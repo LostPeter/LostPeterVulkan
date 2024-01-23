@@ -35,7 +35,7 @@ namespace LostPeterEngine
 
     void ResourceManager::Destroy()
     {
-		
+		DeleteAll();
     }
 
     Resource* ResourceManager::GetResourceByName(const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)

@@ -109,13 +109,187 @@ namespace LostPeterPluginRendererVulkan
         m_eVkImageAspectFlags = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat);
         m_eVkSamplesCountFlagBits = VulkanConverter::Transform2VkSampleCountFlagBits(m_eMSAASampleCount);
         bool bIsAutoMipMap = IsUsage_AutoMipMap() && IsMipMapsHardwareGenerated();
+        bool bIsRenderTarget = IsUsage_RenderTarget();
         bool bIsStagingBuffer = IsUsage_StagingBuffer();
+        bool bIsFrameBufferColor = IsUsage_FrameBufferColor();
+        bool bIsFrameBufferDepth = IsUsage_FrameBufferDepth();
         uint32 nWidth = GetWidth();
         uint32 nHeight = GetHeight();
         uint32 nDepth = GetDepth();
-        uint32 nPixelSize = FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);
+        uint32 nPixelSize = (uint32)FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);
 
-        if (!IsUsage_RenderTarget())
+        if (bIsRenderTarget)
+        {
+            this->m_vkImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            if (this->m_eTexture == F_Texture_1D)
+            {
+                m_pDevice->CreateTextureRenderTarget1D(this->m_colorRT, 
+                                                       this->m_bIsRTSetColor, 
+                                                       nWidth, 
+                                                       this->m_nMipMapsCount, 
+                                                       this->m_eVkSamplesCountFlagBits,
+                                                       this->m_eVkFormat,
+                                                       this->m_vkRTImageUsage,
+                                                       this->m_bIsGraphicsComputeShared,
+                                                       this->m_vkImage, 
+                                                       this->m_vkImageMemory,
+                                                       this->m_vkBufferStaging,
+                                                       this->m_vkBufferMemoryStaging);
+                m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                             this->m_eVkImageView, 
+                                             this->m_eVkFormat, 
+                                             this->m_eVkComponentMapping,
+                                             this->m_eVkImageAspectFlags, 
+                                             this->m_nMipMapsCount, 
+                                             1, 
+                                             this->m_vkImageView);
+            }
+            else if (this->m_eTexture == F_Texture_2D)
+            {
+                m_pDevice->CreateTextureRenderTarget2D(this->m_colorRT, 
+                                                       this->m_bIsRTSetColor, 
+                                                       nWidth, 
+                                                       nHeight,
+                                                       this->m_nMipMapsCount, 
+                                                       this->m_eVkImage,
+                                                       this->m_eVkSamplesCountFlagBits,
+                                                       this->m_eVkFormat, 
+                                                       this->m_vkRTImageUsage,
+                                                       this->m_bIsGraphicsComputeShared,
+                                                       this->m_vkImage, 
+                                                       this->m_vkImageMemory,
+                                                       this->m_vkBufferStaging,
+                                                       this->m_vkBufferMemoryStaging);
+                m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                             this->m_eVkImageView, 
+                                             this->m_eVkFormat, 
+                                             this->m_eVkComponentMapping,
+                                             this->m_eVkImageAspectFlags, 
+                                             this->m_nMipMapsCount, 
+                                             1, 
+                                             this->m_vkImageView);
+            }
+            else if (this->m_eTexture == F_Texture_2DArray)
+            {
+                m_pDevice->CreateTextureRenderTarget2DArray(this->m_colorRT, 
+                                                            this->m_bIsRTSetColor, 
+                                                            nWidth, 
+                                                            nHeight,
+                                                            nDepth,
+                                                            this->m_nMipMapsCount, 
+                                                            this->m_eVkImage,
+                                                            this->m_eVkSamplesCountFlagBits,
+                                                            this->m_eVkFormat, 
+                                                            this->m_vkRTImageUsage,
+                                                            this->m_bIsGraphicsComputeShared,
+                                                            this->m_vkImage, 
+                                                            this->m_vkImageMemory,
+                                                            this->m_vkBufferStaging,
+                                                            this->m_vkBufferMemoryStaging);
+                m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                             this->m_eVkImageView, 
+                                             this->m_eVkFormat, 
+                                             this->m_eVkComponentMapping,
+                                             this->m_eVkImageAspectFlags, 
+                                             this->m_nMipMapsCount, 
+                                             nDepth, 
+                                             this->m_vkImageView);
+            }   
+            else if (this->m_eTexture == F_Texture_3D)
+            {
+                m_pDevice->CreateTextureRenderTarget3D(this->m_colorRT, 
+                                                       this->m_bIsRTSetColor, 
+                                                       nWidth, 
+                                                       nHeight,
+                                                       nDepth,
+                                                       this->m_nMipMapsCount, 
+                                                       this->m_eVkSamplesCountFlagBits,
+                                                       this->m_eVkFormat, 
+                                                       this->m_vkRTImageUsage,
+                                                       this->m_bIsGraphicsComputeShared,
+                                                       this->m_vkImage, 
+                                                       this->m_vkImageMemory,
+                                                       this->m_vkBufferStaging,
+                                                       this->m_vkBufferMemoryStaging);
+                m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                             this->m_eVkImageView, 
+                                             this->m_eVkFormat, 
+                                             this->m_eVkComponentMapping,
+                                             this->m_eVkImageAspectFlags, 
+                                             this->m_nMipMapsCount, 
+                                             1, 
+                                             this->m_vkImageView);
+            }
+            else if (this->m_eTexture == F_Texture_CubeMap)
+            {
+                m_pDevice->CreateTextureRenderTargetCubeMap(nWidth, 
+                                                            nHeight,
+                                                            this->m_nMipMapsCount, 
+                                                            this->m_eVkSamplesCountFlagBits,
+                                                            this->m_eVkFormat, 
+                                                            this->m_vkRTImageUsage,
+                                                            this->m_bIsGraphicsComputeShared,
+                                                            this->m_vkImage, 
+                                                            this->m_vkImageMemory,
+                                                            this->m_vkBufferStaging,
+                                                            this->m_vkBufferMemoryStaging);
+                m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                             this->m_eVkImageView, 
+                                             this->m_eVkFormat, 
+                                             this->m_eVkComponentMapping,
+                                             this->m_eVkImageAspectFlags, 
+                                             this->m_nMipMapsCount, 
+                                             6, 
+                                             this->m_vkImageView);
+            }
+            else
+            {
+                F_LogError("*********************** VulkanTexture::createInternalResourcesImpl: Wrong texture type, create texture !");
+                return;
+            }
+        }
+        else if (bIsFrameBufferColor)
+        {
+            this->m_eVkImageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+
+            m_pDevice->CreateTextureFrameBufferColor(nWidth, 
+                                                     nHeight,
+                                                     nDepth,
+                                                     this->m_eVkSamplesCountFlagBits,
+                                                     this->m_eVkFormat,
+                                                     this->m_vkImage, 
+                                                     this->m_vkImageMemory);
+            m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                         this->m_eVkImageView, 
+                                         this->m_eVkFormat,
+                                         this->m_eVkComponentMapping,
+                                         this->m_eVkImageAspectFlags, 
+                                         1, 
+                                         1, 
+                                         this->m_vkImageView);
+        }
+        else if (bIsFrameBufferDepth)
+        {
+            this->m_eVkImageAspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+            m_pDevice->CreateTextureFrameBufferDepth(nWidth, 
+                                                     nHeight,
+                                                     nDepth,
+                                                     this->m_eVkSamplesCountFlagBits,
+                                                     this->m_eVkFormat,
+                                                     this->m_vkImage, 
+                                                     this->m_vkImageMemory);
+            m_pDevice->CreateVkImageView(this->m_vkImage, 
+                                         this->m_eVkImageView, 
+                                         this->m_eVkFormat,
+                                         this->m_eVkComponentMapping,
+                                         this->m_eVkImageAspectFlags, 
+                                         1, 
+                                         1, 
+                                         this->m_vkImageView);
+        }
+        else
         {
             this->m_vkImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -277,137 +451,6 @@ namespace LostPeterPluginRendererVulkan
             else
             {
                 F_LogError("*********************** VulkanTexture::createInternalResourcesImpl: Wrong texture type, create render target !");
-                return;
-            }
-        }
-        else
-        {
-            this->m_vkImageLayout = VK_IMAGE_LAYOUT_GENERAL;
-
-            if (this->m_eTexture == F_Texture_1D)
-            {
-                m_pDevice->CreateTextureRenderTarget1D(this->m_colorRT, 
-                                                       this->m_bIsRTSetColor, 
-                                                       nWidth, 
-                                                       this->m_nMipMapsCount, 
-                                                       this->m_eVkSamplesCountFlagBits,
-                                                       this->m_eVkFormat,
-                                                       this->m_vkRTImageUsage,
-                                                       this->m_bIsGraphicsComputeShared,
-                                                       this->m_vkImage, 
-                                                       this->m_vkImageMemory,
-                                                       this->m_vkBufferStaging,
-                                                       this->m_vkBufferMemoryStaging);
-                m_pDevice->CreateVkImageView(this->m_vkImage, 
-                                             this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
-                                             this->m_eVkComponentMapping,
-                                             this->m_eVkImageAspectFlags, 
-                                             this->m_nMipMapsCount, 
-                                             1, 
-                                             this->m_vkImageView);
-            }
-            else if (this->m_eTexture == F_Texture_2D)
-            {
-                m_pDevice->CreateTextureRenderTarget2D(this->m_colorRT, 
-                                                       this->m_bIsRTSetColor, 
-                                                       nWidth, 
-                                                       nHeight,
-                                                       this->m_nMipMapsCount, 
-                                                       this->m_eVkImage,
-                                                       this->m_eVkSamplesCountFlagBits,
-                                                       this->m_eVkFormat, 
-                                                       this->m_vkRTImageUsage,
-                                                       this->m_bIsGraphicsComputeShared,
-                                                       this->m_vkImage, 
-                                                       this->m_vkImageMemory,
-                                                       this->m_vkBufferStaging,
-                                                       this->m_vkBufferMemoryStaging);
-                m_pDevice->CreateVkImageView(this->m_vkImage, 
-                                             this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
-                                             this->m_eVkComponentMapping,
-                                             this->m_eVkImageAspectFlags, 
-                                             this->m_nMipMapsCount, 
-                                             1, 
-                                             this->m_vkImageView);
-            }
-            else if (this->m_eTexture == F_Texture_2DArray)
-            {
-                m_pDevice->CreateTextureRenderTarget2DArray(this->m_colorRT, 
-                                                            this->m_bIsRTSetColor, 
-                                                            nWidth, 
-                                                            nHeight,
-                                                            nDepth,
-                                                            this->m_nMipMapsCount, 
-                                                            this->m_eVkImage,
-                                                            this->m_eVkSamplesCountFlagBits,
-                                                            this->m_eVkFormat, 
-                                                            this->m_vkRTImageUsage,
-                                                            this->m_bIsGraphicsComputeShared,
-                                                            this->m_vkImage, 
-                                                            this->m_vkImageMemory,
-                                                            this->m_vkBufferStaging,
-                                                            this->m_vkBufferMemoryStaging);
-                m_pDevice->CreateVkImageView(this->m_vkImage, 
-                                             this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
-                                             this->m_eVkComponentMapping,
-                                             this->m_eVkImageAspectFlags, 
-                                             this->m_nMipMapsCount, 
-                                             nDepth, 
-                                             this->m_vkImageView);
-            }   
-            else if (this->m_eTexture == F_Texture_3D)
-            {
-                m_pDevice->CreateTextureRenderTarget3D(this->m_colorRT, 
-                                                       this->m_bIsRTSetColor, 
-                                                       nWidth, 
-                                                       nHeight,
-                                                       nDepth,
-                                                       this->m_nMipMapsCount, 
-                                                       this->m_eVkSamplesCountFlagBits,
-                                                       this->m_eVkFormat, 
-                                                       this->m_vkRTImageUsage,
-                                                       this->m_bIsGraphicsComputeShared,
-                                                       this->m_vkImage, 
-                                                       this->m_vkImageMemory,
-                                                       this->m_vkBufferStaging,
-                                                       this->m_vkBufferMemoryStaging);
-                m_pDevice->CreateVkImageView(this->m_vkImage, 
-                                             this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
-                                             this->m_eVkComponentMapping,
-                                             this->m_eVkImageAspectFlags, 
-                                             this->m_nMipMapsCount, 
-                                             1, 
-                                             this->m_vkImageView);
-            }
-            else if (this->m_eTexture == F_Texture_CubeMap)
-            {
-                m_pDevice->CreateTextureRenderTargetCubeMap(nWidth, 
-                                                            nHeight,
-                                                            this->m_nMipMapsCount, 
-                                                            this->m_eVkSamplesCountFlagBits,
-                                                            this->m_eVkFormat, 
-                                                            this->m_vkRTImageUsage,
-                                                            this->m_bIsGraphicsComputeShared,
-                                                            this->m_vkImage, 
-                                                            this->m_vkImageMemory,
-                                                            this->m_vkBufferStaging,
-                                                            this->m_vkBufferMemoryStaging);
-                m_pDevice->CreateVkImageView(this->m_vkImage, 
-                                             this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
-                                             this->m_eVkComponentMapping,
-                                             this->m_eVkImageAspectFlags, 
-                                             this->m_nMipMapsCount, 
-                                             6, 
-                                             this->m_vkImageView);
-            }
-            else
-            {
-                F_LogError("*********************** VulkanTexture::createInternalResourcesImpl: Wrong texture type, create texture !");
                 return;
             }
         }

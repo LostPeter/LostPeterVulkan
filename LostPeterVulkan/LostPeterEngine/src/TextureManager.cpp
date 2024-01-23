@@ -358,6 +358,8 @@ namespace LostPeterEngine
     void TextureManager::Destroy()
     {
         F_DELETE(m_pTextureSerializer)
+
+        ResourceManager::Destroy();
     }
     bool TextureManager::Init(uint nGroup, const String& strNameCfg)
     {

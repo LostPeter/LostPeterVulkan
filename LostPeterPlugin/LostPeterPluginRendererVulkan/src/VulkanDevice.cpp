@@ -3067,6 +3067,57 @@ namespace LostPeterPluginRendererVulkan
     }     
 
 
+    bool VulkanDevice::CreateTextureFrameBufferColor(uint32_t nWidth, 
+                                                     uint32_t nHeight,
+                                                     uint32_t nDepth,
+                                                     VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                                     VkFormat typeFormat, 
+                                                     VkImage& vkImage, 
+                                                     VkDeviceMemory& vkImageMemory)
+    {
+        return CreateVkImage(nWidth, 
+                             nHeight, 
+                             nDepth,
+                             1,
+                             1,
+                             VK_IMAGE_TYPE_2D, 
+                             false,
+                             typeSamplesCountFlagBits, 
+                             typeFormat, 
+                             VK_IMAGE_TILING_OPTIMAL, 
+                             VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
+                             VK_SHARING_MODE_EXCLUSIVE,
+                             false,
+                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                             vkImage, 
+                             vkImageMemory);
+    }
+    bool VulkanDevice::CreateTextureFrameBufferDepth(uint32_t nWidth, 
+                                                     uint32_t nHeight,
+                                                     uint32_t nDepth,
+                                                     VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                                     VkFormat typeFormat, 
+                                                     VkImage& vkImage, 
+                                                     VkDeviceMemory& vkImageMemory)
+    {
+        return CreateVkImage(nWidth, 
+                             nHeight, 
+                             nDepth,
+                             1,
+                             1,
+                             VK_IMAGE_TYPE_2D, 
+                             false,
+                             typeSamplesCountFlagBits, 
+                             typeFormat, 
+                             VK_IMAGE_TILING_OPTIMAL, 
+                             VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                             VK_SHARING_MODE_EXCLUSIVE,
+                             false,
+                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                             vkImage, 
+                             vkImageMemory);
+    }
+
     //////////////////// VkShaderModule /////////////////
     bool VulkanDevice::CreateVkShaderModule(FShaderType typeShader, 
                                             const String& pathFile,

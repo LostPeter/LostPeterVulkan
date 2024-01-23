@@ -627,6 +627,23 @@ namespace LostPeterPluginRendererVulkan
                                               VkImage& vkImage, 
                                               VkDeviceMemory& vkImageMemory);
 
+        bool CreateTextureFrameBufferColor(uint32_t nWidth, 
+                                           uint32_t nHeight,
+                                           uint32_t nDepth,
+                                           VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                           VkFormat typeFormat, 
+                                           VkImage& vkImage, 
+                                           VkDeviceMemory& vkImageMemory);
+
+        bool CreateTextureFrameBufferDepth(uint32_t nWidth, 
+                                           uint32_t nHeight,
+                                           uint32_t nDepth,
+                                           VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                           VkFormat typeFormat, 
+                                           VkImage& vkImage, 
+                                           VkDeviceMemory& vkImageMemory);
+
+
         //////////////////// VkShaderModule /////////////////
         bool CreateVkShaderModule(FShaderType typeShader, 
                                   const String& pathFile,

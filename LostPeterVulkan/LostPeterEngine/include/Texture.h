@@ -96,6 +96,8 @@ namespace LostPeterEngine
 		F_FORCEINLINE bool IsUsage_NotSRV() const { return m_nUsage & E_TextureUsage_NotSRV; }
 		F_FORCEINLINE bool IsUsage_UnorderedAccessView() const { return m_nUsage & E_TextureUsage_UnorderedAccessView; }
 		F_FORCEINLINE bool IsUsage_UnorderedAccessViewNotSRV() const { return m_nUsage & E_TextureUsage_UnorderedAccessViewNotSRV; }
+		F_FORCEINLINE bool IsUsage_FrameBufferColor() const { return m_nUsage & E_TextureUsage_FrameBufferColor; }
+		F_FORCEINLINE bool IsUsage_FrameBufferDepth() const { return m_nUsage & E_TextureUsage_FrameBufferDepth; }
 		F_FORCEINLINE bool IsUsage_Default() const { return m_nUsage & E_TextureUsage_Default; }
 		F_FORCEINLINE bool IsUsage_StagingBuffer() const { return IsUsage_Dynamic() ||  IsUsage_DynamicWriteOnly() || IsUsage_DynamicWriteOnlyDiscardable() || IsUsage_RenderTarget(); }
 		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }

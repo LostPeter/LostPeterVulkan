@@ -139,6 +139,8 @@ namespace LostPeterEngine
 		E_TextureUsage_NotSRV						= 0x40,
 		E_TextureUsage_UnorderedAccessView 	        = 0x80,
         E_TextureUsage_UnorderedAccessViewNotSRV    = E_TextureUsage_UnorderedAccessView | E_TextureUsage_NotSRV,
+        E_TextureUsage_FrameBufferColor             = 0x0100,
+        E_TextureUsage_FrameBufferDepth             = 0x0200,
 		E_TextureUsage_Default		                = E_TextureUsage_AutoMipMap | E_TextureUsage_StaticWriteOnly
 	};
 

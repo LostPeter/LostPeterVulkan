@@ -58,7 +58,7 @@ namespace LostPeterPluginRendererVulkan
         const VkFormat vkFormat = VulkanConverter::Transform2VkFormat(ePixelFormat);
 
         VkFormatProperties props;
-        //vkGetPhysicalDeviceFormatProperties(m_pDevice->m_vkPhysicalDevice, vkFormat, &props);
+        vkGetPhysicalDeviceFormatProperties(m_pDevice->GetVkPhysicalDevice(), vkFormat, &props);
 
         uint32 features = 0;
         if (!(nTextureFlags & E_TextureUsage_NotSRV))
