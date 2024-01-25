@@ -70,6 +70,7 @@ namespace LostPeterPluginRendererVulkan
                                                                VkSampleCountFlagBits samples);
         
         void DeleteRenderPass(const String& strName);
+        void DeleteRenderPass(VulkanRenderPass* pRenderPass);
         void DeleteRenderPassAll();
 
     };

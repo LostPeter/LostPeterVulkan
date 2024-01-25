@@ -71,17 +71,17 @@ namespace LostPeterPluginRendererVulkan
         m_aFrameBuffer.push_back(pFrameBuffer);
         return true;
     }
-    bool VulkanFrameBufferManager::CreateFrameBuffer(const String& nameFrameBuffer,
-                                                     const VkImageViewVector& aImageView, 
-                                                     VkRenderPass& vkRenderPass,
-                                                     VkFramebufferCreateFlags flags,
-                                                     uint32_t nWidth,
-                                                     uint32_t nHeight,
-                                                     uint32_t layers)
+    VulkanFrameBuffer* VulkanFrameBufferManager::CreateFrameBuffer(const String& nameFrameBuffer,
+                                                                   const VkImageViewVector& aImageView, 
+                                                                   VkRenderPass vkRenderPass,
+                                                                   VkFramebufferCreateFlags flags,
+                                                                   uint32_t nWidth,
+                                                                   uint32_t nHeight,
+                                                                   uint32_t layers)
     {
         VulkanFrameBuffer* pFrameBuffer = GetFrameBuffer(nameFrameBuffer);
         if (pFrameBuffer != nullptr)
-            return true;
+            return pFrameBuffer;
         
         pFrameBuffer = new VulkanFrameBuffer(nameFrameBuffer, this->m_pDevice);
         if (!pFrameBuffer->Init(aImageView,
@@ -91,7 +91,9 @@ namespace LostPeterPluginRendererVulkan
                                 nHeight,
                                 layers))
         {
-            return false;
+            F_LogError("*********************** VulkanFrameBufferManager::CreateFrameBuffer: Failed to init VulkanFrameBuffer, name: [%s] !", nameFrameBuffer.c_str());
+            F_DELETE(pFrameBuffer)
+            return nullptr;
         }
         AddFrameBuffer(pFrameBuffer);
         return pFrameBuffer;
@@ -109,6 +111,12 @@ namespace LostPeterPluginRendererVulkan
             m_aFrameBuffer.erase(itFindA);
         F_DELETE(itFind->second)
         m_mapFrameBuffer.erase(itFind);
+    }
+    void VulkanFrameBufferManager::DeleteFrameBuffer(VulkanFrameBuffer* pFrameBuffer)
+    {
+        if (!pFrameBuffer)
+            return;
+        DeleteFrameBuffer(pFrameBuffer->GetName());
     }
     void VulkanFrameBufferManager::DeleteFrameBufferAll()
     {

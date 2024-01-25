@@ -29,8 +29,8 @@ namespace LostPeterPluginRendererVulkan
 
         , m_eTexture(F_Texture_2D)
         , m_eMSAASampleCount(F_MSAASampleCount_1_Bit)
-        , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
-        , m_bHasImGUI(true)
+        , m_ePixelFormatSwapChain(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
+        , m_bIsUseImGUI(true)
 
         , m_nSwapChainImageDesiredCount(3)
         , m_pSwapChain(nullptr)
@@ -218,14 +218,15 @@ namespace LostPeterPluginRendererVulkan
         }
         bool VulkanRenderWindow::createRenderFrameBufferDescriptor()
         {
-            this->m_eDepthPixelFormat = m_pDevice->FindDepthPixelFormatType();
+            this->m_ePixelFormatDepth = m_pDevice->FindDepthPixelFormatType();
             String nameRenderFrameBufferDescriptor = "RenderFrameBufferDescriptor-" + GetName();
-            m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, m_pSwapChain);
+            m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, this);
             if (!m_pRenderFrameBufferDescriptor->Init(this->m_eTexture,
-                                                      this->m_eSwapChainImagePixelFormat,
-                                                      this->m_eDepthPixelFormat,
+                                                      this->m_ePixelFormatSwapChain,
+                                                      this->m_ePixelFormatDepth,
+                                                      this->m_ePixelFormatSwapChain,
                                                       this->m_eMSAASampleCount,
-                                                      this->m_bHasImGUI))
+                                                      this->m_bIsUseImGUI))
             {
                 F_LogError("*********************** VulkanRenderWindow::createRenderFrameBufferDescriptor: Failed to create VulkanRenderPassDescriptor !");
                 return false;
@@ -314,7 +315,7 @@ namespace LostPeterPluginRendererVulkan
             m_pSwapChain = new VulkanSwapChain(this->m_pDevice);
         }
         if (!m_pSwapChain->Init(m_pWindow,
-                                m_eSwapChainImagePixelFormat,
+                                m_ePixelFormatSwapChain,
                                 nWindowWidth,
                                 nWindowHeight,
                                 &this->m_nSwapChainImageDesiredCount,
@@ -332,8 +333,8 @@ namespace LostPeterPluginRendererVulkan
             VkImageView vkImageView = VK_NULL_HANDLE;
             if (!m_pDevice->CreateVkImageView(m_aSwapChainVkImages[i],
                                               VK_IMAGE_VIEW_TYPE_2D,
-                                              VulkanConverter::Transform2VkFormat(m_eSwapChainImagePixelFormat),
-                                              VulkanConverter::Transform2VkComponentMapping(m_eSwapChainImagePixelFormat),
+                                              VulkanConverter::Transform2VkFormat(m_ePixelFormatSwapChain),
+                                              VulkanConverter::Transform2VkComponentMapping(m_ePixelFormatSwapChain),
                                               VK_IMAGE_ASPECT_COLOR_BIT,
                                               1,
                                               1,

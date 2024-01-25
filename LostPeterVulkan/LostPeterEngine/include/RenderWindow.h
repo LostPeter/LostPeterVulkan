@@ -88,7 +88,9 @@ namespace LostPeterEngine
 	public:
 		virtual FTextureType GetTextureType() const = 0;
         virtual FMSAASampleCountType GetMSAASampleCountType() const = 0;
-        virtual FPixelFormatType GetSwapChainImagePixelFormat() const = 0;
+        virtual FPixelFormatType GetPixelFormatSwapChain() const = 0;
+		virtual FPixelFormatType GetPixelFormatDepth() const = 0;
+
 
 		virtual bool IsClosed() const = 0;
 		virtual void EmptyGPUCommandBuffer() = 0;
@@ -102,8 +104,22 @@ namespace LostPeterEngine
         void RemoveRenderWindowListenerAll();
 
 	public:
-        //Window
+		//Common/Window
+        virtual void OnInit();
+        virtual void OnLoad();
+        virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
+		virtual void OnDestroy();
+
+		//Compute/Render
+        virtual bool OnBeginCompute();
+            virtual void OnUpdateCompute();
+            virtual void OnCompute();
+        virtual void OnEndCompute();
+        virtual bool OnBeginRender();
+            virtual void OnUpdateRender();
+            virtual void OnRender();
+        virtual void OnEndRender();
 
         //Mouse Input
         virtual void OnMouseLeftDown(double x, double y);
@@ -118,8 +134,8 @@ namespace LostPeterEngine
 
         //Keyboard Input
         virtual void OnKeyboardInput();
-        virtual void OnKeyDown(int key);
-        virtual void OnKeyUp(int key);
+			virtual void OnKeyDown(int key);
+			virtual void OnKeyUp(int key);
     };
 
 }; //LostPeterEngine

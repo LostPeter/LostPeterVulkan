@@ -531,319 +531,39 @@ namespace LostPeterPluginRendererVulkan
 
     VkComponentMapping VulkanConverter::Transform2VkComponentMapping(FPixelFormatType ePixelFormat)
     {
-        VkComponentMapping componentMapping;
-        componentMapping.r = VK_COMPONENT_SWIZZLE_R;
-		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
-		componentMapping.b = VK_COMPONENT_SWIZZLE_B;
-		componentMapping.a = VK_COMPONENT_SWIZZLE_A;
-        
-        switch ((int32)ePixelFormat)
+        VkComponentMapping componentMapping = {};
+        if (FPixelFormat::IsLuminance(ePixelFormat) && !FPixelFormat::IsDepth(ePixelFormat))
         {
-        // BYTE CHANNEL
-        case F_PixelFormat_BYTE_R4G4_UNORM_PACK8:              //1
-            break;
-        case F_PixelFormat_BYTE_L8_UNORM:                      //2               
+            if (FPixelFormat::GetPixelFormatComponentCount(ePixelFormat) == 2)
             {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-        case F_PixelFormat_BYTE_A8_UNORM:                      //3        
+                componentMapping = 
+                {
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_G
+                };
+            }
+            else
             {
-                componentMapping.r = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_R;
-            } 
-            break;
-        case F_PixelFormat_BYTE_R8_UNORM:                      //4
-        case F_PixelFormat_BYTE_R8_SNORM:                      //5
-        case F_PixelFormat_BYTE_R8_USCALED:                    //6
-        case F_PixelFormat_BYTE_R8_SSCALED:                    //7
-        case F_PixelFormat_BYTE_R8_UINT:                       //8
-        case F_PixelFormat_BYTE_R8_SINT:                       //9
-        case F_PixelFormat_BYTE_R8_SRGB:                       //10
+                componentMapping = 
+                {
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_R,
+                    VK_COMPONENT_SWIZZLE_ONE
+                };
+            }
+        }
+        else if (ePixelFormat == F_PixelFormat_BYTE_A8_UNORM)
+        {
+            componentMapping = 
             {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_BYTE_R4G4B4A4_UNORM_PACK16:         //11            
-        case F_PixelFormat_BYTE_B4G4R4A4_UNORM_PACK16:         //12
-        case F_PixelFormat_BYTE_R5G6B5_UNORM_PACK16:           //13  
-        case F_PixelFormat_BYTE_B5G6R5_UNORM_PACK16:           //14
-        case F_PixelFormat_BYTE_R5G5B5A1_UNORM_PACK16:         //15 
-        case F_PixelFormat_BYTE_B5G5R5A1_UNORM_PACK16:         //16
-        case F_PixelFormat_BYTE_A1R5G5B5_UNORM_PACK16:         //17
-            break;
-        case F_PixelFormat_BYTE_AL_UNORM:                      //18      
-        case F_PixelFormat_BYTE_G8R8_UNORM:                    //19
-        case F_PixelFormat_BYTE_G8R8_SNORM:                    //20
-        case F_PixelFormat_BYTE_G8R8_USCALED:                  //21
-        case F_PixelFormat_BYTE_G8R8_SSCALED:                  //22
-        case F_PixelFormat_BYTE_G8R8_UINT:                     //23
-        case F_PixelFormat_BYTE_G8R8_SINT:                     //24
-        case F_PixelFormat_BYTE_G8R8_SRGB:                     //25
-            {
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;       
-
-        case F_PixelFormat_BYTE_R8G8B8_UNORM:                  //26
-        case F_PixelFormat_BYTE_R8G8B8_SNORM:                  //27
-        case F_PixelFormat_BYTE_R8G8B8_USCALED:                //28
-        case F_PixelFormat_BYTE_R8G8B8_SSCALED:                //29
-        case F_PixelFormat_BYTE_R8G8B8_UINT:                   //30
-        case F_PixelFormat_BYTE_R8G8B8_SINT:                   //31
-        case F_PixelFormat_BYTE_R8G8B8_SRGB:                   //32
-        case F_PixelFormat_BYTE_B8G8R8_UNORM:                  //33
-        case F_PixelFormat_BYTE_B8G8R8_SNORM:                  //34
-        case F_PixelFormat_BYTE_B8G8R8_USCALED:                //35
-        case F_PixelFormat_BYTE_B8G8R8_SSCALED:                //36
-        case F_PixelFormat_BYTE_B8G8R8_UINT:                   //37
-        case F_PixelFormat_BYTE_B8G8R8_SINT:                   //38
-        case F_PixelFormat_BYTE_B8G8R8_SRGB:                   //39
-            {
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_BYTE_A8B8G8R8_UNORM_PACK32:         //40
-        case F_PixelFormat_BYTE_A8B8G8R8_SNORM_PACK32:         //41
-        case F_PixelFormat_BYTE_A8B8G8R8_USCALED_PACK32:       //42
-        case F_PixelFormat_BYTE_A8B8G8R8_SSCALED_PACK32:       //43
-        case F_PixelFormat_BYTE_A8B8G8R8_UINT_PACK32:          //44
-        case F_PixelFormat_BYTE_A8B8G8R8_SINT_PACK32:          //45
-        case F_PixelFormat_BYTE_A8B8G8R8_SRGB_PACK32:          //46
-        case F_PixelFormat_BYTE_A2R10G10B10_UNORM_PACK32:      //47
-        case F_PixelFormat_BYTE_A2R10G10B10_SNORM_PACK32:      //48
-        case F_PixelFormat_BYTE_A2R10G10B10_USCALED_PACK32:    //49
-        case F_PixelFormat_BYTE_A2R10G10B10_SSCALED_PACK32:    //50
-        case F_PixelFormat_BYTE_A2R10G10B10_UINT_PACK32:       //51
-        case F_PixelFormat_BYTE_A2R10G10B10_SINT_PACK32:       //52
-        case F_PixelFormat_BYTE_A2B10G10R10_UNORM_PACK32:      //53
-        case F_PixelFormat_BYTE_A2B10G10R10_SNORM_PACK32:      //54
-        case F_PixelFormat_BYTE_A2B10G10R10_USCALED_PACK32:    //55
-        case F_PixelFormat_BYTE_A2B10G10R10_SSCALED_PACK32:    //56
-        case F_PixelFormat_BYTE_A2B10G10R10_UINT_PACK32:       //57
-        case F_PixelFormat_BYTE_A2B10G10R10_SINT_PACK32:       //58
-        case F_PixelFormat_BYTE_A8R8G8B8_UNORM:                //59
-        case F_PixelFormat_BYTE_A8R8G8B8_SNORM:                //60
-        case F_PixelFormat_BYTE_A8R8G8B8_USCALED:              //61
-        case F_PixelFormat_BYTE_A8R8G8B8_SSCALED:              //62
-        case F_PixelFormat_BYTE_A8R8G8B8_UINT:                 //63
-        case F_PixelFormat_BYTE_A8R8G8B8_SINT:                 //64
-        case F_PixelFormat_BYTE_A8R8G8B8_SRGB:                 //65
-        case F_PixelFormat_BYTE_A8B8G8R8_UNORM:                //66
-        case F_PixelFormat_BYTE_A8B8G8R8_SNORM:                //67
-        case F_PixelFormat_BYTE_A8B8G8R8_USCALED:              //68
-        case F_PixelFormat_BYTE_A8B8G8R8_SSCALED:              //69
-        case F_PixelFormat_BYTE_A8B8G8R8_UINT:                 //70
-        case F_PixelFormat_BYTE_A8B8G8R8_SINT:                 //71
-        case F_PixelFormat_BYTE_A8B8G8R8_SRGB:                 //72
-            break;
-
-        // SHORT CHANNEL
-        case F_PixelFormat_SHORT_L16_UNORM:                    //73  
-        case F_PixelFormat_SHORT_R16_UNORM:                    //74
-        case F_PixelFormat_SHORT_R16_SNORM:                    //75  
-        case F_PixelFormat_SHORT_R16_USCALED:                  //76  
-        case F_PixelFormat_SHORT_R16_SSCALED:                  //77  
-        case F_PixelFormat_SHORT_R16_UINT:                     //78             
-        case F_PixelFormat_SHORT_R16_SINT:                     //79  
-        case F_PixelFormat_SHORT_R16_SFLOAT:                   //80  
-            {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_SHORT_G16R16_UNORM:                 //81
-        case F_PixelFormat_SHORT_G16R16_SNORM:                 //82
-        case F_PixelFormat_SHORT_G16R16_USCALED:               //83
-        case F_PixelFormat_SHORT_G16R16_SSCALED:               //84
-        case F_PixelFormat_SHORT_G16R16_UINT:                  //85
-        case F_PixelFormat_SHORT_G16R16_SINT:                  //86
-        case F_PixelFormat_SHORT_G16R16_SFLOAT:                //87     
-            {
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_SHORT_B16G16R16_UNORM:              //88   
-        case F_PixelFormat_SHORT_B16G16R16_SNORM:              //89
-        case F_PixelFormat_SHORT_B16G16R16_USCALED:            //90   
-        case F_PixelFormat_SHORT_B16G16R16_SSCALED:            //91   
-        case F_PixelFormat_SHORT_B16G16R16_UINT:               //92   
-        case F_PixelFormat_SHORT_B16G16R16_SINT:               //93   
-        case F_PixelFormat_SHORT_B16G16R16_SFLOAT:             //94             
-            {
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_SHORT_A16B16G16R16_UNORM:           //95 
-        case F_PixelFormat_SHORT_A16B16G16R16_SNORM:           //96
-        case F_PixelFormat_SHORT_A16B16G16R16_USCALED:         //97 
-        case F_PixelFormat_SHORT_A16B16G16R16_SSCALED:         //98 
-        case F_PixelFormat_SHORT_A16B16G16R16_UINT:            //99 
-        case F_PixelFormat_SHORT_A16B16G16R16_SINT:            //100 
-        case F_PixelFormat_SHORT_A16B16G16R16_SFLOAT:          //101             
-            break;
-
-        // INT CHANNEL
-        case F_PixelFormat_INT_R32_UINT:                       //102
-        case F_PixelFormat_INT_R32_SINT:                       //103
-        case F_PixelFormat_INT_R32_SFLOAT:                     //104
-            {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-        
-        case F_PixelFormat_INT_G32R32_UINT:                    //105
-        case F_PixelFormat_INT_G32R32_SINT:                    //106
-        case F_PixelFormat_INT_G32R32_SFLOAT:                  //107
-            {
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_INT_B32G32R32_UINT:                 //108
-        case F_PixelFormat_INT_B32G32R32_SINT:                 //109
-        case F_PixelFormat_INT_B32G32R32_SFLOAT:               //110
-            {
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_INT_A32B32G32R32_UINT:              //111
-        case F_PixelFormat_INT_A32B32G32R32_SINT:              //112
-        case F_PixelFormat_INT_A32B32G32R32_SFLOAT:            //113
-            break;
-
-        // LONG CHANNEL
-        case F_PixelFormat_LONG_R64_UINT:                      //114
-        case F_PixelFormat_LONG_R64_SINT:                      //115
-        case F_PixelFormat_LONG_R64_SFLOAT:                    //116
-            {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-        
-        case F_PixelFormat_LONG_G64R64_UINT:                   //117
-        case F_PixelFormat_LONG_G64R64_SINT:                   //118
-        case F_PixelFormat_LONG_G64R64_SFLOAT:                 //119
-            {
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_LONG_B64G64R64_UINT:                //120
-        case F_PixelFormat_LONG_B64G64R64_SINT:                //121
-        case F_PixelFormat_LONG_B64G64R64_SFLOAT:              //122
-            {
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-
-        case F_PixelFormat_LONG_A64B64G32R64_UINT:             //123
-        case F_PixelFormat_LONG_A64B64G32R64_SINT:             //124
-        case F_PixelFormat_LONG_A64B64G32R64_SFLOAT:           //125
-            break;
-
-        // FLOAT
-        case F_PixelFormat_FLOAT_B10G11R11_UFLOAT_PACK32:      //126
-        case F_PixelFormat_FLOAT_E5B9G9R9_UFLOAT_PACK32:       //127
-            break;
-
-        // STENCIL
-        case F_PixelFormat_STENCIL_S8_UINT:                    //128
-            break;
-        // DEPTH
-        case F_PixelFormat_DEPTH_D16_UNORM:                    //129
-        case F_PixelFormat_DEPTH_D24_UNORM:                    //130
-        case F_PixelFormat_DEPTH_D32_SFLOAT:                   //131
-            {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
-            } 
-            break;
-        // DEPTHSTENCIL
-        case F_PixelFormat_DEPTHSTENCIL_D16_UNORM_S8_UINT:     //132
-        case F_PixelFormat_DEPTHSTENCIL_D24_UNORM_S8_UINT:     //133
-        case F_PixelFormat_DEPTHSTENCIL_D32_SFLOAT_S8_UINT:    //134
-            {
-                componentMapping.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-                componentMapping.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-                componentMapping.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-            } 
-            break;
-
-        // DXT
-        case F_PixelFormat_DXT1:                               //135                 
-        case F_PixelFormat_DXT2:                               //136        
-        case F_PixelFormat_DXT3:                               //137        
-        case F_PixelFormat_DXT4:                               //138        
-        case F_PixelFormat_DXT5:                               //139        
-
-        // BC
-        case F_PixelFormat_BC4_UNORM:                          //140
-        case F_PixelFormat_BC4_SNORM:                          //141
-        case F_PixelFormat_BC5_UNORM:                          //142
-        case F_PixelFormat_BC5_SNORM:                          //143
-        case F_PixelFormat_BC6H_UF16:                          //144
-        case F_PixelFormat_BC6H_SF16:                          //145
-        case F_PixelFormat_BC7_UNORM:                          //146
-
-        // PVRTC (PowerVR)
-        case F_PixelFormat_PVRTC_RGB2:                         //147
-        case F_PixelFormat_PVRTC_RGBA2:                        //148
-        case F_PixelFormat_PVRTC_RGB4:                         //149
-        case F_PixelFormat_PVRTC_RGBA4:                        //150
-        case F_PixelFormat_PVRTC2_2BPP:                        //151
-        case F_PixelFormat_PVRTC2_4BPP:                        //152
-
-        // ETC
-        case F_PixelFormat_ETC1_RGB8:                          //153
-        case F_PixelFormat_ETC2_RGB8:                          //154
-        case F_PixelFormat_ETC2_RGBA8:                         //155
-        case F_PixelFormat_ETC2_RGB8A1:                        //156
-
-        // ATC
-        case F_PixelFormat_ATC_RGB:                            //157
-        case F_PixelFormat_ATC_RGBA_EXPLICIT_ALPHA:            //158
-        case F_PixelFormat_ATC_RGBA_INTERPOLATED_ALPHA:        //159
-
-        // ASTC 
-        case F_PixelFormat_ASTC_RGBA_4X4_LDR:                  //160
-        case F_PixelFormat_ASTC_RGBA_5X4_LDR:                  //161
-        case F_PixelFormat_ASTC_RGBA_5X5_LDR:                  //162
-        case F_PixelFormat_ASTC_RGBA_6X5_LDR:                  //163
-        case F_PixelFormat_ASTC_RGBA_6X6_LDR:                  //164
-        case F_PixelFormat_ASTC_RGBA_8X5_LDR:                  //165
-        case F_PixelFormat_ASTC_RGBA_8X6_LDR:                  //166
-        case F_PixelFormat_ASTC_RGBA_8X8_LDR:                  //167
-        case F_PixelFormat_ASTC_RGBA_10X5_LDR:                 //168
-        case F_PixelFormat_ASTC_RGBA_10X6_LDR:                 //169
-        case F_PixelFormat_ASTC_RGBA_10X8_LDR:                 //170
-        case F_PixelFormat_ASTC_RGBA_10X10_LDR:                //171
-        case F_PixelFormat_ASTC_RGBA_12X10_LDR:                //172
-        case F_PixelFormat_ASTC_RGBA_12X12_LDR:                //173
-            break;
-
+                VK_COMPONENT_SWIZZLE_ONE,
+                VK_COMPONENT_SWIZZLE_ONE,
+                VK_COMPONENT_SWIZZLE_ONE,
+                VK_COMPONENT_SWIZZLE_R
+            };
         }
 
         return componentMapping;

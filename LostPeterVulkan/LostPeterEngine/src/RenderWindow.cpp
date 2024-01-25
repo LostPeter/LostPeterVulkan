@@ -92,6 +92,23 @@ namespace LostPeterEngine
         m_mapRenderWindowListener.clear();
     }
 
+    //Common/Window
+    void RenderWindow::OnInit()
+    {
+
+    }
+
+    void RenderWindow::OnLoad()
+    {
+
+    }
+
+    bool RenderWindow::OnIsInit()
+    {
+
+        return true;
+    }
+
     void RenderWindow::OnResize(int w, int h, bool force)
     {
         if (m_mapRenderWindowListener.size() <= 0)
@@ -104,6 +121,46 @@ namespace LostPeterEngine
         }
     }   
 
+    void RenderWindow::OnDestroy()
+    {
+
+    }
+
+    //Compute/Render
+    bool RenderWindow::OnBeginCompute()
+    {
+        return true;
+    }
+        void RenderWindow::OnUpdateCompute()
+        {
+
+        }
+        void RenderWindow::OnCompute()
+        {
+
+        }
+    void RenderWindow::OnEndCompute()
+    {
+
+    }
+    bool RenderWindow::OnBeginRender()
+    {
+        return true;
+    }
+        void RenderWindow::OnUpdateRender()
+        {
+
+        }
+        void RenderWindow::OnRender()
+        {
+
+        }
+    void RenderWindow::OnEndRender()
+    {
+        
+    }
+
+    //Mouse Input
     void RenderWindow::OnMouseLeftDown(double x, double y)
     {
         if (m_mapRenderWindowListener.size() <= 0)

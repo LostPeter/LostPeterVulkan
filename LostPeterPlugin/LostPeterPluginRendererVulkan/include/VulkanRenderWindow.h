@@ -36,9 +36,9 @@ namespace LostPeterPluginRendererVulkan
 
         FTextureType m_eTexture;
         FMSAASampleCountType m_eMSAASampleCount;
-        FPixelFormatType m_eSwapChainImagePixelFormat;
-        FPixelFormatType m_eDepthPixelFormat;
-        bool m_bHasImGUI;
+        FPixelFormatType m_ePixelFormatSwapChain;
+        FPixelFormatType m_ePixelFormatDepth;
+        bool m_bIsUseImGUI;
 
         uint32 m_nSwapChainImageDesiredCount;
         VkImageVector m_aSwapChainVkImages;
@@ -75,7 +75,8 @@ namespace LostPeterPluginRendererVulkan
     public:
         virtual FTextureType GetTextureType() const { return m_eTexture; }
         virtual FMSAASampleCountType GetMSAASampleCountType() const { return m_eMSAASampleCount; }
-        virtual FPixelFormatType GetSwapChainImagePixelFormat() const { return m_eSwapChainImagePixelFormat; }
+        virtual FPixelFormatType GetPixelFormatSwapChain() const { return m_ePixelFormatSwapChain; }
+        virtual FPixelFormatType GetPixelFormatDepth() const { return m_ePixelFormatDepth; }
 
 		virtual bool IsClosed() const;
 		virtual void EmptyGPUCommandBuffer();

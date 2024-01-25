@@ -548,6 +548,12 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(itFind->second)
         m_mapRenderPass.erase(itFind);
     }
+    void VulkanRenderPassManager::DeleteRenderPass(VulkanRenderPass* pRenderPass)
+    {
+        if (!pRenderPass)
+            return;
+        DeleteRenderPass(pRenderPass->GetName());
+    }
     void VulkanRenderPassManager::DeleteRenderPassAll()
     {
         for (VulkanRenderPassPtrVector::iterator it = m_aRenderPass.begin();

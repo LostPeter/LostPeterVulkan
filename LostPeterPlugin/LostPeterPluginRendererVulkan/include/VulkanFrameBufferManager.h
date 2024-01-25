@@ -46,14 +46,16 @@ namespace LostPeterPluginRendererVulkan
         bool HasFrameBuffer(const String& strName);
         VulkanFrameBuffer* GetFrameBuffer(const String& strName);
         bool AddFrameBuffer(VulkanFrameBuffer* pFrameBuffer);
-        bool CreateFrameBuffer(const String& nameFrameBuffer,
-                               const VkImageViewVector& aImageView, 
-                               VkRenderPass& vkRenderPass,
-                               VkFramebufferCreateFlags flags,
-                               uint32_t nWidth,
-                               uint32_t nHeight,
-                               uint32_t layers);
+        VulkanFrameBuffer* CreateFrameBuffer(const String& nameFrameBuffer,
+                                             const VkImageViewVector& aImageView, 
+                                             VkRenderPass vkRenderPass,
+                                             VkFramebufferCreateFlags flags,
+                                             uint32_t nWidth,
+                                             uint32_t nHeight,
+                                             uint32_t layers);
+
         void DeleteFrameBuffer(const String& strName);
+        void DeleteFrameBuffer(VulkanFrameBuffer* pFrameBuffer);
         void DeleteFrameBufferAll();
 
     };

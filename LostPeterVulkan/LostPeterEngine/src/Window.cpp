@@ -50,6 +50,23 @@ namespace LostPeterEngine
         m_mapWindowListener.clear();
     }
 
+    //Common/Window
+    void Window::OnInit()
+    {
+
+    }
+
+    void Window::OnLoad()
+    {
+
+    }
+
+    bool Window::OnIsInit()
+    {
+
+        return true;
+    }
+
     void Window::OnResize(int w, int h, bool force)
     {
         if (m_mapWindowListener.size() <= 0)
@@ -62,6 +79,46 @@ namespace LostPeterEngine
         }
     }   
 
+    void Window::OnDestroy()
+    {
+
+    }
+
+    //Compute/Render
+    bool Window::OnBeginCompute()
+    {
+        return true;
+    }
+        void Window::OnUpdateCompute()
+        {
+
+        }
+        void Window::OnCompute()
+        {
+
+        }
+    void Window::OnEndCompute()
+    {
+
+    }
+    bool Window::OnBeginRender()
+    {
+        return true;
+    }
+        void Window::OnUpdateRender()
+        {
+
+        }
+        void Window::OnRender()
+        {
+
+        }
+    void Window::OnEndRender()
+    {
+
+    }
+
+    //Mouse Input
     void Window::OnMouseLeftDown(double x, double y)
     {
         if (m_mapWindowListener.size() <= 0)
@@ -162,6 +219,7 @@ namespace LostPeterEngine
         }
     }
 
+    //Keyboard Input
     void Window::OnKeyboardInput()
     {
         if (m_mapWindowListener.size() <= 0)
@@ -173,27 +231,27 @@ namespace LostPeterEngine
             it->second->OnKeyboardInput();
         }
     }
-    void Window::OnKeyDown(int key)
-    {
-        if (m_mapWindowListener.size() <= 0)
-            return;
-
-        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
-             it != m_mapWindowListener.end(); ++it)
+        void Window::OnKeyDown(int key)
         {
-            it->second->OnKeyDown(key);
-        }
-    }
-    void Window::OnKeyUp(int key)
-    {
-        if (m_mapWindowListener.size() <= 0)
-            return;
+            if (m_mapWindowListener.size() <= 0)
+                return;
 
-        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
-             it != m_mapWindowListener.end(); ++it)
-        {
-            it->second->OnKeyUp(key);
+            for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+                it != m_mapWindowListener.end(); ++it)
+            {
+                it->second->OnKeyDown(key);
+            }
         }
-    }
+        void Window::OnKeyUp(int key)
+        {
+            if (m_mapWindowListener.size() <= 0)
+                return;
+
+            for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+                it != m_mapWindowListener.end(); ++it)
+            {
+                it->second->OnKeyUp(key);
+            }
+        }
 
 }; //LostPeterEngine

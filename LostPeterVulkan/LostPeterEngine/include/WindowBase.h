@@ -71,8 +71,22 @@ namespace LostPeterEngine
         virtual void registerCallbacks();
 
     public:
-        //Window
+        //Common/Window
+        virtual void OnInit() = 0;
+        virtual void OnLoad() = 0;
+        virtual bool OnIsInit() = 0;
         virtual void OnResize(int w, int h, bool force) = 0;
+        virtual void OnDestroy() = 0;
+
+        //Compute/Render
+        virtual bool OnBeginCompute() = 0;
+            virtual void OnUpdateCompute() = 0;
+            virtual void OnCompute() = 0;
+        virtual void OnEndCompute() = 0;
+        virtual bool OnBeginRender() = 0;
+            virtual void OnUpdateRender() = 0;
+            virtual void OnRender() = 0;
+        virtual void OnEndRender() = 0;
 
         //Mouse Input
         virtual void OnMouseInput();

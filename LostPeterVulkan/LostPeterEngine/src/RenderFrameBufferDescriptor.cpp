@@ -16,6 +16,12 @@ namespace LostPeterEngine
 {
     RenderFrameBufferDescriptor::RenderFrameBufferDescriptor(const String& nameRenderFrameBufferDescriptor)
         : Base(nameRenderFrameBufferDescriptor)
+        , m_eTexture(F_Texture_2D)
+        , m_ePixelFormatColor(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
+        , m_ePixelFormatDepth(F_PixelFormat_DEPTH_D32_SFLOAT)
+        , m_ePixelFormatSwapChian(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
+        , m_eMSAASampleCount(F_MSAASampleCount_1_Bit)
+        , m_bIsUseImGUI(false)
     {
 
     }

@@ -35,8 +35,22 @@ namespace LostPeterEngine
         void RemoveWindowListenerAll();
 
     public:
-        //Window
+        //Common/Window
+        virtual void OnInit();
+        virtual void OnLoad();
+        virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
+        virtual void OnDestroy();
+
+        //Compute/Render
+        virtual bool OnBeginCompute();
+            virtual void OnUpdateCompute();
+            virtual void OnCompute();
+        virtual void OnEndCompute();
+        virtual bool OnBeginRender();
+            virtual void OnUpdateRender();
+            virtual void OnRender();
+        virtual void OnEndRender();
 
         //Mouse Input
         virtual void OnMouseLeftDown(double x, double y);
@@ -51,8 +65,8 @@ namespace LostPeterEngine
 
         //Keyboard Input
         virtual void OnKeyboardInput();
-        virtual void OnKeyDown(int key);
-        virtual void OnKeyUp(int key);
+            virtual void OnKeyDown(int key);
+            virtual void OnKeyUp(int key);
     };
 
 }; //LostPeterEngine

@@ -29,16 +29,33 @@ namespace LostPeterEngine
         TexturePtrVector m_aTextureDepth;
         TexturePtrVector m_aTextureSwapChain;
 
+        FTextureType m_eTexture;
+        FPixelFormatType m_ePixelFormatColor;
+        FPixelFormatType m_ePixelFormatDepth;
+        FPixelFormatType m_ePixelFormatSwapChian;
+        FMSAASampleCountType m_eMSAASampleCount;
+        bool m_bIsUseImGUI;
+
     public:
         F_FORCEINLINE const TexturePtrVector& GetTextureColor() const { return m_aTextureColor; }
         F_FORCEINLINE const TexturePtrVector& GetTextureDepth() const { return m_aTextureDepth; }
         F_FORCEINLINE const TexturePtrVector& GetTextureSwapChain() const { return m_aTextureSwapChain; }
+
+        F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
+        F_FORCEINLINE FPixelFormatType GetPixelFormatColor() const { return m_ePixelFormatColor; }
+        F_FORCEINLINE FPixelFormatType GetPixelFormatDepth() const { return m_ePixelFormatDepth; }
+        F_FORCEINLINE FPixelFormatType GetPixelFormatSwapChian() const { return m_ePixelFormatSwapChian; }
+        F_FORCEINLINE FMSAASampleCountType GetMSAASampleCount() const { return m_eMSAASampleCount; }
+
+        F_FORCEINLINE bool HasMSAASampleCount() const { return m_eMSAASampleCount != F_MSAASampleCount_1_Bit; }
+        F_FORCEINLINE bool GetIsUseImGUI() const { return m_bIsUseImGUI; }
 
     public:
         virtual void Destroy();
         virtual bool Init(FTextureType eTexture,
                           FPixelFormatType ePixelFormatColor,
                           FPixelFormatType ePixelFormatDepth,
+                          FPixelFormatType ePixelFormatSwapChian,
                           FMSAASampleCountType eMSAASampleCount,
                           bool bHasImGUI) = 0;
         

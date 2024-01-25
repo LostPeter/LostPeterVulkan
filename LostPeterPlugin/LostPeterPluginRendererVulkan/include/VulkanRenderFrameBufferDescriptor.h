@@ -21,31 +21,54 @@ namespace LostPeterPluginRendererVulkan
     public:
         VulkanRenderFrameBufferDescriptor(const String& nameRenderFrameBufferDescriptor,
                                           VulkanDevice* pDevice,
-                                          VulkanSwapChain* pSwapChain);
+                                          VulkanRenderWindow* pRenderWindow);
         virtual ~VulkanRenderFrameBufferDescriptor();
 
     public:
     protected:
         VulkanDevice* m_pDevice;
-        VulkanSwapChain* m_pSwapChain;
+        VulkanRenderWindow* m_pRenderWindow;
         VulkanRenderPass* m_pRenderPass;    
-        VulkanFrameBuffer* m_pFrameBuffer;
+        VulkanFrameBufferPtrVector m_aFrameBuffer;
+
+        VkFormat m_eVkFormatColor;
+        VkFormat m_eVkFormatDepth;
+        VkFormat m_eVkFormatSwapChian;
+        VkSampleCountFlagBits m_eVkMSAASampleCount;
+        
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE VulkanRenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
         F_FORCEINLINE VulkanRenderPass* GetRenderPass() const { return m_pRenderPass; }
-        F_FORCEINLINE VulkanFrameBuffer* GetFrameBuffer() const { return m_pFrameBuffer; }
+        F_FORCEINLINE const VulkanFrameBufferPtrVector& GetFrameBuffers() const { return m_aFrameBuffer; }
+        F_FORCEINLINE VulkanFrameBufferPtrVector& GetFrameBuffers() { return m_aFrameBuffer; }
+        F_FORCEINLINE int GetFrameBufferCount() const { return (int)m_aFrameBuffer.size(); }
+        F_FORCEINLINE VulkanFrameBuffer* GetFrameBuffer(int index) 
+        {
+            F_Assert(index >= 0 && index < (int)m_aFrameBuffer.size() && "VulkanRenderFrameBufferDescriptor::GetFrameBuffer") 
+            return m_aFrameBuffer[index]; 
+        }
+
+        F_FORCEINLINE VkFormat GetVkFormatColor() const { return m_eVkFormatColor; }
+        F_FORCEINLINE VkFormat GetVkFormatDepth() const { return m_eVkFormatDepth; }
+        F_FORCEINLINE VkFormat GetVkFormatSwapChian() const { return m_eVkFormatSwapChian; }
+        F_FORCEINLINE VkSampleCountFlagBits GetVkMSAASampleCount() const { return m_eVkMSAASampleCount; }
+
 
     public:
         virtual void Destroy();
         virtual bool Init(FTextureType eTexture,
                           FPixelFormatType ePixelFormatColor,
                           FPixelFormatType ePixelFormatDepth,
+                          FPixelFormatType ePixelFormatSwapChian,
                           FMSAASampleCountType eMSAASampleCount,
-                          bool bHasImGUI);
+                          bool bIsUseImGUI);
 
     public:
     protected:
+        void destroyRenderFrameBuffer();
+        void destroyRenderPass();
         void destroyTextures(TexturePtrVector& aTexture);
 
         virtual bool createTextureColor(FTextureType eTexture,
@@ -58,7 +81,6 @@ namespace LostPeterPluginRendererVulkan
 
         virtual bool createRenderPass();
         virtual bool createRenderFrameBuffer();
-
     };
 
 }; //LostPeterPluginRendererVulkan
