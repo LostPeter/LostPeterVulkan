@@ -24,50 +24,57 @@ namespace LostPeterEngine
 		~RenderStateCommon();
 
 	public:
-		FPolygonType				typePolygon;
-		FCullingType			    typeCulling;
-		float					    fPointSize;
-		bool					    bPointSpriteEnabled;
-		bool					    bPointAttenuEnabled;
-		float					    fPointAttenuConstant;
-		float					    fPointAttenuLinear;
-		float					    fPointAttenuQuadratic;
-		float					    fPointMinSize;
-		float					    fPointMaxSize;
-		bool					    bDepthTestEnabled;
-		bool					    bDepthWriteEnabled;
-		FCompareFuncType			typeDepthFunc;
-		float					    fDepthBiasConstant;
-		float					    fDepthBiasSlopeScale;
-		bool					    bStencilEnabled;
-		FCompareFuncType			typeStencilFunc;
-		uint32					    nStencilRefValue;
-		uint32					    nStencilMask;
-		FStencilOPType	            typeStencilFailOP;
-		FStencilOPType	            typeStencilDepthFailOP;
-		FStencilOPType	            typeStencilPassOP;
-		bool					    bStencilTwoSidedEnabled;
-		bool					    bScissorTestEnabled;
-		uint32					    nScissorTest_Left;
-		uint32					    nScissorTest_Top;
-		uint32					    nScissorTest_Right;
-		uint32					    nScissorTest_Bottom;
-		bool 						bAlphaTestEnabled;
-		FCompareFuncType 			typeAlphaRejectFunc;
-		uint8					    nAlphaRejectValue;
-		bool					    bSceneBlendingEnabled;
-		FSceneBlendingType		    typeSceneBlending;
-		FSceneBlendingOPType		typeSceneBlendingOP;
-		FSceneBlendingFactorType	typeSceneBlendingFactorSrc;
-		FSceneBlendingFactorType	typeSceneBlendingFactorDst;
-		bool					    bSceneBlendingSeperateEnabled;
-		FSceneBlendingOPType		typeSceneBlendingOP2;
-		FSceneBlendingFactorType	typeSceneBlendingFactorSrc2;
-		FSceneBlendingFactorType	typeSceneBlendingFactorDst2;
-		bool					    bColorRWriteEnabled;
-		bool					    bColorGWriteEnabled;
-		bool					    bColorBWriteEnabled;
-		bool					    bColorAWriteEnabled;
+		FPolygonType m_ePolygon;
+		FCullingType m_eCulling;
+
+		float m_fPointSize;
+		bool m_bPointSpriteEnabled;
+		bool m_bPointAttenuEnabled;
+		float m_fPointAttenuConstant;
+		float m_fPointAttenuLinear;
+		float m_fPointAttenuQuadratic;
+		float m_fPointMinSize;
+		float m_fPointMaxSize;
+
+		bool m_bDepthTestEnabled;
+		bool m_bDepthWriteEnabled;
+		FCompareFuncType m_eDepthCompareFunc;
+		float m_fDepthBiasConstant;
+		float m_fDepthBiasSlopeScale;
+
+		bool m_bStencilEnabled;
+		FCompareFuncType m_eStencilCompareFunc;
+		uint32 m_nStencilRefValue;
+		uint32 m_nStencilMask;
+		FStencilOPType m_eStencilFailOP;
+		FStencilOPType m_eStencilDepthFailOP;
+		FStencilOPType m_eStencilPassOP;
+		bool m_bStencilTwoSidedEnabled;
+
+		bool m_bScissorTestEnabled;
+		uint32 m_nScissorTest_Left;
+		uint32 m_nScissorTest_Top;
+		uint32 m_nScissorTest_Right;
+		uint32 m_nScissorTest_Bottom;
+
+		bool m_bAlphaTestEnabled;
+		FCompareFuncType m_eAlphaRejectCompareFunc;
+		uint8 m_nAlphaRejectValue;
+		
+		bool m_bSceneBlendingEnabled;
+		FSceneBlendingType m_eSceneBlending;
+		FSceneBlendingOPType m_eSceneBlendingOP;
+		FSceneBlendingFactorType m_eSceneBlendingFactorSrc;
+		FSceneBlendingFactorType m_eSceneBlendingFactorDst;
+		bool m_bSceneBlendingSeperateEnabled;
+		FSceneBlendingOPType m_eSceneBlendingOP2;
+		FSceneBlendingFactorType m_eSceneBlendingFactorSrc2;
+		FSceneBlendingFactorType m_eSceneBlendingFactorDst2;
+
+		bool m_bColorRWriteEnabled;
+		bool m_bColorGWriteEnabled;
+		bool m_bColorBWriteEnabled;
+		bool m_bColorAWriteEnabled;
 
 	public:
 		void CopyFrom(const RenderStateCommon* pStateCommon);
@@ -83,17 +90,17 @@ namespace LostPeterEngine
 		~RenderStateLighting();
 
 	public:
-		bool					    bLightingEnabled;
-		FLightingType 				typeLighting;
-		uint8					    nMaxEffectLightNum;
+		bool m_bLightingEnabled;
+		FLightingType m_eLighting;
+		uint8 m_nMaxEffectLightNum;
 
 	////Flat/Gouraud/Phong
-		FColor					    clAmbient;
-		FColor					    clDiffuse;
-		FColor					    clSpecular;
-		FColor					    clEmissive;
-		float					    fShininess;
-		uint32					    nColorFromVertexFlag;
+		FColor m_clAmbient;
+		FColor m_clDiffuse;
+		FColor m_clSpecular;
+		FColor m_clEmissive;
+		float m_fShininess;
+		uint32 m_nColorFromVertexFlag;
 
 	////Pbr
 
@@ -106,7 +113,7 @@ namespace LostPeterEngine
 
 	//////////////////////////////////// RenderStateParam ///////////////////////////////
 	class engineExport RenderStateParam : public Base
-									  , public FNonCopyable
+									    , public FNonCopyable
 	{
 	public:
 		RenderStateParam(const String& _nameParam);
@@ -125,7 +132,7 @@ namespace LostPeterEngine
 
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
 	class engineExport RenderStateTexture : public Base
-										, public FNonCopyable
+										  , public FNonCopyable
 	{
 	public:
 		RenderStateTexture(uint32 _group, const String& _nameTexture);
@@ -133,10 +140,10 @@ namespace LostPeterEngine
 
 	public:
 	protected:
-		Texture* pTexture;
+		Texture* m_pTexture;
 
 	public:
-		F_FORCEINLINE Texture* GetTexture() const { return pTexture; }
+		F_FORCEINLINE Texture* GetTexture() const { return m_pTexture; }
 
 	public:
 		void Destroy();
@@ -148,37 +155,37 @@ namespace LostPeterEngine
 	
 	//////////////////////////////////// RenderStateShader //////////////////////////////
 	class engineExport RenderStateShaderItem : public Base
-										   , public FNonCopyable
+										   	 , public FNonCopyable
 	{
 	public:
 		RenderStateShaderItem(const String& nameShader, FShaderType type);
 		~RenderStateShaderItem();
 
 	public:
-		FShaderType typeShader;
-		Shader* pShader;
+		FShaderType m_eShader;
+		Shader* m_pShader;
 
 	////Param
-		RenderStateParamPtrVector aRenderStateParam;
-		RenderStateParamPtrMap mapRenderStateParam;
+		RenderStateParamPtrVector m_aRenderStateParam;
+		RenderStateParamPtrMap m_mapRenderStateParam;
 	////Texture
-		RenderStateTexturePtrVector aRenderStateTexture;
-		RenderStateTexturePtrMap mapRenderStateTexture;
+		RenderStateTexturePtrVector m_aRenderStateTexture;
+		RenderStateTexturePtrMap m_mapRenderStateTexture;
 
 	public:
-		F_FORCEINLINE FShaderType GetShaderType() const { return typeShader; }
-		F_FORCEINLINE Shader* GetShader() const { return pShader; }
+		F_FORCEINLINE FShaderType GetShaderType() const { return m_eShader; }
+		F_FORCEINLINE Shader* GetShader() const { return m_pShader; }
 
 	////Param
-		F_FORCEINLINE const RenderStateParamPtrVector& GetRenderStateParamPtrVector() const { return aRenderStateParam; }
-        F_FORCEINLINE RenderStateParamPtrVector& GetRenderStateParamPtrVector() { return aRenderStateParam; }
-        F_FORCEINLINE const RenderStateParamPtrMap& GetRenderStateParamPtrMap() const { return mapRenderStateParam; }
-        F_FORCEINLINE RenderStateParamPtrMap& GetRenderStateParamPtrMap() { return mapRenderStateParam; }
+		F_FORCEINLINE const RenderStateParamPtrVector& GetRenderStateParamPtrVector() const { return m_aRenderStateParam; }
+        F_FORCEINLINE RenderStateParamPtrVector& GetRenderStateParamPtrVector() { return m_aRenderStateParam; }
+        F_FORCEINLINE const RenderStateParamPtrMap& GetRenderStateParamPtrMap() const { return m_mapRenderStateParam; }
+        F_FORCEINLINE RenderStateParamPtrMap& GetRenderStateParamPtrMap() { return m_mapRenderStateParam; }
 	////Texture
-		F_FORCEINLINE const RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() const { return aRenderStateTexture; }
-        F_FORCEINLINE RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() { return aRenderStateTexture; }
-        F_FORCEINLINE const RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() const { return mapRenderStateTexture; }
-        F_FORCEINLINE RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() { return mapRenderStateTexture; }
+		F_FORCEINLINE const RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() const { return m_aRenderStateTexture; }
+        F_FORCEINLINE RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() { return m_aRenderStateTexture; }
+        F_FORCEINLINE const RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() const { return m_mapRenderStateTexture; }
+        F_FORCEINLINE RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() { return m_mapRenderStateTexture; }
 
 	public:	
 		void Destroy();
@@ -216,19 +223,19 @@ namespace LostPeterEngine
 
 	public:
 	protected:
-		String nameDescriptorSetLayout;
+		String m_strNameDescriptorSetLayout;
 
-		RenderStateShaderItemPtrVector aRenderStateShaderItem;
-		RenderStateShaderItemPtrMap mapRenderStateShaderItem;
+		RenderStateShaderItemPtrVector m_aRenderStateShaderItem;
+		RenderStateShaderItemPtrMap m_mapRenderStateShaderItem;
 
 	public:
-		F_FORCEINLINE const String& GetNameDescriptorSetLayout() const { return nameDescriptorSetLayout; }
-		F_FORCEINLINE void SetNameDescriptorSetLayout(const String& nameDSL) { nameDescriptorSetLayout = nameDSL; }
+		F_FORCEINLINE const String& GetNameDescriptorSetLayout() const { return m_strNameDescriptorSetLayout; }
+		F_FORCEINLINE void SetNameDescriptorSetLayout(const String& nameDSL) { m_strNameDescriptorSetLayout = nameDSL; }
 
-		F_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return aRenderStateShaderItem; }
-        F_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return aRenderStateShaderItem; }
-        F_FORCEINLINE const RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() const { return mapRenderStateShaderItem; }
-        F_FORCEINLINE RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() { return mapRenderStateShaderItem; }
+		F_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return m_aRenderStateShaderItem; }
+        F_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return m_aRenderStateShaderItem; }
+        F_FORCEINLINE const RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() const { return m_mapRenderStateShaderItem; }
+        F_FORCEINLINE RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() { return m_mapRenderStateShaderItem; }
 
 	public:
 		void Destroy();
@@ -246,7 +253,7 @@ namespace LostPeterEngine
 
 	//////////////////////////////////// RenderState ////////////////////////////////////
     class engineExport RenderState : public Base
-								 , public FNonCopyable
+								   , public FNonCopyable
     {
     public:
         RenderState(const String& namePass,
@@ -266,279 +273,281 @@ namespace LostPeterEngine
 		F_FORCEINLINE RenderStateShader* GetStateShader() const { return m_pStateShader; }
 
 	////RenderStateCommon
-		F_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->typePolygon; }
-		F_FORCEINLINE void	SetPolygonType(const FPolygonType& t)	{ m_pStateCommon->typePolygon = t; }
-		F_FORCEINLINE FCullingType GetCullingType() const { return m_pStateCommon->typeCulling; }
-		F_FORCEINLINE void	SetCullingType(const FCullingType& t) { m_pStateCommon->typeCulling = t; }
+		F_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->m_ePolygon; }
+		F_FORCEINLINE void SetPolygonType(const FPolygonType& ePolygon) { m_pStateCommon->m_ePolygon = ePolygon; }
+		F_FORCEINLINE FCullingType GetCullingType() const { return m_pStateCommon->m_eCulling; }
+		F_FORCEINLINE void SetCullingType(const FCullingType& eCulling) { m_pStateCommon->m_eCulling = eCulling; }
 
 
-		F_FORCEINLINE float GetPointSize() const { return m_pStateCommon->fPointSize; }
-		F_FORCEINLINE void	SetPointSize(const float& f) { m_pStateCommon->fPointSize = f; }
-		F_FORCEINLINE bool	GetPointSpriteEnabled() const { return m_pStateCommon->bPointSpriteEnabled; }
-		F_FORCEINLINE void	SetPointSpriteEnabled(const bool& bEnabled) { m_pStateCommon->bPointSpriteEnabled = bEnabled; }
-		F_FORCEINLINE bool	GetPointAttenuEnabled() const { return m_pStateCommon->bPointAttenuEnabled; }
-		F_FORCEINLINE void	SetPointAttenuEnabled(const bool& bEnabled) { m_pStateCommon->bPointAttenuEnabled = bEnabled; }
-		F_FORCEINLINE float GetPointAttenuConstant() const	{ return m_pStateCommon->fPointAttenuConstant; }
-		F_FORCEINLINE void	SetPointAttenuConstant(const float& f) { m_pStateCommon->fPointAttenuConstant = f; }
-		F_FORCEINLINE float GetPointAttenuLinear() const { return m_pStateCommon->fPointAttenuLinear; }
-		F_FORCEINLINE void	SetPointAttenuLinear(const float& f) { m_pStateCommon->fPointAttenuLinear = f; }
-		F_FORCEINLINE float GetPointAttenuQuadratic() const { return m_pStateCommon->fPointAttenuQuadratic; }
-		F_FORCEINLINE void	SetPointAttenuQuadratic(const float& f) { m_pStateCommon->fPointAttenuQuadratic = f; }
-		F_FORCEINLINE float GetPointMinSize() const { return m_pStateCommon->fPointMinSize; }
-		F_FORCEINLINE void	SetPointMinSize(const float& f) { m_pStateCommon->fPointMinSize = f; }
-		F_FORCEINLINE float GetPointMaxSize() const { return m_pStateCommon->fPointMaxSize; }
-		F_FORCEINLINE void	SetPointMaxSize(const float& f) { m_pStateCommon->fPointMaxSize = f; }
+		F_FORCEINLINE float GetPointSize() const { return m_pStateCommon->m_fPointSize; }
+		F_FORCEINLINE void SetPointSize(const float& fPointSize) { m_pStateCommon->m_fPointSize = fPointSize; }
+		F_FORCEINLINE bool GetPointSpriteEnabled() const { return m_pStateCommon->m_bPointSpriteEnabled; }
+		F_FORCEINLINE void SetPointSpriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bPointSpriteEnabled = bEnabled; }
+		F_FORCEINLINE bool GetPointAttenuEnabled() const { return m_pStateCommon->m_bPointAttenuEnabled; }
+		F_FORCEINLINE void SetPointAttenuEnabled(const bool& bEnabled) { m_pStateCommon->m_bPointAttenuEnabled = bEnabled; }
+		F_FORCEINLINE float GetPointAttenuConstant() const	{ return m_pStateCommon->m_fPointAttenuConstant; }
+		F_FORCEINLINE void SetPointAttenuConstant(const float& fPointAttenuConstant) { m_pStateCommon->m_fPointAttenuConstant = fPointAttenuConstant; }
+		F_FORCEINLINE float GetPointAttenuLinear() const { return m_pStateCommon->m_fPointAttenuLinear; }
+		F_FORCEINLINE void SetPointAttenuLinear(const float& fPointAttenuLinear) { m_pStateCommon->m_fPointAttenuLinear = fPointAttenuLinear; }
+		F_FORCEINLINE float GetPointAttenuQuadratic() const { return m_pStateCommon->m_fPointAttenuQuadratic; }
+		F_FORCEINLINE void SetPointAttenuQuadratic(const float& fPointAttenuQuadratic) { m_pStateCommon->m_fPointAttenuQuadratic = fPointAttenuQuadratic; }
+		F_FORCEINLINE float GetPointMinSize() const { return m_pStateCommon->m_fPointMinSize; }
+		F_FORCEINLINE void SetPointMinSize(const float& fPointMinSize) { m_pStateCommon->m_fPointMinSize = fPointMinSize; }
+		F_FORCEINLINE float GetPointMaxSize() const { return m_pStateCommon->m_fPointMaxSize; }
+		F_FORCEINLINE void SetPointMaxSize(const float& fPointMaxSize) { m_pStateCommon->m_fPointMaxSize = fPointMaxSize; }
 		F_FORCEINLINE void GetPointSetting(float& fSize, bool& bSpriteEnabled, bool& bAttenuEnabled,
-										    float& fAttenuConstant, float& fAttenuLinear, float& fAttenuQuadratic,
-											float& fMinSize, float& fMaxSize) const
+										   float& fAttenuConstant, float& fAttenuLinear, float& fAttenuQuadratic,
+										   float& fMinSize, float& fMaxSize) const
 		{
-			fSize = m_pStateCommon->fPointSize;
-			bSpriteEnabled = m_pStateCommon->bPointSpriteEnabled;
-			bAttenuEnabled = m_pStateCommon->bPointAttenuEnabled;
-			fAttenuConstant = m_pStateCommon->fPointAttenuConstant;
-			fAttenuLinear = m_pStateCommon->fPointAttenuLinear;
-			fAttenuQuadratic = m_pStateCommon->fPointAttenuQuadratic;
-			fMinSize = m_pStateCommon->fPointMinSize;
-			fMaxSize = m_pStateCommon->fPointMaxSize;
+			fSize = m_pStateCommon->m_fPointSize;
+			bSpriteEnabled = m_pStateCommon->m_bPointSpriteEnabled;
+			bAttenuEnabled = m_pStateCommon->m_bPointAttenuEnabled;
+			fAttenuConstant = m_pStateCommon->m_fPointAttenuConstant;
+			fAttenuLinear = m_pStateCommon->m_fPointAttenuLinear;
+			fAttenuQuadratic = m_pStateCommon->m_fPointAttenuQuadratic;
+			fMinSize = m_pStateCommon->m_fPointMinSize;
+			fMaxSize = m_pStateCommon->m_fPointMaxSize;
 		}
 		F_FORCEINLINE void SetPointSetting(float fSize, bool bSpriteEnabled, bool bAttenuEnabled,
-											float fAttenuConstant, float fAttenuLinear, float fAttenuQuadratic,
-											float fMinSize, float fMaxSize)
+										   float fAttenuConstant, float fAttenuLinear, float fAttenuQuadratic,
+										   float fMinSize, float fMaxSize)
 		{
 
-			m_pStateCommon->fPointSize = fSize;
-			m_pStateCommon->bPointSpriteEnabled = bSpriteEnabled;
-			m_pStateCommon->bPointAttenuEnabled = bAttenuEnabled;
-			m_pStateCommon->fPointAttenuConstant = fAttenuConstant;
-			m_pStateCommon->fPointAttenuLinear = fAttenuLinear;
-			m_pStateCommon->fPointAttenuQuadratic = fAttenuQuadratic;
-			m_pStateCommon->fPointMinSize = fMinSize;
-			m_pStateCommon->fPointMaxSize = fMaxSize;
+			m_pStateCommon->m_fPointSize = fSize;
+			m_pStateCommon->m_bPointSpriteEnabled = bSpriteEnabled;
+			m_pStateCommon->m_bPointAttenuEnabled = bAttenuEnabled;
+			m_pStateCommon->m_fPointAttenuConstant = fAttenuConstant;
+			m_pStateCommon->m_fPointAttenuLinear = fAttenuLinear;
+			m_pStateCommon->m_fPointAttenuQuadratic = fAttenuQuadratic;
+			m_pStateCommon->m_fPointMinSize = fMinSize;
+			m_pStateCommon->m_fPointMaxSize = fMaxSize;
 		}
 
 
-		F_FORCEINLINE bool	GetDepthTestEnabled() const { return m_pStateCommon->bDepthTestEnabled; }
-		F_FORCEINLINE void	SetDepthTestEnabled(const bool& bEnabled) { m_pStateCommon->bDepthTestEnabled = bEnabled; }
-		F_FORCEINLINE bool	GetDepthWriteEnabled() const { return m_pStateCommon->bDepthWriteEnabled; }
-		F_FORCEINLINE void	SetDepthWriteEnabled(const bool& bEnabled) { m_pStateCommon->bDepthWriteEnabled = bEnabled; }
-		F_FORCEINLINE FCompareFuncType GetDepthFunc() const { return m_pStateCommon->typeDepthFunc; }
-		F_FORCEINLINE void	SetDepthFunc(const FCompareFuncType& func) { m_pStateCommon->typeDepthFunc = func; }
-		F_FORCEINLINE float GetDepthBiasConstant() const { return m_pStateCommon->fDepthBiasConstant; }
-		F_FORCEINLINE void	SetDepthBiasConstant(const float& f) { m_pStateCommon->fDepthBiasConstant = f; }
-		F_FORCEINLINE float GetDepthBiasSlopeScale() const	{ return m_pStateCommon->fDepthBiasSlopeScale; }
-		F_FORCEINLINE void	SetDepthBiasSlopeScale(const float& f) { m_pStateCommon->fDepthBiasSlopeScale = f; }
-		F_FORCEINLINE void	GetDepthSetting(bool& bDepthTestEnabled, bool& bDepthWriteEnabled, FCompareFuncType& eFunc,
-											float& fDepthBiasConstant, float& fDepthBiasSlopeScale) const
+		F_FORCEINLINE bool GetDepthTestEnabled() const { return m_pStateCommon->m_bDepthTestEnabled; }
+		F_FORCEINLINE void SetDepthTestEnabled(const bool& bEnabled) { m_pStateCommon->m_bDepthTestEnabled = bEnabled; }
+		F_FORCEINLINE bool GetDepthWriteEnabled() const { return m_pStateCommon->m_bDepthWriteEnabled; }
+		F_FORCEINLINE void SetDepthWriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bDepthWriteEnabled = bEnabled; }
+		F_FORCEINLINE FCompareFuncType GetDepthCompareFunc() const { return m_pStateCommon->m_eDepthCompareFunc; }
+		F_FORCEINLINE void SetDepthCompareFunc(const FCompareFuncType& eDepthCompareFunc) { m_pStateCommon->m_eDepthCompareFunc = eDepthCompareFunc; }
+		F_FORCEINLINE float GetDepthBiasConstant() const { return m_pStateCommon->m_fDepthBiasConstant; }
+		F_FORCEINLINE void SetDepthBiasConstant(const float& fDepthBiasConstant) { m_pStateCommon->m_fDepthBiasConstant = fDepthBiasConstant; }
+		F_FORCEINLINE float GetDepthBiasSlopeScale() const	{ return m_pStateCommon->m_fDepthBiasSlopeScale; }
+		F_FORCEINLINE void SetDepthBiasSlopeScale(const float& fDepthBiasSlopeScale) { m_pStateCommon->m_fDepthBiasSlopeScale = fDepthBiasSlopeScale; }
+		F_FORCEINLINE void GetDepthSetting(bool& bDepthTestEnabled, bool& bDepthWriteEnabled, FCompareFuncType& eDepthCompareFunc,
+										   float& fDepthBiasConstant, float& fDepthBiasSlopeScale) const
 		{
-			bDepthTestEnabled = m_pStateCommon->bDepthTestEnabled;
-			bDepthWriteEnabled = m_pStateCommon->bDepthWriteEnabled;
-			eFunc = m_pStateCommon->typeDepthFunc;
-			fDepthBiasConstant = m_pStateCommon->fDepthBiasConstant;
-			fDepthBiasSlopeScale = m_pStateCommon->fDepthBiasSlopeScale;
+			bDepthTestEnabled = m_pStateCommon->m_bDepthTestEnabled;
+			bDepthWriteEnabled = m_pStateCommon->m_bDepthWriteEnabled;
+			eDepthCompareFunc = m_pStateCommon->m_eDepthCompareFunc;
+			fDepthBiasConstant = m_pStateCommon->m_fDepthBiasConstant;
+			fDepthBiasSlopeScale = m_pStateCommon->m_fDepthBiasSlopeScale;
 		}
-		F_FORCEINLINE void	SetDepthSetting(bool bDepthTestEnabled, bool bDepthWriteEnabled, FCompareFuncType eFunc,
-										    float fDepthBiasConstant, float fDepthBiasSlopeScale)
+		F_FORCEINLINE void SetDepthSetting(bool bDepthTestEnabled, bool bDepthWriteEnabled, FCompareFuncType eDepthCompareFunc,
+										   float fDepthBiasConstant, float fDepthBiasSlopeScale)
 		{
-			m_pStateCommon->bDepthTestEnabled = bDepthTestEnabled;
-			m_pStateCommon->bDepthWriteEnabled = bDepthWriteEnabled;
-			m_pStateCommon->typeDepthFunc = eFunc;
-			m_pStateCommon->fDepthBiasConstant = fDepthBiasConstant;
-			m_pStateCommon->fDepthBiasSlopeScale = fDepthBiasSlopeScale;
-		}
-
-
-		F_FORCEINLINE bool	GetAlphaTestEnabled() const	{ return m_pStateCommon->bAlphaTestEnabled; }
-		F_FORCEINLINE void	SetAlphaTestEnabled(const bool& bEnabled) { m_pStateCommon->bAlphaTestEnabled = bEnabled; }
-		F_FORCEINLINE FCompareFuncType GetAlphaRejectFunc() const { return m_pStateCommon->typeAlphaRejectFunc; }
-		F_FORCEINLINE void	SetAlphaRejectFunc(const FCompareFuncType& func) { m_pStateCommon->typeAlphaRejectFunc = func; }
-		F_FORCEINLINE uint8 GetAlphaRejectValue() const { return m_pStateCommon->nAlphaRejectValue; }
-		F_FORCEINLINE void	SetAlphaRejectValue(const uint8& c)	{ m_pStateCommon->nAlphaRejectValue = c; }
-		F_FORCEINLINE void	GetAlphaTestSetting(bool& bEnabled, FCompareFuncType& eFunc, uint8& nValue) const
-		{
-			bEnabled = m_pStateCommon->bAlphaTestEnabled;
-			eFunc = m_pStateCommon->typeAlphaRejectFunc;
-			nValue = m_pStateCommon->nAlphaRejectValue;
-		}
-		F_FORCEINLINE void	SetAlphaTestSetting(bool bEnabled, FCompareFuncType eFunc, uint8 nValue)
-		{
-			m_pStateCommon->bAlphaTestEnabled = bEnabled;
-			m_pStateCommon->typeAlphaRejectFunc = eFunc;
-			m_pStateCommon->nAlphaRejectValue = nValue;
-		}
-
-
-		F_FORCEINLINE bool	GetStencilEnabled() const { return m_pStateCommon->bStencilEnabled; }
-		F_FORCEINLINE void	SetStencilEnabled(const bool& bEnabled) { m_pStateCommon->bStencilEnabled = bEnabled; }
-		F_FORCEINLINE FCompareFuncType GetStencilFunc() const { return m_pStateCommon->typeStencilFunc; }
-		F_FORCEINLINE void	SetStencilFunc(const FCompareFuncType& func) { m_pStateCommon->typeStencilFunc = func; }
-		F_FORCEINLINE uint32 GetStencilRefValue() const { return m_pStateCommon->nStencilRefValue; }
-		F_FORCEINLINE void	SetStencilRefValue(const uint32& n)	{ m_pStateCommon->nStencilRefValue = n; }
-		F_FORCEINLINE uint32 GetStencilMask() const { return m_pStateCommon->nStencilMask; }
-		F_FORCEINLINE void	SetStencilMask(const uint32& n)	{ m_pStateCommon->nStencilMask = n; }
-		F_FORCEINLINE FStencilOPType GetStencilFailOP() const { return m_pStateCommon->typeStencilFailOP; }
-		F_FORCEINLINE void	SetStencilFailOP(const FStencilOPType& func) { m_pStateCommon->typeStencilFailOP = func; }
-		F_FORCEINLINE FStencilOPType GetStencilDepthFailOP() const { return m_pStateCommon->typeStencilDepthFailOP; }
-		F_FORCEINLINE void	SetStencilDepthFailOP(const FStencilOPType& func)	{ m_pStateCommon->typeStencilDepthFailOP = func; }
-		F_FORCEINLINE FStencilOPType GetStencilPassOP() const { return m_pStateCommon->typeStencilPassOP; }
-		F_FORCEINLINE void	SetStencilPassOP(const FStencilOPType& func) { m_pStateCommon->typeStencilPassOP = func; }
-		F_FORCEINLINE bool	GetStencilTwoSidedEnabled() const { return m_pStateCommon->bStencilTwoSidedEnabled; }
-		F_FORCEINLINE void	SetStencilTwoSidedEnabled(const bool& bEnabled) { m_pStateCommon->bStencilTwoSidedEnabled = bEnabled; }
-		F_FORCEINLINE void	GetStencilSetting(bool& bEnabled, FCompareFuncType& eType,
-											  uint32& nRefValue, uint32& nMask,
-											  FStencilOPType& eFailOP, FStencilOPType& eDepthFailOP, FStencilOPType& ePassOP,
-											  bool& bTwoSided) const
-		{
-			bEnabled = m_pStateCommon->bStencilEnabled;
-			eType = m_pStateCommon->typeStencilFunc;
-			nRefValue = m_pStateCommon->nStencilRefValue;
-			nMask = m_pStateCommon->nStencilMask;
-			eFailOP = m_pStateCommon->typeStencilFailOP;
-			eDepthFailOP = m_pStateCommon->typeStencilDepthFailOP;
-			ePassOP	= m_pStateCommon->typeStencilPassOP;
-			bTwoSided = m_pStateCommon->bStencilTwoSidedEnabled;
-		}
-		F_FORCEINLINE void	SetStencilSetting(bool bEnabled, FCompareFuncType eType,
-											  uint32 nRefValue, uint32 nMask,
-											  FStencilOPType eFailOP, FStencilOPType eDepthFailOP, FStencilOPType ePassOP,
-											  bool bTwoSided)
-		{
-			m_pStateCommon->bStencilEnabled = bEnabled;
-			m_pStateCommon->typeStencilFunc = eType;		  
-			m_pStateCommon->nStencilRefValue = nRefValue;	  
-			m_pStateCommon->nStencilMask = nMask;		  
-			m_pStateCommon->typeStencilFailOP = eFailOP;		  
-			m_pStateCommon->typeStencilDepthFailOP = eDepthFailOP;  
-			m_pStateCommon->typeStencilPassOP = ePassOP;		  
-			m_pStateCommon->bStencilTwoSidedEnabled = bTwoSided;
-		}
-
-		F_FORCEINLINE bool	GetScissorTestEnabled() const { return m_pStateCommon->bScissorTestEnabled; }
-		F_FORCEINLINE void	SetScissorTestEnabled(const bool& bEnabled) { m_pStateCommon->bScissorTestEnabled = bEnabled; }
-		F_FORCEINLINE void	GetScissorTestParam(uint32& nLeft, uint32& nTop, uint32& nRight, uint32& nBottom)
-		{
-			nLeft = m_pStateCommon->nScissorTest_Left;
-			nTop = m_pStateCommon->nScissorTest_Top;
-			nRight = m_pStateCommon->nScissorTest_Right;
-			nBottom = m_pStateCommon->nScissorTest_Bottom;
-		}
-		F_FORCEINLINE void	SetScissorTestParam(bool bEnabled, uint32 nLeft, uint32 nTop, uint32 nRight, uint32 nBottom)
-		{
-			m_pStateCommon->bScissorTestEnabled = bEnabled;
-			m_pStateCommon->nScissorTest_Left = nLeft;
-			m_pStateCommon->nScissorTest_Top = nTop;
-			m_pStateCommon->nScissorTest_Right = nRight;
-			m_pStateCommon->nScissorTest_Bottom = nBottom;
+			m_pStateCommon->m_bDepthTestEnabled = bDepthTestEnabled;
+			m_pStateCommon->m_bDepthWriteEnabled = bDepthWriteEnabled;
+			m_pStateCommon->m_eDepthCompareFunc = eDepthCompareFunc;
+			m_pStateCommon->m_fDepthBiasConstant = fDepthBiasConstant;
+			m_pStateCommon->m_fDepthBiasSlopeScale = fDepthBiasSlopeScale;
 		}	
 
+
+		F_FORCEINLINE bool GetStencilEnabled() const { return m_pStateCommon->m_bStencilEnabled; }
+		F_FORCEINLINE void SetStencilEnabled(const bool& bEnabled) { m_pStateCommon->m_bStencilEnabled = bEnabled; }
+		F_FORCEINLINE FCompareFuncType GetStencilCompareFunc() const { return m_pStateCommon->m_eStencilCompareFunc; }
+		F_FORCEINLINE void SetStencilCompareFunc(const FCompareFuncType& eStencilCompareFunc) { m_pStateCommon->m_eStencilCompareFunc = eStencilCompareFunc; }
+		F_FORCEINLINE uint32 GetStencilRefValue() const { return m_pStateCommon->m_nStencilRefValue; }
+		F_FORCEINLINE void SetStencilRefValue(const uint32& nStencilRefValue) { m_pStateCommon->m_nStencilRefValue = nStencilRefValue; }
+		F_FORCEINLINE uint32 GetStencilMask() const { return m_pStateCommon->m_nStencilMask; }
+		F_FORCEINLINE void SetStencilMask(const uint32& nStencilMask) { m_pStateCommon->m_nStencilMask = nStencilMask; }
+		F_FORCEINLINE FStencilOPType GetStencilFailOP() const { return m_pStateCommon->m_eStencilFailOP; }
+		F_FORCEINLINE void SetStencilFailOP(const FStencilOPType& eStencilFailOP) { m_pStateCommon->m_eStencilFailOP = eStencilFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilDepthFailOP() const { return m_pStateCommon->m_eStencilDepthFailOP; }
+		F_FORCEINLINE void SetStencilDepthFailOP(const FStencilOPType& eStencilDepthFailOP) { m_pStateCommon->m_eStencilDepthFailOP = eStencilDepthFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilPassOP() const { return m_pStateCommon->m_eStencilPassOP; }
+		F_FORCEINLINE void SetStencilPassOP(const FStencilOPType& eStencilPassOP) { m_pStateCommon->m_eStencilPassOP = eStencilPassOP; }
+		F_FORCEINLINE bool GetStencilTwoSidedEnabled() const { return m_pStateCommon->m_bStencilTwoSidedEnabled; }
+		F_FORCEINLINE void SetStencilTwoSidedEnabled(const bool& bEnabled) { m_pStateCommon->m_bStencilTwoSidedEnabled = bEnabled; }
+		F_FORCEINLINE void GetStencilSetting(bool& bEnabled, FCompareFuncType& eType,
+											 uint32& nRefValue, uint32& nMask,
+											 FStencilOPType& eFailOP, FStencilOPType& eDepthFailOP, FStencilOPType& ePassOP,
+										     bool& bTwoSided) const
+		{
+			bEnabled = m_pStateCommon->m_bStencilEnabled;
+			eType = m_pStateCommon->m_eStencilCompareFunc;
+			nRefValue = m_pStateCommon->m_nStencilRefValue;
+			nMask = m_pStateCommon->m_nStencilMask;
+			eFailOP = m_pStateCommon->m_eStencilFailOP;
+			eDepthFailOP = m_pStateCommon->m_eStencilDepthFailOP;
+			ePassOP	= m_pStateCommon->m_eStencilPassOP;
+			bTwoSided = m_pStateCommon->m_bStencilTwoSidedEnabled;
+		}
+		F_FORCEINLINE void SetStencilSetting(bool bEnabled, FCompareFuncType eType,
+											 uint32 nRefValue, uint32 nMask,
+											 FStencilOPType eFailOP, FStencilOPType eDepthFailOP, FStencilOPType ePassOP,
+											 bool bTwoSided)
+		{
+			m_pStateCommon->m_bStencilEnabled = bEnabled;
+			m_pStateCommon->m_eStencilCompareFunc = eType;		  
+			m_pStateCommon->m_nStencilRefValue = nRefValue;	  
+			m_pStateCommon->m_nStencilMask = nMask;		  
+			m_pStateCommon->m_eStencilFailOP = eFailOP;		  
+			m_pStateCommon->m_eStencilDepthFailOP = eDepthFailOP;  
+			m_pStateCommon->m_eStencilPassOP = ePassOP;		  
+			m_pStateCommon->m_bStencilTwoSidedEnabled = bTwoSided;
+		}
+
+
+		F_FORCEINLINE bool GetScissorTestEnabled() const { return m_pStateCommon->m_bScissorTestEnabled; }
+		F_FORCEINLINE void SetScissorTestEnabled(const bool& bEnabled) { m_pStateCommon->m_bScissorTestEnabled = bEnabled; }
+		F_FORCEINLINE void GetScissorTestParam(uint32& nLeft, uint32& nTop, uint32& nRight, uint32& nBottom)
+		{
+			nLeft = m_pStateCommon->m_nScissorTest_Left;
+			nTop = m_pStateCommon->m_nScissorTest_Top;
+			nRight = m_pStateCommon->m_nScissorTest_Right;
+			nBottom = m_pStateCommon->m_nScissorTest_Bottom;
+		}
+		F_FORCEINLINE void SetScissorTestParam(bool bEnabled, uint32 nLeft, uint32 nTop, uint32 nRight, uint32 nBottom)
+		{
+			m_pStateCommon->m_bScissorTestEnabled = bEnabled;
+			m_pStateCommon->m_nScissorTest_Left = nLeft;
+			m_pStateCommon->m_nScissorTest_Top = nTop;
+			m_pStateCommon->m_nScissorTest_Right = nRight;
+			m_pStateCommon->m_nScissorTest_Bottom = nBottom;
+		}	
+
+
+		F_FORCEINLINE bool GetAlphaTestEnabled() const { return m_pStateCommon->m_bAlphaTestEnabled; }
+		F_FORCEINLINE void SetAlphaTestEnabled(const bool& bEnabled) { m_pStateCommon->m_bAlphaTestEnabled = bEnabled; }
+		F_FORCEINLINE FCompareFuncType GetAlphaRejectCompareFunc() const { return m_pStateCommon->m_eAlphaRejectCompareFunc; }
+		F_FORCEINLINE void SetAlphaRejectCompareFunc(const FCompareFuncType& eAlphaRejectCompareFunc) { m_pStateCommon->m_eAlphaRejectCompareFunc = eAlphaRejectCompareFunc; }
+		F_FORCEINLINE uint8 GetAlphaRejectValue() const { return m_pStateCommon->m_nAlphaRejectValue; }
+		F_FORCEINLINE void SetAlphaRejectValue(const uint8& c) { m_pStateCommon->m_nAlphaRejectValue = c; }
+		F_FORCEINLINE void GetAlphaTestSetting(bool& bEnabled, FCompareFuncType& eAlphaRejectCompareFunc, uint8& nValue) const
+		{
+			bEnabled = m_pStateCommon->m_bAlphaTestEnabled;
+			eAlphaRejectCompareFunc = m_pStateCommon->m_eAlphaRejectCompareFunc;
+			nValue = m_pStateCommon->m_nAlphaRejectValue;
+		}
+		F_FORCEINLINE void SetAlphaTestSetting(bool bEnabled, FCompareFuncType eAlphaRejectCompareFunc, uint8 nValue)
+		{
+			m_pStateCommon->m_bAlphaTestEnabled = bEnabled;
+			m_pStateCommon->m_eAlphaRejectCompareFunc = eAlphaRejectCompareFunc;
+			m_pStateCommon->m_nAlphaRejectValue = nValue;
+		}
 		
-		F_FORCEINLINE bool	GetSceneBlendingEnabled() const	{ return m_pStateCommon->bSceneBlendingEnabled; }
-		F_FORCEINLINE void	SetSceneBlendingEnabled(const bool& bEnabled) { m_pStateCommon->bSceneBlendingEnabled = bEnabled; }
-		F_FORCEINLINE FSceneBlendingType GetSceneBlendingType() const { return m_pStateCommon->typeSceneBlending; }
-		F_FORCEINLINE void	SetSceneBlendingType(const FSceneBlendingType& t)	{ m_pStateCommon->typeSceneBlending = t; }
-		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType() const { return m_pStateCommon->typeSceneBlendingOP; }
-		F_FORCEINLINE void	SetSceneBlendingOperationOPType(const FSceneBlendingOPType& t) { m_pStateCommon->typeSceneBlendingOP = t; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType() const	{ return m_pStateCommon->typeSceneBlendingFactorSrc; }
-		F_FORCEINLINE void	SetSceneBlendingFactorSrcType(const FSceneBlendingFactorType& t) { m_pStateCommon->typeSceneBlendingFactorSrc = t; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType() const	{ return m_pStateCommon->typeSceneBlendingFactorDst; }
-		F_FORCEINLINE void	SetSceneBlendingFactorDstType(const FSceneBlendingFactorType& t) { m_pStateCommon->typeSceneBlendingFactorDst = t; }
-		F_FORCEINLINE bool	GetSceneBlendingSeperateEnabled() const	{ return m_pStateCommon->bSceneBlendingSeperateEnabled; }
-		F_FORCEINLINE void	SetSceneBlendingSeperateEnabled(const bool& bEnabled) { m_pStateCommon->bSceneBlendingSeperateEnabled = bEnabled; }
-		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType2() const { return m_pStateCommon->typeSceneBlendingOP2; }
-		F_FORCEINLINE void	SetSceneBlendingOperationOPType2(const FSceneBlendingOPType& t) { m_pStateCommon->typeSceneBlendingOP2 = t; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType2() const { return m_pStateCommon->typeSceneBlendingFactorSrc2; }
-		F_FORCEINLINE void	SetSceneBlendingFactorSrcType2(const FSceneBlendingFactorType& t) { m_pStateCommon->typeSceneBlendingFactorSrc2 = t; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType2() const { return m_pStateCommon->typeSceneBlendingFactorDst2; }
-		F_FORCEINLINE void	SetSceneBlendingFactorDstType2(const FSceneBlendingFactorType& t) { m_pStateCommon->typeSceneBlendingFactorDst2 = t; }
-		F_FORCEINLINE void	GetSceneBlendingSetting(bool& bEnabled, FSceneBlendingOPType& eSBOT,
-													FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst) const
+
+		F_FORCEINLINE bool GetSceneBlendingEnabled() const	{ return m_pStateCommon->m_bSceneBlendingEnabled; }
+		F_FORCEINLINE void SetSceneBlendingEnabled(const bool& bEnabled) { m_pStateCommon->m_bSceneBlendingEnabled = bEnabled; }
+		F_FORCEINLINE FSceneBlendingType GetSceneBlendingType() const { return m_pStateCommon->m_eSceneBlending; }
+		F_FORCEINLINE void SetSceneBlendingType(const FSceneBlendingType& eSceneBlending) { m_pStateCommon->m_eSceneBlending = eSceneBlending; }
+		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType() const { return m_pStateCommon->m_eSceneBlendingOP; }
+		F_FORCEINLINE void SetSceneBlendingOperationOPType(const FSceneBlendingOPType& t) { m_pStateCommon->m_eSceneBlendingOP = t; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType() const { return m_pStateCommon->m_eSceneBlendingFactorSrc; }
+		F_FORCEINLINE void SetSceneBlendingFactorSrcType(const FSceneBlendingFactorType& eSceneBlendingFactorSrc) { m_pStateCommon->m_eSceneBlendingFactorSrc = eSceneBlendingFactorSrc; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType() const { return m_pStateCommon->m_eSceneBlendingFactorDst; }
+		F_FORCEINLINE void SetSceneBlendingFactorDstType(const FSceneBlendingFactorType& eSceneBlendingFactorDst) { m_pStateCommon->m_eSceneBlendingFactorDst = eSceneBlendingFactorDst; }
+		F_FORCEINLINE bool GetSceneBlendingSeperateEnabled() const { return m_pStateCommon->m_bSceneBlendingSeperateEnabled; }
+		F_FORCEINLINE void SetSceneBlendingSeperateEnabled(const bool& bEnabled) { m_pStateCommon->m_bSceneBlendingSeperateEnabled = bEnabled; }
+		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType2() const { return m_pStateCommon->m_eSceneBlendingOP2; }
+		F_FORCEINLINE void SetSceneBlendingOperationOPType2(const FSceneBlendingOPType& eSceneBlendingOP2) { m_pStateCommon->m_eSceneBlendingOP2 = eSceneBlendingOP2; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType2() const { return m_pStateCommon->m_eSceneBlendingFactorSrc2; }
+		F_FORCEINLINE void SetSceneBlendingFactorSrcType2(const FSceneBlendingFactorType& eSceneBlendingFactorSrc2) { m_pStateCommon->m_eSceneBlendingFactorSrc2 = eSceneBlendingFactorSrc2; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType2() const { return m_pStateCommon->m_eSceneBlendingFactorDst2; }
+		F_FORCEINLINE void SetSceneBlendingFactorDstType2(const FSceneBlendingFactorType& eSceneBlendingFactorDst2) { m_pStateCommon->m_eSceneBlendingFactorDst2 = eSceneBlendingFactorDst2; }
+		F_FORCEINLINE void GetSceneBlendingSetting(bool& bEnabled, FSceneBlendingOPType& eSBOT,
+												   FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst) const
 		{
-			bEnabled = m_pStateCommon->bSceneBlendingEnabled;
-			eSBOT = m_pStateCommon->typeSceneBlendingOP;
-			eSrc = m_pStateCommon->typeSceneBlendingFactorSrc;
-			eDst = m_pStateCommon->typeSceneBlendingFactorDst;
+			bEnabled = m_pStateCommon->m_bSceneBlendingEnabled;
+			eSBOT = m_pStateCommon->m_eSceneBlendingOP;
+			eSrc = m_pStateCommon->m_eSceneBlendingFactorSrc;
+			eDst = m_pStateCommon->m_eSceneBlendingFactorDst;
 		}
-		F_FORCEINLINE void	SetSceneBlendingSetting(bool bEnabled, FSceneBlendingOPType eSBOT,
-													FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst)
+		F_FORCEINLINE void SetSceneBlendingSetting(bool bEnabled, FSceneBlendingOPType eSBOT,
+												   FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst)
 		{
-			m_pStateCommon->bSceneBlendingEnabled = bEnabled;
-			m_pStateCommon->typeSceneBlendingOP = eSBOT; 
-			m_pStateCommon->typeSceneBlendingFactorSrc = eSrc;
-			m_pStateCommon->typeSceneBlendingFactorDst = eDst;
+			m_pStateCommon->m_bSceneBlendingEnabled = bEnabled;
+			m_pStateCommon->m_eSceneBlendingOP = eSBOT; 
+			m_pStateCommon->m_eSceneBlendingFactorSrc = eSrc;
+			m_pStateCommon->m_eSceneBlendingFactorDst = eDst;
 		}
 
-		F_FORCEINLINE void	GetSceneBlendingSeperateSetting(bool& bEnabled, bool& bSeperateEnabled,
-															FSceneBlendingOPType& eSBOT, FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst,
-															FSceneBlendingOPType& eSBOT2, FSceneBlendingFactorType& eSrc2, FSceneBlendingFactorType& eDst2) const
+		F_FORCEINLINE void GetSceneBlendingSeperateSetting(bool& bEnabled, bool& bSeperateEnabled,
+														   FSceneBlendingOPType& eSBOT, FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst,
+														   FSceneBlendingOPType& eSBOT2, FSceneBlendingFactorType& eSrc2, FSceneBlendingFactorType& eDst2) const
 		{
-			bEnabled = m_pStateCommon->bSceneBlendingEnabled;
-			bSeperateEnabled = m_pStateCommon->bSceneBlendingSeperateEnabled;
-			eSBOT = m_pStateCommon->typeSceneBlendingOP;
-			eSrc = m_pStateCommon->typeSceneBlendingFactorSrc;
-			eDst = m_pStateCommon->typeSceneBlendingFactorDst;
-			eSBOT2 = m_pStateCommon->typeSceneBlendingOP2;
-			eSrc2 = m_pStateCommon->typeSceneBlendingFactorSrc2;
-			eDst2 = m_pStateCommon->typeSceneBlendingFactorDst2;
+			bEnabled = m_pStateCommon->m_bSceneBlendingEnabled;
+			bSeperateEnabled = m_pStateCommon->m_bSceneBlendingSeperateEnabled;
+			eSBOT = m_pStateCommon->m_eSceneBlendingOP;
+			eSrc = m_pStateCommon->m_eSceneBlendingFactorSrc;
+			eDst = m_pStateCommon->m_eSceneBlendingFactorDst;
+			eSBOT2 = m_pStateCommon->m_eSceneBlendingOP2;
+			eSrc2 = m_pStateCommon->m_eSceneBlendingFactorSrc2;
+			eDst2 = m_pStateCommon->m_eSceneBlendingFactorDst2;
 		}
-		F_FORCEINLINE void	SetSceneBlendingSeperateSetting(bool bEnabled, bool bSeperateEnabled,
-															FSceneBlendingOPType eSBOT, FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst,
-															FSceneBlendingOPType eSBOT2, FSceneBlendingFactorType eSrc2, FSceneBlendingFactorType eDst2)
+		F_FORCEINLINE void SetSceneBlendingSeperateSetting(bool bEnabled, bool bSeperateEnabled,
+														   FSceneBlendingOPType eSBOT, FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst,
+														   FSceneBlendingOPType eSBOT2, FSceneBlendingFactorType eSrc2, FSceneBlendingFactorType eDst2)
 		{
-			m_pStateCommon->bSceneBlendingEnabled = bEnabled;
-			m_pStateCommon->bSceneBlendingSeperateEnabled = bSeperateEnabled;
-			m_pStateCommon->typeSceneBlendingOP = eSBOT; 
-			m_pStateCommon->typeSceneBlendingFactorSrc = eSrc;
-			m_pStateCommon->typeSceneBlendingFactorDst = eDst;
-			m_pStateCommon->typeSceneBlendingOP2 = eSBOT2; 
-			m_pStateCommon->typeSceneBlendingFactorSrc2 = eSrc2;
-			m_pStateCommon->typeSceneBlendingFactorDst2 = eDst2;
+			m_pStateCommon->m_bSceneBlendingEnabled = bEnabled;
+			m_pStateCommon->m_bSceneBlendingSeperateEnabled = bSeperateEnabled;
+			m_pStateCommon->m_eSceneBlendingOP = eSBOT; 
+			m_pStateCommon->m_eSceneBlendingFactorSrc = eSrc;
+			m_pStateCommon->m_eSceneBlendingFactorDst = eDst;
+			m_pStateCommon->m_eSceneBlendingOP2 = eSBOT2; 
+			m_pStateCommon->m_eSceneBlendingFactorSrc2 = eSrc2;
+			m_pStateCommon->m_eSceneBlendingFactorDst2 = eDst2;
 		}
 
 		
-		F_FORCEINLINE bool	GetColorRWriteEnabled() const { return m_pStateCommon->bColorRWriteEnabled; }
-		F_FORCEINLINE void	SetColorRWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorRWriteEnabled = bEnabled; }
-		F_FORCEINLINE bool	GetColorGWriteEnabled() const { return m_pStateCommon->bColorGWriteEnabled; }
-		F_FORCEINLINE void	SetColorGWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorGWriteEnabled = bEnabled; }
-		F_FORCEINLINE bool	GetColorBWriteEnabled() const { return m_pStateCommon->bColorBWriteEnabled; }
-		F_FORCEINLINE void	SetColorBWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorBWriteEnabled = bEnabled; }
-		F_FORCEINLINE bool	GetColorAWriteEnabled() const { return m_pStateCommon->bColorAWriteEnabled; }
-		F_FORCEINLINE void	SetColorAWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorAWriteEnabled = bEnabled; }
+		F_FORCEINLINE bool GetColorRWriteEnabled() const { return m_pStateCommon->m_bColorRWriteEnabled; }
+		F_FORCEINLINE void SetColorRWriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bColorRWriteEnabled = bEnabled; }
+		F_FORCEINLINE bool GetColorGWriteEnabled() const { return m_pStateCommon->m_bColorGWriteEnabled; }
+		F_FORCEINLINE void SetColorGWriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bColorGWriteEnabled = bEnabled; }
+		F_FORCEINLINE bool GetColorBWriteEnabled() const { return m_pStateCommon->m_bColorBWriteEnabled; }
+		F_FORCEINLINE void SetColorBWriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bColorBWriteEnabled = bEnabled; }
+		F_FORCEINLINE bool GetColorAWriteEnabled() const { return m_pStateCommon->m_bColorAWriteEnabled; }
+		F_FORCEINLINE void SetColorAWriteEnabled(const bool& bEnabled) { m_pStateCommon->m_bColorAWriteEnabled = bEnabled; }
 
-		F_FORCEINLINE void	GetColorWriteEnabled(bool& r, bool& g, bool& b, bool& a) const					
+		F_FORCEINLINE void GetColorWriteEnabled(bool& r, bool& g, bool& b, bool& a) const					
 		{ 
-			r = m_pStateCommon->bColorRWriteEnabled;
-			g = m_pStateCommon->bColorGWriteEnabled;
-			b = m_pStateCommon->bColorBWriteEnabled;
-			a = m_pStateCommon->bColorAWriteEnabled;
+			r = m_pStateCommon->m_bColorRWriteEnabled;
+			g = m_pStateCommon->m_bColorGWriteEnabled;
+			b = m_pStateCommon->m_bColorBWriteEnabled;
+			a = m_pStateCommon->m_bColorAWriteEnabled;
 		}
-		F_FORCEINLINE void	SetColorWriteEnabled(bool r, bool g, bool b, bool a)  	
+		F_FORCEINLINE void SetColorWriteEnabled(bool r, bool g, bool b, bool a)  	
 		{
-			m_pStateCommon->bColorRWriteEnabled = r;
-			m_pStateCommon->bColorGWriteEnabled = g;
-			m_pStateCommon->bColorBWriteEnabled = b;
-			m_pStateCommon->bColorAWriteEnabled = a;
+			m_pStateCommon->m_bColorRWriteEnabled = r;
+			m_pStateCommon->m_bColorGWriteEnabled = g;
+			m_pStateCommon->m_bColorBWriteEnabled = b;
+			m_pStateCommon->m_bColorAWriteEnabled = a;
 		}
 
 	////RenderStateLighting
-		F_FORCEINLINE FLightingType GetLightingType() const { return m_pStateLighting->typeLighting; }
-		F_FORCEINLINE void	SetLightingType(const FLightingType& t) { m_pStateLighting->typeLighting = t; }
+		F_FORCEINLINE bool GetLightingEnabled() const { return m_pStateLighting->m_bLightingEnabled; }
+		F_FORCEINLINE void SetLightingEnabled(bool b) { m_pStateLighting->m_bLightingEnabled = b; }
 
-		F_FORCEINLINE bool	GetLightingEnabled() const { return m_pStateLighting->bLightingEnabled; }
-		F_FORCEINLINE void	SetLightingEnabled(bool b) { m_pStateLighting->bLightingEnabled = b; }
-		F_FORCEINLINE uint8 GetMaxEffectLightNum() const { return m_pStateLighting->nMaxEffectLightNum; }
-		F_FORCEINLINE void	SetMaxEffectLightNum(uint8 nNum) { m_pStateLighting->nMaxEffectLightNum = nNum; }
+		F_FORCEINLINE FLightingType GetLightingType() const { return m_pStateLighting->m_eLighting; }
+		F_FORCEINLINE void SetLightingType(const FLightingType& eLighting) { m_pStateLighting->m_eLighting = eLighting; }
+
+		F_FORCEINLINE uint8 GetMaxEffectLightNum() const { return m_pStateLighting->m_nMaxEffectLightNum; }
+		F_FORCEINLINE void SetMaxEffectLightNum(uint8 nNum) { m_pStateLighting->m_nMaxEffectLightNum = nNum; }
 		
-		F_FORCEINLINE const FColor& GetAmbient() const { return m_pStateLighting->clAmbient; }
-		F_FORCEINLINE void	SetAmbient(const FColor& cl) { m_pStateLighting->clAmbient = cl; }
-		F_FORCEINLINE const FColor& GetDiffuse() const { return m_pStateLighting->clDiffuse; }
-		F_FORCEINLINE void	SetDiffuse(const FColor& cl)	{ m_pStateLighting->clDiffuse = cl; }
-		F_FORCEINLINE const FColor& GetSpecular() const	{ return m_pStateLighting->clSpecular; }
-		F_FORCEINLINE void	SetSpecular(const FColor& cl) { m_pStateLighting->clSpecular = cl; }
-		F_FORCEINLINE const FColor& GetEmissive() const { return m_pStateLighting->clEmissive; }
-		F_FORCEINLINE void	SetEmissive(const FColor& cl) { m_pStateLighting->clEmissive = cl; }
-		F_FORCEINLINE float GetShininess() const { return m_pStateLighting->fShininess; }
-		F_FORCEINLINE void	SetShininess(float f) { m_pStateLighting->fShininess = f; }
-		F_FORCEINLINE uint32 GetColorFromVertexFlag() const { return m_pStateLighting->nColorFromVertexFlag; }
-		F_FORCEINLINE void	SetColorFromVertexFlag(uint32 n) { m_pStateLighting->nColorFromVertexFlag = n; }
+		F_FORCEINLINE const FColor& GetAmbient() const { return m_pStateLighting->m_clAmbient; }
+		F_FORCEINLINE void SetAmbient(const FColor& cl) { m_pStateLighting->m_clAmbient = cl; }
+		F_FORCEINLINE const FColor& GetDiffuse() const { return m_pStateLighting->m_clDiffuse; }
+		F_FORCEINLINE void SetDiffuse(const FColor& cl)	{ m_pStateLighting->m_clDiffuse = cl; }
+		F_FORCEINLINE const FColor& GetSpecular() const	{ return m_pStateLighting->m_clSpecular; }
+		F_FORCEINLINE void SetSpecular(const FColor& cl) { m_pStateLighting->m_clSpecular = cl; }
+		F_FORCEINLINE const FColor& GetEmissive() const { return m_pStateLighting->m_clEmissive; }
+		F_FORCEINLINE void SetEmissive(const FColor& cl) { m_pStateLighting->m_clEmissive = cl; }
+		F_FORCEINLINE float GetShininess() const { return m_pStateLighting->m_fShininess; }
+		F_FORCEINLINE void SetShininess(float f) { m_pStateLighting->m_fShininess = f; }
+		F_FORCEINLINE uint32 GetColorFromVertexFlag() const { return m_pStateLighting->m_nColorFromVertexFlag; }
+		F_FORCEINLINE void SetColorFromVertexFlag(uint32 n) { m_pStateLighting->m_nColorFromVertexFlag = n; }
 
 
 	////RenderStateShader

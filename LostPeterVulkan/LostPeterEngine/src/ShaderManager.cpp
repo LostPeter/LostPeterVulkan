@@ -29,20 +29,21 @@ namespace LostPeterEngine
 
     const String ShaderManager::ms_strShaderConfigName = "Cfg_Shader.xml";
     ShaderManager::ShaderManager()
-        : Base("ShaderManager")
+        : ResourceManager(E_GetResourceTypeName(E_Resource_Shader), E_Resource_Shader)
         , m_pShaderSerializer(nullptr)
     {
 
     }
     ShaderManager::~ShaderManager()
     {
-        Destroy();
+
     }
 
     void ShaderManager::Destroy()
     {
         F_DELETE(m_pShaderSerializer)
-        DeleteShaderAll();
+
+        ResourceManager::Destroy();
     }
     bool ShaderManager::Init(uint nGroup, const String& strNameCfg)
     {
@@ -65,29 +66,12 @@ namespace LostPeterEngine
         return true;
     }
 
-    bool ShaderManager::LoadShaderAll()
-    {
-        if (m_pShaderSerializer == nullptr)
-            return false;
-
-        DeleteShaderAll();
-        ShaderInfoPtrVector& aShaderInfos = m_pShaderSerializer->GetShaderInfoPtrVector();
-        for (ShaderInfoPtrVector::iterator it = aShaderInfos.begin();
-             it != aShaderInfos.end(); ++it)
-        {
-            if (!loadShader(*it))
-                continue;
-        }
-
-        return true;
-    }
-
-    Shader* ShaderManager::LoadShader(uint nGroup, const String& strName)
+    Shader* ShaderManager::LoadShader(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pShaderSerializer == nullptr)
             return nullptr;
 
-        Shader* pShader = GetShader(nGroup, strName);
+        Shader* pShader = GetShader(strName, strGroupName);
         if (pShader == nullptr)
         {
             ShaderInfo* pShaderInfo = m_pShaderSerializer->GetShaderInfo(nGroup, strName);
@@ -106,108 +90,35 @@ namespace LostPeterEngine
     }
     Shader* ShaderManager::loadShader(ShaderInfo* pSI)
     {
-        Shader* pShader = new Shader(pSI->group,
-                                     pSI->nameShader,
-                                     pSI->pathShader,
-                                     pSI->typeShader);
-        pShader->LoadShader();
-        if (AddShader(pSI->group, pShader))
-        {
-            F_LogInfo("ShaderManager::loadShader: Load shader success, [%u]-[%s]-[%s] !", 
-                      pSI->group, 
-                      pSI->nameShader.c_str(), 
-                      pSI->pathShader.c_str());
-        }
-        return pShader;
-    }
-    void ShaderManager::UnloadShader(Shader* pShader)
-    {
-        if (pShader == nullptr)
-            return;
-        pShader->DelRef();
-        if (!HasRef())
-        {
-            DeleteShader(pShader->GetGroup(), pShader->GetName());
-        }
+        
+        return nullptr;
     }
 
-    bool ShaderManager::HasShader(uint nGroup, const String& strName)
+    bool ShaderManager::HasShader(const String& strName)
     {
-        return GetShader(nGroup, strName) != nullptr;
+        return GetResourceByName(strName) != nullptr;
     }
-
-    Shader* ShaderManager::GetShader(uint nGroup, const String& strName)
+    bool ShaderManager::HasShader(const String& strName, const String& strGroupName)
     {
-        ShaderGroupPtrMap::iterator itFindGroup = m_mapShaderGroup.find(nGroup);
-        if (itFindGroup == m_mapShaderGroup.end())
-        {
+        return GetResourceByName(strName, strGroupName) != nullptr;
+    }
+    Shader* ShaderManager::GetShader(const String& strName)
+    {
+        Resource* pResource = GetResourceByName(strName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-
-        ShaderPtrMap::iterator itFindShader = itFindGroup->second.find(strName);
-        if (itFindShader == itFindGroup->second.end())
-        {
+        return (Shader*)pResource;
+    }
+    Shader* ShaderManager::GetShader(const String& strName, const String& strGroupName)
+    {
+        Resource* pResource = GetResourceByName(strName, strGroupName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-        return itFindShader->second;
+        return (Shader*)pResource;
     }
 
-    bool ShaderManager::AddShader(uint nGroup, Shader* pShader)
-    {
-        ShaderGroupPtrMap::iterator itFind = m_mapShaderGroup.find(nGroup);
-        if (itFind == m_mapShaderGroup.end())
-        {
-            ShaderPtrMap mapShader;
-            m_mapShaderGroup[nGroup] = mapShader;
-            itFind = m_mapShaderGroup.find(nGroup);
-        }
-        const String& strName = pShader->GetName();
-        ShaderPtrMap::iterator itFindShader = itFind->second.find(strName);
-        if (itFindShader != itFind->second.end())
-        {
-            F_LogError("*********************** ShaderManager::AddShader: Shader name already exist: [%s] !", strName.c_str());
-            F_DELETE(pShader)
-            return false;
-        }
+    
 
-        itFind->second.insert(ShaderPtrMap::value_type(strName, pShader));
-        m_aShader.push_back(pShader);
-        return true;
-    }
-
-    void ShaderManager::DeleteShader(uint nGroup, const String& strName)
-    {
-        ShaderGroupPtrMap::iterator itFind = m_mapShaderGroup.find(nGroup);
-        if (itFind == m_mapShaderGroup.end())
-        {
-            return;
-        }
-
-        ShaderPtrMap::iterator itFindShader = itFind->second.find(strName);
-        if (itFindShader != itFind->second.end())
-        {
-            ShaderPtrVector::iterator itFindA = std::find(m_aShader.begin(), m_aShader.end(), itFindShader->second);
-            if (itFindA != m_aShader.end())
-                m_aShader.erase(itFindA);
-            F_DELETE(itFindShader->second)
-            itFind->second.erase(itFindShader);
-        }
-    }
-
-    void ShaderManager::DeleteShaderAll()
-    {
-        for (ShaderGroupPtrMap::iterator it = m_mapShaderGroup.begin();
-             it != m_mapShaderGroup.end(); ++it)
-        {
-            ShaderPtrMap& mapShader = it->second;
-            for (ShaderPtrMap::iterator itShader = mapShader.begin(); 
-                 itShader != mapShader.end(); ++itShader)
-            {
-                F_DELETE(itShader->second)
-            }
-        }
-        m_aShader.clear();
-        m_mapShaderGroup.clear();
-    }
+    
 
 }; //LostPeterEngine

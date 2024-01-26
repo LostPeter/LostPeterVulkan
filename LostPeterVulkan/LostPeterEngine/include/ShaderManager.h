@@ -12,12 +12,12 @@
 #ifndef _SHADER_MANAGER_H_
 #define _SHADER_MANAGER_H_
 
-#include "Base.h"
+#include "ResourceManager.h"
 
 namespace LostPeterEngine
 {
     class engineExport ShaderManager : public FSingleton<ShaderManager>
-                                     , public Base
+                                     , public ResourceManager
     {
     public:
         ShaderManager();
@@ -28,37 +28,31 @@ namespace LostPeterEngine
 
     protected:
         ShaderSerializer* m_pShaderSerializer;
-        ShaderPtrVector m_aShader;
-        ShaderGroupPtrMap m_mapShaderGroup;
 
     public:
         F_FORCEINLINE ShaderSerializer* GetShaderSerializer() const { return m_pShaderSerializer; }
-        F_FORCEINLINE const ShaderPtrVector& GetShaderPtrVector() const { return m_aShader; }
-        F_FORCEINLINE ShaderPtrVector& GetShaderPtrVector() { return m_aShader; }
-        F_FORCEINLINE const ShaderGroupPtrMap& GetShaderGroupPtrMap() const { return m_mapShaderGroup; }
-        F_FORCEINLINE ShaderGroupPtrMap& GetShaderGroupPtrMap() { return m_mapShaderGroup; }
 
     public:
         static ShaderManager& GetSingleton();
 		static ShaderManager* GetSingletonPtr();
 
     public:
-        void Destroy();
+        virtual void Destroy();
         bool Init(uint nGroup, const String& strNameCfg);
 
     public:
-        bool LoadShaderAll();
-        Shader* LoadShader(uint nGroup, const String& strName);
-        void UnloadShader(Shader* pShader);
+        Shader* LoadShader(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
 
-        bool HasShader(uint nGroup, const String& strName);
-        Shader* GetShader(uint nGroup, const String& strName);
-        bool AddShader(uint nGroup, Shader* pShader);
-        void DeleteShader(uint nGroup, const String& strName);
-        void DeleteShaderAll();
+        bool HasShader(const String& strName);
+        bool HasShader(const String& strName, const String& strGroupName);
+        Shader* GetShader(const String& strName);
+        Shader* GetShader(const String& strName, const String& strGroupName);
 
     private:
         Shader* loadShader(ShaderInfo* pSI);
+
+    public:
+        
     };
 
 }; //LostPeterEngine

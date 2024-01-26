@@ -791,11 +791,11 @@ namespace LostPeterPluginRendererVulkan
 
         if (vkCreateDescriptorPool(this->m_vkDevice, &poolInfo, nullptr, &vkDescriptorPool) != VK_SUCCESS) 
         {
-            F_LogError("*********************** VulkanDevice::CreateVkDescriptorPool: Failed to create descriptor pool, count pool: [%u] !", descriptorCount);
+            F_LogError("*********************** VulkanDevice::CreateVkDescriptorPool: Failed to create descriptor pool, descriptor count: [%u] !", descriptorCount);
             return false;
         }
 
-        F_LogInfo("VulkanDevice::CreateVkDescriptorPool: Success to create descriptor pool, count pool: [%u] !", descriptorCount);
+        F_LogInfo("VulkanDevice::CreateVkDescriptorPool: Success to create descriptor pool, descriptor count: [%u] !", descriptorCount);
         return true;
     }
     void VulkanDevice::DestroyVkDescriptorPool(const VkDescriptorPool& vkDescriptorPool)

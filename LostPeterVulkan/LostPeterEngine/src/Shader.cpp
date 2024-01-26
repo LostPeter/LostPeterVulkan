@@ -13,16 +13,36 @@
 
 namespace LostPeterEngine
 {
-    Shader::Shader(uint32 _group,
-                   const String& _nameShader,
-                   const String& _pathShader,
-                   FShaderType _typeShader)
-        : Base(_group, _nameShader)
-        , pathShader(_pathShader)
-        , typeShader(_typeShader)
-    {
 
+
+    const String Shader::ms_nameShader = "Shader";
+    Shader::Shader(ResourceManager* pResourceManager,
+				   uint32 nGroup, 
+				   const String& strName,
+			   	   const String& strGroupName,
+			       ResourceHandle nHandle,
+				   bool bIsManualLoad /*= false*/,
+			   	   ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
+        : Resource(pResourceManager,
+				   nGroup, 
+				   strName,
+				   strGroupName,
+				   nHandle,
+				   bIsManualLoad,
+				   pResourceManualLoader)
+        , m_strPath("")
+        , m_eShader(F_Shader_Vertex)
+    {
+        if (createParameterDictionary(ms_nameShader))
+		{
+			addParameterBase();
+		}
     }
+        void Shader::addParameterBase()
+        {
+
+        }
+        
     Shader::~Shader()
     {
 
@@ -30,13 +50,34 @@ namespace LostPeterEngine
 
     void Shader::Destroy()
     {
-       
+        
+        Resource::Destroy();
     }
 
-    bool Shader::LoadShader()
+    void Shader::loadImpl()
     {
-        
-        
+
+    }
+
+    void Shader::unloadImpl()
+    {
+
+    }
+
+    uint32 Shader::calculateSize() const
+    {
+
+        return 0;
+    }
+
+    void Shader::destroyInternalResources()
+    {
+
+    }
+
+    bool Shader::createInternalResources()
+    {
+
         return true;
     }
 
