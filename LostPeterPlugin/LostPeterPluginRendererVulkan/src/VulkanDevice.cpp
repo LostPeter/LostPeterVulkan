@@ -20,6 +20,8 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanRenderPassManager.h"
 #include "../include/VulkanFrameBufferManager.h"
+#include "../include/VulkanDescriptorSetLayoutManager.h"
+#include "../include/VulkanDescriptorSetManager.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -29,6 +31,8 @@ namespace LostPeterPluginRendererVulkan
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_vkMaxMSAASamples(VK_SAMPLE_COUNT_1_BIT)
         , m_vkCommandPoolTransfer(VK_NULL_HANDLE)
+        , m_vkCommandPoolGraphics(VK_NULL_HANDLE)
+        , m_vkCommandPoolCompute(VK_NULL_HANDLE)
         , m_pInstance(pInstance)
         , m_pQueueGraphics(nullptr)
         , m_pQueueCompute(nullptr)
@@ -38,6 +42,10 @@ namespace LostPeterPluginRendererVulkan
         , m_pFenceManager(nullptr)
         , m_pRenderPassManager(nullptr)
         , m_pFrameBufferManager(nullptr)
+        , m_pDescriptorSetLayoutManager(nullptr)
+        , m_pDescriptorSetManager(nullptr)
+        , m_vkDescriptorPool(VK_NULL_HANDLE)
+        , m_vkDescriptorPool_ImGUI(VK_NULL_HANDLE)
     {
         F_Assert(m_vkPhysicalDevice != VK_NULL_HANDLE && "VulkanDevice::VulkanDevice")
 
@@ -57,18 +65,27 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanDevice::Destroy()
     {
+
+
         m_pQueuePresent = nullptr;
         F_DELETE(m_pQueueTransfer)
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
+        F_DELETE(m_pDescriptorSetManager)
+        F_DELETE(m_pDescriptorSetLayoutManager)
         F_DELETE(m_pFrameBufferManager)
         F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pFenceManager)
         F_DELETE(m_pDeviceMemoryManager)
 
+        DestroyVkCommandPool(this->m_vkCommandPoolCompute);
+        this->m_vkCommandPoolCompute = VK_NULL_HANDLE;
+        DestroyVkCommandPool(this->m_vkCommandPoolGraphics);
+        this->m_vkCommandPoolGraphics = VK_NULL_HANDLE;
         DestroyVkCommandPool(this->m_vkCommandPoolTransfer);
         this->m_vkCommandPoolTransfer = VK_NULL_HANDLE;
+
         DestroyVkDevice(this->m_vkDevice);
         this->m_vkDevice = VK_NULL_HANDLE;
     }
@@ -103,7 +120,10 @@ namespace LostPeterPluginRendererVulkan
         m_pFenceManager = new VulkanFenceManager(this);
         m_pRenderPassManager = new VulkanRenderPassManager(this);
         m_pFrameBufferManager = new VulkanFrameBufferManager(this);
+        m_pDescriptorSetLayoutManager = new VulkanDescriptorSetLayoutManager(this);
+        m_pDescriptorSetManager = new VulkanDescriptorSetManager(this);
 
+        //5> 
 
         F_LogInfo("VulkanDevice::Init: Init vulkan device success !");
         return true;
@@ -420,6 +440,8 @@ namespace LostPeterPluginRendererVulkan
         }
 
         m_vkCommandPoolTransfer = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Transfer);
+        m_vkCommandPoolGraphics = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Graphics);
+        m_vkCommandPoolCompute = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Compute);
         return true;
     }
     bool VulkanDevice::checkPixelFormats()
@@ -530,6 +552,10 @@ namespace LostPeterPluginRendererVulkan
             vkDestroyDevice(vkDevice, nullptr);
         }
     }
+    void VulkanDevice::WaitVkDeviceIdle()
+    {
+        vkDeviceWaitIdle(this->m_vkDevice);
+    }
 
 
     //////////////////// VkCommandPool //////////////////
@@ -567,7 +593,7 @@ namespace LostPeterPluginRendererVulkan
 
 
     //////////////////// VkCommandBuffer ////////////////
-    VkCommandBuffer VulkanDevice::AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
+    VkCommandBuffer VulkanDevice::AllocateVkCommandBuffer(VkCommandPool vkCommandPool,
                                                           VkCommandBufferLevel level)
     {
         VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
@@ -577,7 +603,7 @@ namespace LostPeterPluginRendererVulkan
                                  &vkCommandBuffer);
         return vkCommandBuffer;
     }
-    bool VulkanDevice::AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+    bool VulkanDevice::AllocateVkCommandBuffers(VkCommandPool vkCommandPool,
                                                 VkCommandBufferLevel level,
                                                 uint32_t commandBufferCount,
                                                 VkCommandBuffer* pCommandBuffers)
@@ -594,7 +620,7 @@ namespace LostPeterPluginRendererVulkan
         }
         return true;
     }
-    void VulkanDevice::FreeVkCommandBuffers(const VkCommandPool& vkCommandPool, 
+    void VulkanDevice::FreeVkCommandBuffers(VkCommandPool vkCommandPool, 
                                             uint32_t commandBufferCount, 
                                             VkCommandBuffer* pCommandBuffer)
     {

@@ -35,7 +35,10 @@ namespace LostPeterPluginRendererVulkan
         VkQueueFamilyPropertiesVector m_aVkQueueFamilyProperties;
         VkFormat2PropertiesMap m_mapExtensionFormatProperties;
         VkSampleCountFlagBits m_vkMaxMSAASamples;
+
         VkCommandPool m_vkCommandPoolTransfer;
+        VkCommandPool m_vkCommandPoolGraphics;
+        VkCommandPool m_vkCommandPoolCompute;
 
         VkFormatVector m_aDepthVkFormat;
         VkFormat2PixelFormatMap m_mapDepthVkFormat2PixelFormat;
@@ -50,6 +53,11 @@ namespace LostPeterPluginRendererVulkan
         VulkanFenceManager* m_pFenceManager;
         VulkanRenderPassManager* m_pRenderPassManager;
         VulkanFrameBufferManager* m_pFrameBufferManager;
+        VulkanDescriptorSetLayoutManager* m_pDescriptorSetLayoutManager;
+        VulkanDescriptorSetManager* m_pDescriptorSetManager;
+
+        VkDescriptorPool m_vkDescriptorPool;
+        VkDescriptorPool m_vkDescriptorPool_ImGUI;
         
     public:
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
@@ -66,6 +74,10 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
         F_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
 
+        F_FORCEINLINE VkCommandPool GetVkCommandPoolTransfer() const { return m_vkCommandPoolTransfer; }
+        F_FORCEINLINE VkCommandPool GetVkCommandPoolGraphics() const { return m_vkCommandPoolGraphics; }
+        F_FORCEINLINE VkCommandPool GetVkCommandPoolCompute() const { return m_vkCommandPoolCompute; }
+
         F_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
         F_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
         F_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
@@ -76,6 +88,11 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
         F_FORCEINLINE VulkanRenderPassManager* GetRenderPassManager() const { return m_pRenderPassManager; }
         F_FORCEINLINE VulkanFrameBufferManager* GetFrameBufferManager() const { return m_pFrameBufferManager; }
+        F_FORCEINLINE VulkanDescriptorSetLayoutManager* GetDescriptorSetLayoutManager() const { return m_pDescriptorSetLayoutManager; }
+        F_FORCEINLINE VulkanDescriptorSetManager* GetDescriptorSetManager() const { return m_pDescriptorSetManager; }
+        
+        F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool() const { return m_vkDescriptorPool; }
+        F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool_ImGUI() const { return m_vkDescriptorPool_ImGUI; }
 
     public:
         void Destroy();
@@ -117,6 +134,7 @@ namespace LostPeterPluginRendererVulkan
     public:
         //////////////////// VkDevice ///////////////////////
         void DestroyVkDevice(const VkDevice& vkDevice);
+        void WaitVkDeviceIdle();
 
         //////////////////// VkCommandPool //////////////////
         VkCommandPool CreateVkCommandPool(VkCommandPoolCreateFlags flags,
@@ -128,13 +146,13 @@ namespace LostPeterPluginRendererVulkan
         void DestroyVkCommandPool(const VkCommandPool& vkCommandPool);
 
         //////////////////// VkCommandBuffer ////////////////
-        VkCommandBuffer AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
+        VkCommandBuffer AllocateVkCommandBuffer(VkCommandPool vkCommandPool,
                                                 VkCommandBufferLevel level);
-        bool AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+        bool AllocateVkCommandBuffers(VkCommandPool vkCommandPool,
                                       VkCommandBufferLevel level,
                                       uint32_t commandBufferCount,
                                       VkCommandBuffer* pCommandBuffers);
-        void FreeVkCommandBuffers(const VkCommandPool& vkCommandPool, 
+        void FreeVkCommandBuffers(VkCommandPool vkCommandPool, 
                                   uint32_t commandBufferCount, 
                                   VkCommandBuffer* pCommandBuffer);
         

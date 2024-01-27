@@ -52,23 +52,13 @@ namespace LostPeterPluginRendererVulkan
     {
         clearVkViewports();
 
-        destroyRenderPassDescriptor();
-        destroyRenderFrameBufferDescriptor();
-        destroySyncObjects_RenderCompute();
-        destroySyncObjects_PresentRender();
         DestroySwapChain();
         F_DELETE(m_pSwapChain)
+        destroySyncObjects_RenderCompute();
+        destroySyncObjects_PresentRender();
 
         RenderWindow::Destroy();
     }
-        void VulkanRenderWindow::destroyRenderPassDescriptor()
-        {
-            F_DELETE(m_pRenderPassDescriptor)
-        }
-        void VulkanRenderWindow::destroyRenderFrameBufferDescriptor()
-        {
-            F_DELETE(m_pRenderFrameBufferDescriptor)
-        }
         void VulkanRenderWindow::destroySyncObjects_RenderCompute()
         {
             F_DELETE(m_pSemaphore_GraphicsWait)
@@ -107,50 +97,34 @@ namespace LostPeterPluginRendererVulkan
         }
         F_LogInfo("VulkanRenderWindow::Init: 1> Create WindowBase success, name: [%s] !", nameWindow.c_str());
 
-        //2> Create SwapChain
-        if (!RecreateSwapChain())
-        {   
-            F_LogError("*********************** VulkanRenderWindow::Init: 2> Create SwapChain failed, name window: [%s] !", nameWindow.c_str());
-            return false;
-        }
-        F_LogInfo("VulkanRenderWindow::Init: 2> Create SwapChain success !");
-
-        //3> createSyncObjects_PresentRender
+        //2> createSyncObjects_PresentRender
         if (!createSyncObjects_PresentRender())
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: 3> Create SyncObjects PresentRender failed, name window: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: 2> Create SyncObjects PresentRender failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
-        F_LogInfo("VulkanRenderWindow::Init: 3> Create SyncObjects PresentRender success !");
+        F_LogInfo("VulkanRenderWindow::Init: 2> Create SyncObjects PresentRender success !");
 
-        //4> createSyncObjects_RenderCompute
+        //3> createSyncObjects_RenderCompute
         if (this->m_bIsCreateRenderComputeSycSemaphore)
         {
             if (!createSyncObjects_RenderCompute())
             {
-                F_LogError("*********************** VulkanRenderWindow::Init: 4> Create SyncObjects RenderCompute failed, name window: [%s] !", nameWindow.c_str());
+                F_LogError("*********************** VulkanRenderWindow::Init: 3> Create SyncObjects RenderCompute failed, name window: [%s] !", nameWindow.c_str());
                 return false;
             }
-            F_LogInfo("VulkanRenderWindow::Init: 4> Create SyncObjects RenderCompute success !");
+            F_LogInfo("VulkanRenderWindow::Init: 3> Create SyncObjects RenderCompute success !");
         }
 
-        //5> createRenderFrameBufferDescriptor
-        if (!createRenderFrameBufferDescriptor())
-        {
-            F_LogError("*********************** VulkanRenderWindow::Init: 5> Create RenderFrameBufferDescriptor failed, name window: [%s] !", nameWindow.c_str());
+        //4> Create SwapChain
+        if (!RecreateSwapChain())
+        {   
+            F_LogError("*********************** VulkanRenderWindow::Init: 4> Create SwapChain failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
-        F_LogInfo("VulkanRenderWindow::Init: 5> Create RenderFrameBufferDescriptor success !");
+        F_LogInfo("VulkanRenderWindow::Init: 4> Create SwapChain success !");
 
-        //6> createRenderPassDescriptor
-        if (!createRenderPassDescriptor())
-        {
-            F_LogError("*********************** VulkanRenderWindow::Init: 6> Create RenderPassDescriptor failed, name window: [%s] !", nameWindow.c_str());
-            return false;
-        }
-        F_LogInfo("VulkanRenderWindow::Init: 6> Create RenderPassDescriptor success !");
-
-
+        
         F_LogInfo("VulkanRenderWindow::Init: Create RenderWindow success, name window: [%s] !", nameWindow.c_str());
         return true;
     }
@@ -216,32 +190,7 @@ namespace LostPeterPluginRendererVulkan
             F_LogInfo("VulkanRenderWindow::createSyncObjects_RenderCompute: Success to create Semaphore GraphicsWait/ComputeWait !");
             return true;
         }
-        bool VulkanRenderWindow::createRenderFrameBufferDescriptor()
-        {
-            this->m_ePixelFormatDepth = m_pDevice->FindDepthPixelFormatType();
-            String nameRenderFrameBufferDescriptor = "RenderFrameBufferDescriptor-" + GetName();
-            m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, this);
-            if (!m_pRenderFrameBufferDescriptor->Init(this->m_eTexture,
-                                                      this->m_ePixelFormatSwapChain,
-                                                      this->m_ePixelFormatDepth,
-                                                      this->m_ePixelFormatSwapChain,
-                                                      this->m_eMSAASampleCount,
-                                                      this->m_bIsUseImGUI))
-            {
-                F_LogError("*********************** VulkanRenderWindow::createRenderFrameBufferDescriptor: Failed to create VulkanRenderPassDescriptor !");
-                return false;
-            }
-
-            F_LogInfo("VulkanRenderWindow::createRenderFrameBufferDescriptor: Success to create VulkanRenderPassDescriptor !");
-            return true;
-        }
-        bool VulkanRenderWindow::createRenderPassDescriptor()
-        {
-            
-
-            F_LogInfo("VulkanRenderWindow::createRenderPassDescriptor: Success to create VulkanRenderPassDescriptor !");
-            return true;
-        }
+        
 
     bool VulkanRenderWindow::IsClosed() const
     {
@@ -280,76 +229,184 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanRenderWindow::DestroySwapChain()
     {
-        if (m_pSwapChain != nullptr)
-        {
-            m_pSwapChain->Destroy();
+        F_LogInfo("----- VulkanRenderWindow::DestroySwapChain Start -----");
+        {   
+            destroyCommandBuffers();
+            destroyRenderPassDescriptor();
+            destroyRenderFrameBufferDescriptor();
+            destroySwapChain();
         }
-
-        size_t count = m_aSwapChainVkImageViews.size();
-        for (size_t i = 0; i < count; ++i) 
-        {
-            m_pDevice->DestroyVkImageView(m_aSwapChainVkImageViews[i]);
-        }
-        m_aSwapChainVkImageViews.clear();
-        m_aSwapChainVkImages.clear();
-
+        F_LogInfo("----- VulkanRenderWindow::DestroySwapChain End -------");
     }
+        void VulkanRenderWindow::destroyCommandBuffers()
+        {
+            if (m_aCommandBuffers.size() > 0)
+            {
+                m_pDevice->FreeVkCommandBuffers(m_pDevice->GetVkCommandPoolGraphics(),
+                                                (uint32_t)m_aCommandBuffers.size(),
+                                                m_aCommandBuffers.data());
+            }
+            m_aCommandBuffers.clear();
+        }
+        void VulkanRenderWindow::destroyRenderPassDescriptor()
+        {
+            F_DELETE(m_pRenderPassDescriptor)
+        }
+        void VulkanRenderWindow::destroyRenderFrameBufferDescriptor()
+        {
+            F_DELETE(m_pRenderFrameBufferDescriptor)
+        }
+        void VulkanRenderWindow::destroySwapChain()
+        {
+            if (m_pSwapChain != nullptr)
+            {
+                m_pSwapChain->Destroy();
+            }
+
+            size_t count = m_aSwapChainVkImageViews.size();
+            for (size_t i = 0; i < count; ++i) 
+            {
+                m_pDevice->DestroyVkImageView(m_aSwapChainVkImageViews[i]);
+            }
+            m_aSwapChainVkImageViews.clear();
+            m_aSwapChainVkImages.clear();
+        }
+
     bool VulkanRenderWindow::RecreateSwapChain()
     {
-        DestroySwapChain();
-        const String& nameWindow = GetName();
+        F_LogInfo("++++++++++ VulkanRenderWindow::RecreateSwapChain Start ++++++++++");
+        {
+            m_pDevice->WaitVkDeviceIdle();
 
-        //1> Window Width/Height
-        int nWindowWidth = 0;
-        int nWindowHeight = 0;
-        RefreshWindowSize(nWindowWidth, nWindowHeight);
-        if (nWindowWidth <= 0 || nWindowHeight <= 0)
-        {
-            F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: Wrong window size: Width: [%d], Height: [%d], name: [%s] !", nWindowWidth, nWindowHeight, nameWindow.c_str());
-            return false;
-        }
+            DestroySwapChain();
 
-        //2> SwapChain
-        if (m_pSwapChain == nullptr)
-        {
-            m_pSwapChain = new VulkanSwapChain(this->m_pDevice);
-        }
-        if (!m_pSwapChain->Init(m_pWindow,
-                                m_ePixelFormatSwapChain,
-                                nWindowWidth,
-                                nWindowHeight,
-                                &this->m_nSwapChainImageDesiredCount,
-                                this->m_aSwapChainVkImages,
-                                1))
-        {
-            F_LogError("*********************** VulkanInstance::RecreateSwapChain: VulkanSwapChain.Init failed, name: [%s] !", nameWindow.c_str());
-            return false;
-        }
-
-        //3> VkImageView
-        size_t count = m_aSwapChainVkImages.size();
-        for (size_t i = 0; i < count; ++i)
-        {
-            VkImageView vkImageView = VK_NULL_HANDLE;
-            if (!m_pDevice->CreateVkImageView(m_aSwapChainVkImages[i],
-                                              VK_IMAGE_VIEW_TYPE_2D,
-                                              VulkanConverter::Transform2VkFormat(m_ePixelFormatSwapChain),
-                                              VulkanConverter::Transform2VkComponentMapping(m_ePixelFormatSwapChain),
-                                              VK_IMAGE_ASPECT_COLOR_BIT,
-                                              1,
-                                              1,
-                                              vkImageView))
+            //[1] createSwapChain
+            if (!createSwapChain())
             {
-                F_LogError("*********************** VulkanInstance::RecreateSwapChain: CreateVkImageView failed, name: [%s] !", nameWindow.c_str());
+                F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: [1] Failed to create SwapChain, name window: [%s] !", GetName().c_str());
                 return false;
-            }   
-            
-            m_aSwapChainVkImageViews.push_back(vkImageView);
-        }
+            }
+            F_LogInfo("VulkanRenderWindow::RecreateSwapChain: [1] Success to create SwapChain !");
 
+            //[2] createRenderFrameBufferDescriptor
+            if (!createRenderFrameBufferDescriptor())
+            {
+                F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: [2] Failed to create RenderFrameBufferDescriptor, name window: [%s] !", GetName().c_str());
+                return false;
+            }
+            F_LogInfo("VulkanRenderWindow::RecreateSwapChain: [2] Success to create RenderFrameBufferDescriptor !");
+
+            //[3] createRenderPassDescriptor
+            if (!createRenderPassDescriptor())
+            {
+                F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: [3] Failed to create RenderPassDescriptor, name window: [%s] !", GetName().c_str());
+                return false;
+            }
+            F_LogInfo("VulkanRenderWindow::RecreateSwapChain: [3] Success to create RenderPassDescriptor !");
+
+            //[4] createCommandBuffers
+            if (!createCommandBuffers())
+            {
+                F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: [4] Failed to create CommandBuffers, name window: [%s] !", GetName().c_str());
+                return false;
+            }
+            F_LogInfo("VulkanRenderWindow::RecreateSwapChain: [4] Success to create CommandBuffers !");
+
+
+        }       
+        F_LogInfo("++++++++++ VulkanRenderWindow::RecreateSwapChain End ++++++++++++");
         return true;
     }
+        bool VulkanRenderWindow::createSwapChain()
+        {
+            const String& nameWindow = GetName();
 
+            //1> Window Width/Height
+            int nWindowWidth = 0;
+            int nWindowHeight = 0;
+            RefreshWindowSize(nWindowWidth, nWindowHeight);
+            if (nWindowWidth <= 0 || nWindowHeight <= 0)
+            {
+                F_LogError("*********************** VulkanRenderWindow::createSwapChain: Wrong window size: Width: [%d], Height: [%d], name: [%s] !", nWindowWidth, nWindowHeight, nameWindow.c_str());
+                return false;
+            }
+
+            //2> SwapChain
+            if (m_pSwapChain == nullptr)
+            {
+                m_pSwapChain = new VulkanSwapChain(this->m_pDevice);
+            }
+            if (!m_pSwapChain->Init(m_pWindow,
+                                    m_ePixelFormatSwapChain,
+                                    nWindowWidth,
+                                    nWindowHeight,
+                                    &this->m_nSwapChainImageDesiredCount,
+                                    this->m_aSwapChainVkImages,
+                                    1))
+            {
+                F_LogError("*********************** VulkanInstance::createSwapChain: VulkanSwapChain.Init failed, name: [%s] !", nameWindow.c_str());
+                return false;
+            }
+
+            //3> VkImageView
+            m_aSwapChainVkImageViews.clear();
+            size_t count = m_aSwapChainVkImages.size();
+            for (size_t i = 0; i < count; ++i)
+            {
+                VkImageView vkImageView = VK_NULL_HANDLE;
+                if (!m_pDevice->CreateVkImageView(m_aSwapChainVkImages[i],
+                                                  VK_IMAGE_VIEW_TYPE_2D,
+                                                  VulkanConverter::Transform2VkFormat(m_ePixelFormatSwapChain),
+                                                  VulkanConverter::Transform2VkComponentMapping(m_ePixelFormatSwapChain),
+                                                  VK_IMAGE_ASPECT_COLOR_BIT,
+                                                  1,
+                                                  1,
+                                                  vkImageView))
+                {
+                    F_LogError("*********************** VulkanInstance::createSwapChain: CreateVkImageView failed, name: [%s] !", nameWindow.c_str());
+                    return false;
+                }   
+                m_aSwapChainVkImageViews.push_back(vkImageView);
+            }
+            return true;
+        }
+        bool VulkanRenderWindow::createRenderFrameBufferDescriptor()
+        {
+            this->m_ePixelFormatDepth = m_pDevice->FindDepthPixelFormatType();
+            String nameRenderFrameBufferDescriptor = "RenderFrameBufferDescriptor-" + GetName();
+            m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, this);
+            if (!m_pRenderFrameBufferDescriptor->Init(this->m_eTexture,
+                                                      this->m_ePixelFormatSwapChain,
+                                                      this->m_ePixelFormatDepth,
+                                                      this->m_ePixelFormatSwapChain,
+                                                      this->m_eMSAASampleCount,
+                                                      this->m_bIsUseImGUI))
+            {
+                F_LogError("*********************** VulkanRenderWindow::createRenderFrameBufferDescriptor: Failed to create VulkanRenderPassDescriptor !");
+                return false;
+            }
+            return true;
+        }
+        bool VulkanRenderWindow::createRenderPassDescriptor()
+        {
+            
+
+            return true;
+        }
+        bool VulkanRenderWindow::createCommandBuffers()
+        {   
+            m_aCommandBuffers.resize(m_aSwapChainVkImageViews.size());
+            if (!m_pDevice->AllocateVkCommandBuffers(m_pDevice->GetVkCommandPoolGraphics(),
+                                                     VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                                                     (uint32_t)m_aCommandBuffers.size(),
+                                                     m_aCommandBuffers.data()))
+            {
+                F_LogError("*********************** VulkanRenderWindow::createCommandBuffers: Failed to allocate VkCommandBuffers !");
+                return false;
+            }
+
+            return true;
+        }
 
     void VulkanRenderWindow::ViewportAdded(const RenderTargetViewportEvent& evt)
     {
@@ -410,6 +467,24 @@ namespace LostPeterPluginRendererVulkan
             m_aVkViewports.push_back(vp.GetVkViewport());
             m_aVkScissors.push_back(vp.GetScissor());
 		}
+    }   
+
+    //Common/Window
+    void VulkanRenderWindow::OnInit()
+    {
+        RenderWindow::OnInit();
+    }
+
+    void VulkanRenderWindow::OnLoad()
+    {
+        RenderWindow::OnLoad();
+    }
+
+    bool VulkanRenderWindow::OnIsInit()
+    {
+        RenderWindow::OnIsInit();
+
+        return true;
     }
 
     void VulkanRenderWindow::OnResize(int w, int h, bool force)
@@ -417,6 +492,46 @@ namespace LostPeterPluginRendererVulkan
         UpdateViewportAll();
 
         RenderWindow::OnResize(w, h, force);
+    }   
+
+    void VulkanRenderWindow::OnDestroy()
+    {
+        RenderWindow::OnDestroy();
+    }
+
+    //Compute/Render
+    bool VulkanRenderWindow::OnBeginCompute()
+    {
+        return true;
+    }
+        void VulkanRenderWindow::OnUpdateCompute()
+        {
+
+        }
+        void VulkanRenderWindow::OnCompute()
+        {
+
+        }
+    void VulkanRenderWindow::OnEndCompute()
+    {
+
+    }
+
+    bool VulkanRenderWindow::OnBeginRender()
+    {
+        return true;
+    }
+        void VulkanRenderWindow::OnUpdateRender()
+        {
+
+        }
+        void VulkanRenderWindow::OnRender()
+        {
+
+        }
+    void VulkanRenderWindow::OnEndRender()
+    {
+        
     }
 
 }; //LostPeterPluginRendererVulkan

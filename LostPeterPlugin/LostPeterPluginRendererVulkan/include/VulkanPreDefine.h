@@ -86,6 +86,8 @@ namespace LostPeterPluginRendererVulkan
     typedef std::vector<VkViewport> VkViewportVector;
     typedef std::vector<VkRect2D> VkRect2DVector;
 
+    typedef std::vector<VkCommandBuffer> VkCommandBufferVector;
+
     typedef std::vector<VkSwapchainKHR> VkSwapchainKHRVector;
 
     typedef std::vector<VkSemaphore> VkSemaphoreVector;
@@ -158,6 +160,10 @@ namespace LostPeterPluginRendererVulkan
 	class VulkanBufferVertex;
     class VulkanConverter;
     class VulkanDebug;
+    class VulkanDescriptorSet;
+    class VulkanDescriptorSetManager;
+    class VulkanDescriptorSetLayout;
+    class VulkanDescriptorSetLayoutManager;
 	class VulkanDevice;
 	class VulkanDeviceMemoryAllocation;
 	class VulkanDeviceMemoryManager;
@@ -191,6 +197,11 @@ namespace LostPeterPluginRendererVulkan
     class VulkanVolk;
 
 	typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
+    
+    typedef std::vector<VulkanDescriptorSet*> VulkanDescriptorSetPtrVector;
+    typedef std::map<String, VulkanDescriptorSet*> VulkanDescriptorSetPtrMap;
+    typedef std::vector<VulkanDescriptorSetLayout*> VulkanDescriptorSetLayoutPtrVector;
+    typedef std::map<String, VulkanDescriptorSetLayout*> VulkanDescriptorSetLayoutPtrMap;
 
 	typedef std::vector<VulkanFence*> VulkanFencePtrVector;
     typedef std::map<String, VulkanFence*> VulkanFencePtrMap;

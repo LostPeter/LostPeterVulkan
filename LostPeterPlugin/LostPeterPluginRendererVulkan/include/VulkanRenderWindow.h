@@ -40,11 +40,6 @@ namespace LostPeterPluginRendererVulkan
         FPixelFormatType m_ePixelFormatDepth;
         bool m_bIsUseImGUI;
 
-        uint32 m_nSwapChainImageDesiredCount;
-        VkImageVector m_aSwapChainVkImages;
-	    VkImageViewVector m_aSwapChainVkImageViews;
-        VulkanSwapChain* m_pSwapChain;
-
         VulkanSemaphorePtrVector m_aSemaphores_PresentComplete;
         VulkanSemaphorePtrVector m_aSemaphores_RenderComplete;
         VulkanFencePtrVector m_aFences_InFlight;
@@ -53,7 +48,14 @@ namespace LostPeterPluginRendererVulkan
         bool m_bIsCreateRenderComputeSycSemaphore;
         VulkanSemaphore* m_pSemaphore_GraphicsWait;
         VulkanSemaphore* m_pSemaphore_ComputeWait;
-        
+
+        uint32 m_nSwapChainImageDesiredCount;
+        VkImageVector m_aSwapChainVkImages;
+	    VkImageViewVector m_aSwapChainVkImageViews;
+        VulkanSwapChain* m_pSwapChain;
+        VkCommandBufferVector m_aCommandBuffers;
+
+
         VulkanViewportMap m_mapVulkanViewport;
         VkViewportVector m_aVkViewports;
         VkRect2DVector m_aVkScissors;
@@ -65,6 +67,8 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE const VkImageVector& GetSwapChainVkImages() const { return m_aSwapChainVkImages; }
 	    F_FORCEINLINE const VkImageViewVector& GetSwapChainVkImageViews() const { return m_aSwapChainVkImageViews; }
         F_FORCEINLINE VulkanSwapChain* GetSwapChain() const { return m_pSwapChain; }
+        F_FORCEINLINE const VkCommandBufferVector& GetCommandBuffers() const { return m_aCommandBuffers; }
+
 
     public:
         virtual void Destroy();
@@ -88,16 +92,23 @@ namespace LostPeterPluginRendererVulkan
         bool RecreateSwapChain();
 
     protected:
+        //DestroySwapChain
+        void destroyCommandBuffers();
         void destroyRenderPassDescriptor();
         void destroyRenderFrameBufferDescriptor();
+        void destroySwapChain();
+
         void destroySyncObjects_RenderCompute();
         void destroySyncObjects_PresentRender();
-
+        
         bool createSyncObjects_PresentRender();
         bool createSyncObjects_RenderCompute();
+
+        //RecreateSwapChain
+        bool createSwapChain();
         bool createRenderFrameBufferDescriptor();
         bool createRenderPassDescriptor();
-
+        bool createCommandBuffers();
 
     public: 
         virtual void ViewportAdded(const RenderTargetViewportEvent& evt);
@@ -109,7 +120,23 @@ namespace LostPeterPluginRendererVulkan
         void updateVkViewports();
 
     public:
+        //Common/Window
+        virtual void OnInit();
+        virtual void OnLoad();
+        virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
+		virtual void OnDestroy();
+
+		//Compute/Render
+        virtual bool OnBeginCompute();
+            virtual void OnUpdateCompute();
+            virtual void OnCompute();
+        virtual void OnEndCompute();
+        virtual bool OnBeginRender();
+            virtual void OnUpdateRender();
+            virtual void OnRender();
+        virtual void OnEndRender();
+
     };
 
 }; //LostPeterPluginRendererVulkan

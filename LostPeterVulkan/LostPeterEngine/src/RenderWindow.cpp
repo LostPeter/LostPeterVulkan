@@ -143,6 +143,7 @@ namespace LostPeterEngine
     {
 
     }
+    
     bool RenderWindow::OnBeginRender()
     {
         return true;
