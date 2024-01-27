@@ -178,6 +178,8 @@ namespace LostPeterPluginRendererVulkan
     class VulkanRenderTexture;
     class VulkanRenderWindow;
 	class VulkanSemaphore;
+    class VulkanShader;
+    class VulkanShaderManager;
     class VulkanStreamIndex;
     class VulkanStreamManager;
     class VulkanStreamTexture;

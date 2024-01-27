@@ -60,8 +60,8 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        
 
+        
     protected:
         virtual void loadImpl();
 		virtual void unloadImpl();
