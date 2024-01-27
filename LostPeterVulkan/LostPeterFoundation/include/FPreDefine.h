@@ -833,6 +833,19 @@ namespace LostPeterFoundation
     foundationExport FShaderType F_ParseShaderType(const String& strName);
 
 
+    enum FShaderPassType
+    {
+        F_ShaderPass_Main = 0,                          //0: Main
+        F_ShaderPass_Depth,                             //1: Depth
+        F_ShaderPass_Custom,                            //2: Custom
+
+        F_ShaderPass_Count,
+    };
+    foundationExport const String& F_GetShaderPassTypeName(FShaderPassType type);
+    foundationExport const String& F_GetShaderPassTypeName(int type);
+    foundationExport FShaderPassType F_ParseShaderPassType(const String& strName);
+
+
     enum FPlaneSideType
     {
         F_PlaneSide_None = 0,                           //0: None

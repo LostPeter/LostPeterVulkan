@@ -466,6 +466,33 @@ namespace LostPeterFoundation
     }
 
 
+    //FShaderPassType
+    static String s_nameShaderPassTypes[] = 
+    {
+        "Main",                 //0: Main
+        "Depth",                //1: Depth
+        "Custom",               //2: Custom
+    };
+    const String& F_GetShaderPassTypeName(FShaderPassType type)
+    {
+        return s_nameShaderPassTypes[(int)type];
+    }
+    const String& F_GetShaderPassTypeName(int type)
+    {
+        return s_nameShaderPassTypes[type];
+    }
+    FShaderPassType F_ParseShaderPassType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_ShaderPass_Count; i++)
+        {
+            if (s_nameShaderPassTypes[i] == strName)
+                return (FShaderPassType)(i);
+        }
+        F_Assert(false && "F_ParseShaderPassType: Wrong type name !")
+        return F_ShaderPass_Main;
+    }
+
+
     //FCameraType
     static const String s_nameCameraTypes[] = 
     {

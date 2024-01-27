@@ -771,6 +771,11 @@ namespace LostPeterEngine
     class SceneManagerEnumerator;
     class SceneNode;
     class SceneSerializer;
+    class ShaderParamPass;
+    class ShaderParamPassMain;
+    class ShaderParamPassDepth;
+    class ShaderParamPassCustom;
+    class ShaderParamPassManager;
     class Shader;
     class ShaderManager;
     class ShaderSerializer;
@@ -816,6 +821,9 @@ namespace LostPeterEngine
     typedef std::vector<Shader*> ShaderPtrVector;
     typedef std::map<String, Shader*> ShaderPtrMap;
     typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;
+    
+    typedef std::vector<ShaderParamPass*> ShaderParamPassPtrVector;
+    typedef std::map<String, ShaderParamPass*> ShaderParamPassPtrMap;
 
     typedef std::vector<RendererListener*> RendererListenerPtrVector;
     typedef std::list<RendererListener*> RendererListenerPtrList;
