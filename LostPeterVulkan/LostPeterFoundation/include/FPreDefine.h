@@ -846,6 +846,181 @@ namespace LostPeterFoundation
     foundationExport FShaderPassType F_ParseShaderPassType(const String& strName);
 
 
+    enum FShaderParamConstantType
+    {
+        F_ShaderParamConstant_Float1 = 0,               //0:  Float1
+		F_ShaderParamConstant_Float2,                   //1:  Float2
+		F_ShaderParamConstant_Float3,                   //2:  Float3
+		F_ShaderParamConstant_Float4,                   //3:  Float4
+		F_ShaderParamConstant_Sampler1D,                //4:  Sampler1D
+		F_ShaderParamConstant_Sampler2D,                //5:  Sampler2D
+		F_ShaderParamConstant_Sampler3D,                //6:  Sampler3D
+		F_ShaderParamConstant_SamplerCube,              //7:  SamplerCube
+		F_ShaderParamConstant_Sampler1DShadow,          //8:  Sampler1DShadow
+		F_ShaderParamConstant_Sampler2DShadow,          //9:  Sampler2DShadow
+		F_ShaderParamConstant_Matrix_2X2,               //10: Matrix_2X2
+		F_ShaderParamConstant_Matrix_2X3,               //11: Matrix_2X3
+		F_ShaderParamConstant_Matrix_2X4,               //12: Matrix_2X4
+		F_ShaderParamConstant_Matrix_3X2,               //13: Matrix_3X2
+		F_ShaderParamConstant_Matrix_3X3,               //14: Matrix_3X3
+		F_ShaderParamConstant_Matrix_3X4,               //15: Matrix_3X4
+		F_ShaderParamConstant_Matrix_4X2,               //16: Matrix_4X2
+		F_ShaderParamConstant_Matrix_4X3,               //17: Matrix_4X3
+		F_ShaderParamConstant_Matrix_4X4,               //18: Matrix_4X4
+		F_ShaderParamConstant_Int1,                     //19: Int1
+		F_ShaderParamConstant_Int2,                     //20: Int2
+		F_ShaderParamConstant_Int3,                     //21: Int3
+		F_ShaderParamConstant_Int4,                     //22: Int4
+
+        F_ShaderParamConstant_Count,
+    };
+    foundationExport const String& F_GetShaderParamConstantTypeName(FShaderParamConstantType type);
+    foundationExport const String& F_GetShaderParamConstantTypeName(int type);
+    foundationExport FShaderParamConstantType F_ParseShaderParamConstantType(const String& strName);
+
+
+    enum FShaderParamConstantDataType
+	{
+        F_ShaderParamConstantData_Float = 0,            //0: Float
+		F_ShaderParamConstantData_Bool,                 //1: Bool
+		F_ShaderParamConstantData_Int,                  //2: Int
+
+        F_ShaderParamConstantData_Count,
+	};
+    foundationExport const String& F_GetShaderParamConstantDataTypeName(FShaderParamConstantDataType type);
+    foundationExport const String& F_GetShaderParamConstantDataTypeName(int type);
+    foundationExport FShaderParamConstantDataType F_ParseShaderParamConstantDataType(const String& strName);
+
+
+    enum FShaderParamConstantAutoType
+    {
+    ////World
+		F_ShaderParamConstantAuto_WorldMatrix = 0,			                    //0:   WorldMatrix
+		F_ShaderParamConstantAuto_WorldMatrixTranspose,						    //1:   WorldMatrixTranspose
+		F_ShaderParamConstantAuto_WorldMatrixInverse,						    //2:   WorldMatrixInverse
+		F_ShaderParamConstantAuto_WorldMatrixInverseTranspose,				    //3:   WorldMatrixInverseTranspose
+		F_ShaderParamConstantAuto_WorldMatrixArray4x4,						    //4:   WorldMatrixArray4x4
+		F_ShaderParamConstantAuto_WorldMatrixArray3x4,						    //5:   WorldMatrixArray3x4
+	////View	
+		F_ShaderParamConstantAuto_ViewMatrix,								    //6:   ViewMatrix
+		F_ShaderParamConstantAuto_ViewMatrixTranspose,						    //7:   ViewMatrixTranspose
+		F_ShaderParamConstantAuto_ViewMatrixInverse,							//8:   ViewMatrixInverse
+		F_ShaderParamConstantAuto_ViewMatrixInverseTranspose,				    //9:   ViewMatrixInverseTranspose
+	////Projection										
+		F_ShaderParamConstantAuto_ProjectionMatrix,							    //10:  ProjectionMatrix
+		F_ShaderParamConstantAuto_ProjectionMatrixTranspose,					//11:  ProjectionMatrixTranspose
+		F_ShaderParamConstantAuto_ProjectionMatrixInverse,					    //12:  ProjectionMatrixInverse
+		F_ShaderParamConstantAuto_ProjectionMatrixInverseTranspose,			    //13:  ProjectionMatrixInverseTranspose
+	////World * View									
+		F_ShaderParamConstantAuto_WorldViewMatrix,							    //14:  WorldViewMatrix
+		F_ShaderParamConstantAuto_WorldViewMatrixTranspose,					    //15:  WorldViewMatrixTranspose
+		F_ShaderParamConstantAuto_WorldViewMatrixInverse,					    //16:  WorldViewMatrixInverse
+		F_ShaderParamConstantAuto_WorldViewMatrixInverseTranspose,			    //17:  WorldViewMatrixInverseTranspose
+	////View * Projection								
+		F_ShaderParamConstantAuto_ViewProjectionMatrix,						    //18:  ViewProjectionMatrix
+		F_ShaderParamConstantAuto_ViewProjectionMatrixTranspose,				//19:  ViewProjectionMatrixTranspose
+		F_ShaderParamConstantAuto_ViewProjectionMatrixInverse,				    //20:  ViewProjectionMatrixInverse
+		F_ShaderParamConstantAuto_ViewProjectionMatrixInverseTranspose,		    //21:  ViewProjectionMatrixInverseTranspose
+	////World * View * Projection						
+		F_ShaderParamConstantAuto_WorldViewProjectionMatrix,					//22:  WorldViewProjectionMatrix
+		F_ShaderParamConstantAuto_WorldViewProjectionMatrixTranspose,		    //23:  WorldViewProjectionMatrixTranspose
+		F_ShaderParamConstantAuto_WorldViewProjectionMatrixInverse,			    //24:  WorldViewProjectionMatrixInverse
+		F_ShaderParamConstantAuto_WorldViewProjectionMatrixInverseTranspose,	//25:  WorldViewProjectionMatrixInverseTranspose
+	////Viewport	
+		F_ShaderParamConstantAuto_ViewportSize,								    //26:  ViewportSize
+		F_ShaderParamConstantAuto_ViewportWidth,								//27:  ViewportWidth
+		F_ShaderParamConstantAuto_ViewportWidthInverse,						    //28:  ViewportWidthInverse
+		F_ShaderParamConstantAuto_ViewportHeight,							    //29:  ViewportHeight
+		F_ShaderParamConstantAuto_ViewportHeightInverse,						//30:  ViewportHeightInverse
+	////Camera											
+		F_ShaderParamConstantAuto_CameraPosInObjectSpace,					    //31:  CameraPosInObjectSpace
+		F_ShaderParamConstantAuto_CameraRightInObjectSpace,					    //32:  CameraRightInObjectSpace
+		F_ShaderParamConstantAuto_CameraUpInObjectSpace,						//33:  CameraUpInObjectSpace
+		F_ShaderParamConstantAuto_CameraDirInObjectSpace,					    //34:  CameraDirInObjectSpace
+		F_ShaderParamConstantAuto_CameraPosInWorldSpace,						//35:  CameraPosInWorldSpace
+		F_ShaderParamConstantAuto_CameraRightInWorldSpace,					    //36:  CameraRightInWorldSpace
+		F_ShaderParamConstantAuto_CameraUpInWorldSpace,						    //37:  CameraUpInWorldSpace
+		F_ShaderParamConstantAuto_CameraDirInWorldSpace,						//38:  CameraDirInWorldSpace
+		F_ShaderParamConstantAuto_CameraFov,									//39:  CameraFov
+		F_ShaderParamConstantAuto_CameraNearClipDistance,					    //40:  CameraNearClipDistance
+		F_ShaderParamConstantAuto_CameraFarClipDistance,						//41:  CameraFarClipDistance
+		F_ShaderParamConstantAuto_CameraParam,								    //42:  CameraParam
+	////Light
+		F_ShaderParamConstantAuto_LightPosInModelSpace,						    //43:  LightPosInModelSpace
+		F_ShaderParamConstantAuto_LightPosInWorldSpace,						    //44:  LightPosInWorldSpace
+		F_ShaderParamConstantAuto_LightPosInViewSpace,						    //45:  LightPosInViewSpace
+		F_ShaderParamConstantAuto_LightDirInModelSpace,						    //46:  LightDirInModelSpace
+		F_ShaderParamConstantAuto_LightDirInWorldSpace,						    //47:  LightDirInWorldSpace
+		F_ShaderParamConstantAuto_LightDirInViewSpace,						    //48:  LightDirInViewSpace
+		F_ShaderParamConstantAuto_LightDistanceModelSpace,					    //49:  LightDistanceModelSpace
+		F_ShaderParamConstantAuto_LightPowerScale,							    //50:  LightPowerScale
+		F_ShaderParamConstantAuto_LightDiffuseColor,							//51:  LightDiffuseColor
+		F_ShaderParamConstantAuto_LightSpecularColor,						    //52:  LightSpecularColor			 									
+		F_ShaderParamConstantAuto_LightAttenuation,							    //53:  LightAttenuation
+		F_ShaderParamConstantAuto_LightSpotParam,							    //54:  LightSpotParam
+		F_ShaderParamConstantAuto_LightPosInModelSpaceArray,					//55:  LightPosInModelSpaceArray
+		F_ShaderParamConstantAuto_LightPosInWorldSpaceArray,					//56:  LightPosInWorldSpaceArray
+		F_ShaderParamConstantAuto_LightPosInViewSpaceArray,					    //57:  LightPosInViewSpaceArray
+		F_ShaderParamConstantAuto_LightDirInModelSpaceArray,					//58:  LightDirInModelSpaceArray
+		F_ShaderParamConstantAuto_LightDirInWorldSpaceArray,					//59:  LightDirInWorldSpaceArray
+		F_ShaderParamConstantAuto_LightDirInViewSpaceArray,					    //60:  LightDirInViewSpaceArray
+		F_ShaderParamConstantAuto_LightDistanceModelSpaceArray,				    //61:  LightDistanceModelSpaceArray
+		F_ShaderParamConstantAuto_LightPowerScaleArray,						    //62:  LightPowerScaleArray
+		F_ShaderParamConstantAuto_LightDiffuseColorArray,					    //63:  LightDiffuseColorArray
+		F_ShaderParamConstantAuto_LightSpecularColorArray,					    //64:  LightSpecularColorArray			 									
+		F_ShaderParamConstantAuto_LightAttenuationArray,						//65:  LightAttenuationArray
+		F_ShaderParamConstantAuto_LightSpotParamArray,						    //66:  LightSpotParamArray
+	////Material										
+		F_ShaderParamConstantAuto_GlobalAmbient,								//67:  GlobalAmbient
+		F_ShaderParamConstantAuto_MaterialAmbientColor,						    //68:  MaterialAmbientColor
+		F_ShaderParamConstantAuto_MaterialDiffuseColor,						    //69:  MaterialDiffuseColor
+		F_ShaderParamConstantAuto_MaterialSpecularColor,						//70:  MaterialSpecularColor
+		F_ShaderParamConstantAuto_MaterialEmissiveColor,						//71:  MaterialEmissiveColor
+		F_ShaderParamConstantAuto_MaterialShininess,							//72:  MaterialShininess
+		F_ShaderParamConstantAuto_MaterialLightAmbientColor,					//73:  MaterialLightAmbientColor
+		F_ShaderParamConstantAuto_MaterialLightDiffuseColor,					//74:  MaterialLightDiffuseColor
+		F_ShaderParamConstantAuto_MaterialLightSpecularColor,				    //75:  MaterialLightSpecularColor
+		F_ShaderParamConstantAuto_MaterialLightSceneColor,					    //76:  MaterialLightSceneColor
+		F_ShaderParamConstantAuto_MaterialLightDiffuseColorArray,			    //77:  MaterialLightDiffuseColorArray
+		F_ShaderParamConstantAuto_MaterialLightSpecularColorArray,			    //78:  MaterialLightSpecularColorArray
+	////Fog												  
+		F_ShaderParamConstantAuto_FogColor,									    //79:  FogColor
+		F_ShaderParamConstantAuto_FogParam,									    //80:  FogParam
+	////Texture											  
+		F_ShaderParamConstantAuto_TextureSizeWHD,							    //81:  TextureSizeWHD
+		F_ShaderParamConstantAuto_TextureSizeWHDInverse,						//82:  TextureSizeWHDInverse
+		F_ShaderParamConstantAuto_TextureSizeWH,								//83:  TextureSizeWH
+		F_ShaderParamConstantAuto_TextureUVTranslation,						    //84:  TextureUVTranslation
+		F_ShaderParamConstantAuto_TextureUVRotation,							//85:  TextureUVRotation
+		F_ShaderParamConstantAuto_TextureUVScale,							    //86:  TextureUVScale
+		F_ShaderParamConstantAuto_TextureUVTransformMatrix,					    //87:  TextureUVTransformMatrix
+	////Time											  
+		F_ShaderParamConstantAuto_TimeElapsed,								    //88:  TimeElapsed
+		F_ShaderParamConstantAuto_TimeElapsed_0_X,							    //89:  TimeElapsed_0_X							  
+		F_ShaderParamConstantAuto_TimeElapsed_Sin_0_X,						    //90:  TimeElapsed_Sin_0_X
+		F_ShaderParamConstantAuto_TimeElapsed_Cos_0_X,						    //91:  TimeElapsed_Cos_0_X
+		F_ShaderParamConstantAuto_TimeElapsed_Tan_0_X,						    //92:  TimeElapsed_Tan_0_X
+		F_ShaderParamConstantAuto_TimeElapsed_Packed_0_X,					    //93:  TimeElapsed_Packed_0_X
+		F_ShaderParamConstantAuto_TimeElapsed_0_1,							    //94:  TimeElapsed_0_1							  
+		F_ShaderParamConstantAuto_TimeElapsed_Sin_0_1,						    //95:  TimeElapsed_Sin_0_1
+		F_ShaderParamConstantAuto_TimeElapsed_Cos_0_1,						    //96:  TimeElapsed_Cos_0_1	
+		F_ShaderParamConstantAuto_TimeElapsed_Tan_0_1,						    //97:  TimeElapsed_Tan_0_1
+		F_ShaderParamConstantAuto_TimeElapsed_Packed_0_1,					    //98:  TimeElapsed_Packed_0_1
+		F_ShaderParamConstantAuto_TimeElapsed_0_2PI,							//99:  TimeElapsed_0_2PI			  
+		F_ShaderParamConstantAuto_TimeElapsed_Sin_0_2PI,						//100: TimeElapsed_Sin_0_2PI
+		F_ShaderParamConstantAuto_TimeElapsed_Cos_0_2PI,						//101: TimeElapsed_Cos_0_2PI
+		F_ShaderParamConstantAuto_TimeElapsed_Tan_0_2PI,						//102: TimeElapsed_Tan_0_2PI
+		F_ShaderParamConstantAuto_TimeElapsed_Packed_0_2PI,					    //103: TimeElapsed_Packed_0_2PI
+		F_ShaderParamConstantAuto_FrameTime,									//104: FrameTime
+		F_ShaderParamConstantAuto_FPS,										    //105: FPS
+
+		F_ShaderParamConstantAuto_Count										    
+    };
+    foundationExport const String& F_GetShaderParamConstantAutoTypeName(FShaderParamConstantAutoType type);
+    foundationExport const String& F_GetShaderParamConstantAutoTypeName(int type);
+    foundationExport FShaderParamConstantAutoType F_ParseShaderParamConstantAutoType(const String& strName);
+
+
     enum FPlaneSideType
     {
         F_PlaneSide_None = 0,                           //0: None

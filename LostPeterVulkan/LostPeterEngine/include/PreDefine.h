@@ -776,6 +776,7 @@ namespace LostPeterEngine
     class ShaderParamPassDepth;
     class ShaderParamPassCustom;
     class ShaderParamPassManager;
+    class ShaderParamSource;
     class Shader;
     class ShaderManager;
     class ShaderSerializer;

@@ -118,6 +118,7 @@
 #include "ShaderParamPassDepth.h"
 #include "ShaderParamPassCustom.h"
 #include "ShaderParamPassManager.h"
+#include "ShaderParamSource.h"
 #include "Shader.h"
 #include "ShaderManager.h"
 #include "ShaderSerializer.h"

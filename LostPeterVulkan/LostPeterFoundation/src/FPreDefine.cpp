@@ -493,6 +493,225 @@ namespace LostPeterFoundation
     }
 
 
+    //FShaderParamConstantType
+    static String s_nameShaderParamConstantTypes[] = 
+    {
+        "Float1",               //0:  Float1
+        "Float2",               //1:  Float2
+        "Float3",               //2:  Float3
+        "Float4",               //3:  Float4
+        "Sampler1D",            //4:  Sampler1D
+        "Sampler2D",            //5:  Sampler2D
+        "Sampler3D",            //6:  Sampler3D
+        "SamplerCube",          //7:  SamplerCube
+        "Sampler1DShadow",      //8:  Sampler1DShadow
+        "Sampler2DShadow",      //9:  Sampler2DShadow
+        "Matrix_2X2",           //10: Matrix_2X2
+        "Matrix_2X3",           //11: Matrix_2X3
+        "Matrix_2X4",           //12: Matrix_2X4
+        "Matrix_3X2",           //13: Matrix_3X2
+        "Matrix_3X3",           //14: Matrix_3X3
+        "Matrix_3X4",           //15: Matrix_3X4
+        "Matrix_4X2",           //16: Matrix_4X2
+        "Matrix_4X3",           //17: Matrix_4X3
+        "Matrix_4X4",           //18: Matrix_4X4
+        "Int1",                 //19: Int1
+        "Int2",                 //20: Int2
+        "Int3",                 //21: Int3
+        "Int4",                 //22: Int4
+    };
+    const String& F_GetShaderParamConstantTypeName(FShaderParamConstantType type)
+    {
+        return s_nameShaderParamConstantTypes[(int)type];
+    }
+    const String& F_GetShaderParamConstantTypeName(int type)
+    {
+        return s_nameShaderParamConstantTypes[type];
+    }
+    FShaderParamConstantType F_ParseShaderParamConstantType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_ShaderParamConstant_Count; i++)
+        {
+            if (s_nameShaderParamConstantTypes[i] == strName)
+                return (FShaderParamConstantType)(i);
+        }
+        F_Assert(false && "F_ParseShaderParamConstantType: Wrong type name !")
+        return F_ShaderParamConstant_Float1;
+    }
+
+
+    //FShaderParamConstantDataType
+    static String s_nameShaderParamConstantDataTypes[] = 
+    {
+        "Float",                //0: Float
+        "Bool",                 //1: Bool
+        "Int",                  //2: Int
+    };
+    const String& F_GetShaderParamConstantDataTypeName(FShaderParamConstantDataType type)
+    {
+        return s_nameShaderParamConstantDataTypes[(int)type];
+    }
+    const String& F_GetShaderParamConstantDataTypeName(int type)
+    {
+        return s_nameShaderParamConstantDataTypes[type];
+    }
+    FShaderParamConstantDataType F_ParseShaderParamConstantDataType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_ShaderParamConstantData_Count; i++)
+        {
+            if (s_nameShaderParamConstantDataTypes[i] == strName)
+                return (FShaderParamConstantDataType)(i);
+        }
+        F_Assert(false && "F_ParseShaderParamConstantDataType: Wrong type name !")
+        return F_ShaderParamConstantData_Float;
+    }
+
+
+    //FShaderParamConstantAutoType
+    static String s_nameShaderParamConstantAutoTypes[] = 
+    {
+    ////World
+		"WorldMatrix",			                        //0:   WorldMatrix
+		"WorldMatrixTranspose",						    //1:   WorldMatrixTranspose
+		"WorldMatrixInverse",						    //2:   WorldMatrixInverse
+		"WorldMatrixInverseTranspose",				    //3:   WorldMatrixInverseTranspose
+		"WorldMatrixArray4x4",						    //4:   WorldMatrixArray4x4
+		"WorldMatrixArray3x4",						    //5:   WorldMatrixArray3x4
+	////View	
+		"ViewMatrix",								    //6:   ViewMatrix
+		"ViewMatrixTranspose",						    //7:   ViewMatrixTranspose
+		"ViewMatrixInverse",							//8:   ViewMatrixInverse
+		"ViewMatrixInverseTranspose",				    //9:   ViewMatrixInverseTranspose
+	////Projection										
+		"ProjectionMatrix",							    //10:  ProjectionMatrix
+		"ProjectionMatrixTranspose",					//11:  ProjectionMatrixTranspose
+		"ProjectionMatrixInverse",					    //12:  ProjectionMatrixInverse
+		"ProjectionMatrixInverseTranspose",			    //13:  ProjectionMatrixInverseTranspose
+	////World * View									
+		"WorldViewMatrix",							    //14:  WorldViewMatrix
+		"WorldViewMatrixTranspose",					    //15:  WorldViewMatrixTranspose
+		"WorldViewMatrixInverse",					    //16:  WorldViewMatrixInverse
+		"WorldViewMatrixInverseTranspose",			    //17:  WorldViewMatrixInverseTranspose
+	////View * Projection								
+		"ViewProjectionMatrix",						    //18:  ViewProjectionMatrix
+		"ViewProjectionMatrixTranspose",				//19:  ViewProjectionMatrixTranspose
+		"ViewProjectionMatrixInverse",				    //20:  ViewProjectionMatrixInverse
+		"ViewProjectionMatrixInverseTranspose",		    //21:  ViewProjectionMatrixInverseTranspose
+	////World * View * Projection						
+		"WorldViewProjectionMatrix",					//22:  WorldViewProjectionMatrix
+		"WorldViewProjectionMatrixTranspose",		    //23:  WorldViewProjectionMatrixTranspose
+		"WorldViewProjectionMatrixInverse",			    //24:  WorldViewProjectionMatrixInverse
+		"WorldViewProjectionMatrixInverseTranspose",	//25:  WorldViewProjectionMatrixInverseTranspose
+	////Viewport	
+		"ViewportSize",								    //26:  ViewportSize
+		"ViewportWidth",								//27:  ViewportWidth
+		"ViewportWidthInverse",						    //28:  ViewportWidthInverse
+		"ViewportHeight",							    //29:  ViewportHeight
+		"ViewportHeightInverse",						//30:  ViewportHeightInverse
+	////Camera											
+		"CameraPosInObjectSpace",					    //31:  CameraPosInObjectSpace
+		"CameraRightInObjectSpace",					    //32:  CameraRightInObjectSpace
+		"CameraUpInObjectSpace",						//33:  CameraUpInObjectSpace
+		"CameraDirInObjectSpace",					    //34:  CameraDirInObjectSpace
+		"CameraPosInWorldSpace",						//35:  CameraPosInWorldSpace
+		"CameraRightInWorldSpace",					    //36:  CameraRightInWorldSpace
+		"CameraUpInWorldSpace",						    //37:  CameraUpInWorldSpace
+		"CameraDirInWorldSpace",						//38:  CameraDirInWorldSpace
+		"CameraFov",									//39:  CameraFov
+		"CameraNearClipDistance",					    //40:  CameraNearClipDistance
+		"CameraFarClipDistance",						//41:  CameraFarClipDistance
+		"CameraParam",								    //42:  CameraParam
+	////Light
+		"LightPosInModelSpace",						    //43:  LightPosInModelSpace
+		"LightPosInWorldSpace",						    //44:  LightPosInWorldSpace
+		"LightPosInViewSpace",						    //45:  LightPosInViewSpace
+		"LightDirInModelSpace",						    //46:  LightDirInModelSpace
+		"LightDirInWorldSpace",						    //47:  LightDirInWorldSpace
+		"LightDirInViewSpace",						    //48:  LightDirInViewSpace
+		"LightDistanceModelSpace",					    //49:  LightDistanceModelSpace
+		"LightPowerScale",							    //50:  LightPowerScale
+		"LightDiffuseColor",							//51:  LightDiffuseColor
+		"LightSpecularColor",						    //52:  LightSpecularColor			 									
+		"LightAttenuation",							    //53:  LightAttenuation
+		"LightSpotParam",							    //54:  LightSpotParam
+		
+		"LightPosInModelSpaceArray",					//55:  LightPosInModelSpaceArray
+		"LightPosInWorldSpaceArray",					//56:  LightPosInWorldSpaceArray
+		"LightPosInViewSpaceArray",					    //57:  LightPosInViewSpaceArray
+		"LightDirInModelSpaceArray",					//58:  LightDirInModelSpaceArray
+		"LightDirInWorldSpaceArray",					//59:  LightDirInWorldSpaceArray
+		"LightDirInViewSpaceArray",					    //60:  LightDirInViewSpaceArray
+		"LightDistanceModelSpaceArray",				    //61:  LightDistanceModelSpaceArray
+		"LightPowerScaleArray",						    //62:  LightPowerScaleArray
+		"LightDiffuseColorArray",					    //63:  LightDiffuseColorArray
+		"LightSpecularColorArray",					    //64:  LightSpecularColorArray			 									
+		"LightAttenuationArray",						//65:  LightAttenuationArray
+		"LightSpotParamArray",						    //66:  LightSpotParamArray
+	////Material										
+		"GlobalAmbient",								//67:  GlobalAmbient
+		"MaterialAmbientColor",						    //68:  MaterialAmbientColor
+		"MaterialDiffuseColor",						    //69:  MaterialDiffuseColor
+		"MaterialSpecularColor",						//70:  MaterialSpecularColor
+		"MaterialEmissiveColor",						//71:  MaterialEmissiveColor
+		"MaterialShininess",							//72:  MaterialShininess
+
+		"MaterialLightAmbientColor",					//73:  MaterialLightAmbientColor
+		"MaterialLightDiffuseColor",					//74:  MaterialLightDiffuseColor
+		"MaterialLightSpecularColor",				    //75:  MaterialLightSpecularColor
+		"MaterialLightSceneColor",					    //76:  MaterialLightSceneColor
+		"MaterialLightDiffuseColorArray",			    //77:  MaterialLightDiffuseColorArray
+		"MaterialLightSpecularColorArray",			    //78:  MaterialLightSpecularColorArray
+	////Fog												  
+		"FogColor",									    //79:  FogColor
+		"FogParam",									    //80:  FogParam
+	////Texture											  
+		"TextureSizeWHD",							    //81:  TextureSizeWHD
+		"TextureSizeWHDInverse",						//82:  TextureSizeWHDInverse
+		"TextureSizeWH",								//83:  TextureSizeWH
+		"TextureUVTranslation",						    //84:  TextureUVTranslation
+		"TextureUVRotation",							//85:  TextureUVRotation
+		"TextureUVScale",							    //86:  TextureUVScale
+		"TextureUVTransformMatrix",					    //87:  TextureUVTransformMatrix
+	////Time											  
+		"TimeElapsed",								    //88:  TimeElapsed
+		"TimeElapsed_0_X",							    //89:  TimeElapsed_0_X							  
+		"TimeElapsed_Sin_0_X",						    //90:  TimeElapsed_Sin_0_X
+		"TimeElapsed_Cos_0_X",						    //91:  TimeElapsed_Cos_0_X
+		"TimeElapsed_Tan_0_X",						    //92:  TimeElapsed_Tan_0_X
+		"TimeElapsed_Packed_0_X",					    //93:  TimeElapsed_Packed_0_X
+		"TimeElapsed_0_1",							    //94:  TimeElapsed_0_1							  
+		"TimeElapsed_Sin_0_1",						    //95:  TimeElapsed_Sin_0_1
+		"TimeElapsed_Cos_0_1",						    //96:  TimeElapsed_Cos_0_1	
+		"TimeElapsed_Tan_0_1",						    //97:  TimeElapsed_Tan_0_1
+		"TimeElapsed_Packed_0_1",					    //98:  TimeElapsed_Packed_0_1
+		"TimeElapsed_0_2PI",							//99:  TimeElapsed_0_2PI			  
+		"TimeElapsed_Sin_0_2PI",						//100: TimeElapsed_Sin_0_2PI
+		"TimeElapsed_Cos_0_2PI",						//101: TimeElapsed_Cos_0_2PI
+		"TimeElapsed_Tan_0_2PI",						//102: TimeElapsed_Tan_0_2PI
+		"TimeElapsed_Packed_0_2PI",					    //103: TimeElapsed_Packed_0_2PI
+		"FrameTime",									//104: FrameTime
+		"FPS",										    //105: FPS
+    };
+    const String& F_GetShaderParamConstantAutoTypeName(FShaderParamConstantAutoType type)
+    {
+        return s_nameShaderParamConstantAutoTypes[(int)type];
+    }
+    const String& F_GetShaderParamConstantAutoTypeName(int type)
+    {
+        return s_nameShaderParamConstantAutoTypes[type];
+    }
+    FShaderParamConstantAutoType F_ParseShaderParamConstantAutoType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_ShaderParamConstantAuto_Count; i++)
+        {
+            if (s_nameShaderParamConstantAutoTypes[i] == strName)
+                return (FShaderParamConstantAutoType)(i);
+        }
+        F_Assert(false && "F_ParseShaderParamConstantAutoType: Wrong type name !")
+        return F_ShaderParamConstantAuto_WorldMatrix;
+    }
+    
+
     //FCameraType
     static const String s_nameCameraTypes[] = 
     {
