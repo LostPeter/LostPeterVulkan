@@ -26,6 +26,11 @@ namespace LostPeterEngine
 
     }
 
+    const FMatrix4&	ObjectFrustum::GetProjectionMatrixWithRSDepth() const
+    {
+        return FMath::ms_mat4Unit;
+    }
+
     const FAABB& ObjectFrustum::GetBoundingAABB() const
     {
         return m_aabb;

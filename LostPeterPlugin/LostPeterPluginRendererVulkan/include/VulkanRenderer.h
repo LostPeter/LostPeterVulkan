@@ -46,6 +46,7 @@ namespace LostPeterPluginRendererVulkan
     
     public:
         virtual FVertexElementDataType GetColorVertexElementType() const;
+        virtual void ConvertProjectionMatrix(const FMatrix4& matIn, FMatrix4& matOut, bool bForShaderProgram = false);
         
         virtual RenderWindow* CreateRenderWindow(const String& strName, 
                                                  uint32 nWidth, 

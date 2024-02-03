@@ -22,48 +22,40 @@ using namespace LostPeterFoundation;
 namespace LostPeterEngine
 {
 ////////////////////////////// Define //////////////////////////////
-    #define MAX_LIGHT_COUNT 16
-    #define MAX_TEXTURE_COUNT 16
-    #define MAX_OBJECT_COUNT 1024
-    #define MAX_OBJECT_LINEFLAT_2D_COUNT 2048
-    #define MAX_OBJECT_LINEFLAT_3D_COUNT 512
-    #define MAX_MATERIAL_COUNT 64
-    #define MAX_INSTANCE_COUNT 1024
-
-    #define SHADER_NAME_Vertex                      "vert"
-    #define SHADER_NAME_TessellationControl         "tesc"
-    #define SHADER_NAME_TessellationEvaluation      "tese"
-    #define SHADER_NAME_Geometry                    "geom"
-    #define SHADER_NAME_Fragment                    "frag"
-    #define SHADER_NAME_Compute                     "comp"
-
-
-    #define C_THRESH_POINT_ON_PLANE			0.10f
-    #define C_THRESH_POINT_ON_SIDE			0.20f
-    #define C_THRESH_POINTS_ARE_SAME		0.00002f	
-    #define C_THRESH_POINTS_ARE_NEAR		0.015f
-    #define C_THRESH_NORMALS_ARE_SAME		0.00002f
-    #define C_THRESH_UVS_ARE_SAME			0.0009765625f
-    #define C_THRESH_VECTORS_ARE_NEAR		0.0004f
-    #define C_THRESH_SPLIT_POLY_WITH_PLANE	0.25f	
-    #define C_THRESH_SPLIT_POLY_PRECISELY	0.01f
-    #define C_THRESH_ZERO_NORM_SQUARED		0.0001f	
-    #define C_THRESH_NORMALS_ARE_PARALLEL	0.999845f	
-    #define C_THRESH_NORMALS_ARE_ORTHOGONAL	0.017455f
-    #define C_THRESH_VECTOR_NORMALIZED		0.01f
-    #define C_THRESH_QUAT_NORMALIZED		0.01f
-
     #define C_CONFIG_MAX_RENDER_TARGET_MULTIPLE_COUNT       8
     #define C_CONFIG_MAX_TEXTURE_UNIT_COUNT				    16
     #define C_CONFIG_MAX_TEXTURE_COORD_SETS_COUNT		    8
     #define	C_CONFIG_MAX_TEXTURE_UV_SCROLL_ANIM_COUNT	    4
+    #define C_CONFIG_MAX_SHADER_PARAM_COUNT				    32
+    #define C_CONFIG_MAX_SHADER_PARAM_WORLD_COUNT		    1024
+    #define C_CONFIG_MAX_STREAM_SOURCE_COUNT				16
     #define C_CONFIG_MAX_BONE_BLEND_WEIGHTS_COUNT	        4
     #define C_CONFIG_MAX_BONE_COUNT					        256
-    #define C_CONFIG_MAX_STREAM_SOURCE_COUNT				16
-    #define C_CONFIG_MAX_LIGHT_COUNT						8
-    #define C_CONFIG_MAX_SHADER_PARAM_COUNT				    32
+    #define C_CONFIG_MAX_LIGHT_COUNT						16
+    #define C_CONFIG_MAX_OBJECT_COUNT                       1024
+    #define C_CONFIG_MAX_OBJECT_LINEFLAT_2D_COUNT           2048
+    #define C_CONFIG_MAX_OBJECT_LINEFLAT_3D_COUNT           512
+    #define C_CONFIG_MAX_MATERIAL_COUNT                     64
+    #define C_CONFIG_MAX_INSTANCE_COUNT                     1024
     #define C_CONFIG_MAX_GLYPHS_COUNT				        (9030 - 32)
     #define C_CONFIG_GLYPH_INDEX(c)					        c - 33
+    
+
+    #define C_THRESH_POINT_ON_PLANE			                0.10f
+    #define C_THRESH_POINT_ON_SIDE			                0.20f
+    #define C_THRESH_POINTS_ARE_SAME		                0.00002f	
+    #define C_THRESH_POINTS_ARE_NEAR		                0.015f
+    #define C_THRESH_NORMALS_ARE_SAME		                0.00002f
+    #define C_THRESH_UVS_ARE_SAME			                0.0009765625f
+    #define C_THRESH_VECTORS_ARE_NEAR		                0.0004f
+    #define C_THRESH_SPLIT_POLY_WITH_PLANE	                0.25f	
+    #define C_THRESH_SPLIT_POLY_PRECISELY	                0.01f
+    #define C_THRESH_ZERO_NORM_SQUARED		                0.0001f	
+    #define C_THRESH_NORMALS_ARE_PARALLEL	                0.999845f	
+    #define C_THRESH_NORMALS_ARE_ORTHOGONAL	                0.017455f
+    #define C_THRESH_VECTOR_NORMALIZED		                0.01f
+    #define C_THRESH_QUAT_NORMALIZED		                0.01f
+
 
 ////////////////////////////// Typedef /////////////////////////////
     
@@ -175,6 +167,9 @@ namespace LostPeterEngine
         E_Object_Sky,                                       //6:    Sky
         E_Object_Cloud,                                     //7:    Cloud
         E_Object_Particle,                                  //8:    Particle
+        E_Object_PostProcess,                               //9:    PostProcess
+        E_Object_UI,                                        //10:   UI
+		E_Object_Custom,                                    //11:   Custom
 
         E_Object_Count,                
     };
@@ -776,7 +771,15 @@ namespace LostPeterEngine
     class ShaderParamPassDepth;
     class ShaderParamPassCustom;
     class ShaderParamPassManager;
-    class ShaderParamSource;
+    class ShaderParamSourceAuto;
+    class ShaderConstantRegister;
+    class ShaderConstantEntryAuto;
+    class ShaderConstantEntryManual;
+    class ShaderConstantAutoDefinition;
+    class ShaderParamDefine;
+    class ShaderProgram;
+    class ShaderProgramGroup;
+    class ShaderProgramGroupManager;
     class Shader;
     class ShaderManager;
     class ShaderSerializer;

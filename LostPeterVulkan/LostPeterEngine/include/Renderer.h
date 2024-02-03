@@ -92,6 +92,7 @@ namespace LostPeterEngine
     public:
 		virtual void ConvertColorValue(const FColor& color, uint32* pDest);
 		virtual FVertexElementDataType GetColorVertexElementType() const = 0;
+		virtual void ConvertProjectionMatrix(const FMatrix4& matIn, FMatrix4& matOut, bool bForShaderProgram = false) = 0;
 
 		virtual RenderWindow* CreateRenderWindow(const String& strName, 
 												 uint32 nWidth, 

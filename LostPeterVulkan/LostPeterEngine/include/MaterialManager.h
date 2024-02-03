@@ -31,6 +31,10 @@ namespace LostPeterEngine
             return ++ ms_nInstanceID;
         }
 
+        static const String& GetMaterialName_Default();
+        static const String& GetMaterialName_DefaultOpaque();
+        static const String& GetMaterialName_DefaultTransparent();
+
     protected:
         MaterialSerializer* m_pMaterialSerializer;
         MaterialPtrVector m_aMaterial;

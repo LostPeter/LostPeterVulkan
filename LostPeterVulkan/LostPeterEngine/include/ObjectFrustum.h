@@ -26,13 +26,46 @@ namespace LostPeterEngine
     protected:
         mutable FAABB m_aabb;
         
+        float m_fFovY;						
+		float m_fNearDist;					
+		float m_fFarDist;		
 
     public:
+        virtual float GetFovY() const { return m_fFovY; }
+		virtual void SetFovY(float fFovY)
+		{
+			m_fFovY = fFovY;
+			invalidateFrustum();
+		}
 
+		virtual float GetNearClipDistance() const { return m_fNearDist; }
+		virtual void SetNearClipDistance(float fNearDist)
+		{
+			F_Assert(fNearDist > 0 && "ObjectFrustum::SetNearClipDistance");
+			
+			m_fNearDist = fNearDist;
+			invalidateFrustum();
+		}
+
+		virtual float GetFarClipDistance() const { return m_fFarDist; }
+		virtual void SetFarClipDistance(float fFarDist)
+		{
+			m_fFarDist = fFarDist;
+			invalidateFrustum();
+		}
+
+        virtual const FMatrix4&	GetProjectionMatrixWithRSDepth() const;
 
     ////Movable
     public:
         virtual const FAABB& GetBoundingAABB() const;
+
+
+    protected:
+        virtual void invalidateFrustum() const
+		{
+			
+		}
 
     };
 

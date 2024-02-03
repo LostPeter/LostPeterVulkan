@@ -94,7 +94,7 @@ namespace LostPeterEngine
 	RenderStateLighting::RenderStateLighting()
 		: m_bLightingEnabled(true)
 		, m_eLighting(F_Lighting_Gouraud) 
-		, m_nMaxEffectLightNum(MAX_LIGHT_COUNT)
+		, m_nMaxEffectLightNum(C_CONFIG_MAX_LIGHT_COUNT)
 
 	////Flat/Gouraud/Phong
 		, m_clAmbient(FMath::ms_clWhite)

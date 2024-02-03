@@ -38,6 +38,20 @@ namespace LostPeterEngine
         "Default_Opaque",
         "Default_Transparent",
     };
+    const String& MaterialManager::GetMaterialName_Default()
+    {
+        return s_aNameDefaults[0];
+    }
+    const String& MaterialManager::GetMaterialName_DefaultOpaque()
+    {
+        return s_aNameDefaults[1];
+    }
+    const String& MaterialManager::GetMaterialName_DefaultTransparent()
+    {
+        return s_aNameDefaults[2];
+    }   
+
+
     MaterialManager::MaterialManager()
         : Base("MaterialManager")
         , m_pMaterialSerializer(nullptr)
@@ -53,7 +67,7 @@ namespace LostPeterEngine
     bool MaterialManager::IsMaterialDefault(Material* pMaterial)
     {
         for (MaterialPtrMap::iterator it = m_mapMaterialDefaults.begin(); 
-            it != m_mapMaterialDefaults.end(); ++it)
+             it != m_mapMaterialDefaults.end(); ++it)
         {
             if (it->second == pMaterial)
                 return true;

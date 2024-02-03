@@ -382,8 +382,8 @@ namespace LostPeterFoundation
     typedef std::vector<FMatrix4> FMatrix4Vector;
     typedef std::vector<FQuaternion> FQuaternionVector;
     typedef std::vector<FColor> FColorVector;
-    typedef std::map<size_t, FVector3> FIndex2Vector3Map;
-
+    typedef std::map<uint, FVector3> FIndex2Vector3Map;
+    typedef std::map<uint, FVector4> FIndex2Vector4Map;
 
     struct FVertex_Pos2Color4;
     struct FVertex_Pos3Color4;

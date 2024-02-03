@@ -429,6 +429,57 @@ namespace LostPeterFoundation
 			return (fLen < (ms_fEpsilon * ms_fEpsilon));
         }
 
+        //Sin/Cos/Tan
+		static float Sin(float fAngle, bool bUseTables = false)
+        {
+            return sin(ms_fDeg2Rad * fAngle);
+        }
+		static float Cos(float fAngle, bool bUseTables = false)
+        {
+            return cos(ms_fDeg2Rad * fAngle);
+        }
+		static float Tan(float fAngle, bool bUseTables = false)
+        {
+            return tan(ms_fDeg2Rad * fAngle);
+        }
+		
+		static float ASin(float fValue)
+        {
+            if (-1.0 < fValue)
+            {
+                if (fValue < 1.0)
+                    return asin(fValue) * ms_fRad2Deg;
+                else
+                    return 90.0f;
+            }
+            else
+            {
+                return -90.0f;
+            }
+        }		
+		static float ACos(float fValue)
+        {
+            if (-1.0 < fValue)
+            {
+                if (fValue < 1.0)
+                    return acos(fValue) * ms_fRad2Deg;
+                else
+                    return 0.0f;
+            }
+            else
+            {
+                return 180.0f;
+            }
+        }
+		static float ATan(float fValue)
+        {
+            return atan(fValue) * ms_fRad2Deg; 
+        }									
+		static float ATan2(float fY, float fX)
+        {
+            return atan2(fY, fX) * ms_fRad2Deg;
+        }
+
         //Color
         static RGBA GetAsRGBA(const FColor& color);						
 		static ARGB GetAsARGB(const FColor& color);						

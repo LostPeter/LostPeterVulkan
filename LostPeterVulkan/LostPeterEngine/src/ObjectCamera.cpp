@@ -41,6 +41,15 @@ namespace LostPeterEngine
 
     }   
 
+    const FMatrix4& ObjectCamera::GetViewMatrix() const
+    {
+        return FMath::ms_mat4Unit;
+    }
+    const FMatrix4&	ObjectCamera::GetViewMatrix(bool bOwnFrustumOnly) const
+    {
+        return FMath::ms_mat4Unit;
+    }
+
 
     void ObjectCamera::RenderScene(Viewport* pViewport, bool bIncludeOverlays)
     {

@@ -83,6 +83,11 @@ namespace LostPeterPluginRendererVulkan
         return F_VertexElementData_Float1;
     }
 
+    void VulkanRenderer::ConvertProjectionMatrix(const FMatrix4& matIn, FMatrix4& matOut, bool bForShaderProgram /*= false*/)
+    {
+        
+    }
+
     RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, 
                                                      uint32 nWidth, 
                                                      uint32 nHeight, 

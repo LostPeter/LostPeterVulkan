@@ -58,6 +58,9 @@ namespace LostPeterEngine
         "Sky",                      //6:    Sky
         "Cloud",                    //7:    Cloud
         "Particle",                 //8:    Particle
+        "PostProcess",              //9:    PostProcess
+        "UI",                       //10:   UI
+        "Custom",                   //11:   Custom
     };
     const String& E_GetObjectTypeName(EObjectType type)
     {

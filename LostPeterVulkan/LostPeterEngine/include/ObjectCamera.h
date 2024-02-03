@@ -53,25 +53,25 @@ namespace LostPeterEngine
 
 	////Local
         F_FORCEINLINE const FVector3& GetPositionLocal() const { return m_vPosLocal; }
-		F_FORCEINLINE void	SetPositionLocal(float x, float y, float z)
+		F_FORCEINLINE void SetPositionLocal(float x, float y, float z)
 		{
 			m_vPosLocal.x = x;
 			m_vPosLocal.y = y;
 			m_vPosLocal.z = z;
 			//invalidateView();
 		}
-		F_FORCEINLINE void	SetPositionLocal(const FVector3& vPosLocal)
+		F_FORCEINLINE void SetPositionLocal(const FVector3& vPosLocal)
 		{
 			m_vPosLocal = vPosLocal;
 			//invalidateView();
 		}
 
-		F_FORCEINLINE void	Move(const FVector3& vDelta)
+		F_FORCEINLINE void Move(const FVector3& vDelta)
 		{
 			m_vPosLocal = m_vPosLocal + vDelta;
 			//invalidateView();
 		}
-		F_FORCEINLINE void	MoveRelative(const FVector3& vMove)
+		F_FORCEINLINE void MoveRelative(const FVector3& vMove)
 		{
 			FVector3 vTrans = m_qRotLocal * vMove;
 			m_vPosLocal = m_vPosLocal + vTrans;
@@ -80,20 +80,20 @@ namespace LostPeterEngine
 		
 
 		F_FORCEINLINE const FQuaternion& GetRotationLocal() const { return m_qRotLocal; }
-		F_FORCEINLINE void	SetRotationLocal(const FQuaternion& qRotLocal)
+		F_FORCEINLINE void SetRotationLocal(const FQuaternion& qRotLocal)
 		{
 			m_qRotLocal = FMath::Normalize(qRotLocal);
 			//invalidateView();
 		}
 
-		F_FORCEINLINE FVector3	GetDirectionLocal() const { return m_qRotLocal * FMath::ms_v3UnitNegZ; }
+		F_FORCEINLINE FVector3 GetDirectionLocal() const { return m_qRotLocal * FMath::ms_v3UnitNegZ; }
 		void SetDirectionLocal(const FVector3& vDirLocal);
-		F_FORCEINLINE void	SetDirectionLocal(float x, float y, float z)
+		F_FORCEINLINE void SetDirectionLocal(float x, float y, float z)
 		{
 			SetDirectionLocal(FVector3(x, y, z));
 		}
-		F_FORCEINLINE FVector3	GetUpLocal() const { return m_qRotLocal * FMath::ms_v3UnitY; }
-		F_FORCEINLINE FVector3	GetRightLocal() const { return m_qRotLocal * FMath::ms_v3UnitX; }
+		F_FORCEINLINE FVector3 GetUpLocal() const { return m_qRotLocal * FMath::ms_v3UnitY; }
+		F_FORCEINLINE FVector3 GetRightLocal() const { return m_qRotLocal * FMath::ms_v3UnitX; }
 
 		
 	////World
@@ -108,17 +108,17 @@ namespace LostPeterEngine
 			return m_qRotWorld;
 		}
 
-		F_FORCEINLINE FVector3	GetDirectionWorld() const
+		F_FORCEINLINE FVector3 GetDirectionWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitNegZ;
 		}
-		F_FORCEINLINE FVector3	GetUpWorld() const
+		F_FORCEINLINE FVector3 GetUpWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitY;
 		}
-		F_FORCEINLINE FVector3	GetRightWorld() const
+		F_FORCEINLINE FVector3 GetRightWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitX;
@@ -137,17 +137,17 @@ namespace LostPeterEngine
 			return m_qRotReal;
 		}
 
-		F_FORCEINLINE FVector3	GetDirectionReal() const
+		F_FORCEINLINE FVector3 GetDirectionReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitNegZ;
 		}
-		F_FORCEINLINE FVector3	GetUpReal() const
+		F_FORCEINLINE FVector3 GetUpReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitY;
 		}
-		F_FORCEINLINE FVector3	GetRightReal() const
+		F_FORCEINLINE FVector3 GetRightReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitX;
@@ -157,8 +157,12 @@ namespace LostPeterEngine
 		F_FORCEINLINE Viewport* GetViewport() const { return m_pViewport; }
 		F_FORCEINLINE void	NotifyViewport(Viewport* pViewport)	{ m_pViewport = pViewport; }
 
-	
+		
+
 	public:
+		virtual const FMatrix4& GetViewMatrix() const;
+		virtual const FMatrix4&	GetViewMatrix(bool bOwnFrustumOnly) const;
+
 		virtual void RenderScene(Viewport* pViewport, bool bIncludeOverlays);
 
 

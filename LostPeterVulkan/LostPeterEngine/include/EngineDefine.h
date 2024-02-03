@@ -113,7 +113,7 @@ namespace LostPeterEngine
 
         //Light
         LightConstants g_MainLight;
-        LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
+        LightConstants g_AdditionalLights[C_CONFIG_MAX_LIGHT_COUNT];
 
         PassConstants()
             : g_TotalTime(0.0f)
@@ -275,7 +275,7 @@ namespace LostPeterEngine
         float lighting;
         float reserve0;
 
-        TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
+        TextureConstants aTexLayers[C_CONFIG_MAX_TEXTURE_UNIT_COUNT];
 
         MaterialConstants()
             : factorAmbient(1.0f, 1.0f, 1.0f, 1.0f)
