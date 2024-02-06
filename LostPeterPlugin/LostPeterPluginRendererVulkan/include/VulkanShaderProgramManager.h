@@ -9,18 +9,18 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_SHADER_MANAGER_H_
-#define _VULKAN_SHADER_MANAGER_H_
+#ifndef _VULKAN_SHADER_PROGRAM_MANAGER_H_
+#define _VULKAN_SHADER_PROGRAM_MANAGER_H_
 
 #include "VulkanPreDefine.h"
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanShaderManager : public ShaderManager 
+    class VulkanShaderProgramManager : public ShaderProgramManager 
     {
     public:
-        VulkanShaderManager(VulkanDevice* pDevice);
-        virtual ~VulkanShaderManager();
+        VulkanShaderProgramManager(VulkanDevice* pDevice);
+        virtual ~VulkanShaderProgramManager();
 
     public:
     protected:

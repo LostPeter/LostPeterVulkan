@@ -12,6 +12,7 @@
 #include "../include/VulkanRenderer.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanShaderProgramManager.h"
 #include "../include/VulkanTextureManager.h"
 #include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanPlugin.h"
@@ -46,7 +47,7 @@ namespace LostPeterPluginRendererVulkan
         m_pVulkanInstance = new VulkanInstance();
         if (!m_pVulkanInstance->Init())
         {
-            F_LogError("*********************** VulkanRenderer::Init: Failed to init VulkanInstance !");
+            F_LogError("*********************** VulkanRenderer::Init: 1> Failed to init VulkanInstance !");
             return nullptr;
         }
         F_LogInfo("VulkanRenderer::Init: 1> Init vulkan instance/device/physical device success !");
@@ -54,21 +55,29 @@ namespace LostPeterPluginRendererVulkan
         //2> Init render capabilities
         if (!initRenderCapabilities())
         {
-            F_LogError("*********************** VulkanRenderer::Init: Failed to init render capabilities !");
+            F_LogError("*********************** VulkanRenderer::Init: 2> Failed to init render capabilities !");
             return nullptr;
         }
         initFromRenderCapabilities(nullptr);
         F_LogInfo("VulkanRenderer::Init: 2> Init render capabilities success !");
 
-        //3> Init TextureManager
-        if (!initTextureManager())
+        //3> Init ShaderProgramManager
+         if (!initShaderProgramManager())
         {
-            F_LogError("*********************** VulkanRenderer::Init: Failed to init texture manager !");
+            F_LogError("*********************** VulkanRenderer::Init: 3> Failed to init shader program manager !");
             return nullptr;
         }
-        F_LogInfo("VulkanRenderer::Init: 3> Init texture manager success !");
+        F_LogInfo("VulkanRenderer::Init: 3> Init shader program manager success !");
 
-        //4> Auto CreateWindow
+        //4> Init TextureManager
+        if (!initTextureManager())
+        {
+            F_LogError("*********************** VulkanRenderer::Init: 4> Failed to init texture manager !");
+            return nullptr;
+        }
+        F_LogInfo("VulkanRenderer::Init: 4> Init texture manager success !");
+
+        //5> Auto CreateWindow
         if (bAutoCreateWindow)
         {
 
@@ -306,6 +315,21 @@ namespace LostPeterPluginRendererVulkan
 	void VulkanRenderer::initFromRenderCapabilities(RenderTarget* pPrimary)
     {
 
+    }
+    bool VulkanRenderer::initShaderProgramManager()
+    {
+        VulkanDevice* pDevice = GetDevice();
+        m_pShaderProgramManager = new VulkanShaderProgramManager(pDevice);
+        uint32 nGroup = RenderEngine::GetSingleton().GetCfgGroup(E_EngineConfig_Render_ShaderGroup);
+        const String& strNameCfg =  RenderEngine::GetSingleton().GetCfgConfigName(E_EngineConfig_Render_ShaderConfigName);
+        if (!m_pShaderProgramManager->Init(nGroup, strNameCfg))
+        {
+            F_LogError("*********************** VulkanRenderer::initShaderProgramManager: Failed to init shader program manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+			return false;
+        }
+
+        F_LogInfo("VulkanRenderer::initShaderProgramManager: Success to init shader program manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+        return true;
     }
     bool VulkanRenderer::initTextureManager()
     {

@@ -12,25 +12,20 @@
 #ifndef _SHADER_MANAGER_H_
 #define _SHADER_MANAGER_H_
 
-#include "ResourceManager.h"
+#include "Base.h"
 
 namespace LostPeterEngine
 {
     class engineExport ShaderManager : public FSingleton<ShaderManager>
-                                     , public ResourceManager
+                                     , public Base
     {
     public:
         ShaderManager();
         virtual ~ShaderManager();
 
     public:
-        static const String ms_strShaderConfigName;
-
     protected:
-        ShaderSerializer* m_pShaderSerializer;
 
-    public:
-        F_FORCEINLINE ShaderSerializer* GetShaderSerializer() const { return m_pShaderSerializer; }
 
     public:
         static ShaderManager& GetSingleton();
@@ -38,18 +33,8 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
 
     public:
-        Shader* LoadShader(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
-
-        bool HasShader(const String& strName);
-        bool HasShader(const String& strName, const String& strGroupName);
-        Shader* GetShader(const String& strName);
-        Shader* GetShader(const String& strName, const String& strGroupName);
-
-    private:
-        Shader* loadShader(ShaderInfo* pSI);
 
     public:
         

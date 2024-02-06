@@ -12,8 +12,8 @@
 #include "../include/RenderState.h"
 #include "../include/TextureManager.h"
 #include "../include/Texture.h"
-#include "../include/ShaderManager.h"
-#include "../include/Shader.h"
+#include "../include/ShaderProgramManager.h"
+#include "../include/ShaderProgram.h"
 
 namespace LostPeterEngine
 {
@@ -177,18 +177,18 @@ namespace LostPeterEngine
 
 
     //////////////////////////////////// RenderStateShader //////////////////////////////
-	RenderStateShaderItem::RenderStateShaderItem(const String& nameShader, FShaderType type)
-		: Base(nameShader)
+	RenderStateShaderProgramItem::RenderStateShaderProgramItem(const String& nameShaderProgram, FShaderType type)
+		: Base(nameShaderProgram)
 		, m_eShader(type)
-		, m_pShader(nullptr)
+		, m_pShaderProgram(nullptr)
 	{
 
 	}
-	RenderStateShaderItem::~RenderStateShaderItem()
+	RenderStateShaderProgramItem::~RenderStateShaderProgramItem()
 	{
 		Destroy();
 	}
-	void RenderStateShaderItem::Destroy()
+	void RenderStateShaderProgramItem::Destroy()
 	{
 		m_eShader = F_Shader_Vertex;
 		DeleteStateParamAll();
@@ -196,46 +196,46 @@ namespace LostPeterEngine
 		UnloadShader();
 	}
 
-	bool RenderStateShaderItem::LoadShader()
+	bool RenderStateShaderProgramItem::LoadShaderProgram()
 	{
 		uint32 nGroup = FPathManager::PathGroup_Shader;
-		m_pShader = ShaderManager::GetSingleton().LoadShader(nGroup, GetName());
-		if (m_pShader == nullptr)
+		m_pShaderProgram = ShaderProgramManager::GetSingleton().LoadShaderProgram(nGroup, GetName());
+		if (m_pShaderProgram == nullptr)
 		{
-			F_LogError("*********************** RenderStateShaderItem::LoadShader: Load shader, group: [%u], name: [%s] failed !", nGroup, GetName().c_str());
+			F_LogError("*********************** RenderStateShaderProgramItem::LoadShaderProgram: Load shader, group: [%u], name: [%s] failed !", nGroup, GetName().c_str());
 			return false;
 		}
 
 		return true;
 	}
-	void RenderStateShaderItem::UnloadShader()
+	void RenderStateShaderProgramItem::UnloadShader()
 	{
-		if (m_pShader != nullptr)
+		if (m_pShaderProgram != nullptr)
 		{
-			ShaderManager::GetSingleton().Delete(m_pShader);
+			ShaderProgramManager::GetSingleton().Delete(m_pShaderProgram);
 		}
-		m_pShader = nullptr;
+		m_pShaderProgram = nullptr;
 	}
 
 ////Param
-	int RenderStateShaderItem::GetStateParamCount() const
+	int RenderStateShaderProgramItem::GetStateParamCount() const
 	{
 		return (int)m_aRenderStateParam.size();
 	}
-	RenderStateParam* RenderStateShaderItem::GetStateParam(int index) const
+	RenderStateParam* RenderStateShaderProgramItem::GetStateParam(int index) const
 	{
 		if (index < 0 || index >= (int)m_aRenderStateParam.size())
 			return nullptr;
 		return m_aRenderStateParam[index];
 	}
-	RenderStateParam* RenderStateShaderItem::GetStateParamByName(const String& name)
+	RenderStateParam* RenderStateShaderProgramItem::GetStateParamByName(const String& name)
 	{
 		RenderStateParamPtrMap::iterator itFind = m_mapRenderStateParam.find(name);
 		if (itFind == m_mapRenderStateParam.end())
 			return nullptr;
 		return itFind->second;
 	}
-	void RenderStateShaderItem::AddStateParam(RenderStateParam* pStateParam)
+	void RenderStateShaderProgramItem::AddStateParam(RenderStateParam* pStateParam)
 	{
 		const String& nameSP = pStateParam->GetName();
 		RenderStateParam* pSP = GetStateParamByName(nameSP);
@@ -245,7 +245,7 @@ namespace LostPeterEngine
 		m_aRenderStateParam.push_back(pStateParam);
 		m_mapRenderStateParam[nameSP] = pStateParam;
 	}
-	void RenderStateShaderItem::DeleteStateParam(RenderStateParam* pStateParam)
+	void RenderStateShaderProgramItem::DeleteStateParam(RenderStateParam* pStateParam)
 	{
 		if (pStateParam == nullptr)
 			return;
@@ -261,12 +261,12 @@ namespace LostPeterEngine
 			m_aRenderStateParam.erase(itFindA);
 		F_DELETE(pStateParam)
 	}
-	void RenderStateShaderItem::DeleteStateParam(int index)
+	void RenderStateShaderProgramItem::DeleteStateParam(int index)
 	{
 		RenderStateParam* pStateParam = GetStateParam(index);
 		DeleteStateParam(pStateParam);
 	}
-	void RenderStateShaderItem::DeleteStateParamAll()
+	void RenderStateShaderProgramItem::DeleteStateParamAll()
 	{
 		int count = (int)m_aRenderStateParam.size();
 		for (int i = 0; i < count; i++)
@@ -279,24 +279,24 @@ namespace LostPeterEngine
 
 
 ////Texture
-	int RenderStateShaderItem::GetStateTextureCount() const
+	int RenderStateShaderProgramItem::GetStateTextureCount() const
 	{
 		return (int)m_aRenderStateTexture.size();
 	}
-	RenderStateTexture* RenderStateShaderItem::GetStateTexture(int index) const
+	RenderStateTexture* RenderStateShaderProgramItem::GetStateTexture(int index) const
 	{
 		if (index < 0 || index >= (int)m_aRenderStateTexture.size())
 			return nullptr;
 		return m_aRenderStateTexture[index];
 	}
-	RenderStateTexture* RenderStateShaderItem::GetStateTextureByName(const String& name)
+	RenderStateTexture* RenderStateShaderProgramItem::GetStateTextureByName(const String& name)
 	{
 		RenderStateTexturePtrMap::iterator itFind = m_mapRenderStateTexture.find(name);
 		if (itFind == m_mapRenderStateTexture.end())
 			return nullptr;
 		return itFind->second;
 	}
-	void RenderStateShaderItem::AddStateTexture(RenderStateTexture* pStateTexture)
+	void RenderStateShaderProgramItem::AddStateTexture(RenderStateTexture* pStateTexture)
 	{
 		const String& nameST = pStateTexture->GetName();
 		RenderStateTexture* pST = GetStateTextureByName(nameST);
@@ -306,7 +306,7 @@ namespace LostPeterEngine
 		m_aRenderStateTexture.push_back(pStateTexture);
 		m_mapRenderStateTexture[nameST] = pStateTexture;
 	}
-	void RenderStateShaderItem::DeleteStateTexture(RenderStateTexture* pStateTexture)
+	void RenderStateShaderProgramItem::DeleteStateTexture(RenderStateTexture* pStateTexture)
 	{
 		if (pStateTexture == nullptr)
 			return;
@@ -322,12 +322,12 @@ namespace LostPeterEngine
 			m_aRenderStateTexture.erase(itFindA);
 		F_DELETE(pStateTexture)
 	}
-	void RenderStateShaderItem::DeleteStateTexture(int index)
+	void RenderStateShaderProgramItem::DeleteStateTexture(int index)
 	{
 		RenderStateTexture* pStateTexture = GetStateTexture(index);
 		DeleteStateTexture(pStateTexture);
 	}
-	void RenderStateShaderItem::DeleteStateTextureAll()
+	void RenderStateShaderProgramItem::DeleteStateTextureAll()
 	{
 		int count = (int)m_aRenderStateTexture.size();
 		for (int i = 0; i < count; i++)
@@ -351,55 +351,55 @@ namespace LostPeterEngine
     }
 	void RenderStateShader::Destroy()
 	{
-		DeleteRenderStateShaderItemAll();
+		DeleteRenderStateShaderProgramItemAll();
 	}
 
-	bool RenderStateShader::HasRenderStateShaderItem(const String& nameShader)
+	bool RenderStateShader::HasRenderStateShaderProgramItem(const String& nameShaderProgram)
 	{
-		return GetRenderStateShaderItem(nameShader) != nullptr;
+		return GetRenderStateShaderProgramItem(nameShaderProgram) != nullptr;
 	}
-	RenderStateShaderItem* RenderStateShader::GetRenderStateShaderItem(const String& nameShader)
+	RenderStateShaderProgramItem* RenderStateShader::GetRenderStateShaderProgramItem(const String& nameShaderProgram)
 	{
-		RenderStateShaderItemPtrMap::iterator itFind = m_mapRenderStateShaderItem.find(nameShader);
-		if (itFind != m_mapRenderStateShaderItem.end())
+		RenderStateShaderProgramItemPtrMap::iterator itFind = m_mapRenderStateShaderProgramItem.find(nameShaderProgram);
+		if (itFind != m_mapRenderStateShaderProgramItem.end())
 			return itFind->second;
 		return nullptr;
 	}
-	void RenderStateShader::AddRenderStateShaderItem(RenderStateShaderItem* pItem)
+	void RenderStateShader::AddRenderStateShaderProgramItem(RenderStateShaderProgramItem* pItem)
 	{
-		const String& nameShader = pItem->GetName();
-		RenderStateShaderItemPtrMap::iterator itFind = m_mapRenderStateShaderItem.find(nameShader);
-		if (itFind != m_mapRenderStateShaderItem.end())
+		const String& nameShaderProgram = pItem->GetName();
+		RenderStateShaderProgramItemPtrMap::iterator itFind = m_mapRenderStateShaderProgramItem.find(nameShaderProgram);
+		if (itFind != m_mapRenderStateShaderProgramItem.end())
 			return;
 
-		m_aRenderStateShaderItem.push_back(pItem);
-		m_mapRenderStateShaderItem[nameShader] = pItem;
+		m_aRenderStateShaderProgramItem.push_back(pItem);
+		m_mapRenderStateShaderProgramItem[nameShaderProgram] = pItem;
 	}
-	void RenderStateShader::DeleteRenderStateShaderItem(const String& nameShader)
+	void RenderStateShader::DeleteRenderStateShaderProgramItem(const String& nameShaderProgram)
 	{
-		RenderStateShaderItemPtrMap::iterator itFind = m_mapRenderStateShaderItem.find(nameShader);
-		if (itFind == m_mapRenderStateShaderItem.end())
+		RenderStateShaderProgramItemPtrMap::iterator itFind = m_mapRenderStateShaderProgramItem.find(nameShaderProgram);
+		if (itFind == m_mapRenderStateShaderProgramItem.end())
 			return;
 		
-		RenderStateShaderItemPtrVector::iterator itFindA = std::find(m_aRenderStateShaderItem.begin(), m_aRenderStateShaderItem.end(), itFind->second);
-		if (itFindA != m_aRenderStateShaderItem.end())
-			m_aRenderStateShaderItem.erase(itFindA);
+		RenderStateShaderProgramItemPtrVector::iterator itFindA = std::find(m_aRenderStateShaderProgramItem.begin(), m_aRenderStateShaderProgramItem.end(), itFind->second);
+		if (itFindA != m_aRenderStateShaderProgramItem.end())
+			m_aRenderStateShaderProgramItem.erase(itFindA);
 		F_DELETE(itFind->second)
-		m_mapRenderStateShaderItem.erase(itFind);
+		m_mapRenderStateShaderProgramItem.erase(itFind);
 	}
-	void RenderStateShader::DeleteRenderStateShaderItem(RenderStateShaderItem* pItem)
+	void RenderStateShader::DeleteRenderStateShaderProgramItem(RenderStateShaderProgramItem* pItem)
 	{
-		DeleteRenderStateShaderItem(pItem->GetName());
+		DeleteRenderStateShaderProgramItem(pItem->GetName());
 	}
-	void RenderStateShader::DeleteRenderStateShaderItemAll()
+	void RenderStateShader::DeleteRenderStateShaderProgramItemAll()
 	{
-		for (RenderStateShaderItemPtrVector::iterator it = m_aRenderStateShaderItem.begin();
-			 it != m_aRenderStateShaderItem.end(); ++it)
+		for (RenderStateShaderProgramItemPtrVector::iterator it = m_aRenderStateShaderProgramItem.begin();
+			 it != m_aRenderStateShaderProgramItem.end(); ++it)
 		{
 			F_DELETE(*it)
 		}
-		m_aRenderStateShaderItem.clear();
-		m_mapRenderStateShaderItem.clear();
+		m_aRenderStateShaderProgramItem.clear();
+		m_mapRenderStateShaderProgramItem.clear();
 	}
 
 

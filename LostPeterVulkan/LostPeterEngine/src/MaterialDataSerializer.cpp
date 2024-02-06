@@ -317,7 +317,7 @@ namespace LostPeterEngine
             return true;
         }
 
-                static bool s_parserXML_StateParams(FXMLElement* pElemStateParams, RenderStateShaderItem* pSSItem)
+                static bool s_parserXML_StateParams(FXMLElement* pElemStateParams, RenderStateShaderProgramItem* pSSItem)
                 {
                     F_Assert(pElemStateParams && pSSItem && "s_parserXML_StateParams")
                     
@@ -331,7 +331,7 @@ namespace LostPeterEngine
                     return true;
                 }
 
-                static bool s_parserXML_StateTextures(FXMLElement* pElemStateTextures, RenderStateShaderItem* pSSItem)
+                static bool s_parserXML_StateTextures(FXMLElement* pElemStateTextures, RenderStateShaderProgramItem* pSSItem)
                 {
                     F_Assert(pElemStateTextures && pSSItem && "s_parserXML_StateTextures")
 
@@ -365,9 +365,9 @@ namespace LostPeterEngine
                     }
                     return true;
                 }
-            static bool s_parserXML_StateShaderItem(FXMLElement* pElemShaderItem, RenderStateShaderItem* pSSItem)
+            static bool s_parserXML_StateShaderProgramItem(FXMLElement* pElemShaderItem, RenderStateShaderProgramItem* pSSItem)
             {
-                F_Assert(pElemShaderItem && "s_parserXML_StateShaderItem")
+                F_Assert(pElemShaderItem && "s_parserXML_StateShaderProgramItem")
 
                 int count_items = pElemShaderItem->GetElementChildrenCount();
                 for (int i = 0; i < count_items; i++)
@@ -379,7 +379,7 @@ namespace LostPeterEngine
                     {
                         if (!s_parserXML_StateParams(pElemItem, pSSItem))
                         {
-                            F_LogError("*********************** s_parserXML_StateShaderItem: Parse shader params failed !");
+                            F_LogError("*********************** s_parserXML_StateShaderProgramItem: Parse shader params failed !");
                             return false;
                         }
                     }
@@ -387,7 +387,7 @@ namespace LostPeterEngine
                     {
                         if (!s_parserXML_StateTextures(pElemItem, pSSItem))
                         {
-                            F_LogError("*********************** s_parserXML_StateShaderItem: Parse shader textures failed !");
+                            F_LogError("*********************** s_parserXML_StateShaderProgramItem: Parse shader textures failed !");
                             return false;
                         }
                     }
@@ -416,31 +416,31 @@ namespace LostPeterEngine
                 const String& nameShaderType = pElemShaderItem->GetName();  
                 FShaderType typeShader = F_ParseShaderType(nameShaderType);
 
-                //Shader Name
-                String nameShader;
-                if (!pElemShaderItem->ParserAttribute_String(MATERIAL_DATA_TAG_ATTRIBUTE_NAME, nameShader))
+                //ShaderProgram Name
+                String nameShaderProgram;
+                if (!pElemShaderItem->ParserAttribute_String(MATERIAL_DATA_TAG_ATTRIBUTE_NAME, nameShaderProgram))
                 {
                     F_LogError("*********************** s_parserXML_StateShader: Can not find attribute: 'name', state shader index: [%d] !", i);           
                     return false;
                 }
 
-                RenderStateShaderItem* pSSItem = new RenderStateShaderItem(nameShader, typeShader);
-                if (!pSSItem->LoadShader())
+                RenderStateShaderProgramItem* pSSItem = new RenderStateShaderProgramItem(nameShaderProgram, typeShader);
+                if (!pSSItem->LoadShaderProgram())
                 {
                     F_DELETE(pSSItem)
-                    F_LogError("*********************** s_parserXML_StateShader: Load shader failed, group: [%u], name: [%s], type: [%s] !", FPathManager::PathGroup_Shader, nameShader.c_str(), nameShaderType.c_str()); 
+                    F_LogError("*********************** s_parserXML_StateShader: Load shader program failed, group: [%u], name: [%s], type: [%s] !", FPathManager::PathGroup_Shader, nameShaderProgram.c_str(), nameShaderType.c_str()); 
                     return false;
                 }
 
-                if (!s_parserXML_StateShaderItem(pElemShaderItem, pSSItem))
+                if (!s_parserXML_StateShaderProgramItem(pElemShaderItem, pSSItem))
                 {
                     F_DELETE(pSSItem)
-                    F_LogError("*********************** s_parserXML_StateShader: Parse state shader item, name: [%s], type: [%s] failed !", nameShader.c_str(), nameShaderType.c_str());           
+                    F_LogError("*********************** s_parserXML_StateShader: Parse state shader program item, name: [%s], type: [%s] failed !", nameShaderProgram.c_str(), nameShaderType.c_str());           
                     return false;
                 }
-                pSS->AddRenderStateShaderItem(pSSItem);
+                pSS->AddRenderStateShaderProgramItem(pSSItem);
 
-                F_LogInfo("########## s_parserXML_StateShader: Parser shader item, index: [%d], name: [%s], type: [%s] success !", i, nameShader.c_str(), nameShaderType.c_str());
+                F_LogInfo("########## s_parserXML_StateShader: Parser shader item, index: [%d], name: [%s], type: [%s] success !", i, nameShaderProgram.c_str(), nameShaderType.c_str());
             }
             return true;
         }

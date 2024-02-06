@@ -9,25 +9,25 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/VulkanShaderManager.h"
+#include "../include/VulkanShaderProgramManager.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanShader.h"
+#include "../include/VulkanShaderProgram.h"
 #include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
 {
-    VulkanShaderManager::VulkanShaderManager(VulkanDevice* pDevice)
+    VulkanShaderProgramManager::VulkanShaderProgramManager(VulkanDevice* pDevice)
         : m_pDevice(pDevice)
     {
-        F_Assert(m_pDevice != nullptr && "VulkanShaderManager::VulkanShaderManager")
+        F_Assert(m_pDevice != nullptr && "VulkanShaderProgramManager::VulkanShaderProgramManager")
     }
 
-    VulkanShaderManager::~VulkanShaderManager()
+    VulkanShaderProgramManager::~VulkanShaderProgramManager()
     {
         Destroy();
     }
 
-    Resource* VulkanShaderManager::createImpl(uint32 nGroup,
+    Resource* VulkanShaderProgramManager::createImpl(uint32 nGroup,
                                               const String& strName,
                                               const String& strGroupName,
                                               ResourceHandle nHandle, 
@@ -35,14 +35,14 @@ namespace LostPeterPluginRendererVulkan
                                               ResourceManualLoader* pManualLoader, 
                                               const NameValuePairMap* pLoadParams)
     {
-        return new VulkanShader(m_pDevice,
-                                this,
-                                nGroup, 
-                                strName,
-                                strGroupName,
-                                nHandle,
-                                bIsManualLoad,
-                                pManualLoader);
+        return new VulkanShaderProgram(m_pDevice,
+                                       this,
+                                       nGroup, 
+                                       strName,
+                                       strGroupName,
+                                       nHandle,
+                                       bIsManualLoad,
+                                       pManualLoader);
     }
 
 }; //LostPeterPluginRendererVulkan

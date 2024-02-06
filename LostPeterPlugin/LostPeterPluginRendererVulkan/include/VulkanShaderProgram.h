@@ -9,27 +9,27 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_SHADER_H_
-#define _VULKAN_SHADER_H_
+#ifndef _VULKAN_SHADER_PROGRAM_H_
+#define _VULKAN_SHADER_PROGRAM_H_
 
 #include "VulkanPreDefine.h"
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanShader : public Shader
+    class VulkanShaderProgram : public ShaderProgram
     {
         friend class VulkanShaderManager;
 
     public:
-        VulkanShader(VulkanDevice* pDevice,
-                     ResourceManager* pResourceManager,
-                     uint32 nGroup, 
-                     const String& strName,
-                     const String& strGroupName,
-                     ResourceHandle nHandle,
-                     bool bIsManualLoad = false,
-                     ResourceManualLoader* pResourceManualLoader = nullptr);
-        ~VulkanShader();
+        VulkanShaderProgram(VulkanDevice* pDevice,
+                            ResourceManager* pResourceManager,
+                            uint32 nGroup, 
+                            const String& strName,
+                            const String& strGroupName,
+                            ResourceHandle nHandle,
+                            bool bIsManualLoad = false,
+                            ResourceManualLoader* pResourceManualLoader = nullptr);
+        ~VulkanShaderProgram();
 
     public:
     protected:
@@ -52,7 +52,7 @@ namespace LostPeterPluginRendererVulkan
         virtual void addParameterInherit();
 
 
-    ////Shader
+    ////ShaderProgram
     public:
 
 

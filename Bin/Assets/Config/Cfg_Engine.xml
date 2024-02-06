@@ -8,7 +8,7 @@
 		<PipelineName val="Forward"	/>
 
 		<ShaderGroup val="0" />
-		<ShaderConfigName val="Cfg_Shader.xml" />
+		<ShaderConfigName val="Cfg_ShaderProgram.xml" />
 		<MeshGroup val="0" />
 		<MeshConfigName val="Cfg_Mesh.xml" />
 		<TextureGroup val="0" />

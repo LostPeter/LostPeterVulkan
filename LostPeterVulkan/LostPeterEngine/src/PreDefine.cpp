@@ -440,25 +440,25 @@ namespace LostPeterEngine
     }
 
 
-    ShaderInfo::ShaderInfo()
+    ShaderProgramInfo::ShaderProgramInfo()
         : group(0)
-        , nameShader("")
-        , pathShader("")
+        , nameShaderProgram("")
+        , pathShaderProgram("")
         , typeShader(F_Shader_Vertex)
     {
 
     }
-    ShaderInfo::ShaderInfo(const String& _nameShader,
-                           const String& _pathShader,
-                           FShaderType _typeShader)
+    ShaderProgramInfo::ShaderProgramInfo(const String& _nameShaderProgram,
+                                         const String& _pathShaderProgram,
+                                         FShaderType _typeShader)
         : group(0)
-        , nameShader(_nameShader)
-        , pathShader(_pathShader)
+        , nameShaderProgram(_nameShaderProgram)
+        , pathShaderProgram(_pathShaderProgram)
         , typeShader(_typeShader)
     {
 
     }
-    ShaderInfo::~ShaderInfo()
+    ShaderProgramInfo::~ShaderProgramInfo()
     {
 
     }

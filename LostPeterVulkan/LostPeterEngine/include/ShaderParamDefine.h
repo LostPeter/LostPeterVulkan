@@ -165,8 +165,8 @@ namespace LostPeterEngine
 		F_FORCEINLINE const SahderConstantEntryAutoPtrVector& GetSahderConstantEntryAutoPtrVector() const { return m_aShaderConstantEntryAuto; }
 		F_FORCEINLINE const SahderConstantEntryManualPtrVector& GetSahderConstantEntryManualPtrVector() const { return m_aShaderConstantEntryManual; }
 
-        F_FORCEINLINE uint32 GetConstantEntryAutoCount() const { return m_aShaderConstantEntryAuto.size(); }
-        F_FORCEINLINE uint32 GetConstantEntryManualCount() const { return m_aShaderConstantEntryManual.size(); }
+        F_FORCEINLINE uint32 GetConstantEntryAutoCount() const { return (uint32)m_aShaderConstantEntryAuto.size(); }
+        F_FORCEINLINE uint32 GetConstantEntryManualCount() const { return (uint32)m_aShaderConstantEntryManual.size(); }
 
 	public:
 		bool IsRegisterUsed(uint32 nRegisterIndex, uint32 nRegisterCount);

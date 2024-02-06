@@ -154,16 +154,16 @@ namespace LostPeterEngine
 
 	
 	//////////////////////////////////// RenderStateShader //////////////////////////////
-	class engineExport RenderStateShaderItem : public Base
-										   	 , public FNonCopyable
+	class engineExport RenderStateShaderProgramItem : public Base
+										   	 		, public FNonCopyable
 	{
 	public:
-		RenderStateShaderItem(const String& nameShader, FShaderType type);
-		~RenderStateShaderItem();
+		RenderStateShaderProgramItem(const String& nameShaderProgram, FShaderType type);
+		~RenderStateShaderProgramItem();
 
 	public:
 		FShaderType m_eShader;
-		Shader* m_pShader;
+		ShaderProgram* m_pShaderProgram;
 
 	////Param
 		RenderStateParamPtrVector m_aRenderStateParam;
@@ -174,7 +174,7 @@ namespace LostPeterEngine
 
 	public:
 		F_FORCEINLINE FShaderType GetShaderType() const { return m_eShader; }
-		F_FORCEINLINE Shader* GetShader() const { return m_pShader; }
+		F_FORCEINLINE ShaderProgram* GetShaderProgram() const { return m_pShaderProgram; }
 
 	////Param
 		F_FORCEINLINE const RenderStateParamPtrVector& GetRenderStateParamPtrVector() const { return m_aRenderStateParam; }
@@ -190,7 +190,7 @@ namespace LostPeterEngine
 	public:	
 		void Destroy();
 
-		bool LoadShader();
+		bool LoadShaderProgram();
 		void UnloadShader();
 		
 	////Param
@@ -225,29 +225,29 @@ namespace LostPeterEngine
 	protected:
 		String m_strNameDescriptorSetLayout;
 
-		RenderStateShaderItemPtrVector m_aRenderStateShaderItem;
-		RenderStateShaderItemPtrMap m_mapRenderStateShaderItem;
+		RenderStateShaderProgramItemPtrVector m_aRenderStateShaderProgramItem;
+		RenderStateShaderProgramItemPtrMap m_mapRenderStateShaderProgramItem;
 
 	public:
 		F_FORCEINLINE const String& GetNameDescriptorSetLayout() const { return m_strNameDescriptorSetLayout; }
 		F_FORCEINLINE void SetNameDescriptorSetLayout(const String& nameDSL) { m_strNameDescriptorSetLayout = nameDSL; }
 
-		F_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return m_aRenderStateShaderItem; }
-        F_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return m_aRenderStateShaderItem; }
-        F_FORCEINLINE const RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() const { return m_mapRenderStateShaderItem; }
-        F_FORCEINLINE RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() { return m_mapRenderStateShaderItem; }
+		F_FORCEINLINE const RenderStateShaderProgramItemPtrVector& GetRenderStateShaderProgramItemPtrVector() const { return m_aRenderStateShaderProgramItem; }
+        F_FORCEINLINE RenderStateShaderProgramItemPtrVector& GetRenderStateShaderProgramItemPtrVector() { return m_aRenderStateShaderProgramItem; }
+        F_FORCEINLINE const RenderStateShaderProgramItemPtrMap& GetRenderStateShaderProgramItemPtrMap() const { return m_mapRenderStateShaderProgramItem; }
+        F_FORCEINLINE RenderStateShaderProgramItemPtrMap& GetRenderStateShaderProgramItemPtrMap() { return m_mapRenderStateShaderProgramItem; }
 
 	public:
 		void Destroy();
 
 	public:
-		bool HasRenderStateShaderItem(const String& nameShader);
-		RenderStateShaderItem* GetRenderStateShaderItem(const String& nameShader);
+		bool HasRenderStateShaderProgramItem(const String& nameShaderProgram);
+		RenderStateShaderProgramItem* GetRenderStateShaderProgramItem(const String& nameShaderProgram);
 
-		void AddRenderStateShaderItem(RenderStateShaderItem* pItem);
-		void DeleteRenderStateShaderItem(const String& nameShader);
-		void DeleteRenderStateShaderItem(RenderStateShaderItem* pItem);
-		void DeleteRenderStateShaderItemAll();
+		void AddRenderStateShaderProgramItem(RenderStateShaderProgramItem* pItem);
+		void DeleteRenderStateShaderProgramItem(const String& nameShaderProgram);
+		void DeleteRenderStateShaderProgramItem(RenderStateShaderProgramItem* pItem);
+		void DeleteRenderStateShaderProgramItemAll();
 	};
 
 

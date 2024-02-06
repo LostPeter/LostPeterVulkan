@@ -10,8 +10,8 @@
 ****************************************************************************/
 
 #include "../include/RenderEngine.h"
-#include "../include/ShaderManager.h"
 #include "../include/MeshManager.h"
+#include "../include/ShaderProgramManager.h"
 #include "../include/TextureManager.h"
 #include "../include/MaterialDataManager.h"
 #include "../include/MaterialManager.h"
@@ -51,7 +51,6 @@ namespace LostPeterEngine
 		, m_pSceneManagerCurrent(nullptr)
 		, m_pRenderQueueManager(nullptr)
         , m_pMeshManager(nullptr)
-        , m_pShaderManager(nullptr)
         , m_pMaterialDataManager(nullptr)
         , m_pMaterialManager(nullptr)
         
@@ -109,7 +108,7 @@ namespace LostPeterEngine
 		{
 			ConfigItem cfgItem;
 			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_ShaderConfigName);
-			cfgItem.strCurValue = ShaderManager::ms_strShaderConfigName;
+			cfgItem.strCurValue = ShaderProgramManager::ms_strShaderProgramConfigName;
 			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
 		}
 

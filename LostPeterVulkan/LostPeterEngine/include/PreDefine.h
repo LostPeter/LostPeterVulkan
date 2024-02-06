@@ -596,31 +596,23 @@ namespace LostPeterEngine
     typedef std::map<uint32, TextureInfoPtrMap> TextureInfoGroupPtrMap;
 
 
-    struct engineExport ShaderInfo
+    struct engineExport ShaderProgramInfo
     {
-        ShaderInfo();
-        ShaderInfo(const String& _nameShader,
-                   const String& _pathShader,
-                   FShaderType _typeShader);
-        ~ShaderInfo();
+        ShaderProgramInfo();
+        ShaderProgramInfo(const String& _nameShaderProgram,
+                          const String& _pathShaderProgram,
+                          FShaderType _typeShader);
+        ~ShaderProgramInfo();
 
         uint32 group;
-        String nameShader;
-        String pathShader;
+        String nameShaderProgram;
+        String pathShaderProgram;
         FShaderType typeShader;
 
     };
-    typedef std::vector<ShaderInfo*> ShaderInfoPtrVector;
-    typedef std::map<String, ShaderInfo*> ShaderInfoPtrMap;
-    typedef std::map<uint32, ShaderInfoPtrMap> ShaderInfoGroupPtrMap;
-
-    struct engineExport ShaderModuleInfo
-    {
-        String nameShader;
-        String nameShaderType;
-        String pathShader;
-    };
-    typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
+    typedef std::vector<ShaderProgramInfo*> ShaderProgramInfoPtrVector;
+    typedef std::map<String, ShaderProgramInfo*> ShaderProgramInfoPtrMap;
+    typedef std::map<uint32, ShaderProgramInfoPtrMap> ShaderProgramInfoGroupPtrMap;
 
 
     struct engineExport MaterialInfo
@@ -749,7 +741,7 @@ namespace LostPeterEngine
     class RenderStateLighting;
     class RenderStateParam;
     class RenderStateTexture;
-    class RenderStateShaderItem;
+    class RenderStateShaderProgramItem;
     class RenderStateShader;
     class RenderState;
     class ResourceManualLoader;
@@ -778,11 +770,12 @@ namespace LostPeterEngine
     class ShaderConstantAutoDefinition;
     class ShaderParamDefine;
     class ShaderProgram;
+    class ShaderProgramManager;
     class ShaderProgramGroup;
     class ShaderProgramGroupManager;
+    class ShaderProgramSerializer;
     class Shader;
     class ShaderManager;
-    class ShaderSerializer;
     class Stream;
 	class StreamIndex;
 	class StreamIndexSystem;
@@ -821,6 +814,10 @@ namespace LostPeterEngine
     typedef std::map<String, Texture*> TexturePtrMap;
     typedef std::map<uint32, TexturePtrMap> TextureGroupPtrMap;
     typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
+
+    typedef std::vector<ShaderProgram*> ShaderProgramPtrVector;
+    typedef std::map<String, ShaderProgram*> ShaderProgramPtrMap;
+    typedef std::map<uint32, ShaderProgramPtrMap> ShaderProgramGroupPtrMap;
 
     typedef std::vector<Shader*> ShaderPtrVector;
     typedef std::map<String, Shader*> ShaderPtrMap;
@@ -869,8 +866,8 @@ namespace LostPeterEngine
     typedef std::map<String, RenderStateParam*> RenderStateParamPtrMap;
     typedef std::vector<RenderStateTexture*> RenderStateTexturePtrVector;
     typedef std::map<String, RenderStateTexture*> RenderStateTexturePtrMap;
-    typedef std::vector<RenderStateShaderItem*> RenderStateShaderItemPtrVector;
-    typedef std::map<String, RenderStateShaderItem*> RenderStateShaderItemPtrMap;
+    typedef std::vector<RenderStateShaderProgramItem*> RenderStateShaderProgramItemPtrVector;
+    typedef std::map<String, RenderStateShaderProgramItem*> RenderStateShaderProgramItemPtrMap;
     typedef std::vector<RenderStateShader*> RenderStateShaderPtrVector;
     typedef std::map<String, RenderStateShader*> RenderStateShaderPtrMap;
     typedef std::vector<RenderState*> RenderStatePtrVector;

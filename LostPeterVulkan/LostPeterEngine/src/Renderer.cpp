@@ -14,6 +14,9 @@
 #include "../include/VertexDeclarationManager.h"
 #include "../include/StreamVertexBindingManager.h"
 #include "../include/StreamManager.h"
+#include "../include/ShaderProgramManager.h"
+#include "../include/ShaderProgramGroupManager.h"
+#include "../include/ShaderManager.h"
 #include "../include/TextureManager.h"
 #include "../include/RenderPassManager.h"
 #include "../include/RenderTargetManager.h"
@@ -31,6 +34,9 @@ namespace LostPeterEngine
 		, m_pRenderCapabilities(nullptr)
 		, m_pVertexDeclarationManager(nullptr)
 		, m_pStreamManager(nullptr)
+		, m_pShaderProgramManager(nullptr)
+		, m_pShaderProgramGroupManager(nullptr)
+		, m_pShaderManager(nullptr)
 		, m_pTextureManager(nullptr)
         , m_pActiveRenderWindow(nullptr)
         , m_pActiveRenderTarget(nullptr)
@@ -46,6 +52,8 @@ namespace LostPeterEngine
 		, m_nCurHeight(0)
     {
 		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
+		m_pShaderProgramGroupManager = new ShaderProgramGroupManager();
+		m_pShaderManager = new ShaderManager();
 		m_pRenderPassManager = new RenderPassManager();
         m_pRenderTargetManager = new RenderTargetManager(this);
     }
@@ -57,13 +65,16 @@ namespace LostPeterEngine
 
     void Renderer::Destroy()
     {
-		F_DELETE(m_pRenderCapabilities)
-		F_DELETE(m_pVertexDeclarationManager)
-		F_DELETE(m_pVertexStreamBindingManager)
-		F_DELETE(m_pStreamManager)
-		F_DELETE(m_pTextureManager)
 		F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pRenderTargetManager)
+		F_DELETE(m_pTextureManager)
+		F_DELETE(m_pShaderManager)
+		F_DELETE(m_pShaderProgramGroupManager)
+		F_DELETE(m_pShaderProgramManager)
+		F_DELETE(m_pStreamManager)
+		F_DELETE(m_pVertexStreamBindingManager)
+		F_DELETE(m_pVertexDeclarationManager)
+		F_DELETE(m_pRenderCapabilities)
     }
 
 	RenderTarget* Renderer::GetRenderTarget(const String& strName)

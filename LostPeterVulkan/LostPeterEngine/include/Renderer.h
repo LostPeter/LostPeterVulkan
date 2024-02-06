@@ -29,6 +29,9 @@ namespace LostPeterEngine
 		VertexDeclarationManager* m_pVertexDeclarationManager;
 		StreamVertexBindingManager* m_pVertexStreamBindingManager;
 		StreamManager* m_pStreamManager;
+		ShaderProgramManager* m_pShaderProgramManager;
+		ShaderProgramGroupManager* m_pShaderProgramGroupManager;
+		ShaderManager* m_pShaderManager;
 		TextureManager* m_pTextureManager;
 		RenderPassManager* m_pRenderPassManager;
         RenderTargetManager* m_pRenderTargetManager;
