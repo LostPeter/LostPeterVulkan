@@ -55,6 +55,7 @@ namespace LostPeterPluginRendererVulkan
         VulkanFrameBufferManager* m_pFrameBufferManager;
         VulkanDescriptorSetLayoutManager* m_pDescriptorSetLayoutManager;
         VulkanDescriptorSetManager* m_pDescriptorSetManager;
+        VulkanShaderModuleManager* m_pShaderModuleManager;
 
         VkDescriptorPool m_vkDescriptorPool;
         VkDescriptorPool m_vkDescriptorPool_ImGUI;
@@ -90,6 +91,7 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VulkanFrameBufferManager* GetFrameBufferManager() const { return m_pFrameBufferManager; }
         F_FORCEINLINE VulkanDescriptorSetLayoutManager* GetDescriptorSetLayoutManager() const { return m_pDescriptorSetLayoutManager; }
         F_FORCEINLINE VulkanDescriptorSetManager* GetDescriptorSetManager() const { return m_pDescriptorSetManager; }
+        F_FORCEINLINE VulkanShaderModuleManager* GetShaderModuleManager() const { return m_pShaderModuleManager; }  
         
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool() const { return m_vkDescriptorPool; }
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool_ImGUI() const { return m_vkDescriptorPool_ImGUI; }
@@ -663,7 +665,7 @@ namespace LostPeterPluginRendererVulkan
 
 
         //////////////////// VkShaderModule /////////////////
-        bool CreateVkShaderModule(FShaderType typeShader, 
+        bool CreateVkShaderModule(FShaderType eShader, 
                                   const String& pathFile,
                                   VkShaderModule& vkShaderModule);
         bool CreateVkShaderModule(const String& strTypeShader, 

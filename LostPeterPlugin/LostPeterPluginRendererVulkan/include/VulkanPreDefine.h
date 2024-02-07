@@ -184,6 +184,8 @@ namespace LostPeterPluginRendererVulkan
     class VulkanRenderTexture;
     class VulkanRenderWindow;
 	class VulkanSemaphore;
+    class VulkanShaderModule;
+    class VulkanShaderModuleManager;
     class VulkanShaderProgram;
     class VulkanShaderProgramManager;
     class VulkanStreamIndex;
@@ -221,6 +223,9 @@ namespace LostPeterPluginRendererVulkan
     typedef std::map<String, VulkanRenderPass*> VulkanRenderPassPtrMap;
     typedef std::vector<VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrVector;
     typedef std::map<String, VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrMap;
+
+     typedef std::vector<VulkanShaderModule*> VulkanShaderModulePtrVector;
+    typedef std::map<String, VulkanShaderModule*> VulkanShaderModulePtrMap;
 
     typedef std::vector<VulkanViewport*> VulkanViewportPtrVector;
     

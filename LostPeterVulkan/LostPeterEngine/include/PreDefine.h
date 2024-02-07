@@ -601,13 +601,13 @@ namespace LostPeterEngine
         ShaderProgramInfo();
         ShaderProgramInfo(const String& _nameShaderProgram,
                           const String& _pathShaderProgram,
-                          FShaderType _typeShader);
+                          FShaderType _eShader);
         ~ShaderProgramInfo();
 
         uint32 group;
         String nameShaderProgram;
         String pathShaderProgram;
-        FShaderType typeShader;
+        FShaderType eShader;
 
     };
     typedef std::vector<ShaderProgramInfo*> ShaderProgramInfoPtrVector;

@@ -444,17 +444,17 @@ namespace LostPeterEngine
         : group(0)
         , nameShaderProgram("")
         , pathShaderProgram("")
-        , typeShader(F_Shader_Vertex)
+        , eShader(F_Shader_Vertex)
     {
 
     }
     ShaderProgramInfo::ShaderProgramInfo(const String& _nameShaderProgram,
                                          const String& _pathShaderProgram,
-                                         FShaderType _typeShader)
+                                         FShaderType _eShader)
         : group(0)
         , nameShaderProgram(_nameShaderProgram)
         , pathShaderProgram(_pathShaderProgram)
-        , typeShader(_typeShader)
+        , eShader(_eShader)
     {
 
     }

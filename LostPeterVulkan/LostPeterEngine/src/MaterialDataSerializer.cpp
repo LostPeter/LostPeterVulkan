@@ -414,7 +414,7 @@ namespace LostPeterEngine
                 
                 //Shader Type
                 const String& nameShaderType = pElemShaderItem->GetName();  
-                FShaderType typeShader = F_ParseShaderType(nameShaderType);
+                FShaderType eShader = F_ParseShaderType(nameShaderType);
 
                 //ShaderProgram Name
                 String nameShaderProgram;
@@ -424,7 +424,7 @@ namespace LostPeterEngine
                     return false;
                 }
 
-                RenderStateShaderProgramItem* pSSItem = new RenderStateShaderProgramItem(nameShaderProgram, typeShader);
+                RenderStateShaderProgramItem* pSSItem = new RenderStateShaderProgramItem(nameShaderProgram, eShader);
                 if (!pSSItem->LoadShaderProgram())
                 {
                     F_DELETE(pSSItem)

@@ -22,6 +22,7 @@
 #include "../include/VulkanFrameBufferManager.h"
 #include "../include/VulkanDescriptorSetLayoutManager.h"
 #include "../include/VulkanDescriptorSetManager.h"
+#include "../include/VulkanShaderModuleManager.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -44,6 +45,7 @@ namespace LostPeterPluginRendererVulkan
         , m_pFrameBufferManager(nullptr)
         , m_pDescriptorSetLayoutManager(nullptr)
         , m_pDescriptorSetManager(nullptr)
+        , m_pShaderModuleManager(nullptr)
         , m_vkDescriptorPool(VK_NULL_HANDLE)
         , m_vkDescriptorPool_ImGUI(VK_NULL_HANDLE)
     {
@@ -65,13 +67,12 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanDevice::Destroy()
     {
-
-
         m_pQueuePresent = nullptr;
         F_DELETE(m_pQueueTransfer)
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
+        F_DELETE(m_pShaderModuleManager)
         F_DELETE(m_pDescriptorSetManager)
         F_DELETE(m_pDescriptorSetLayoutManager)
         F_DELETE(m_pFrameBufferManager)
@@ -122,6 +123,7 @@ namespace LostPeterPluginRendererVulkan
         m_pFrameBufferManager = new VulkanFrameBufferManager(this);
         m_pDescriptorSetLayoutManager = new VulkanDescriptorSetLayoutManager(this);
         m_pDescriptorSetManager = new VulkanDescriptorSetManager(this);
+        m_pShaderModuleManager = new VulkanShaderModuleManager(this);
 
         //5> 
 
@@ -3145,11 +3147,11 @@ namespace LostPeterPluginRendererVulkan
     }
 
     //////////////////// VkShaderModule /////////////////
-    bool VulkanDevice::CreateVkShaderModule(FShaderType typeShader, 
+    bool VulkanDevice::CreateVkShaderModule(FShaderType eShader, 
                                             const String& pathFile,
                                             VkShaderModule& vkShaderModule)
     {
-        const String& strTypeShader = F_GetShaderTypeName(typeShader);
+        const String& strTypeShader = F_GetShaderTypeName(eShader);
         return CreateVkShaderModule(strTypeShader, 
                                     pathFile,
                                     vkShaderModule);

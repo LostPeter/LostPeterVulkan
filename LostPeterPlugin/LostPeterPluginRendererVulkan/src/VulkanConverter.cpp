@@ -294,11 +294,11 @@ namespace LostPeterPluginRendererVulkan
         {
             for (size_t i = 0; i < count; i++)
             {
-                FShaderType typeShader = (FShaderType)aShaderTypes[i];
+                FShaderType eShader = (FShaderType)aShaderTypes[i];
                 if (i ==0)
-                    bits = Transform2VkShaderStageFlagBits(typeShader);
+                    bits = Transform2VkShaderStageFlagBits(eShader);
                 else
-                    bits = bits | Transform2VkShaderStageFlagBits(typeShader);
+                    bits = bits | Transform2VkShaderStageFlagBits(eShader);
             }
             return (VkShaderStageFlagBits)bits;
         }

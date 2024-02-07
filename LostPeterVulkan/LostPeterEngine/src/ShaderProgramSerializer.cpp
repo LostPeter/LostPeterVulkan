@@ -149,11 +149,11 @@ namespace LostPeterEngine
                 F_LogError("*********************** ShaderProgramSerializer::deserializeXML: Can not find attribute: 'type', shader program index: [%d] !", i);
                 continue;
             }
-            FShaderType typeShader = F_ParseShaderType(strType);
+            FShaderType eShader = F_ParseShaderType(strType);
 
             ShaderProgramInfo* pShaderProgramInfo = new ShaderProgramInfo(strNameShaderProgram,
                                                                           strPathShaderProgram,
-                                                                          typeShader);
+                                                                          eShader);
             if (AddShaderProgramInfo(pShaderProgramInfo))
             {
                 F_LogInfo("ShaderProgramSerializer::deserializeXML: Add shader program info success, [%s]-[%s]-[%s] !",

@@ -43,6 +43,8 @@
 #include "../include/VulkanRenderTexture.h"
 #include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanSemaphore.h"
+#include "../include/VulkanShaderModule.h"
+#include "../include/VulkanShaderModuleManager.h"
 #include "../include/VulkanShaderProgram.h"
 #include "../include/VulkanShaderProgramManager.h"
 #include "../include/VulkanStreamIndex.h"
