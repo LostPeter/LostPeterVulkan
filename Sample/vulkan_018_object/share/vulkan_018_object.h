@@ -28,8 +28,11 @@ public:
 
 protected:
     virtual void loadShaders();
+        ShaderProgram* loadShader(uint nGroup, const String& strNameShaderProgram);
     virtual void loadMeshes();
+        Mesh* loadMesh(uint nGroup, const String& strNameMesh);
     virtual void loadTextures();
+        Texture* loadTexture(uint nGroup, const String& strNameTexture, bool bIsArray);
     virtual void loadMaterials();
 
 };

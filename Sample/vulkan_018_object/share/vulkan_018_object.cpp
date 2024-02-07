@@ -33,10 +33,42 @@ void Vulkan_018_Object::loadShaders()
 {
     F_LogInfo("++++++++++ Vulkan_018_Object::loadShaders: Load shader test start !");
     {
+        uint nGroup = 4000;
 
+        //4000 - vert_default
+        ShaderProgram* pSP_VertDefault = loadShader(nGroup, "vert_default");
+
+        //4000 - frag_default
+        ShaderProgram* pSP_FragDefault = loadShader(nGroup, "frag_default");
+
+        //4000 - vert_default_opaque
+        ShaderProgram* pSP_VertDefaultOpaque = loadShader(nGroup, "vert_default_opaque");
+
+        //4000 - frag_default_opaque
+        ShaderProgram* pSP_FragDefaultOpaque = loadShader(nGroup, "frag_default_opaque");
+
+        //4000 - vert_default_transparent
+        ShaderProgram* pSP_VertDefaultTransparent = loadShader(nGroup, "vert_default_transparent");
+
+        //4000 - frag_default_transparent
+        ShaderProgram* pSP_FragDefaultTransparent = loadShader(nGroup, "frag_default_transparent");
     }
     F_LogInfo("---------- Vulkan_018_Object::loadShaders: Load shader test end !");
 }
+    ShaderProgram* Vulkan_018_Object::loadShader(uint nGroup, const String& strNameShaderProgram)
+    {
+        ShaderProgram* pShaderProgram = ShaderProgramManager::GetSingleton().LoadShaderProgram(nGroup, strNameShaderProgram);
+        if (pShaderProgram == nullptr)
+        {
+            F_LogError("*********************** Vulkan_018_Object::loadShader: Load shader program failed, group: [%u], name: [%s] !", nGroup, strNameShaderProgram.c_str());
+            return nullptr;
+        }
+        F_LogInfo("Vulkan_018_Object::loadShader: Load shader program success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
+                  nGroup, strNameShaderProgram.c_str(), pShaderProgram->GetPath().c_str(), 
+                  F_GetShaderTypeName(pShaderProgram->GetShaderType()).c_str());
+        return pShaderProgram;
+    }
+
 void Vulkan_018_Object::loadMeshes()
 {
     F_LogInfo("++++++++++ Vulkan_018_Object::loadMeshes: Load mesh test start !");
@@ -45,77 +77,65 @@ void Vulkan_018_Object::loadMeshes()
     }
     F_LogInfo("---------- Vulkan_018_Object::loadMeshes: Load mesh test end !");
 }
+    Mesh* Vulkan_018_Object::loadMesh(uint nGroup, const String& strNameMesh)
+    {
+        return nullptr;
+    }
+
 void Vulkan_018_Object::loadTextures()
 {
     F_LogInfo("++++++++++ Vulkan_018_Object::loadTextures: Load texture test start !");
     {
-        // 6001 - default_blackwhite
+        //6001 - default_blackwhite
         uint nGroup = 6001;
         String strNameTexture = "default_blackwhite";
-        Texture* pTexture1 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        if (pTexture1 == nullptr)
-        {
-            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-            return;
-        }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
-                  nGroup, strNameTexture.c_str(), pTexture1->GetPath().at(0).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture1->GetPixelFormatDesired()).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture1->GetPixelFormatSrc()).c_str());
+        Texture* pTexture1 = loadTexture(nGroup, strNameTexture, false);
 
-        // 6002 - mountain_diffuse
+        //6002 - mountain_diffuse
         nGroup = 6002;
         strNameTexture = "mountain_diffuse";
-        Texture* pTexture2 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        if (pTexture2 == nullptr)
-        {
-            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-            return;
-        }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
-                  nGroup, strNameTexture.c_str(), pTexture2->GetPath().at(0).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture2->GetPixelFormatDesired()).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture2->GetPixelFormatSrc()).c_str());
+        Texture* pTexture2 = loadTexture(nGroup, strNameTexture, false);
 
         //6004 - texture_terrain_diffuse
         nGroup = 6004;
         strNameTexture = "texture_terrain_diffuse";
-        Texture* pTexture3 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        if (pTexture3 == nullptr)
-        {
-            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-            return;
-        }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
-                  nGroup, strNameTexture.c_str(), 
-                  pTexture3->GetPath().at(0).c_str(), 
-                  pTexture3->GetPath().at(1).c_str(),
-                  pTexture3->GetPath().at(2).c_str(),
-                  pTexture3->GetPath().at(3).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture3->GetPixelFormatDesired()).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture3->GetPixelFormatSrc()).c_str());
+        Texture* pTexture3 = loadTexture(nGroup, strNameTexture, true);
 
         //6006 - texturecubemap
         nGroup = 6006;
         strNameTexture = "texturecubemap";
-        Texture* pTexture4 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        if (pTexture4 == nullptr)
-        {
-            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-            return;
-        }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
-                  nGroup, strNameTexture.c_str(),
-                  pTexture4->GetPath().at(0).c_str(), 
-                  pTexture4->GetPath().at(1).c_str(),
-                  pTexture4->GetPath().at(2).c_str(),
-                  pTexture4->GetPath().at(3).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture4->GetPixelFormatDesired()).c_str(),
-                  FPixelFormat::GetPixelFormatName(pTexture4->GetPixelFormatSrc()).c_str());
-
+        Texture* pTexture4 = loadTexture(nGroup, strNameTexture, true);
     }
     F_LogInfo("---------- Vulkan_018_Object::loadTextures: Load texture test end !");
 }
+    Texture* Vulkan_018_Object::loadTexture(uint nGroup, const String& strNameTexture, bool bIsArray)
+    {
+        Texture* pTexture = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
+        if (pTexture == nullptr)
+        {
+            F_LogError("*********************** Vulkan_018_Object::loadTexture: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+            return nullptr;
+        }
+        if (bIsArray)
+        {
+            F_LogInfo("Vulkan_018_Object::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
+                      nGroup, strNameTexture.c_str(),
+                      pTexture->GetPath().at(0).c_str(), 
+                      pTexture->GetPath().at(1).c_str(),
+                      pTexture->GetPath().at(2).c_str(),
+                      pTexture->GetPath().at(3).c_str(),
+                      FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatDesired()).c_str(),
+                      FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatSrc()).c_str());
+        }
+        else
+        {
+            F_LogInfo("Vulkan_018_Object::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
+                      nGroup, strNameTexture.c_str(), pTexture->GetPath().at(0).c_str(),
+                      FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatDesired()).c_str(),
+                      FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatSrc()).c_str());
+        }
+        return pTexture;
+    }
 void Vulkan_018_Object::loadMaterials()
 {
     F_LogInfo("++++++++++ Vulkan_018_Object::loadMaterials: Load material test start !");
