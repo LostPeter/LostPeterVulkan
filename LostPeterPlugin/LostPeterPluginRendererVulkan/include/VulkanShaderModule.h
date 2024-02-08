@@ -16,10 +16,14 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanShaderModule : public Base
+    class VulkanShaderModule : public Base 
+                             , public FNonCopyable
     {
-    public:
+        friend class VulkanShaderModuleManager;
+
+    private:
         VulkanShaderModule(const String& nameShaderModule, VulkanDevice* pDevice);
+    public:
         ~VulkanShaderModule();
 
     public:

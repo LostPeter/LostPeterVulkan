@@ -42,6 +42,7 @@ namespace LostPeterEngine
 
     public:
         ShaderProgram* LoadShaderProgram(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+        void UnloadShaderProgram(ShaderProgram* pShaderProgram);
 
         bool HasShaderProgram(const String& strName);
         bool HasShaderProgram(const String& strName, const String& strGroupName);
@@ -52,7 +53,29 @@ namespace LostPeterEngine
         ShaderProgram* loadShaderProgram(ShaderProgramInfo* pSPI);
 
     public:
-		
+		virtual ResourceCreateOrRetrieveResult CreateOrRetrieveShaderProgram(const String& strPath,
+                                                                             uint32 nGroup, 
+                                                                             const String& strName, 
+                                                                             const String& strGroupName, 
+                                                                             bool bIsManualLoad = false,
+                                                                             ResourceManualLoader* pManualLoader = nullptr, 
+                                                                             const NameValuePairMap* pLoadParams = nullptr,
+                                                                             FShaderType eShader = F_Shader_Vertex);
+
+    public:
+        virtual ShaderProgram* Prepare(const String& strPath,
+                                       uint32 nGroup, 
+                                       const String& strName, 
+                                       const String& strGroupName, 
+                                       FShaderType eShader);
+
+    public:
+        virtual ShaderProgram* CreateShaderProgram(const String& strPath,
+                                                   uint32 nGroup, 
+                                                   const String& strName, 
+                                                   const String& strGroupName, 
+                                                   FShaderType eShader);
+
     };
 
 }; //LostPeterEngine

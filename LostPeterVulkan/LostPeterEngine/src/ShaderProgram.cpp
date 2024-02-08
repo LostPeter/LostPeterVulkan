@@ -31,6 +31,7 @@ namespace LostPeterEngine
 				   pResourceManualLoader)
         , m_strPath("")
         , m_eShader(F_Shader_Vertex)
+        , m_bInternalResourcesCreated(false)
     {
         if (createParameterDictionary(ms_nameProgramShader))
 		{
@@ -55,12 +56,12 @@ namespace LostPeterEngine
 
     void ShaderProgram::loadImpl()
     {
-
+        createInternalResources();
     }
 
     void ShaderProgram::unloadImpl()
     {
-
+        destroyInternalResources();
     }
 
     uint32 ShaderProgram::calculateSize() const
@@ -71,13 +72,33 @@ namespace LostPeterEngine
 
     void ShaderProgram::destroyInternalResources()
     {
+        if (m_bInternalResourcesCreated)
+		{
+			destroyInternalResourcesImpl();
+			m_bInternalResourcesCreated = false;
 
+			if (m_eResourceLoading.load() != E_ResourceLoading_Unloading)
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Unloaded);
+                _FireUnloadingComplete();
+            }
+		}
     }
 
     bool ShaderProgram::createInternalResources()
     {
+        if (!m_bInternalResourcesCreated)
+		{
+			createInternalResourcesImpl();
+			m_bInternalResourcesCreated = true;
 
-        return true;
+			if (!IsLoading())
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Loaded);
+                _FireLoadingComplete(false);
+            }
+		}
+		return true;
     }
 
 }; //LostPeterEngine

@@ -17,9 +17,13 @@
 namespace LostPeterPluginRendererVulkan
 {
     class VulkanFrameBuffer : public Base
+                            , public FNonCopyable
     {
-    public:
+        friend class VulkanFrameBufferManager;
+
+    private:
         VulkanFrameBuffer(const String& nameFrameBuffer, VulkanDevice* pDevice);
+    public:
         ~VulkanFrameBuffer();
 
     public:

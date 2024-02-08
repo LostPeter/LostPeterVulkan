@@ -18,9 +18,11 @@ namespace LostPeterPluginRendererVulkan
 {
     class VulkanRenderPassDescriptor : public RenderPassDescriptor
     {
+        friend class VulkanRenderPassDescriptorManager;
+
+    private:
+        VulkanRenderPassDescriptor(const String& nameRenderPassDescriptor, VulkanDevice* pDevice);
     public:
-        VulkanRenderPassDescriptor(const String& nameRenderPassDescriptor, 
-                                   VulkanDevice* pDevice);
         virtual ~VulkanRenderPassDescriptor();
 
     public:

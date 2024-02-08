@@ -16,12 +16,13 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanFence
+    class VulkanFence : public FNonCopyable
     {
         friend class VulkanFenceManager;
 
-    public:
+    private:
         VulkanFence(VulkanFenceManager* pFenceManager, bool bCreateSignaled);
+    public:
         ~VulkanFence();
 
     public:

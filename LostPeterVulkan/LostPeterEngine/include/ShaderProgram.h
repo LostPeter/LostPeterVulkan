@@ -48,6 +48,8 @@ namespace LostPeterEngine
         bool m_bHasCompileError;
         bool m_bIsLoadedManualNamedConstants;
 
+        bool m_bInternalResourcesCreated;
+
     public:
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }
 		F_FORCEINLINE void SetPath(const String& strPath) { m_strPath = strPath; }

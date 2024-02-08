@@ -72,7 +72,11 @@ namespace LostPeterEngine
             return nullptr;
 
         ShaderProgram* pShaderProgram = GetShaderProgram(strName, strGroupName);
-        if (pShaderProgram == nullptr)
+        if (pShaderProgram != nullptr)
+        {
+            pShaderProgram->AddRef();
+        }
+        else
         {
             ShaderProgramInfo* pShaderProgramInfo = m_pShaderProgramSerializer->GetShaderProgramInfo(nGroup, strName);
             if (pShaderProgramInfo == nullptr)
@@ -80,18 +84,33 @@ namespace LostPeterEngine
                 F_LogError("*********************** ShaderProgramManager::LoadShaderProgram: Can not find shader program info, group: [%u], name: [%s] !", nGroup, strName.c_str());
                 return nullptr;
             }
-            if (!loadShaderProgram(pShaderProgramInfo))
+            pShaderProgram = loadShaderProgram(pShaderProgramInfo);
+            if (!pShaderProgram)
             {
                 return nullptr;
             }
         }
-        pShaderProgram->AddRef();
         return pShaderProgram;
     }
-    ShaderProgram* ShaderProgramManager::loadShaderProgram(ShaderProgramInfo* pSPI)
+        ShaderProgram* ShaderProgramManager::loadShaderProgram(ShaderProgramInfo* pSPI)
+        {
+            ShaderProgram* pShaderProgram = CreateShaderProgram(pSPI->pathShaderProgram,
+                                                                pSPI->group,
+                                                                pSPI->nameShaderProgram,
+                                                                ResourceGroupManager::ms_strNameResourceGroup_Internal,
+                                                                pSPI->eShader);
+            if (!pShaderProgram)
+            {
+                F_LogError("*********************** ShaderProgramManager::loadShaderProgram: CreateShaderProgram failed, group: [%u], name: [%s] !", pSPI->group, pSPI->nameShaderProgram.c_str());
+                return nullptr;
+            }
+            return pShaderProgram;
+        }
+    void ShaderProgramManager::UnloadShaderProgram(ShaderProgram* pShaderProgram)
     {
-        
-        return nullptr;
+        if (!pShaderProgram)
+            return;
+        Delete(pShaderProgram);
     }
 
     bool ShaderProgramManager::HasShaderProgram(const String& strName)
@@ -117,5 +136,77 @@ namespace LostPeterEngine
         return (ShaderProgram*)pResource;
     }
 
-    
+    ResourceCreateOrRetrieveResult ShaderProgramManager::CreateOrRetrieveShaderProgram(const String& strPath,
+                                                                                       uint32 nGroup, 
+                                                                                       const String& strName, 
+                                                                                       const String& strGroupName, 
+                                                                                       bool bIsManualLoad /*= false*/,
+                                                                                       ResourceManualLoader* pManualLoader /*= nullptr*/, 
+                                                                                       const NameValuePairMap* pLoadParams /*= nullptr*/,
+                                                                                       FShaderType eShader /*= F_Shader_Vertex*/)
+    {
+        ResourceCreateOrRetrieveResult result = ResourceManager::CreateOrRetrieve(nGroup,
+                                                                                  strName,
+                                                                                  strGroupName,
+                                                                                  bIsManualLoad,
+                                                                                  pManualLoader,
+                                                                                  pLoadParams);
+		if (!result.first || !result.second)
+		{
+            F_LogError("*********************** ShaderProgramManager::CreateOrRetrieveShaderProgram: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+			return result;
+		}
+
+        ShaderProgram* pShaderProgram = (ShaderProgram*)result.first;
+        pShaderProgram->SetPath(strPath);
+        pShaderProgram->SetShaderType(eShader);
+
+		return result;
+    }
+
+    ShaderProgram* ShaderProgramManager::Prepare(const String& strPath,
+                                                 uint32 nGroup, 
+                                                 const String& strName, 
+                                                 const String& strGroupName, 
+                                                 FShaderType eShader)
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveShaderProgram(strPath,
+                                                                              nGroup,
+                                                                              strName,
+                                                                              strGroupName,
+                                                                              false,
+                                                                              nullptr,
+                                                                              nullptr,
+                                                                              eShader);
+		ShaderProgram* pShaderProgram = (ShaderProgram*)result.first;
+        if (!pShaderProgram)
+            return nullptr;
+		pShaderProgram->Prepare();
+
+		return pShaderProgram;
+    }
+
+    ShaderProgram* ShaderProgramManager::CreateShaderProgram(const String& strPath,
+                                                             uint32 nGroup, 
+                                                             const String& strName, 
+                                                             const String& strGroupName, 
+                                                             FShaderType eShader)         
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveShaderProgram(strPath,
+                                                                              nGroup,
+                                                                              strName,
+                                                                              strGroupName,
+                                                                              false,
+                                                                              nullptr,
+                                                                              nullptr,
+                                                                              eShader);
+		ShaderProgram* pShaderProgram = (ShaderProgram*)result.first;
+        if (!pShaderProgram)
+            return nullptr;
+		pShaderProgram->Load();
+
+        pShaderProgram->AddRef();
+		return pShaderProgram;
+    }                                                                
+
 }; //LostPeterEngine

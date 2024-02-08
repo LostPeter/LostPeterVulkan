@@ -77,8 +77,11 @@ namespace LostPeterPluginRendererVulkan
     {
         VulkanShaderModule* pShaderModule = GetShaderModule(nameShaderModule);
         if (pShaderModule != nullptr)
+        {
+            pShaderModule->AddRef();
             return pShaderModule;
-        
+        }
+
         pShaderModule = new VulkanShaderModule(nameShaderModule, this->m_pDevice);
         if (!pShaderModule->Init(eShader,
                                  pathFile))
@@ -88,6 +91,7 @@ namespace LostPeterPluginRendererVulkan
             return nullptr;
         }
         AddShaderModule(pShaderModule);
+        pShaderModule->AddRef();
         return pShaderModule;
     }
     void VulkanShaderModuleManager::DeleteShaderModule(const String& strName)
@@ -98,11 +102,15 @@ namespace LostPeterPluginRendererVulkan
             return;
         }
 
-        VulkanShaderModulePtrVector::iterator itFindA = std::find(m_aShaderModule.begin(), m_aShaderModule.end(), itFind->second);
-        if (itFindA != m_aShaderModule.end())
-            m_aShaderModule.erase(itFindA);
-        F_DELETE(itFind->second)
-        m_mapShaderModule.erase(itFind);
+        itFind->second->DelRef();
+        if (itFind->second->CanDel())
+        {
+            VulkanShaderModulePtrVector::iterator itFindA = std::find(m_aShaderModule.begin(), m_aShaderModule.end(), itFind->second);
+            if (itFindA != m_aShaderModule.end())
+                m_aShaderModule.erase(itFindA);
+            F_DELETE(itFind->second)
+            m_mapShaderModule.erase(itFind);
+        }
     }
     void VulkanShaderModuleManager::DeleteShaderModule(VulkanShaderModule* pShaderModule)
     {

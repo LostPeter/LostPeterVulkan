@@ -13,6 +13,7 @@
 #define _VULKAN_SHADER_PROGRAM_H_
 
 #include "VulkanPreDefine.h"
+#include "VulkanShaderModule.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -34,9 +35,12 @@ namespace LostPeterPluginRendererVulkan
     public:
     protected:
         VulkanDevice* m_pDevice;
+        VulkanShaderModule* m_pShaderModule;
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE VulkanShaderModule* GetShaderModule() const { return m_pShaderModule; }
+        F_FORCEINLINE VkShaderModule GetVkShaderModule() const { return m_pShaderModule->GetVkShaderModule(); }
 
     public:
         virtual void Destroy();

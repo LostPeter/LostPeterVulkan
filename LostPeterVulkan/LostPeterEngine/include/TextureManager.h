@@ -108,7 +108,8 @@ namespace LostPeterEngine
 
     public:
         Texture* LoadTexture(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
-        
+        void UnloadTexture(Texture* pTexture);
+
         bool HasTexture(const String& strName);
         bool HasTexture(const String& strName, const String& strGroupName);
         Texture* GetTexture(const String& strName);

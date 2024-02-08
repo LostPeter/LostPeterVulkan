@@ -17,9 +17,13 @@
 namespace LostPeterPluginRendererVulkan
 {
     class VulkanRenderPass : public Base
+                           , public FNonCopyable
     {
-    public:
+        friend class VulkanRenderPassManager;
+
+    private:
         VulkanRenderPass(const String& nameRenderPass, VulkanDevice* pDevice);
+    public:
         ~VulkanRenderPass();
 
     public:

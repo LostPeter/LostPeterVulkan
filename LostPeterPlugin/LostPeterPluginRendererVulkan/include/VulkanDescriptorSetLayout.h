@@ -17,11 +17,13 @@
 namespace LostPeterPluginRendererVulkan
 {
     class VulkanDescriptorSetLayout : public Base
+                                    , public FNonCopyable
     {
         friend class VulkanDescriptorSetLayoutManager;
 
-    public:
+    private:
         VulkanDescriptorSetLayout(const String& strNameDescriptorSetLayout, VulkanDescriptorSetLayoutManager* pDescriptorSetLayoutManager);
+    public:
         ~VulkanDescriptorSetLayout();
 
     public:
