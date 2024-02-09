@@ -846,36 +846,78 @@ namespace LostPeterFoundation
     foundationExport FShaderPassType F_ParseShaderPassType(const String& strName);
 
 
+    enum FShaderParamConstantBaseType
+    {
+        F_ShaderParamConstantBase_Float = 0x00,         //0x00: Float
+        F_ShaderParamConstantBase_Int = 0x10,           //0x10: Int
+        F_ShaderParamConstantBase_Double = 0x20,        //0x20: Double
+        F_ShaderParamConstantBase_Uint = 0x30,          //0x30: Uint
+        F_ShaderParamConstantBase_Bool = 0x40,          //0x40: Bool 
+        F_ShaderParamConstantBase_Sampler = 0x50,       //0x50: Sampler
+        F_ShaderParamConstantBase_Specialization = 0x60,//0x60: Specialization
+        F_ShaderParamConstantBase_Unknown = 0x70,       //0x70: Unknown
+    };
+
     enum FShaderParamConstantType
     {
-        F_ShaderParamConstant_Float1 = 0,               //0:  Float1
-		F_ShaderParamConstant_Float2,                   //1:  Float2
-		F_ShaderParamConstant_Float3,                   //2:  Float3
-		F_ShaderParamConstant_Float4,                   //3:  Float4
-		F_ShaderParamConstant_Sampler1D,                //4:  Sampler1D
-		F_ShaderParamConstant_Sampler2D,                //5:  Sampler2D
-		F_ShaderParamConstant_Sampler3D,                //6:  Sampler3D
-		F_ShaderParamConstant_SamplerCube,              //7:  SamplerCube
-		F_ShaderParamConstant_Sampler1DShadow,          //8:  Sampler1DShadow
-		F_ShaderParamConstant_Sampler2DShadow,          //9:  Sampler2DShadow
-		F_ShaderParamConstant_Matrix_2X2,               //10: Matrix_2X2
-		F_ShaderParamConstant_Matrix_2X3,               //11: Matrix_2X3
-		F_ShaderParamConstant_Matrix_2X4,               //12: Matrix_2X4
-		F_ShaderParamConstant_Matrix_3X2,               //13: Matrix_3X2
-		F_ShaderParamConstant_Matrix_3X3,               //14: Matrix_3X3
-		F_ShaderParamConstant_Matrix_3X4,               //15: Matrix_3X4
-		F_ShaderParamConstant_Matrix_4X2,               //16: Matrix_4X2
-		F_ShaderParamConstant_Matrix_4X3,               //17: Matrix_4X3
-		F_ShaderParamConstant_Matrix_4X4,               //18: Matrix_4X4
-		F_ShaderParamConstant_Int1,                     //19: Int1
-		F_ShaderParamConstant_Int2,                     //20: Int2
-		F_ShaderParamConstant_Int3,                     //21: Int3
-		F_ShaderParamConstant_Int4,                     //22: Int4
-
-        F_ShaderParamConstant_Count,
+    ////Float
+        F_ShaderParamConstant_Float1 = F_ShaderParamConstantBase_Float + 1,                     //0:  Float1
+		F_ShaderParamConstant_Float2 = F_ShaderParamConstantBase_Float + 2,                     //1:  Float2
+		F_ShaderParamConstant_Float3 = F_ShaderParamConstantBase_Float + 3,                     //2:  Float3
+		F_ShaderParamConstant_Float4 = F_ShaderParamConstantBase_Float + 4,                     //3:  Float4
+		F_ShaderParamConstant_Matrix_2X2 = F_ShaderParamConstantBase_Float + 5,                 //4:  Matrix_2X2
+		F_ShaderParamConstant_Matrix_2X3 = F_ShaderParamConstantBase_Float + 6,                 //5:  Matrix_2X3
+		F_ShaderParamConstant_Matrix_2X4 = F_ShaderParamConstantBase_Float + 7,                 //6:  Matrix_2X4
+		F_ShaderParamConstant_Matrix_3X2 = F_ShaderParamConstantBase_Float + 8,                 //7:  Matrix_3X2
+		F_ShaderParamConstant_Matrix_3X3 = F_ShaderParamConstantBase_Float + 9,                 //8:  Matrix_3X3
+		F_ShaderParamConstant_Matrix_3X4 = F_ShaderParamConstantBase_Float + 10,                //9:  Matrix_3X4
+		F_ShaderParamConstant_Matrix_4X2 = F_ShaderParamConstantBase_Float + 11,                //10: Matrix_4X2
+		F_ShaderParamConstant_Matrix_4X3 = F_ShaderParamConstantBase_Float + 12,                //11: Matrix_4X3
+		F_ShaderParamConstant_Matrix_4X4 = F_ShaderParamConstantBase_Float + 13,                //12: Matrix_4X4
+    ////Int
+        F_ShaderParamConstant_Int1 = F_ShaderParamConstantBase_Int + 1,                         //13: Int1
+		F_ShaderParamConstant_Int2 = F_ShaderParamConstantBase_Int + 1,                         //14: Int2
+		F_ShaderParamConstant_Int3 = F_ShaderParamConstantBase_Int + 1,                         //15: Int3
+		F_ShaderParamConstant_Int4 = F_ShaderParamConstantBase_Int + 1,                         //16: Int4
+    ////Double
+        F_ShaderParamConstant_Double1 = F_ShaderParamConstantBase_Double + 1,                   //17: Double1
+        F_ShaderParamConstant_Double2 = F_ShaderParamConstantBase_Double + 2,                   //18: Double2
+        F_ShaderParamConstant_Double3 = F_ShaderParamConstantBase_Double + 3,                   //19: Double3
+        F_ShaderParamConstant_Double4 = F_ShaderParamConstantBase_Double + 4,                   //20: Double4
+        F_ShaderParamConstant_Matrix_Double_2X2 = F_ShaderParamConstantBase_Double + 5,         //21: Matrix_Double_2X2
+        F_ShaderParamConstant_Matrix_Double_2X3 = F_ShaderParamConstantBase_Double + 6,         //22: Matrix_Double_2X3
+        F_ShaderParamConstant_Matrix_Double_2X4 = F_ShaderParamConstantBase_Double + 7,         //23: Matrix_Double_2X4
+        F_ShaderParamConstant_Matrix_Double_3X2 = F_ShaderParamConstantBase_Double + 8,         //24: Matrix_Double_3X2
+        F_ShaderParamConstant_Matrix_Double_3X3 = F_ShaderParamConstantBase_Double + 9,         //25: Matrix_Double_3X3
+        F_ShaderParamConstant_Matrix_Double_3X4 = F_ShaderParamConstantBase_Double + 10,        //26: Matrix_Double_3X4
+        F_ShaderParamConstant_Matrix_Double_4X2 = F_ShaderParamConstantBase_Double + 11,        //27: Matrix_Double_4X2
+        F_ShaderParamConstant_Matrix_Double_4X3 = F_ShaderParamConstantBase_Double + 12,        //28: Matrix_Double_4X3
+        F_ShaderParamConstant_Matrix_Double_4X4 = F_ShaderParamConstantBase_Double + 13,        //29: Matrix_Double_4X4
+    ////Uint
+        F_ShaderParamConstant_Uint1 = F_ShaderParamConstantBase_Uint + 1,                       //30: Uint1
+        F_ShaderParamConstant_Uint2 = F_ShaderParamConstantBase_Uint + 2,                       //31: Uint2
+        F_ShaderParamConstant_Uint3 = F_ShaderParamConstantBase_Uint + 3,                       //32: Uint3
+        F_ShaderParamConstant_Uint4 = F_ShaderParamConstantBase_Uint + 4,                       //33: Uint4
+    ////Bool
+        F_ShaderParamConstant_Bool1 = F_ShaderParamConstantBase_Bool + 1,                       //34: Bool1
+        F_ShaderParamConstant_Bool2 = F_ShaderParamConstantBase_Bool + 2,                       //35: Bool2
+        F_ShaderParamConstant_Bool3 = F_ShaderParamConstantBase_Bool + 3,                       //36: Bool3
+        F_ShaderParamConstant_Bool4 = F_ShaderParamConstantBase_Bool + 4,                       //37: Bool4
+    ////Sampler
+        F_ShaderParamConstant_Sampler1D = F_ShaderParamConstantBase_Sampler + 1,                //38: Sampler1D
+		F_ShaderParamConstant_Sampler2D = F_ShaderParamConstantBase_Sampler + 2,                //39: Sampler2D
+		F_ShaderParamConstant_Sampler3D = F_ShaderParamConstantBase_Sampler + 3,                //40: Sampler3D
+		F_ShaderParamConstant_SamplerCube = F_ShaderParamConstantBase_Sampler + 4,              //41: SamplerCube
+		F_ShaderParamConstant_Sampler1DShadow = F_ShaderParamConstantBase_Sampler + 5,          //42: Sampler1DShadow
+		F_ShaderParamConstant_Sampler2DShadow = F_ShaderParamConstantBase_Sampler + 6,          //43: Sampler2DShadow
+        F_ShaderParamConstant_Sampler2DArray = F_ShaderParamConstantBase_Sampler + 7,           //44: Sampler2DArray
+        F_ShaderParamConstant_SamplerExternalOES = F_ShaderParamConstantBase_Sampler + 8,       //45: SamplerExternalOES
+	////Specialization
+        F_ShaderParamConstant_Specialization = F_ShaderParamConstantBase_Specialization,        //46: Specialization
+    ////Unknown
+        F_ShaderParamConstant_Unknown = F_ShaderParamConstantBase_Unknown,                      //47: Unknown
     };
     foundationExport const String& F_GetShaderParamConstantTypeName(FShaderParamConstantType type);
-    foundationExport const String& F_GetShaderParamConstantTypeName(int type);
     foundationExport FShaderParamConstantType F_ParseShaderParamConstantType(const String& strName);
 
 

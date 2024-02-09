@@ -496,44 +496,192 @@ namespace LostPeterFoundation
     //FShaderParamConstantType
     static String s_nameShaderParamConstantTypes[] = 
     {
-        "Float1",               //0:  Float1
-        "Float2",               //1:  Float2
-        "Float3",               //2:  Float3
-        "Float4",               //3:  Float4
-        "Sampler1D",            //4:  Sampler1D
-        "Sampler2D",            //5:  Sampler2D
-        "Sampler3D",            //6:  Sampler3D
-        "SamplerCube",          //7:  SamplerCube
-        "Sampler1DShadow",      //8:  Sampler1DShadow
-        "Sampler2DShadow",      //9:  Sampler2DShadow
-        "Matrix_2X2",           //10: Matrix_2X2
-        "Matrix_2X3",           //11: Matrix_2X3
-        "Matrix_2X4",           //12: Matrix_2X4
-        "Matrix_3X2",           //13: Matrix_3X2
-        "Matrix_3X3",           //14: Matrix_3X3
-        "Matrix_3X4",           //15: Matrix_3X4
-        "Matrix_4X2",           //16: Matrix_4X2
-        "Matrix_4X3",           //17: Matrix_4X3
-        "Matrix_4X4",           //18: Matrix_4X4
-        "Int1",                 //19: Int1
-        "Int2",                 //20: Int2
-        "Int3",                 //21: Int3
-        "Int4",                 //22: Int4
+    ////Float
+        "Float1",                     //0:  Float1
+		"Float2",                     //1:  Float2
+		"Float3",                     //2:  Float3
+		"Float4",                     //3:  Float4
+		"Matrix_2X2",                 //4:  Matrix_2X2
+		"Matrix_2X3",                 //5:  Matrix_2X3
+		"Matrix_2X4",                 //6:  Matrix_2X4
+		"Matrix_3X2",                 //7:  Matrix_3X2
+		"Matrix_3X3",                 //8:  Matrix_3X3
+		"Matrix_3X4",                 //9:  Matrix_3X4
+		"Matrix_4X2",                 //10: Matrix_4X2
+		"Matrix_4X3",                 //11: Matrix_4X3
+		"Matrix_4X4",                 //12: Matrix_4X4
+    ////Int
+        "Int1",                       //13: Int1
+		"Int2",                       //14: Int2
+		"Int3",                       //15: Int3
+		"Int4",                       //16: Int4
+    ////Double
+        "Double1",                    //17: Double1
+        "Double2",                    //18: Double2
+        "Double3",                    //19: Double3
+        "Double4",                    //20: Double4
+        "Matrix_Double_2X2",          //21: Matrix_Double_2X2
+        "Matrix_Double_2X3",          //22: Matrix_Double_2X3
+        "Matrix_Double_2X4",          //23: Matrix_Double_2X4
+        "Matrix_Double_3X2",          //24: Matrix_Double_3X2
+        "Matrix_Double_3X3",          //25: Matrix_Double_3X3
+        "Matrix_Double_3X4",          //26: Matrix_Double_3X4
+        "Matrix_Double_4X2",          //27: Matrix_Double_4X2
+        "Matrix_Double_4X3",          //28: Matrix_Double_4X3
+        "Matrix_Double_4X4",          //29: Matrix_Double_4X4
+    ////Uint
+        "Uint1",                      //30: Uint1
+        "Uint2",                      //31: Uint2
+        "Uint3",                      //32: Uint3
+        "Uint4",                      //33: Uint4
+    ////Bool
+        "Bool1",                      //34: Bool1
+        "Bool2",                      //35: Bool2
+        "Bool3",                      //36: Bool3
+        "Bool4",                      //37: Bool4
+    ////Sampler
+        "Sampler1D",                  //38: Sampler1D
+		"Sampler1D",                  //39: Sampler2D
+		"Sampler1D",                  //40: Sampler3D
+		"Sampler1D",                  //41: SamplerCube
+		"Sampler1D",                  //42: Sampler1DShadow
+		"Sampler1D",                  //43: Sampler2DShadow
+        "Sampler1D",                  //44: Sampler2DArray
+        "Sampler1D",                  //45: SamplerExternalOES
+	////Specialization
+        "Specialization",             //46: Specialization
+    ////Unknown
+        "Unknown",                    //47: Unknown
+    };
+    static std::map<FShaderParamConstantType, int> s_mapShaderParamConstantType2Index
+    {
+    ////Float
+        { F_ShaderParamConstant_Float1,                 0  },                 //0:  Float1
+		{ F_ShaderParamConstant_Float2,                 1  },                 //1:  Float2
+		{ F_ShaderParamConstant_Float3,                 2  },                 //2:  Float3
+		{ F_ShaderParamConstant_Float4,                 3  },                 //3:  Float4
+		{ F_ShaderParamConstant_Matrix_2X2,             4  },                 //4:  Matrix_2X2
+		{ F_ShaderParamConstant_Matrix_2X3,             5  },                 //5:  Matrix_2X3
+		{ F_ShaderParamConstant_Matrix_2X4 ,            6  },                 //6:  Matrix_2X4
+		{ F_ShaderParamConstant_Matrix_3X2,             7  },                 //7:  Matrix_3X2
+		{ F_ShaderParamConstant_Matrix_3X3,             8  },                 //8:  Matrix_3X3
+		{ F_ShaderParamConstant_Matrix_3X4,             9  },                 //9:  Matrix_3X4
+		{ F_ShaderParamConstant_Matrix_4X2,             10 },                 //10: Matrix_4X2
+		{ F_ShaderParamConstant_Matrix_4X3,             11 },                 //11: Matrix_4X3
+		{ F_ShaderParamConstant_Matrix_4X4 ,            12 },                 //12: Matrix_4X4
+    ////Int
+        { F_ShaderParamConstant_Int1,                   13 },                 //13: Int1
+		{ F_ShaderParamConstant_Int2,                   14 },                 //14: Int2
+		{ F_ShaderParamConstant_Int3,                   15 },                 //15: Int3
+		{ F_ShaderParamConstant_Int4,                   16 },                 //16: Int4
+    ////Double
+        { F_ShaderParamConstant_Double1,                17 },                 //17: Double1
+        { F_ShaderParamConstant_Double2,                18 },                 //18: Double2
+        { F_ShaderParamConstant_Double3,                19 },                 //19: Double3
+        { F_ShaderParamConstant_Double4,                20 },                 //20: Double4
+        { F_ShaderParamConstant_Matrix_Double_2X2,      21 },                 //21: Matrix_Double_2X2
+        { F_ShaderParamConstant_Matrix_Double_2X3,      22 },                 //22: Matrix_Double_2X3
+        { F_ShaderParamConstant_Matrix_Double_2X4,      23 },                 //23: Matrix_Double_2X4
+        { F_ShaderParamConstant_Matrix_Double_3X2,      24 },                 //24: Matrix_Double_3X2
+        { F_ShaderParamConstant_Matrix_Double_3X3,      25 },                 //25: Matrix_Double_3X3
+        { F_ShaderParamConstant_Matrix_Double_3X4,      26 },                 //26: Matrix_Double_3X4
+        { F_ShaderParamConstant_Matrix_Double_4X2,      27 },                 //27: Matrix_Double_4X2
+        { F_ShaderParamConstant_Matrix_Double_4X3,      28 },                 //28: Matrix_Double_4X3
+        { F_ShaderParamConstant_Matrix_Double_4X4,      29 },                 //29: Matrix_Double_4X4
+    ////Uint
+        { F_ShaderParamConstant_Uint1,                  30 },                 //30: Uint1
+        { F_ShaderParamConstant_Uint2,                  31 },                 //31: Uint2
+        { F_ShaderParamConstant_Uint3,                  32 },                 //32: Uint3
+        { F_ShaderParamConstant_Uint4,                  33 },                 //33: Uint4
+    ////Bool
+        { F_ShaderParamConstant_Bool1,                  34 },                 //34: Bool1
+        { F_ShaderParamConstant_Bool2,                  35 },                 //35: Bool2
+        { F_ShaderParamConstant_Bool3,                  36 },                 //36: Bool3
+        { F_ShaderParamConstant_Bool4,                  37 },                 //37: Bool4
+    ////Sampler
+        { F_ShaderParamConstant_Sampler1D,              38 },                 //38: Sampler1D
+		{ F_ShaderParamConstant_Sampler2D,              39 },                 //39: Sampler2D
+		{ F_ShaderParamConstant_Sampler3D,              40 },                 //40: Sampler3D
+		{ F_ShaderParamConstant_SamplerCube,            41 },                 //41: SamplerCube
+		{ F_ShaderParamConstant_Sampler1DShadow,        42 },                 //42: Sampler1DShadow
+		{ F_ShaderParamConstant_Sampler2DShadow,        43 },                 //43: Sampler2DShadow
+        { F_ShaderParamConstant_Sampler2DArray,         44 },                 //44: Sampler2DArray
+        { F_ShaderParamConstant_SamplerExternalOES,     45 },                 //45: SamplerExternalOES
+	////Specialization
+        { F_ShaderParamConstant_Specialization,         46 },                 //46: Specialization
+    ////Unknown
+        { F_ShaderParamConstant_Unknown,                47 },                 //47: Unknown
+    };
+    static std::map<int, FShaderParamConstantType> s_mapIndex2ShaderParamConstantType
+    {
+    ////Float
+        { 0,                F_ShaderParamConstant_Float1  },                  //0:  Float1
+		{ 1,                F_ShaderParamConstant_Float2  },                  //1:  Float2
+		{ 2,                F_ShaderParamConstant_Float3  },                  //2:  Float3
+		{ 3,                F_ShaderParamConstant_Float4  },                  //3:  Float4
+		{ 4,                F_ShaderParamConstant_Matrix_2X2  },              //4:  Matrix_2X2
+		{ 5,                F_ShaderParamConstant_Matrix_2X3  },              //5:  Matrix_2X3
+		{ 6,                F_ShaderParamConstant_Matrix_2X4  },              //6:  Matrix_2X4
+		{ 7,                F_ShaderParamConstant_Matrix_3X2  },              //7:  Matrix_3X2
+		{ 8,                F_ShaderParamConstant_Matrix_3X3  },              //8:  Matrix_3X3
+		{ 9,                F_ShaderParamConstant_Matrix_3X4  },              //9:  Matrix_3X4
+		{ 10,               F_ShaderParamConstant_Matrix_4X2  },              //10: Matrix_4X2
+		{ 11,               F_ShaderParamConstant_Matrix_4X3  },              //11: Matrix_4X3
+		{ 12,               F_ShaderParamConstant_Matrix_4X4  },              //12: Matrix_4X4
+    ////Int
+        { 13,               F_ShaderParamConstant_Int1  },                    //13: Int1
+		{ 14,               F_ShaderParamConstant_Int2  },                    //14: Int2
+		{ 15,               F_ShaderParamConstant_Int3  },                    //15: Int3
+		{ 16,               F_ShaderParamConstant_Int4  },                    //16: Int4
+    ////Double
+        { 17,               F_ShaderParamConstant_Double1  },                 //17: Double1
+        { 18,               F_ShaderParamConstant_Double2  },                 //18: Double2
+        { 19,               F_ShaderParamConstant_Double3  },                 //19: Double3
+        { 20,               F_ShaderParamConstant_Double4  },                 //20: Double4
+        { 21,               F_ShaderParamConstant_Matrix_Double_2X2  },       //21: Matrix_Double_2X2
+        { 22,               F_ShaderParamConstant_Matrix_Double_2X3  },       //22: Matrix_Double_2X3
+        { 23,               F_ShaderParamConstant_Matrix_Double_2X4  },       //23: Matrix_Double_2X4
+        { 24,               F_ShaderParamConstant_Matrix_Double_3X2  },       //24: Matrix_Double_3X2
+        { 25,               F_ShaderParamConstant_Matrix_Double_3X3  },       //25: Matrix_Double_3X3
+        { 26,               F_ShaderParamConstant_Matrix_Double_3X4  },       //26: Matrix_Double_3X4
+        { 27,               F_ShaderParamConstant_Matrix_Double_4X2  },       //27: Matrix_Double_4X2
+        { 28,               F_ShaderParamConstant_Matrix_Double_4X3  },       //28: Matrix_Double_4X3
+        { 29,               F_ShaderParamConstant_Matrix_Double_4X4  },       //29: Matrix_Double_4X4
+    ////Uint
+        { 30,               F_ShaderParamConstant_Uint1  },                   //30: Uint1
+        { 31,               F_ShaderParamConstant_Uint2  },                   //31: Uint2
+        { 32,               F_ShaderParamConstant_Uint3  },                   //32: Uint3
+        { 33,               F_ShaderParamConstant_Uint4  },                   //33: Uint4
+    ////Bool
+        { 34,               F_ShaderParamConstant_Bool1  },                   //34: Bool1
+        { 35,               F_ShaderParamConstant_Bool2  },                   //35: Bool2
+        { 36,               F_ShaderParamConstant_Bool3  },                   //36: Bool3
+        { 37,               F_ShaderParamConstant_Bool4  },                   //37: Bool4
+    ////Sampler
+        { 38,               F_ShaderParamConstant_Sampler1D  },               //38: Sampler1D
+		{ 39,               F_ShaderParamConstant_Sampler2D  },               //39: Sampler2D
+		{ 40,               F_ShaderParamConstant_Sampler3D  },               //40: Sampler3D
+		{ 41,               F_ShaderParamConstant_SamplerCube  },             //41: SamplerCube
+		{ 42,               F_ShaderParamConstant_Sampler1DShadow  },         //42: Sampler1DShadow
+		{ 43,               F_ShaderParamConstant_Sampler2DShadow  },         //43: Sampler2DShadow
+        { 44,               F_ShaderParamConstant_Sampler2DArray  },          //44: Sampler2DArray
+        { 45,               F_ShaderParamConstant_SamplerExternalOES  },      //45: SamplerExternalOES
+	////Specialization
+        { 46,               F_ShaderParamConstant_Specialization  },          //46: Specialization
+    ////Unknown
+        { 47,               F_ShaderParamConstant_Unknown  },                 //47: Unknown
     };
     const String& F_GetShaderParamConstantTypeName(FShaderParamConstantType type)
     {
-        return s_nameShaderParamConstantTypes[(int)type];
-    }
-    const String& F_GetShaderParamConstantTypeName(int type)
-    {
-        return s_nameShaderParamConstantTypes[type];
+        return s_nameShaderParamConstantTypes[s_mapShaderParamConstantType2Index[type]];
     }
     FShaderParamConstantType F_ParseShaderParamConstantType(const String& strName)
     {
-        for (int i = 0; i < (int)F_ShaderParamConstant_Count; i++)
+        int count = (int)s_mapIndex2ShaderParamConstantType.size();
+        for (int i = 0; i < (int)count; i++)
         {
             if (s_nameShaderParamConstantTypes[i] == strName)
-                return (FShaderParamConstantType)(i);
+                return s_mapIndex2ShaderParamConstantType[i];
         }
         F_Assert(false && "F_ParseShaderParamConstantType: Wrong type name !")
         return F_ShaderParamConstant_Float1;
