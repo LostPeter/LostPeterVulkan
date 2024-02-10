@@ -28,6 +28,7 @@ namespace LostPeterEngine
 
     protected:
         ShaderProgramSerializer* m_pShaderProgramSerializer;
+        ShaderProgramFactoryPtrMap m_mapShaderProgramFactory;
 
     public:
         F_FORCEINLINE ShaderProgramSerializer* GetShaderProgramSerializer() const { return m_pShaderProgramSerializer; }
@@ -39,6 +40,11 @@ namespace LostPeterEngine
     public:
         virtual void Destroy();
         bool Init(uint nGroup, const String& strNameCfg);
+
+        ShaderProgramFactory* GetShaderProgramFactory(const String& strShaderLanguage);
+        void AddShaderProgramFactory(ShaderProgramFactory* pShaderProgramFactory);
+        void RemoveShaderProgramFactory(ShaderProgramFactory* pShaderProgramFactory);
+        void RemoveShaderProgramFactoryAll();
 
     public:
         ShaderProgram* LoadShaderProgram(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);

@@ -30,7 +30,7 @@ namespace LostPeterPluginRendererVulkan
                             ResourceHandle nHandle,
                             bool bIsManualLoad = false,
                             ResourceManualLoader* pResourceManualLoader = nullptr);
-        ~VulkanShaderProgram();
+        virtual ~VulkanShaderProgram();
 
     public:
     protected:

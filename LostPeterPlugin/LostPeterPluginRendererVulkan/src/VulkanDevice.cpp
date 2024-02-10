@@ -20,9 +20,11 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanRenderPassManager.h"
 #include "../include/VulkanFrameBufferManager.h"
+#include "../include/VulkanShaderModuleManager.h"
+#include "../include/VulkanDescriptorPoolManager.h"
 #include "../include/VulkanDescriptorSetLayoutManager.h"
 #include "../include/VulkanDescriptorSetManager.h"
-#include "../include/VulkanShaderModuleManager.h"
+#include "../include/VulkanCommandPoolManager.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -43,9 +45,11 @@ namespace LostPeterPluginRendererVulkan
         , m_pFenceManager(nullptr)
         , m_pRenderPassManager(nullptr)
         , m_pFrameBufferManager(nullptr)
+        , m_pShaderModuleManager(nullptr)
+        , m_pDescriptorPoolManager(nullptr)
         , m_pDescriptorSetLayoutManager(nullptr)
         , m_pDescriptorSetManager(nullptr)
-        , m_pShaderModuleManager(nullptr)
+        , m_pCommandPoolManager(nullptr)
         , m_vkDescriptorPool(VK_NULL_HANDLE)
         , m_vkDescriptorPool_ImGUI(VK_NULL_HANDLE)
     {
@@ -72,9 +76,11 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
-        F_DELETE(m_pShaderModuleManager)
+        F_DELETE(m_pCommandPoolManager)
         F_DELETE(m_pDescriptorSetManager)
         F_DELETE(m_pDescriptorSetLayoutManager)
+        F_DELETE(m_pDescriptorPoolManager)
+        F_DELETE(m_pShaderModuleManager)
         F_DELETE(m_pFrameBufferManager)
         F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pFenceManager)
@@ -121,9 +127,11 @@ namespace LostPeterPluginRendererVulkan
         m_pFenceManager = new VulkanFenceManager(this);
         m_pRenderPassManager = new VulkanRenderPassManager(this);
         m_pFrameBufferManager = new VulkanFrameBufferManager(this);
+        m_pShaderModuleManager = new VulkanShaderModuleManager(this);
+        m_pDescriptorPoolManager = new VulkanDescriptorPoolManager(this);
         m_pDescriptorSetLayoutManager = new VulkanDescriptorSetLayoutManager(this);
         m_pDescriptorSetManager = new VulkanDescriptorSetManager(this);
-        m_pShaderModuleManager = new VulkanShaderModuleManager(this);
+        m_pCommandPoolManager = new VulkanCommandPoolManager(this);
 
         //5> 
 

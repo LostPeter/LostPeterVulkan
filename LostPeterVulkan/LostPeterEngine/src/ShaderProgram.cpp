@@ -15,6 +15,62 @@
 
 namespace LostPeterEngine
 {
+    ////////////////////////////// ShaderConstantDefinition ////////////////////////////
+    ShaderConstantDefinition::ShaderConstantDefinition()
+        : m_eShaderParamConstant()
+        , m_nPhysicalIndex((std::numeric_limits<uint32>::max)())
+        , m_nLogicalIndex(0)
+        , m_nElementSize(0)
+        , m_nArraySize(1)
+        , m_nVariability(F_ShaderParamVariability_Global)
+    {
+
+    }
+
+	ShaderConstantDefinition::~ShaderConstantDefinition()
+    {
+
+    }
+
+
+
+    ////////////////////////////// ShaderConstantNamed /////////////////////////////////
+    ShaderConstantNamed::ShaderConstantNamed()
+    {
+
+    }
+
+	ShaderConstantNamed::~ShaderConstantNamed()
+    {
+
+    }
+
+    uint32 ShaderConstantNamed::CalculateSize() const
+    {
+        uint32 nMemSize = (uint32)sizeof(*this);
+        nMemSize += (uint32)(sizeof(ShaderConstantDefinition) * m_mapConstantDefinition.size());
+        return nMemSize;
+    }
+
+    void ShaderConstantNamed::GenerateConstantDefinitionArrayEntries(const String& strNameParam, const ShaderConstantDefinition& constantDef)
+    {
+        ShaderConstantDefinition arrayDef = constantDef;
+		arrayDef.m_nArraySize = 1;
+		String strArrayName;
+
+		uint32 nMaxArrayIndex = 1;
+		if (constantDef.m_nArraySize <= 16)
+			nMaxArrayIndex = constantDef.m_nArraySize;
+		for (uint32 i = 0; i < nMaxArrayIndex; i++)
+		{
+			strArrayName = strNameParam + "[" + FUtilString::SaveUInt(i) + "]";
+			m_mapConstantDefinition.insert(ShaderConstantDefinitionMap::value_type(strArrayName, arrayDef));
+			arrayDef.m_nPhysicalIndex += arrayDef.m_nElementSize;
+		}
+    }
+
+    
+    ////////////////////////////// ShaderProgram ///////////////////////////////////////
     const String ShaderProgram::ms_nameProgramShader = "ShaderProgram";
     ShaderProgram::ShaderProgram(ResourceManager* pResourceManager,
                                  uint32 nGroup, 
@@ -84,8 +140,17 @@ namespace LostPeterEngine
 
     uint32 ShaderProgram::calculateSize() const
     {
+        uint32 nMemSize = sizeof(*this);
+        nMemSize += m_strPath.size() * sizeof(char);
+        nMemSize += GetName().size() * sizeof(char);
+        nMemSize += m_strSource.size() * sizeof(char);
+        nMemSize += m_strSyntaxCode.size() * sizeof(char);
 
-        return 0;
+        size_t nParamsSize = 0;
+        if (m_pShaderParameter)
+            nParamsSize += m_pShaderParameter->CalculateSize();
+
+        return nMemSize + nParamsSize;
     }
 
     void ShaderProgram::destroyInternalResources()

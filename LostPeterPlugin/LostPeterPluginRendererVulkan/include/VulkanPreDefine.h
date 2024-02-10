@@ -158,8 +158,12 @@ namespace LostPeterPluginRendererVulkan
 	class VulkanBufferIndex;
 	class VulkanBufferUniform;
 	class VulkanBufferVertex;
+    class VulkanCommandPool;
+    class VulkanCommandPoolManager;
     class VulkanConverter;
     class VulkanDebug;
+    class VulkanDescriptorPool;
+    class VulkanDescriptorPoolManager;
     class VulkanDescriptorSet;
     class VulkanDescriptorSetManager;
     class VulkanDescriptorSetLayout;
@@ -187,6 +191,7 @@ namespace LostPeterPluginRendererVulkan
     class VulkanShaderModule;
     class VulkanShaderModuleManager;
     class VulkanShaderProgram;
+    class VulkanShaderProgramFactory;
     class VulkanShaderProgramManager;
     class VulkanStreamIndex;
     class VulkanStreamManager;
@@ -199,6 +204,12 @@ namespace LostPeterPluginRendererVulkan
     class VulkanVolk;
 
 	typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
+    
+    typedef std::vector<VulkanCommandPool*> VulkanCommandPoolPtrVector;
+    typedef std::map<String, VulkanCommandPool*> VulkanCommandPoolPtrMap;
+
+    typedef std::vector<VulkanDescriptorPool*> VulkanDescriptorPoolPtrVector;
+    typedef std::map<String, VulkanDescriptorPool*> VulkanDescriptorPoolPtrMap;
     
     typedef std::vector<VulkanDescriptorSet*> VulkanDescriptorSetPtrVector;
     typedef std::map<String, VulkanDescriptorSet*> VulkanDescriptorSetPtrMap;

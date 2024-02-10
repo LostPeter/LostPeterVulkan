@@ -1328,4 +1328,10 @@ namespace LostPeterEngine
 		}
 	}
 
+	uint32 ShaderParameter::CalculateSize() const
+	{
+		
+		return 0;
+	}
+
 }; //LostPeterEngine

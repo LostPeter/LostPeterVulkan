@@ -876,9 +876,9 @@ namespace LostPeterFoundation
 		F_ShaderParamConstant_Matrix_4X4 = F_ShaderParamConstantBase_Float + 13,                //12: Matrix_4X4
     ////Int
         F_ShaderParamConstant_Int1 = F_ShaderParamConstantBase_Int + 1,                         //13: Int1
-		F_ShaderParamConstant_Int2 = F_ShaderParamConstantBase_Int + 1,                         //14: Int2
-		F_ShaderParamConstant_Int3 = F_ShaderParamConstantBase_Int + 1,                         //15: Int3
-		F_ShaderParamConstant_Int4 = F_ShaderParamConstantBase_Int + 1,                         //16: Int4
+		F_ShaderParamConstant_Int2 = F_ShaderParamConstantBase_Int + 2,                         //14: Int2
+		F_ShaderParamConstant_Int3 = F_ShaderParamConstantBase_Int + 3,                         //15: Int3
+		F_ShaderParamConstant_Int4 = F_ShaderParamConstantBase_Int + 4,                         //16: Int4
     ////Double
         F_ShaderParamConstant_Double1 = F_ShaderParamConstantBase_Double + 1,                   //17: Double1
         F_ShaderParamConstant_Double2 = F_ShaderParamConstantBase_Double + 2,                   //18: Double2
@@ -919,6 +919,25 @@ namespace LostPeterFoundation
     };
     foundationExport const String& F_GetShaderParamConstantTypeName(FShaderParamConstantType type);
     foundationExport FShaderParamConstantType F_ParseShaderParamConstantType(const String& strName);
+    foundationExport FShaderParamConstantBaseType F_ParseShaderParamConstantBaseType(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsFloat(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsInt(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsDouble(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsUint(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsBool(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsSampler(FShaderParamConstantType type);
+    foundationExport bool F_ShaderParamConstant_IsSpecialization(FShaderParamConstantType type);
+    foundationExport uint32 F_ShaderParamConstant_GetElementSize(FShaderParamConstantType type, bool bIsPadToMultiplesOf4);
+
+
+    enum FShaderParamVariability
+    {
+        F_ShaderParamVariability_Global = 1,            //0x0001: Global
+        F_ShaderParamVariability_PerObject = 2,         //0x0002: PerObject
+        F_ShaderParamVariability_LightRelated = 4,      //0x0004: LightRelated
+        F_ShaderParamVariability_PassIteration = 8,     //0x0008: PassIteration
+        F_ShaderParamVariability_All = 0xFFFF,          //0xFFFF: All
+    };
 
 
     enum FShaderParamConstantDataType

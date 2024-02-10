@@ -16,6 +16,108 @@
 
 namespace LostPeterEngine
 {
+    ////////////////////////////// ShaderConstantDefinition ////////////////////////////
+	class engineExport ShaderConstantDefinition
+	{
+	public:
+		ShaderConstantDefinition();
+		~ShaderConstantDefinition();
+
+    public:
+		FShaderParamConstantType m_eShaderParamConstant;
+		uint32 m_nPhysicalIndex;
+        uint32 m_nLogicalIndex;
+		uint32 m_nElementSize;
+		uint32 m_nArraySize;
+        mutable uint16 m_nVariability;
+
+    public:
+        F_FORCEINLINE bool IsFloat() const { return F_ShaderParamConstant_IsFloat(m_eShaderParamConstant); }
+		F_FORCEINLINE bool IsInt() const { return F_ShaderParamConstant_IsInt(m_eShaderParamConstant); }
+        F_FORCEINLINE bool IsDouble() const { return F_ShaderParamConstant_IsDouble(m_eShaderParamConstant); }
+        F_FORCEINLINE bool IsUint() const { return F_ShaderParamConstant_IsUint(m_eShaderParamConstant); }
+        F_FORCEINLINE bool IsBool() const { return F_ShaderParamConstant_IsBool(m_eShaderParamConstant); }
+        F_FORCEINLINE bool IsSampler() const { return F_ShaderParamConstant_IsSampler(m_eShaderParamConstant); }
+        F_FORCEINLINE bool IsSpecialization() const { return F_ShaderParamConstant_IsSpecialization(m_eShaderParamConstant); }
+	};
+    typedef std::map<String, ShaderConstantDefinition> ShaderConstantDefinitionMap;
+
+    
+    ////////////////////////////// ShaderConstantNamed /////////////////////////////////
+    class engineExport ShaderConstantNamed
+    {
+    public:
+        ShaderConstantNamed();
+        ~ShaderConstantNamed();
+
+    public:
+        uint32 m_nBufferSize;
+        uint32 m_nRegisterCount;
+        ShaderConstantDefinitionMap m_mapConstantDefinition;
+
+    public:
+        uint32 CalculateSize() const;
+
+    public:
+        void GenerateConstantDefinitionArrayEntries(const String& strNameParam, const ShaderConstantDefinition& constantDef);
+    };
+
+    
+    ////////////////////////////// ShaderLogical/Physical //////////////////////////////
+    struct engineExport ShaderLogicalIndexUsed
+	{
+		ShaderLogicalIndexUsed(uint32 _nPhysicalIndex, uint32 _nCurrentSize) 
+			: nPhysicalIndex(_nPhysicalIndex)
+			, nCurrentSize(_nCurrentSize) 
+		{
+	
+		}
+
+		uint32 nPhysicalIndex;
+		uint32 nCurrentSize;
+	};
+    typedef std::map<uint32, ShaderLogicalIndexUsed> ShaderLogicalIndexUsedMap;
+
+    struct engineExport ShaderLogicalBufferStruct
+	{
+		ShaderLogicalBufferStruct()
+			: nBufferSize(0)
+		{
+
+		}
+
+		uint32 nBufferSize;
+        ShaderLogicalIndexUsedMap mapLogicalIndexUsed;
+	};
+
+    struct engineExport ShaderPhysicalIndexUsed
+	{
+		ShaderPhysicalIndexUsed(uint32 _nLogicalIndex, uint32 _nCurrentSize)
+			: nLogicalIndex(_nLogicalIndex)
+			, nCurrentSize(_nCurrentSize)
+		{
+
+		}
+
+		uint32 nLogicalIndex;
+		uint32 nCurrentSize;		
+	};
+    typedef std::map<uint32, ShaderPhysicalIndexUsed> ShaderPhysicalIndexUsedMap;
+
+    struct engineExport ShaderPhysicalBufferStruct
+	{
+		ShaderPhysicalBufferStruct()
+			: nBufferSize(0)
+		{
+
+		}
+
+        size_t nBufferSize;
+		ShaderPhysicalIndexUsedMap mapPhysicalIndexUsed;
+	};
+
+
+    ////////////////////////////// ShaderProgram ///////////////////////////////////////
     class engineExport ShaderProgram : public Resource
     {
         friend class ShaderProgramManager;
@@ -51,6 +153,10 @@ namespace LostPeterEngine
         bool m_bInternalResourcesCreated;
 
         ShaderParameter* m_pShaderParameter;
+
+        mutable ShaderLogicalBufferStruct m_FloatLogicalToPhysical;
+		mutable ShaderLogicalBufferStruct m_IntLogicalToPhysical;
+		mutable ShaderPhysicalBufferStruct m_FloatPhysicalToLogical;
 
     public:
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }

@@ -55,9 +55,15 @@ Usage:
             glfw-3.3.6
             glm-0.9.9.8
             imgui-1.85
+            libcpuid-0.5.1
+            libnoise-1.0.0
+            libsquish-1.15
+            rapidxml-1.13
             spdlog-1.10.0
             stb-0.02
+            tinyxml-2.6.2
             zlib-1.2.11
+            zziplib-0.13.72
 
     2> Compile Shader
         cd Bin

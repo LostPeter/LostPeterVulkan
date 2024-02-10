@@ -12,7 +12,7 @@
 #include "../include/VulkanShaderProgramManager.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanShaderProgram.h"
-#include "../include/VulkanConverter.h"
+#include "../include/VulkanShaderProgramFactory.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -20,6 +20,8 @@ namespace LostPeterPluginRendererVulkan
         : m_pDevice(pDevice)
     {
         F_Assert(m_pDevice != nullptr && "VulkanShaderProgramManager::VulkanShaderProgramManager")
+        m_pShaderProgramFactory = new VulkanShaderProgramFactory(pDevice);
+        AddShaderProgramFactory(m_pShaderProgramFactory);
     }
 
     VulkanShaderProgramManager::~VulkanShaderProgramManager()
@@ -27,13 +29,19 @@ namespace LostPeterPluginRendererVulkan
         Destroy();
     }
 
+    void VulkanShaderProgramManager::Destroy()
+    {
+        ShaderProgramManager::Destroy();
+        F_DELETE(m_pShaderProgramFactory)
+    }
+
     Resource* VulkanShaderProgramManager::createImpl(uint32 nGroup,
-                                              const String& strName,
-                                              const String& strGroupName,
-                                              ResourceHandle nHandle, 
-                                              bool bIsManualLoad,
-                                              ResourceManualLoader* pManualLoader, 
-                                              const NameValuePairMap* pLoadParams)
+                                                     const String& strName,
+                                                     const String& strGroupName,
+                                                     ResourceHandle nHandle, 
+                                                     bool bIsManualLoad,
+                                                     ResourceManualLoader* pManualLoader, 
+                                                     const NameValuePairMap* pLoadParams)
     {
         return new VulkanShaderProgram(m_pDevice,
                                        this,

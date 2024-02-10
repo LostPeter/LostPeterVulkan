@@ -769,7 +769,14 @@ namespace LostPeterEngine
     class ShaderConstantEntryManual;
     class ShaderConstantAutoDefinition;
     class ShaderParameter;
+    class ShaderConstantDefinition;
+    struct ShaderLogicalIndexUsed;
+    struct ShaderLogicalBufferStruct;
+    struct ShaderPhysicalIndexUsed;
+    struct ShaderPhysicalBufferStruct;
+    class ShaderConstantNamed;
     class ShaderProgram;
+    class ShaderProgramFactory;
     class ShaderProgramManager;
     class ShaderProgramGroup;
     class ShaderProgramGroupManager;
@@ -819,6 +826,9 @@ namespace LostPeterEngine
     typedef std::map<String, ShaderProgram*> ShaderProgramPtrMap;
     typedef std::map<uint32, ShaderProgramPtrMap> ShaderProgramGroupPtrMap;
 
+    typedef std::vector<ShaderProgramFactory*> ShaderProgramFactorytrVector;
+    typedef std::map<String, ShaderProgramFactory*> ShaderProgramFactoryPtrMap;
+    
     typedef std::vector<Shader*> ShaderPtrVector;
     typedef std::map<String, Shader*> ShaderPtrMap;
     typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;

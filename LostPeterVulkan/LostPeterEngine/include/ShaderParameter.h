@@ -99,8 +99,8 @@ namespace LostPeterEngine
 	typedef std::vector<ShaderConstantEntryManual*> SahderConstantEntryManualPtrVector;
 	typedef std::vector<ShaderConstantEntryManual*> SahderManualConstantEntryVector;
 
-	
-    ////////////////////////////// ShaderParameter /////////////////////////////////////
+
+	////////////////////////////// ShaderConstantAutoDefinition ////////////////////////
     class engineExport ShaderConstantAutoDefinition
     {
     public:
@@ -124,7 +124,8 @@ namespace LostPeterEngine
     };
     typedef std::map<String, ShaderConstantAutoDefinition*>	Name2ShaderConstantAutoDefinitionPtrMap;
 
-
+		
+	////////////////////////////// ShaderParameter /////////////////////////////////////
     class engineExport ShaderParameter
 	{
 	public:
@@ -204,6 +205,8 @@ namespace LostPeterEngine
 
         void UpdateParamAutos(const ShaderParamSourceAuto* pParamSourceAuto, uint32 nBeginIndex = 0, uint32 nEndIndex = (uint32)(-1));
 		void UpdateParamManuals(uint32 nBeginIndex = 0, uint32 nEndIndex = (uint32)(-1));
+
+		uint32 CalculateSize() const;
 
 	private:	
 		void clearConstantManuals();

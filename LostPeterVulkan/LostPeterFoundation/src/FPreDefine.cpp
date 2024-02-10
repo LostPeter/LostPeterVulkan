@@ -686,6 +686,142 @@ namespace LostPeterFoundation
         F_Assert(false && "F_ParseShaderParamConstantType: Wrong type name !")
         return F_ShaderParamConstant_Float1;
     }
+    FShaderParamConstantBaseType F_ParseShaderParamConstantBaseType(FShaderParamConstantType type)
+    {
+        return FShaderParamConstantBaseType(type / 0x10 * 0x10);
+    }
+    bool F_ShaderParamConstant_IsFloat(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Float;
+    }
+    bool F_ShaderParamConstant_IsInt(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Int;
+    }
+    bool F_ShaderParamConstant_IsDouble(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Double;
+    }
+    bool F_ShaderParamConstant_IsUint(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Uint;
+    }
+    bool F_ShaderParamConstant_IsBool(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Bool;
+    }
+    bool F_ShaderParamConstant_IsSampler(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Sampler;
+    }
+    bool F_ShaderParamConstant_IsSpecialization(FShaderParamConstantType type)
+    {
+        return F_ParseShaderParamConstantBaseType(type) == F_ShaderParamConstantBase_Specialization;
+    }
+    uint32 F_ShaderParamConstant_GetElementSize(FShaderParamConstantType type, bool bIsPadToMultiplesOf4)
+    {
+        if (bIsPadToMultiplesOf4)
+        {
+            switch (type)
+            {
+            case F_ShaderParamConstant_Float1:
+            case F_ShaderParamConstant_Float2:
+            case F_ShaderParamConstant_Float3:
+            case F_ShaderParamConstant_Float4:
+            case F_ShaderParamConstant_Int1:
+            case F_ShaderParamConstant_Int2:
+            case F_ShaderParamConstant_Int3:
+            case F_ShaderParamConstant_Int4:
+            case F_ShaderParamConstant_Uint1:
+            case F_ShaderParamConstant_Uint2:
+            case F_ShaderParamConstant_Uint3:
+            case F_ShaderParamConstant_Uint4:
+            case F_ShaderParamConstant_Bool1:
+            case F_ShaderParamConstant_Bool2:
+            case F_ShaderParamConstant_Bool3:
+            case F_ShaderParamConstant_Bool4:
+            case F_ShaderParamConstant_Sampler1D:
+            case F_ShaderParamConstant_Sampler2D:
+            case F_ShaderParamConstant_Sampler3D:
+            case F_ShaderParamConstant_SamplerCube:
+            case F_ShaderParamConstant_Sampler1DShadow:
+            case F_ShaderParamConstant_Sampler2DShadow:
+            case F_ShaderParamConstant_Sampler2DArray:
+            case F_ShaderParamConstant_SamplerExternalOES:
+                return 4;   //1 float4
+            case F_ShaderParamConstant_Matrix_2X2:
+            case F_ShaderParamConstant_Matrix_2X3:
+            case F_ShaderParamConstant_Matrix_2X4:
+            case F_ShaderParamConstant_Double1:
+            case F_ShaderParamConstant_Double2:
+            case F_ShaderParamConstant_Double3:
+            case F_ShaderParamConstant_Double4:
+                return 8;   //2 float4
+            case F_ShaderParamConstant_Matrix_3X2:
+            case F_ShaderParamConstant_Matrix_3X3:
+            case F_ShaderParamConstant_Matrix_3X4:
+                return 12;  //3 float4
+            case F_ShaderParamConstant_Matrix_4X2:
+            case F_ShaderParamConstant_Matrix_4X3:
+            case F_ShaderParamConstant_Matrix_4X4:
+            case F_ShaderParamConstant_Matrix_Double_2X2:
+            case F_ShaderParamConstant_Matrix_Double_2X3:
+            case F_ShaderParamConstant_Matrix_Double_2X4:
+                return 16;  //4 float4
+            case F_ShaderParamConstant_Matrix_Double_3X2:
+            case F_ShaderParamConstant_Matrix_Double_3X3:
+            case F_ShaderParamConstant_Matrix_Double_3X4:
+                return 24;  //6 float4
+            case F_ShaderParamConstant_Matrix_Double_4X2:
+            case F_ShaderParamConstant_Matrix_Double_4X3:
+            case F_ShaderParamConstant_Matrix_Double_4X4:
+                return 32;  //8 float4
+            default:
+                return 4;   //1 float4
+            }
+        }
+        else
+        {
+            switch (type)
+            {
+            case F_ShaderParamConstant_Sampler1D:
+            case F_ShaderParamConstant_Sampler2D:
+            case F_ShaderParamConstant_Sampler3D:
+            case F_ShaderParamConstant_SamplerCube:
+            case F_ShaderParamConstant_Sampler1DShadow:
+            case F_ShaderParamConstant_Sampler2DShadow:
+            case F_ShaderParamConstant_Sampler2DArray:
+            case F_ShaderParamConstant_SamplerExternalOES:
+                return 1;   //1 float
+            case F_ShaderParamConstant_Matrix_2X2:
+            case F_ShaderParamConstant_Matrix_Double_2X2:
+                return 4;
+            case F_ShaderParamConstant_Matrix_2X3:
+            case F_ShaderParamConstant_Matrix_3X2:
+            case F_ShaderParamConstant_Matrix_Double_2X3:
+            case F_ShaderParamConstant_Matrix_Double_3X2:
+                return 6;
+            case F_ShaderParamConstant_Matrix_2X4:
+            case F_ShaderParamConstant_Matrix_4X2:
+            case F_ShaderParamConstant_Matrix_Double_2X4:
+            case F_ShaderParamConstant_Matrix_Double_4X2:
+                return 8;
+            case F_ShaderParamConstant_Matrix_3X3:
+            case F_ShaderParamConstant_Matrix_Double_3X3:
+                return 9;
+            case F_ShaderParamConstant_Matrix_3X4:
+            case F_ShaderParamConstant_Matrix_4X3:
+            case F_ShaderParamConstant_Matrix_Double_3X4:
+            case F_ShaderParamConstant_Matrix_Double_4X3:
+                return 12;
+            case F_ShaderParamConstant_Matrix_4X4:
+            case F_ShaderParamConstant_Matrix_Double_4X4:
+                return 16;
+            default:
+                return type % 0x10;
+            }
+        }
+    }
 
 
     //FShaderParamConstantDataType

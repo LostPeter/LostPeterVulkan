@@ -53,9 +53,11 @@ namespace LostPeterPluginRendererVulkan
         VulkanFenceManager* m_pFenceManager;
         VulkanRenderPassManager* m_pRenderPassManager;
         VulkanFrameBufferManager* m_pFrameBufferManager;
+        VulkanShaderModuleManager* m_pShaderModuleManager;
+        VulkanDescriptorPoolManager* m_pDescriptorPoolManager;
         VulkanDescriptorSetLayoutManager* m_pDescriptorSetLayoutManager;
         VulkanDescriptorSetManager* m_pDescriptorSetManager;
-        VulkanShaderModuleManager* m_pShaderModuleManager;
+        VulkanCommandPoolManager* m_pCommandPoolManager;
 
         VkDescriptorPool m_vkDescriptorPool;
         VkDescriptorPool m_vkDescriptorPool_ImGUI;
@@ -89,9 +91,11 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
         F_FORCEINLINE VulkanRenderPassManager* GetRenderPassManager() const { return m_pRenderPassManager; }
         F_FORCEINLINE VulkanFrameBufferManager* GetFrameBufferManager() const { return m_pFrameBufferManager; }
+        F_FORCEINLINE VulkanShaderModuleManager* GetShaderModuleManager() const { return m_pShaderModuleManager; }  
+        F_FORCEINLINE VulkanDescriptorPoolManager* GetDescriptorPoolManager() const { return m_pDescriptorPoolManager; }  
         F_FORCEINLINE VulkanDescriptorSetLayoutManager* GetDescriptorSetLayoutManager() const { return m_pDescriptorSetLayoutManager; }
         F_FORCEINLINE VulkanDescriptorSetManager* GetDescriptorSetManager() const { return m_pDescriptorSetManager; }
-        F_FORCEINLINE VulkanShaderModuleManager* GetShaderModuleManager() const { return m_pShaderModuleManager; }  
+        F_FORCEINLINE VulkanCommandPoolManager* GetCommandPoolManager() const { return m_pCommandPoolManager; } 
         
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool() const { return m_vkDescriptorPool; }
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool_ImGUI() const { return m_vkDescriptorPool_ImGUI; }

@@ -12,6 +12,7 @@
 #include "../include/ShaderProgramManager.h"
 #include "../include/ShaderProgramSerializer.h"
 #include "../include/ShaderProgram.h"
+#include "../include/ShaderProgramFactory.h"
 
 template<> LostPeterEngine::ShaderProgramManager* LostPeterFoundation::FSingleton<LostPeterEngine::ShaderProgramManager>::ms_Singleton = nullptr;
 
@@ -42,7 +43,8 @@ namespace LostPeterEngine
     void ShaderProgramManager::Destroy()
     {
         F_DELETE(m_pShaderProgramSerializer)
-
+        RemoveShaderProgramFactoryAll();
+        
         ResourceManager::Destroy();
     }
     bool ShaderProgramManager::Init(uint nGroup, const String& strNameCfg)
@@ -65,6 +67,41 @@ namespace LostPeterEngine
 
         return true;
     }
+
+    ShaderProgramFactory* ShaderProgramManager::GetShaderProgramFactory(const String& strShaderLanguage)
+    {
+        ShaderProgramFactoryPtrMap::iterator itFind = m_mapShaderProgramFactory.find(strShaderLanguage);
+        if (itFind == m_mapShaderProgramFactory.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+    void ShaderProgramManager::AddShaderProgramFactory(ShaderProgramFactory* pShaderProgramFactory)
+    {
+        if (!pShaderProgramFactory)
+            return;
+        const String& strShaderLanguage = pShaderProgramFactory->GetShaderLanguage();
+        if (GetShaderProgramFactory(strShaderLanguage))
+            return;
+        m_mapShaderProgramFactory[strShaderLanguage] = pShaderProgramFactory;
+    }
+    void ShaderProgramManager::RemoveShaderProgramFactory(ShaderProgramFactory* pShaderProgramFactory)
+    {
+        if (!pShaderProgramFactory)
+            return;
+        const String& strShaderLanguage = pShaderProgramFactory->GetShaderLanguage();
+        ShaderProgramFactoryPtrMap::iterator itFind = m_mapShaderProgramFactory.find(strShaderLanguage);
+        if (itFind != m_mapShaderProgramFactory.end())
+        {
+            m_mapShaderProgramFactory.erase(itFind);
+        }
+    }
+    void ShaderProgramManager::RemoveShaderProgramFactoryAll()
+    {
+        m_mapShaderProgramFactory.clear();
+    }
+
 
     ShaderProgram* ShaderProgramManager::LoadShaderProgram(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {

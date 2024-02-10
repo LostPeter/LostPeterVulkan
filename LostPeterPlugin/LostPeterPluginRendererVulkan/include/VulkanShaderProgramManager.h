@@ -25,12 +25,13 @@ namespace LostPeterPluginRendererVulkan
     public:
     protected:
         VulkanDevice* m_pDevice;
+        VulkanShaderProgramFactory* m_pShaderProgramFactory;
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
     public:
-
+        virtual void Destroy();
     
     protected:
         virtual Resource* createImpl(uint32 nGroup,

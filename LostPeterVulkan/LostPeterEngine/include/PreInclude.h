@@ -120,6 +120,7 @@
 #include "ShaderParamPassManager.h"
 #include "ShaderParamSourceAuto.h"
 #include "ShaderProgram.h"
+#include "ShaderProgramFactory.h"
 #include "ShaderProgramManager.h"
 #include "ShaderProgramGroup.h"
 #include "ShaderProgramGroupManager.h"
