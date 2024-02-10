@@ -11,6 +11,7 @@
 
 #include "../include/ShaderProgram.h"
 #include "../include/ShaderProgramManager.h"
+#include "../include/ShaderParameter.h"
 
 namespace LostPeterEngine
 {
@@ -32,6 +33,7 @@ namespace LostPeterEngine
         , m_strPath("")
         , m_eShader(F_Shader_Vertex)
         , m_bInternalResourcesCreated(false)
+        , m_pShaderParameter(nullptr)
     {
         if (createParameterDictionary(ms_nameProgramShader))
 		{
@@ -53,6 +55,22 @@ namespace LostPeterEngine
         
         Resource::Destroy();
     }
+
+    ShaderParameter* ShaderProgram::GetShaderParameter()
+	{
+		if (nullptr == m_pShaderParameter)
+		{
+            m_pShaderParameter = createShaderParameter();
+        }
+		return m_pShaderParameter;
+	}
+
+	void ShaderProgram::SetShaderParameter(ShaderParameter* pShaderParameter)
+	{
+		F_Assert(pShaderParameter && "ShaderProgram::SetShaderParameter")
+		F_DELETE(m_pShaderParameter)
+		m_pShaderParameter = pShaderParameter;
+	}
 
     void ShaderProgram::loadImpl()
     {
@@ -99,6 +117,12 @@ namespace LostPeterEngine
             }
 		}
 		return true;
+    }
+
+    ShaderParameter* ShaderProgram::createShaderParameter()
+    {
+        ShaderParameter* pShaderParameter = new ShaderParameter;
+		return pShaderParameter;
     }
 
 }; //LostPeterEngine

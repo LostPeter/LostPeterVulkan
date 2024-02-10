@@ -768,7 +768,7 @@ namespace LostPeterEngine
     class ShaderConstantEntryAuto;
     class ShaderConstantEntryManual;
     class ShaderConstantAutoDefinition;
-    class ShaderParamDefine;
+    class ShaderParameter;
     class ShaderProgram;
     class ShaderProgramManager;
     class ShaderProgramGroup;

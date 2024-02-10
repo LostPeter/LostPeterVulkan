@@ -9,7 +9,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/ShaderParamDefine.h"
+#include "../include/ShaderParameter.h"
 #include "../include/ShaderParamSourceAuto.h"
 #include "../include/ShaderProgramGroup.h"
 #include "../include/ObjectLight.h"
@@ -98,10 +98,10 @@ namespace LostPeterEngine
         }
     }
 
-
-    ////////////////////////////// ShaderParamDefine ///////////////////////////////////
-    Name2ShaderConstantAutoDefinitionPtrMap	ShaderParamDefine::m_mapName2ShaderConstantAutoDefinition;
-	ShaderConstantAutoDefinition ShaderParamDefine::ms_aShaderConstantAutoDefinitions[] = 
+	
+    ////////////////////////////// ShaderParameter /////////////////////////////////////
+    Name2ShaderConstantAutoDefinitionPtrMap	ShaderParameter::m_mapName2ShaderConstantAutoDefinition;
+	ShaderConstantAutoDefinition ShaderParameter::ms_aShaderConstantAutoDefinitions[] = 
 	{
         //FShaderParamConstantAutoType                                                                      //FShaderParamConstantDataType          //ElementCount      //bIsArray
 	////World
@@ -227,7 +227,7 @@ namespace LostPeterEngine
 		ShaderConstantAutoDefinition(F_ShaderParamConstantAuto_FPS,										    F_ShaderParamConstantData_Float,		1,		            false)			//105
 	};
 
-    void ShaderParamDefine::initParamStaticMap()
+    void ShaderParameter::initParamStaticMap()
 	{
 		if (!m_mapName2ShaderConstantAutoDefinition.empty())
 			return;
@@ -236,44 +236,44 @@ namespace LostPeterEngine
 		for (uint32 i = 0; i < nCount; i++)
 		{
 			ShaderConstantAutoDefinition* pDefinition = &ms_aShaderConstantAutoDefinitions[i];
-			F_Assert(i == static_cast<uint32>(pDefinition->m_eShaderParamConstantAuto) && "ShaderParamDefine::initParamStaticMap")
+			F_Assert(i == static_cast<uint32>(pDefinition->m_eShaderParamConstantAuto) && "ShaderParameter::initParamStaticMap")
 			m_mapName2ShaderConstantAutoDefinition[F_GetShaderParamConstantAutoTypeName(pDefinition->m_eShaderParamConstantAuto)] = pDefinition;
 		}
 	}
-	uint32 ShaderParamDefine::GetShaderConstantAutoDefinitionCount()
+	uint32 ShaderParameter::GetShaderConstantAutoDefinitionCount()
 	{
 		return sizeof(ms_aShaderConstantAutoDefinitions) / sizeof(ShaderConstantAutoDefinition);
 	}
-	const ShaderConstantAutoDefinition* ShaderParamDefine::GetConstantAutoDefinition(const String& strName)
+	const ShaderConstantAutoDefinition* ShaderParameter::GetConstantAutoDefinition(const String& strName)
 	{
-		F_Assert(!m_mapName2ShaderConstantAutoDefinition.empty() && "ShaderParamDefine::GetConstantAutoDefinition");
+		F_Assert(!m_mapName2ShaderConstantAutoDefinition.empty() && "ShaderParameter::GetConstantAutoDefinition");
 		Name2ShaderConstantAutoDefinitionPtrMap::iterator itFind = m_mapName2ShaderConstantAutoDefinition.find(strName);
 		if (itFind != m_mapName2ShaderConstantAutoDefinition.end())
 			return itFind->second;
 		
-		F_Assert(false && "ShaderParamDefine::GetConstantAutoDefinition: Can not find ConstantAutoDefinition !")
+		F_Assert(false && "ShaderParameter::GetConstantAutoDefinition: Can not find ConstantAutoDefinition !")
 		return nullptr;
 	}
-	const ShaderConstantAutoDefinition* ShaderParamDefine::GetConstantAutoDefinition(uint32 nIndex)
+	const ShaderConstantAutoDefinition* ShaderParameter::GetConstantAutoDefinition(uint32 nIndex)
 	{
 		if (nIndex < GetShaderConstantAutoDefinitionCount())
 		{
-			F_Assert(nIndex == static_cast<uint32>(ms_aShaderConstantAutoDefinitions[nIndex].m_eShaderParamConstantAuto) && "ShaderParamDefine::GetConstantAutoDefinition")
+			F_Assert(nIndex == static_cast<uint32>(ms_aShaderConstantAutoDefinitions[nIndex].m_eShaderParamConstantAuto) && "ShaderParameter::GetConstantAutoDefinition")
 			return &ms_aShaderConstantAutoDefinitions[nIndex];
 		}
 		return nullptr;
 	}
-	uint32 ShaderParamDefine::GetDefaultRangeIndexStart()
+	uint32 ShaderParameter::GetDefaultRangeIndexStart()
 	{
 		return 0;
 	}
-	uint32 ShaderParamDefine::GetDefaultRangeIndexEnd()
+	uint32 ShaderParameter::GetDefaultRangeIndexEnd()
 	{
 		return std::numeric_limits<uint32>::max();
 	}
 
 
-	ShaderParamDefine::ShaderParamDefine()
+	ShaderParameter::ShaderParameter()
 		: m_nStartRangeIndex(0)
 		, m_nEndRangeIndex(std::numeric_limits<uint32>::max())
 		, m_bIsTransposeMatrix(false)
@@ -282,18 +282,18 @@ namespace LostPeterEngine
 		initParamStaticMap();
 	}
 
-	ShaderParamDefine::ShaderParamDefine(uint32 nStartRangeIndex, uint32 nEndRangeIndex)
+	ShaderParameter::ShaderParameter(uint32 nStartRangeIndex, uint32 nEndRangeIndex)
 		: m_nStartRangeIndex(nStartRangeIndex)
 		, m_nEndRangeIndex(nEndRangeIndex)
 		, m_bIsTransposeMatrix(false)
 		, m_pShaderProgramGroup(nullptr)
 	{
-		F_Assert(nEndRangeIndex > nStartRangeIndex && "ShaderParamDefine::ShaderParamDefine");
+		F_Assert(nEndRangeIndex > nStartRangeIndex && "ShaderParameter::ShaderParameter");
 
 		initParamStaticMap();
 	}
 	
-	ShaderParamDefine& ShaderParamDefine::operator= (const ShaderParamDefine& src)
+	ShaderParameter& ShaderParameter::operator= (const ShaderParameter& src)
 	{
 		m_aShaderConstantEntryAuto.clear();
 		clearConstantManuals();
@@ -314,12 +314,12 @@ namespace LostPeterEngine
 		return *this;
 	}
 
-	ShaderParamDefine::~ShaderParamDefine()	
+	ShaderParameter::~ShaderParameter()	
 	{
 		clearConstantManuals();
 	}
 
-	void ShaderParamDefine::clearConstantManuals()
+	void ShaderParameter::clearConstantManuals()
 	{
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
 		for (uint32 i = 0; i < nSize; i++)
@@ -329,7 +329,7 @@ namespace LostPeterEngine
 		m_aShaderConstantEntryManual.clear();
 	}
     
-	bool ShaderParamDefine::IsRegisterUsed(uint32 nRegisterIndex, uint32 nRegisterCount)
+	bool ShaderParameter::IsRegisterUsed(uint32 nRegisterIndex, uint32 nRegisterCount)
 	{
 		if (nRegisterIndex < m_nStartRangeIndex || 
 		    nRegisterIndex >= m_nEndRangeIndex || 
@@ -374,7 +374,7 @@ namespace LostPeterEngine
 		return bRet;
 	}
 
-	void ShaderParamDefine::SetRegisterRange(uint32 nStartRangeIndex, uint32 nEndRangeIndex)
+	void ShaderParameter::SetRegisterRange(uint32 nStartRangeIndex, uint32 nEndRangeIndex)
 	{
 		m_nStartRangeIndex = nStartRangeIndex;
 		m_nEndRangeIndex   = nEndRangeIndex;
@@ -420,7 +420,7 @@ namespace LostPeterEngine
 		}
 	}	
 	
-	ShaderConstantEntryAuto* ShaderParamDefine::GetConstantAutoByIndex(uint32 nIndex)
+	ShaderConstantEntryAuto* ShaderParameter::GetConstantAutoByIndex(uint32 nIndex)
 	{
 		for (SahderConstantEntryAutoPtrVector::iterator it = m_aShaderConstantEntryAuto.begin();
 			 it != m_aShaderConstantEntryAuto.end(); ++it)
@@ -433,14 +433,14 @@ namespace LostPeterEngine
 		return nullptr;
 	}
 
-	const String& ShaderParamDefine::GetConstantManualName(uint32 nIndex)
+	const String& ShaderParameter::GetConstantManualName(uint32 nIndex)
 	{
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
 		if (nIndex >= nSize)
 			return FUtilString::BLANK;
 		return m_aShaderConstantEntryManual[nIndex]->GetName();
 	}
-	ShaderConstantEntryManual* ShaderParamDefine::GetConstantManualByIndex(uint32 nIndex)
+	ShaderConstantEntryManual* ShaderParameter::GetConstantManualByIndex(uint32 nIndex)
 	{
 		ShaderConstantEntryManual* pRet = nullptr;
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
@@ -454,7 +454,7 @@ namespace LostPeterEngine
 		}
 		return pRet;
 	}
-	ShaderConstantEntryManual* ShaderParamDefine::GetConstantManualByName(const String& strName)
+	ShaderConstantEntryManual* ShaderParameter::GetConstantManualByName(const String& strName)
 	{
 		ShaderConstantEntryManual* pRet = nullptr;
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
@@ -468,7 +468,7 @@ namespace LostPeterEngine
 		}
 		return pRet;
 	}
-	bool ShaderParamDefine::SetConstantManualByName(const String& strName, const float* pData, uint32 nDataCount)
+	bool ShaderParameter::SetConstantManualByName(const String& strName, const float* pData, uint32 nDataCount)
 	{
 		ShaderConstantEntryManual* pManualConstantEntry = GetConstantManualByName(strName);
 		bool bRet = false;
@@ -490,7 +490,7 @@ namespace LostPeterEngine
 		}
 		return bRet;
 	}
-	bool ShaderParamDefine::SetConstantManualByIndex(uint32 nBeginIndex, const float* pData, uint32 nDataCount)
+	bool ShaderParameter::SetConstantManualByIndex(uint32 nBeginIndex, const float* pData, uint32 nDataCount)
 	{
 		ShaderConstantEntryManual* pManualConstantEntry = GetConstantManualByIndex(nBeginIndex);
 		bool bRet = false;
@@ -512,7 +512,7 @@ namespace LostPeterEngine
 		}
 		return bRet;
 	}
-	bool ShaderParamDefine::SetConstantManualByIndex(uint32 nBeginIndex, const FVector4& v4)
+	bool ShaderParameter::SetConstantManualByIndex(uint32 nBeginIndex, const FVector4& v4)
 	{
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
 		for (uint32 i = 0; i < nSize; i++)
@@ -528,7 +528,7 @@ namespace LostPeterEngine
 	}
 	
 
-	bool ShaderParamDefine::InsertConstantAutoInt(uint32 nRegisterIndex, 
+	bool ShaderParameter::InsertConstantAutoInt(uint32 nRegisterIndex, 
                                                   FShaderParamConstantAutoType eShaderParamConstantAuto,
                                                   uint32 nData,
                                                   uint32 nElementSize,
@@ -545,7 +545,7 @@ namespace LostPeterEngine
 		return false;
 	}
 
-	bool ShaderParamDefine::InsertConstantAutoFloat(uint32 nRegisterIndex,
+	bool ShaderParameter::InsertConstantAutoFloat(uint32 nRegisterIndex,
                                                     FShaderParamConstantAutoType eShaderParamConstantAuto,
                                                     float fData,
                                                     uint32 nElementSize)
@@ -561,7 +561,7 @@ namespace LostPeterEngine
 		return false;
 	}
 
-	bool ShaderParamDefine::InsertConstantManual(uint32 nRegisterIndex,
+	bool ShaderParameter::InsertConstantManual(uint32 nRegisterIndex,
                                                  const String& strName,
                                                  float* pData,
                                                  uint32 nDataCount)
@@ -577,7 +577,7 @@ namespace LostPeterEngine
 		return false;
 	}
 
-	void ShaderParamDefine::CopyFrom(const ShaderParamDefine& src)
+	void ShaderParameter::CopyFrom(const ShaderParameter& src)
 	{
 		//Auto
 		uint32 nSize = (uint32)src.m_aShaderConstantEntryAuto.size();
@@ -603,17 +603,17 @@ namespace LostPeterEngine
 		}
 	}
 
-    void ShaderParamDefine::UpdateParamAll(const ShaderParamSourceAuto* pParamSourceAuto)
+    void ShaderParameter::UpdateParamAll(const ShaderParamSourceAuto* pParamSourceAuto)
 	{
 		UpdateParamAutos(pParamSourceAuto);
 		UpdateParamManuals();
 	}
-    void ShaderParamDefine::UpdateParamRange(const ShaderParamSourceAuto* pParamSourceAuto, uint32 nStartRegisterIndex, uint32 nEndRegisterIndex)
+    void ShaderParameter::UpdateParamRange(const ShaderParamSourceAuto* pParamSourceAuto, uint32 nStartRegisterIndex, uint32 nEndRegisterIndex)
 	{
         
 	}
 	
-	void ShaderParamDefine::UpdateParamAutos(const ShaderParamSourceAuto* pParamSourceAuto, uint32 nBeginIndex /*= 0*/, uint32 nEndIndex /*= (uint32)(-1)*/)
+	void ShaderParameter::UpdateParamAutos(const ShaderParamSourceAuto* pParamSourceAuto, uint32 nBeginIndex /*= 0*/, uint32 nEndIndex /*= (uint32)(-1)*/)
 	{
 		if (!m_pShaderProgramGroup)
 			return;
@@ -1308,13 +1308,13 @@ namespace LostPeterEngine
 				break;
 			default:
 				{
-					F_Assert(false && "ShaderParamDefine::UpdateParamAutos: Wrong shader param type!");
+					F_Assert(false && "ShaderParameter::UpdateParamAutos: Wrong shader param type!");
 				}
 			}
 		}
 	}
 
-	void ShaderParamDefine::UpdateParamManuals(uint32 nBeginIndex /*= 0*/, uint32 nEndIndex /*= (uint32)(-1)*/)
+	void ShaderParameter::UpdateParamManuals(uint32 nBeginIndex /*= 0*/, uint32 nEndIndex /*= (uint32)(-1)*/)
 	{
 		uint32 nSize = (uint32)m_aShaderConstantEntryManual.size();
 		if(nEndIndex > nSize)

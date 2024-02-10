@@ -112,7 +112,7 @@
 #include "SceneManagerEnumerator.h"
 #include "SceneNode.h"
 #include "SceneSerializer.h"
-#include "ShaderParamDefine.h"
+#include "ShaderParameter.h"
 #include "ShaderParamPass.h"
 #include "ShaderParamPassMain.h"
 #include "ShaderParamPassDepth.h"

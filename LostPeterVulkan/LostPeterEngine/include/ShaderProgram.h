@@ -50,6 +50,8 @@ namespace LostPeterEngine
 
         bool m_bInternalResourcesCreated;
 
+        ShaderParameter* m_pShaderParameter;
+
     public:
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }
 		F_FORCEINLINE void SetPath(const String& strPath) { m_strPath = strPath; }
@@ -63,6 +65,12 @@ namespace LostPeterEngine
     public:
         virtual void Destroy();
 
+
+    public:
+        virtual bool HasShaderParameter() const { return nullptr != m_pShaderParameter; }
+		virtual ShaderParameter* GetShaderParameter();
+		virtual void SetShaderParameter(ShaderParameter* pShaderParameter);
+
         
     protected:
         virtual void loadImpl();
@@ -75,6 +83,8 @@ namespace LostPeterEngine
 
 		virtual bool createInternalResources();
 			virtual void createInternalResourcesImpl() = 0;
+
+        virtual ShaderParameter* createShaderParameter();
 
 	protected:
         virtual void addParameterBase();
