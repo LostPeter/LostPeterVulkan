@@ -11,6 +11,7 @@
 
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
+#include "../include/MeshManager.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -19,22 +20,49 @@
 
 namespace LostPeterEngine
 {
-    Mesh::Mesh(uint32 _group,
-               const String& _nameMesh,
-               const String& _pathMesh,
-               FMeshType _typeMesh,
-               FMeshVertexType _typeVertex,
-               FMeshGeometryType _typeGeometryType,
-               FMeshCreateParam* _pMeshCreateParam)
-        : Base(_group, _nameMesh)
-        , pathMesh(_pathMesh)
-        , typeMesh(_typeMesh)
-        , typeVertex(_typeVertex)
-        , typeGeometryType(_typeGeometryType)
-        , pMeshCreateParam(_pMeshCreateParam)
-    {
 
+
+
+    const String Mesh::ms_nameMesh = "Mesh";
+    Mesh::Mesh(ResourceManager* pResourceManager,
+               uint32 nGroup, 
+               const String& strName,
+               const String& strGroupName,
+               ResourceHandle nHandle,
+               bool bIsManualLoad /*= false*/,
+               ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
+        : Resource(pResourceManager,
+				   nGroup, 
+				   strName,
+				   strGroupName,
+				   nHandle,
+				   bIsManualLoad,
+				   pResourceManualLoader)
+        , m_nUsage(MeshManager::ms_nUsage_Default)
+        , m_eMesh(MeshManager::ms_eMesh_Default)
+        , m_eMeshVertex(MeshManager::ms_eMeshVertex_Default)
+        , m_eMeshGeometry(MeshManager::ms_eMeshGeometry_Default)
+        , m_bIsFlipY(MeshManager::ms_bIsFlipY_Default)
+        , m_pMeshCreateParam(nullptr)
+
+        , m_bInternalResourcesCreated(false)
+    {
+         if (createParameterDictionary(ms_nameMesh))
+		{
+			addParameterBase();
+            addParameterInherit();
+		}
     }
+        void Mesh::addParameterBase()
+        {
+
+        }
+        void Mesh::addParameterInherit()
+        {
+
+        }
+
+
     Mesh::~Mesh()
     {
         Destroy();
@@ -42,120 +70,135 @@ namespace LostPeterEngine
 
     void Mesh::Destroy()
     {
-        int count = (int)this->aMeshSubs.size();
+        
+
+        Resource::Destroy();
+    }
+
+    uint32 Mesh::GetMeshSubCount() const
+    {
+        return static_cast<uint32>(m_aMeshSub.size());
+    }
+    MeshSub* Mesh::GetMeshSubByIndex(uint32 nIndex)
+    {
+        F_Assert(nIndex >= 0 && nIndex < (uint32)m_aMeshSub.size() && "Mesh::GetMeshSubByIndex")
+		return m_aMeshSub[nIndex];
+    }
+    MeshSub* Mesh::GetMeshSubByName(const String& strName)
+    {
+        MeshSubPtrMap::iterator itFind = m_mapMeshSub.find(strName);
+		if (itFind != m_mapMeshSub.end())
+			return itFind->second;
+		return nullptr;
+    }
+    MeshSub* Mesh::CreateMeshSub(const String& strName)
+    {
+        MeshSubPtrMap::iterator itFind = m_mapMeshSub.find(strName);
+		if (itFind != m_mapMeshSub.end())
+		{
+			F_Assert(false && "Mesh::CreateMeshSub: The same name mesh sub already exist !")
+			return itFind->second;
+		}
+		
+		MeshSub* pMeshSub = new MeshSub(strName);
+		pMeshSub->SetMesh(this);
+		pMeshSub->SetMeshSubIndex((int)m_aMeshSub.size());
+
+		m_aMeshSub.push_back(pMeshSub);
+		m_mapMeshSub[strName] = pMeshSub;
+		return pMeshSub;
+    }
+    bool Mesh::DeleteMeshSub(MeshSub* pMeshSub)
+    {
+        return DeleteMeshSub(pMeshSub->GetName());
+    }
+    bool Mesh::DeleteMeshSub(uint32 nIndex)
+    {
+        F_Assert(nIndex >= 0 && nIndex < (uint32)m_aMeshSub.size() && "Mesh::DeleteMeshSub")
+		return DeleteMeshSub(m_aMeshSub[nIndex]->GetName());
+    }
+    bool Mesh::DeleteMeshSub(const String& strName)
+    {
+        MeshSubPtrMap::iterator itFind = m_mapMeshSub.find(strName);
+		if (itFind != m_mapMeshSub.end())
+		{
+			F_Assert(false && "Mesh::DeleteMeshSub: The name mesh sub is not exist !")
+			return false;
+		}
+		MeshSub* pMeshSub = itFind->second;
+		m_mapMeshSub.erase(itFind);
+		m_aMeshSub.erase(m_aMeshSub.begin() + pMeshSub->GetMeshSubIndex());
+
+        F_DELETE(pMeshSub)
+		return true;
+    }
+    void Mesh::DeleteMeshSubAll()
+    {
+        int count = (int)m_aMeshSub.size();
         for (int i = 0; i < count; i++)
         {
-            MeshSub* pMeshSub = this->aMeshSubs[i];
-            pMeshSub->Destroy();
-            delete pMeshSub;
+            MeshSub* pMeshSub = m_aMeshSub[i];
+            F_DELETE(pMeshSub)
         }
-        this->aMeshSubs.clear();
-        this->mapMeshSubs.clear();
+        m_aMeshSub.clear();
+        m_mapMeshSub.clear();
     }
 
-    bool Mesh::AddMeshSub(MeshSub* pMeshSub)
+    void Mesh::loadImpl()
     {
-        MeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
-        if (itFind != this->mapMeshSubs.end())
-        {
-            F_LogError("*********************** Mesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
-            return false;
-        }
-
-        this->aMeshSubs.push_back(pMeshSub);
-        this->mapMeshSubs[pMeshSub->nameMeshSub] = pMeshSub;
-        return true;
-    }   
-    bool Mesh::LoadMesh(bool isFlipY, 
-                        bool isTransformLocal, 
-                        const FMatrix4& matTransformLocal,
-                        bool isUpdateVertexBuffer /*= false*/,
-                        bool isUpdateIndexBuffer /*= false*/)
-    {
-        //1> Load
-        FMeshDataPCVector aMeshDataPCs;
-        FMeshDataVector aMeshDatas;
-        if (this->typeMesh == F_Mesh_File)
-        {
-            unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-            if (!FMeshDataLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
-            {
-                F_LogError("*********************** Mesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
-                return false; 
-            }
-        }
-        else if (this->typeMesh == F_Mesh_Geometry)
-        {
-            FMeshDataPC meshDataPC;
-            FMeshData meshData;
-            meshData.bIsFlipY = isFlipY;
-            if (!FMeshGeometry::CreateGeometryWithParam(&meshDataPC, &meshData, this->typeGeometryType, this->pMeshCreateParam))
-            {
-                F_LogError("*********************** Mesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
-                return false; 
-            }
-
-            if (meshData.GetVertexCount() > 0)
-            {
-                aMeshDatas.push_back(meshData);
-            }
-            if (meshDataPC.GetVertexCount() > 0)
-            {   
-                aMeshDataPCs.push_back(meshDataPC);
-            }
-        }
-        else
-        {
-            F_Assert(false && "Mesh::LoadMesh: Wrong typeMesh !")
-            return false;
-        }
-
-        const String& nameMesh = GetName();
-        //MeshData
-        int count_mesh_sub = (int)aMeshDatas.size();
-        for (int i = 0; i < count_mesh_sub; i++)
-        {
-            FMeshData& meshData = aMeshDatas[i];
-            
-            String nameMeshSub = nameMesh + "-" + FUtilString::SaveInt(i);
-            MeshSub* pMeshSub = new MeshSub(this,
-                                            meshData.nameMesh,
-                                            nameMeshSub,
-                                            i,
-                                            this->typeVertex,
-                                            isUpdateVertexBuffer,
-                                            isUpdateIndexBuffer);
-            if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
-            {
-                F_LogError("*********************** Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
-                return false;
-            }
-            AddMeshSub(pMeshSub);
-        }
-
-        //MeshDataPC
-        count_mesh_sub = (int)aMeshDataPCs.size();
-        for (int i = 0; i < count_mesh_sub; i++)
-        {
-            FMeshDataPC& meshDataPC = aMeshDataPCs[i];
-            
-            String nameMeshSub = nameMesh + "-" + FUtilString::SaveInt(i);
-            MeshSub* pMeshSub = new MeshSub(this,
-                                            meshDataPC.nameMesh,
-                                            nameMeshSub,
-                                            i,
-                                            this->typeVertex,
-                                            isUpdateVertexBuffer,
-                                            isUpdateIndexBuffer);
-            if (!pMeshSub->CreateMeshSub(meshDataPC, isTransformLocal, matTransformLocal))
-            {
-                F_LogError("*********************** Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
-                return false;
-            }
-            AddMeshSub(pMeshSub);
-        }
-
-        return true;
+        createInternalResources();
     }
+
+    void Mesh::unloadImpl()
+    {
+        destroyInternalResources();
+    }
+
+    uint32 Mesh::calculateSize() const
+    {
+        
+
+        return 0;
+    }
+
+    void Mesh::destroyInternalResources()
+    {
+        if (m_bInternalResourcesCreated)
+		{
+			destroyInternalResourcesImpl();
+			m_bInternalResourcesCreated = false;
+
+			if (m_eResourceLoading.load() != E_ResourceLoading_Unloading)
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Unloaded);
+                _FireUnloadingComplete();
+            }
+		}
+    }
+        void Mesh::destroyInternalResourcesImpl()
+        {
+
+        }
+
+
+    bool Mesh::createInternalResources()
+    {
+        if (!m_bInternalResourcesCreated)
+		{
+			createInternalResourcesImpl();
+			m_bInternalResourcesCreated = true;
+
+			if (!IsLoading())
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Loaded);
+                _FireLoadingComplete(false);
+            }
+		}
+		return true;
+    }
+        void Mesh::createInternalResourcesImpl()
+        {
+
+        }
     
 }; //LostPeterEngine

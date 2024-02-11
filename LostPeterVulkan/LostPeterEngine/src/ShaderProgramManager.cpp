@@ -35,6 +35,7 @@ namespace LostPeterEngine
     {
 
     }
+
     ShaderProgramManager::~ShaderProgramManager()
     {
 
@@ -44,9 +45,10 @@ namespace LostPeterEngine
     {
         F_DELETE(m_pShaderProgramSerializer)
         RemoveShaderProgramFactoryAll();
-        
+
         ResourceManager::Destroy();
     }
+
     bool ShaderProgramManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> ShaderProgram Cfg Path 
@@ -138,7 +140,7 @@ namespace LostPeterEngine
                                                                 pSPI->eShader);
             if (!pShaderProgram)
             {
-                F_LogError("*********************** ShaderProgramManager::loadShaderProgram: CreateShaderProgram failed, group: [%u], name: [%s] !", pSPI->group, pSPI->nameShaderProgram.c_str());
+                F_LogError("*********************** ShaderProgramManager::loadShaderProgram: CreateShaderProgram failed, group: [%u], name: [%s], path: [%s] !", pSPI->group, pSPI->nameShaderProgram.c_str(), pSPI->pathShaderProgram.c_str());
                 return nullptr;
             }
             return pShaderProgram;

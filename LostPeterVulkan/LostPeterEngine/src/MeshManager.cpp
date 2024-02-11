@@ -27,13 +27,110 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
+
+    //Set MeshParam
+    void MeshManager::SetMeshParam_Usage(NameValuePairMap& mapParam, uint32 nUsage)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_Usage), FUtilString::SaveUInt(nUsage));
+    }
+    void MeshManager::SetMeshParam_MeshType(NameValuePairMap& mapParam, FMeshType eMesh)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_MeshType), E_GetMeshParamTypeName(eMesh));
+    }
+    void MeshManager::SetMeshParam_MeshVertexType(NameValuePairMap& mapParam, FMeshVertexType eMeshVertex)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_MeshVertexType), E_GetMeshParamTypeName(eMeshVertex));
+    }
+    void MeshManager::SetMeshParam_MeshGeometryType(NameValuePairMap& mapParam, FMeshGeometryType eMeshGeometry)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_MeshGeometryType), E_GetMeshParamTypeName(eMeshGeometry));
+    }
+    void MeshManager::SetMesheParam_IsFlipY(NameValuePairMap& mapParam, bool bIsFlipY)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_IsFlipY), FUtilString::SaveBool(bIsFlipY));
+    }
+
+    //Get MeshParam
+    uint32 MeshManager::GetMeshParam_Usage(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_Usage);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_Usage: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_nUsage_Default;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+    FMeshType MeshManager::GetMeshParam_MeshType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_MeshType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_MeshType: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_eMesh_Default;
+        }
+        return F_ParseMeshType(itFind->second);
+    }
+    FMeshVertexType MeshManager::GetMeshParam_MeshVertexType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_MeshVertexType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_MeshVertexType: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_eMeshVertex_Default;
+        }
+        return F_ParseMeshVertexType(itFind->second);
+    }
+    FMeshGeometryType MeshManager::GetMeshParam_MeshGeometryType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_MeshGeometryType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_MeshGeometryType: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_eMeshGeometry_Default;
+        }
+        return F_ParseMeshGeometryType(itFind->second);
+    }
+    bool MeshManager::GetMeshParam_IsFlipY(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_IsFlipY);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_IsFlipY: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_bIsFlipY_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+
+
+    NameValuePairMap MeshManager::ms_mapParam_Default;
+        uint32 MeshManager::ms_nUsage_Default = 0;
+        FMeshType MeshManager::ms_eMesh_Default = F_Mesh_File;
+        FMeshVertexType MeshManager::ms_eMeshVertex_Default = F_MeshVertex_Pos3Color4Normal3Tangent3Tex2;
+        FMeshGeometryType MeshManager::ms_eMeshGeometry_Default = F_MeshGeometry_EntityQuad;
+        bool MeshManager::ms_bIsFlipY_Default = false;
+
+    const String& MeshManager::GetMeshParamValue(EMeshParamType type)
+    {
+        const String& strName = E_GetMeshParamTypeName(type);
+        NameValuePairMap::iterator itFind = ms_mapParam_Default.find(strName);
+        F_Assert(itFind != ms_mapParam_Default.end() && "MeshManager::GetMeshParamValue")
+        return itFind->second;
+    }
+
     const String MeshManager::ms_strMeshConfigName = "Cfg_Mesh.xml";
     MeshManager::MeshManager()
-        : Base("MeshManager")
+        : ResourceManager(E_GetResourceTypeName(E_Resource_Mesh), E_Resource_Mesh)
         , m_pMeshSerializer(nullptr)
     {
 
     }
+
     MeshManager::~MeshManager()
     {
         Destroy();
@@ -42,8 +139,10 @@ namespace LostPeterEngine
     void MeshManager::Destroy()
     {
         F_DELETE(m_pMeshSerializer)
-        DeleteMeshAll();
+        
+        ResourceManager::Destroy();
     }
+    
     bool MeshManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> Mesh Cfg Path 
@@ -65,147 +164,199 @@ namespace LostPeterEngine
         return true;
     }
 
-    bool MeshManager::LoadMeshAll()
-    {
-        if (m_pMeshSerializer == nullptr)
-            return false;
-
-        DeleteMeshAll();
-        MeshInfoPtrVector& aMeshInfos = m_pMeshSerializer->GetMeshInfoPtrVector();
-        for (MeshInfoPtrVector::iterator it = aMeshInfos.begin();
-             it != aMeshInfos.end(); ++it)
-        {
-            if (!loadMesh(*it))
-                continue;
-        }
-
-        return true;
-    }
-    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strName)
+    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pMeshSerializer == nullptr)
             return nullptr;
 
-        Mesh* pMesh = GetMesh(nGroup, strName);
-        if (pMesh == nullptr)
+        Mesh* pMesh = GetMesh(strName, strGroupName);
+        if (pMesh != nullptr)
+        {
+            pMesh->AddRef();
+        }
+        else
         {
             MeshInfo* pMeshInfo = m_pMeshSerializer->GetMeshInfo(nGroup, strName);
             if (pMeshInfo == nullptr)
             {
-                F_LogError("*********************** MeshManager::LoadMesh: Can not find mesh info, group: [%u], name: [%s] !", nGroup, strName.c_str());
+                F_LogError("*********************** MeshManager::LoadMesh: Can not find mesh info, group: [%u], name: [%s], groupName: [%s] !", nGroup, strName.c_str(), strGroupName.c_str());
                 return nullptr;
             }
-            if (!loadMesh(pMeshInfo))
+            pMesh = loadMesh(pMeshInfo);
+            if (!pMesh)
             {
                 return nullptr;
             }
         }
         return pMesh;
     }
-    Mesh* MeshManager::loadMesh(MeshInfo* pMI)
-    {
-        Mesh* pMesh = new Mesh(pMI->group,
-                               pMI->nameMesh,
-                               pMI->pathMesh,
-                               pMI->typeMesh,
-                               pMI->typeVertex,
-                               pMI->typeGeometryType,
-                               nullptr);
-        if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
+        Mesh* MeshManager::loadMesh(MeshInfo* pMI)
         {
-            F_LogError("*********************** MeshManager::loadMesh: Load mesh failed, name: [%s], path: [%s] !", pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
-            F_DELETE(pMesh)
-            return nullptr;
-        }
-
-        if (AddMesh(pMI->group, pMesh))
-        {
-            F_LogInfo("MeshManager::loadMesh: Load mesh success, [%u]-[%s]-[%s]-[%d] !", 
-                      pMI->group, 
-                      pMI->nameMesh.c_str(), 
-                      pMI->pathMesh.c_str(), 
-                      (int)pMesh->aMeshSubs.size());
-        }
-        return pMesh;
-    }
-
-    bool MeshManager::HasMesh(uint nGroup, const String& strName)
-    {
-        return GetMesh(nGroup, strName) != nullptr;
-    }
-
-    Mesh* MeshManager::GetMesh(uint nGroup, const String& strName)
-    {
-        MeshGroupPtrMap::iterator itFindGroup = m_mapMeshGroup.find(nGroup);
-        if (itFindGroup == m_mapMeshGroup.end())
-        {
-            return nullptr;
-        }
-
-        MeshPtrMap::iterator itFindMesh = itFindGroup->second.find(strName);
-        if (itFindMesh == itFindGroup->second.end())
-        {
-            return nullptr;
-        }
-        return itFindMesh->second;
-    }
-
-    bool MeshManager::AddMesh(uint nGroup, Mesh* pMesh)
-    {
-        MeshGroupPtrMap::iterator itFind = m_mapMeshGroup.find(nGroup);
-        if (itFind == m_mapMeshGroup.end())
-        {
-            MeshPtrMap mapMesh;
-            m_mapMeshGroup[nGroup] = mapMesh;
-            itFind = m_mapMeshGroup.find(nGroup);
-        }
-        const String& strName = pMesh->GetName();
-        MeshPtrMap::iterator itFindMesh = itFind->second.find(strName);
-        if (itFindMesh != itFind->second.end())
-        {
-            F_LogError("*********************** MeshManager::AddMesh: Mesh name already exist: [%s] !", strName.c_str());
-            F_DELETE(pMesh)
-            return false;
-        }
-
-        itFind->second.insert(MeshPtrMap::value_type(strName, pMesh));
-        m_aMesh.push_back(pMesh);
-        return true;
-    }
-
-    void MeshManager::DeleteMesh(uint nGroup, const String& strName)
-    {
-        MeshGroupPtrMap::iterator itFind = m_mapMeshGroup.find(nGroup);
-        if (itFind == m_mapMeshGroup.end())
-        {
-            return;
-        }
-
-        MeshPtrMap::iterator itFindMesh = itFind->second.find(strName);
-        if (itFindMesh != itFind->second.end())
-        {
-            MeshPtrVector::iterator itFindA = std::find(m_aMesh.begin(), m_aMesh.end(), itFindMesh->second);
-            if (itFindA != m_aMesh.end())
-                m_aMesh.erase(itFindA);
-            F_DELETE(itFindMesh->second)
-            itFind->second.erase(itFindMesh);
-        }
-    }
-
-    void MeshManager::DeleteMeshAll()
-    {
-        for (MeshGroupPtrMap::iterator it = m_mapMeshGroup.begin();
-             it != m_mapMeshGroup.end(); ++it)
-        {
-            MeshPtrMap& mapMesh = it->second;
-            for (MeshPtrMap::iterator itMesh = mapMesh.begin(); 
-                 itMesh != mapMesh.end(); ++itMesh)
+            Mesh* pMesh = CreateMesh(pMI->pathMesh,
+                                     pMI->group,
+                                     pMI->nameMesh,
+                                     ResourceGroupManager::ms_strNameResourceGroup_Internal,
+                                     0,
+                                     pMI->eMesh,
+                                     pMI->eMeshVertex,
+                                     pMI->eMeshGeometry,
+                                     pMI->isFlipY,
+                                     nullptr);
+            if (!pMesh)
             {
-                F_DELETE(itMesh->second)
+                F_LogError("*********************** MeshManager::loadMesh: CreateMesh failed, group: [%u], name: [%s], path: [%s] !", pMI->group, pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
+                return nullptr;
             }
+            return pMesh;
         }
-        m_aMesh.clear();
-        m_mapMeshGroup.clear();
+
+    bool MeshManager::HasMesh(const String& strName)
+    {
+        return GetResourceByName(strName) != nullptr;
+    }
+    bool MeshManager::HasMesh(const String& strName, const String& strGroupName)
+    {
+        return GetResourceByName(strName, strGroupName) != nullptr;
+    }
+    Mesh* MeshManager::GetMesh(const String& strName)
+    {
+        Resource* pResource = GetResourceByName(strName);
+        if (pResource == nullptr)
+            return nullptr;
+        return (Mesh*)pResource;
+    }
+    Mesh* MeshManager::GetMesh(const String& strName, const String& strGroupName)
+    {
+        Resource* pResource = GetResourceByName(strName, strGroupName);
+        if (pResource == nullptr)
+            return nullptr;
+        return (Mesh*)pResource;
+    }
+
+    ResourceCreateOrRetrieveResult MeshManager::CreateOrRetrieveMesh(const String& strPath,
+                                                                     uint32 nGroup, 
+                                                                     const String& strName, 
+                                                                     const String& strGroupName, 
+                                                                     bool bIsManualLoad /*= false*/,
+                                                                     ResourceManualLoader* pManualLoader /*= nullptr*/, 
+                                                                     const NameValuePairMap* pLoadParams /*= nullptr*/,
+                                                                     uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
+                                                                     FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
+                                                                     FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
+                                                                     FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
+                                                                     bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
+                                                                     FMeshCreateParam* pMeshCreateParam /*= nullptr*/)
+    {
+        NameValuePairMap mapMeshParam;
+        if (bIsManualLoad && pLoadParams)
+        {
+            FUtil::CopyNameValuePairMapTo(pLoadParams, &mapMeshParam);
+        }
+
+        ResourceCreateOrRetrieveResult result = ResourceManager::CreateOrRetrieve(nGroup,
+                                                                                  strName,
+                                                                                  strGroupName,
+                                                                                  bIsManualLoad,
+                                                                                  pManualLoader,
+                                                                                  &mapMeshParam);
+		if (!result.first || !result.second)
+		{
+            F_LogError("*********************** Mesh::CreateOrRetrieveMesh: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+			return result;
+		}
+
+        Mesh* pMesh = (Mesh*)result.first;
+        pMesh->SetPath(strPath);
+        pMesh->SetUsage(nUsage);
+        pMesh->SetMeshType(eMesh);
+        pMesh->SetMeshVertexType(eMeshVertex);
+        pMesh->SetMeshGeometryType(eMeshGeometry);
+        pMesh->SetIsFlipY(bIsFlipY);
+        pMesh->SetMeshCreateParam(pMeshCreateParam);
+
+		return result;
+    }
+
+    Mesh* MeshManager::Prepare(const String& strPath,
+                               uint32 nGroup, 
+                               const String& strName, 
+                               const String& strGroupName, 
+                               uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
+                               FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
+                               FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
+                               FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
+                               bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
+                               FMeshCreateParam* pMeshCreateParam /*= nullptr*/)
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveMesh(strPath,
+                                                                     nGroup,
+                                                                     strName,
+                                                                     strGroupName,
+                                                                     false,
+                                                                     nullptr,
+                                                                     nullptr,
+                                                                     nUsage,
+                                                                     eMesh,
+                                                                     eMeshVertex,
+                                                                     eMeshGeometry,
+                                                                     bIsFlipY,
+                                                                     pMeshCreateParam);
+		Mesh* pMesh = (Mesh*)result.first;
+        if (!pMesh)
+            return nullptr;
+		pMesh->Prepare();
+
+		return pMesh;
+    }
+
+    Mesh* MeshManager::CreateMesh(const String& strPath,
+                                  uint32 nGroup, 
+                                  const String& strName, 
+                                  const String& strGroupName, 
+                                  uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
+                                  FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
+                                  FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
+                                  FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
+                                  bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
+                                  FMeshCreateParam* pMeshCreateParam /*= nullptr*/)         
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveMesh(strPath,
+                                                                     nGroup,
+                                                                     strName,
+                                                                     strGroupName,
+                                                                     false,
+                                                                     nullptr,
+                                                                     nullptr,
+                                                                     nUsage,
+                                                                     eMesh,
+                                                                     eMeshVertex,
+                                                                     eMeshGeometry,
+                                                                     bIsFlipY,
+                                                                     pMeshCreateParam);
+		Mesh* pMesh = (Mesh*)result.first;
+        if (!pMesh)
+            return nullptr;
+		pMesh->Load();
+
+        pMesh->AddRef();
+		return pMesh;
+    }       
+
+    Resource* MeshManager::createImpl(uint32 nGroup,
+                                      const String& strName,
+                                      const String& strGroupName,
+                                      ResourceHandle nHandle, 
+                                      bool bIsManualLoad,
+                                      ResourceManualLoader* pManualLoader, 
+                                      const NameValuePairMap* pLoadParams)
+    {
+        return new Mesh(this,
+                        nGroup, 
+                        strName,
+                        strGroupName,
+                        nHandle,
+                        bIsManualLoad,
+                        pManualLoader);
     }
 
 }; //LostPeterEngine

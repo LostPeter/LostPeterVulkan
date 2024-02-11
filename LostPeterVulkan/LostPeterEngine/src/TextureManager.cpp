@@ -361,6 +361,7 @@ namespace LostPeterEngine
 
         ResourceManager::Destroy();
     }
+
     bool TextureManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> Texture Cfg Path 
@@ -413,26 +414,26 @@ namespace LostPeterEngine
             StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
             uint32 nUsage = pTI->isRT ? E_TextureUsage_RenderTarget : E_TextureUsage_Default;
             Texture* pTexture = CreateTexture(aPathTexture,
-                                            pTI->group,
-                                            pTI->nameTexture,
-                                            ResourceGroupManager::ms_strNameResourceGroup_Internal,
-                                            nUsage,
-                                            pTI->typeTexture,
-                                            pTI->typeTextureFilter,
-                                            pTI->typeTextureAddressing,
-                                            pTI->typeTextureBorderColor,
-                                            pTI->typeMSAASampleCount,
-                                            TextureManager::ms_ePixelFormat_Default,
-                                            pTI->width,
-                                            pTI->height,
-                                            pTI->depth,
-                                            TextureManager::ms_nBitDepthInteger_Default,
-                                            TextureManager::ms_nBitDepthFloat_Default,
-                                            pTI->isAlpha,
-                                            TextureManager::ms_nMipMapsCount_Default, 
-                                            TextureManager::ms_bIsMipMapsHardwareGenerated_Default,
-                                            TextureManager::ms_fGamma_Default,
-                                            TextureManager::ms_bIsGammaHardware_Default);
+                                              pTI->group,
+                                              pTI->nameTexture,
+                                              ResourceGroupManager::ms_strNameResourceGroup_Internal,
+                                              nUsage,
+                                              pTI->typeTexture,
+                                              pTI->typeTextureFilter,
+                                              pTI->typeTextureAddressing,
+                                              pTI->typeTextureBorderColor,
+                                              pTI->typeMSAASampleCount,
+                                              TextureManager::ms_ePixelFormat_Default,
+                                              pTI->width,
+                                              pTI->height,
+                                              pTI->depth,
+                                              TextureManager::ms_nBitDepthInteger_Default,
+                                              TextureManager::ms_nBitDepthFloat_Default,
+                                              pTI->isAlpha,
+                                              TextureManager::ms_nMipMapsCount_Default, 
+                                              TextureManager::ms_bIsMipMapsHardwareGenerated_Default,
+                                              TextureManager::ms_fGamma_Default,
+                                              TextureManager::ms_bIsGammaHardware_Default);
             if (!pTexture)
             {
                 F_LogError("*********************** TextureManager::loadTexture: CreateTexture failed, group: [%u], name: [%s] !", pTI->group, pTI->nameTexture.c_str());

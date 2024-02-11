@@ -193,7 +193,11 @@ namespace LostPeterEngine
 
     enum EMeshParamType
     {
-        E_MeshParam_IsFlip = 0,                             //0:    IsFlip
+        E_MeshParam_Usage = 0,                              //0:    Usage
+        E_MeshParam_MeshType,                               //1:    MeshType
+        E_MeshParam_MeshVertexType,                         //2:    MeshVertexType
+        E_MeshParam_MeshGeometryType,                       //3:    MeshGeometryType
+        E_MeshParam_IsFlipY,                                //4:    IsFlipY
 
         E_MeshParam_Count,                          
     };
@@ -524,9 +528,9 @@ namespace LostPeterEngine
         MeshInfo();
         MeshInfo(const String& _nameMesh,
                  const String& _pathMesh,
-                 FMeshType _typeMesh,
-                 FMeshVertexType _typeVertex,
-                 FMeshGeometryType _typeGeometryType,
+                 FMeshType _eMesh,
+                 FMeshVertexType _eMeshVertex,
+                 FMeshGeometryType _eMeshGeometry,
                  FMeshCreateParam* _pMeshCreateParam,
                  bool _isFlipY,
                  bool _isTransformLocal,
@@ -537,9 +541,9 @@ namespace LostPeterEngine
         String nameMesh;
         String pathMesh;
         
-        FMeshType typeMesh;
-        FMeshVertexType typeVertex;
-        FMeshGeometryType typeGeometryType;
+        FMeshType eMesh;
+        FMeshVertexType eMeshVertex;
+        FMeshGeometryType eMeshGeometry;
         FMeshCreateParam* pMeshCreateParam;
 
         bool isFlipY;

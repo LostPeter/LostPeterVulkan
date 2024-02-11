@@ -154,18 +154,18 @@ namespace LostPeterEngine
                 F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'type_mesh', mesh index: [%d] !", i);
                 continue;
             }
-            FMeshType typeMesh = F_ParseMeshType(strTypeMesh);
+            FMeshType eMesh = F_ParseMeshType(strTypeMesh);
             //type_mesh_geometry
             String strTypeMeshGeometry = "";
-            FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
-            if (typeMesh == F_Mesh_Geometry)
+            FMeshGeometryType eMeshGeometry = F_MeshGeometry_EntityTriangle;
+            if (eMesh == F_Mesh_Geometry)
             {
                 if (!pChild->ParserAttribute_String(MESH_TAG_ATTRIBUTE_TYPE_MESH_GEOMETRY, strTypeMeshGeometry))
                 {
                     F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'type_mesh_geometry', mesh index: [%d] !", i);
                     continue;
                 }
-                typeGeometryType = F_ParseMeshGeometryType(strTypeMeshGeometry);
+                eMeshGeometry = F_ParseMeshGeometryType(strTypeMeshGeometry);
             }
             //type_vertex
             String strTypeVertex;
@@ -174,7 +174,7 @@ namespace LostPeterEngine
                 F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'type_vertex', mesh index: [%d] !", i);
                 continue;
             }
-            FMeshVertexType typeVertex = F_ParseMeshVertexType(strTypeVertex);
+            FMeshVertexType eMeshVertex = F_ParseMeshVertexType(strTypeVertex);
             //is_flip_y
             bool isFlipY = false;
             if (!pChild->ParserAttribute_Bool(MESH_TAG_ATTRIBUTE_IS_FLIP_Y, isFlipY))
@@ -202,9 +202,9 @@ namespace LostPeterEngine
 
             MeshInfo* pMeshInfo = new MeshInfo(strNameMesh,
                                                strPathMesh,
-                                               typeMesh,
-                                               typeVertex,
-                                               typeGeometryType,
+                                               eMesh,
+                                               eMeshVertex,
+                                               eMeshGeometry,
                                                nullptr,
                                                isFlipY,
                                                isTransLocal,

@@ -18,59 +18,30 @@ namespace LostPeterEngine
 {
     class engineExport MeshSub : public Base
     {
+        friend class Mesh;
+
     public:
-        MeshSub(Mesh* _pMesh, 
-                const String& _nameOriginal,
-                const String& _nameMeshSub,
-                int _indexMeshSub,
-                FMeshVertexType _poTypeVertex,
-                bool isUpdateVertexBuffer,
-                bool isUpdateIndexBuffer);
+        MeshSub(const String& nameMeshSub);
         virtual ~MeshSub();
 
     public:
-        Mesh* pMesh;
-        String nameMeshSub;
-        int indexMeshSub;
-        bool isNeedUpdate_VertexBuffer;
-        bool isNeedUpdate_IndexBuffer;
-        FSphere sphere;
-        FAABB aabb;
+        Mesh* m_pMesh;
+        int32 m_nMeshSubIndex;
 
-        //Vertex
-        FMeshVertexType poTypeVertex;
-        FMeshVertexPCVector vertices_Pos3Color4;
-        std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
-        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<FVertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
-        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
-        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
-        uint32_t poVertexCount;
-        size_t poVertexBuffer_Size;
-        void* poVertexBuffer_Data;
-
-        //Index
-        std::vector<uint32_t> indices;
-        uint32_t poIndexCount;
-        size_t poIndexBuffer_Size;
-        void* poIndexBuffer_Data;
-
-        //Instance
-        uint32_t instanceCount;
+    public:
+        F_FORCEINLINE Mesh* GetMesh() const { return m_pMesh; }
+		F_FORCEINLINE void SetMesh(Mesh* pMesh) { m_pMesh = pMesh; }
+        F_FORCEINLINE int GetMeshSubIndex() const { return m_nMeshSubIndex; }
+		F_FORCEINLINE void SetMeshSubIndex(int nMeshSubIndex) { m_nMeshSubIndex = nMeshSubIndex; }
 
     public:
         void Destroy();
-        uint32_t GetVertexSize();
-        uint32_t GetIndexSize();
+        
 
-        virtual bool CreateMeshSub(FMeshDataPC& meshDataPC, bool isTransformLocal, const FMatrix4& matTransformLocal);
-        virtual bool CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal);
-        virtual void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
-                                        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
-        virtual void WriteIndexData(std::vector<uint32_t>& indexData);
+    public:
 
-        virtual void UpdateVertexBuffer();
-        virtual void UpdateIndexBuffer();
+
+
     };
 
 }; //LostPeterEngine

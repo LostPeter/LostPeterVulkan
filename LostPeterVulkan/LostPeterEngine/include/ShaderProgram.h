@@ -133,9 +133,10 @@ namespace LostPeterEngine
         virtual ~ShaderProgram();
 
     public:
-		static const String ms_nameProgramShader;
+		static const String ms_nameShaderProgram;
 
     public:
+    protected:
         String m_strPath;
 
         FShaderType m_eShader;

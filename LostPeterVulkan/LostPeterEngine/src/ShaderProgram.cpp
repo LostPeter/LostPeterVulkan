@@ -71,7 +71,7 @@ namespace LostPeterEngine
 
     
     ////////////////////////////// ShaderProgram ///////////////////////////////////////
-    const String ShaderProgram::ms_nameProgramShader = "ShaderProgram";
+    const String ShaderProgram::ms_nameShaderProgram = "ShaderProgram";
     ShaderProgram::ShaderProgram(ResourceManager* pResourceManager,
                                  uint32 nGroup, 
                                  const String& strName,
@@ -91,7 +91,7 @@ namespace LostPeterEngine
         , m_bInternalResourcesCreated(false)
         , m_pShaderParameter(nullptr)
     {
-        if (createParameterDictionary(ms_nameProgramShader))
+        if (createParameterDictionary(ms_nameShaderProgram))
 		{
 			addParameterBase();
 		}

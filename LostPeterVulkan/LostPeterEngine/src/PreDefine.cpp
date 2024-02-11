@@ -112,8 +112,11 @@ namespace LostPeterEngine
     //EMeshParamType
     static String s_nameMeshParamTypes[] = 
     {
-        "IsFlip",                   //0:    IsFlip      
-
+        "Usage",                        //0:    Usage
+        "MeshType",                     //1:    MeshType
+        "MeshVertexType",               //2:    MeshVertexType
+        "MeshGeometryType",             //3:    MeshGeometryType
+        "IsFlipY",                      //4:    IsFlipY
     };
     const String& E_GetMeshParamTypeName(EMeshParamType type)
     {
@@ -131,7 +134,7 @@ namespace LostPeterEngine
                 return (EMeshParamType)(i);
         }
         F_Assert(false && "E_ParseMeshParamType: Wrong type name !")
-        return E_MeshParam_IsFlip;
+        return E_MeshParam_Usage;
     }
 
 
@@ -339,9 +342,9 @@ namespace LostPeterEngine
         : group(0)
         , nameMesh("")
         , pathMesh("")
-        , typeMesh(F_Mesh_File)
-        , typeVertex(F_MeshVertex_Pos3Color4Tex2)
-        , typeGeometryType(F_MeshGeometry_EntityGrid)
+        , eMesh(F_Mesh_File)
+        , eMeshVertex(F_MeshVertex_Pos3Color4Tex2)
+        , eMeshGeometry(F_MeshGeometry_EntityGrid)
         , pMeshCreateParam(nullptr)
         , isFlipY(false)
         , isTransformLocal(false)
@@ -351,9 +354,9 @@ namespace LostPeterEngine
     }
     MeshInfo::MeshInfo(const String& _nameMesh,
                        const String& _pathMesh,
-                       FMeshType _typeMesh,
-                       FMeshVertexType _typeVertex,
-                       FMeshGeometryType _typeGeometryType,
+                       FMeshType _eMesh,
+                       FMeshVertexType _eMeshVertex,
+                       FMeshGeometryType _eMeshGeometry,
                        FMeshCreateParam* _pMeshCreateParam,
                        bool _isFlipY,
                        bool _isTransformLocal,
@@ -361,9 +364,9 @@ namespace LostPeterEngine
         : group(0)
         , nameMesh(_nameMesh)
         , pathMesh(_pathMesh)
-        , typeMesh(_typeMesh)
-        , typeVertex(_typeVertex)
-        , typeGeometryType(_typeGeometryType)
+        , eMesh(_eMesh)
+        , eMeshVertex(_eMeshVertex)
+        , eMeshGeometry(_eMeshGeometry)
         , pMeshCreateParam(_pMeshCreateParam)
         , isFlipY(_isFlipY)
         , isTransformLocal(_isTransformLocal)
