@@ -17,11 +17,13 @@
 namespace LostPeterEngine
 {
     class engineExport MeshSub : public Base
+                               , public FNonCopyable
     {
         friend class Mesh;
 
-    public:
+    private:
         MeshSub(const String& nameMeshSub);
+    public:
         virtual ~MeshSub();
 
     public:
@@ -58,11 +60,17 @@ namespace LostPeterEngine
 
     public:
         void Destroy();
-        
+
+        bool Init(FMeshData& meshData, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        bool Init(FMeshDataPC& meshDataPC, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
 
     public:
         bool GetDataVertexIndex(DataVertexIndex& dataVI, uint32 nIndexLOD = 0);
 
+        void UpdateBound(const FAABB& aabb, const FSphere& sphere, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+
+    private:
+        
 
     };
 

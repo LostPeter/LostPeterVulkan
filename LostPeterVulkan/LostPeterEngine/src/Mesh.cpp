@@ -14,13 +14,141 @@
 #include "../include/MeshManager.h"
 #include "../include/DataVertex.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/postprocess.h>
-
 namespace LostPeterEngine
 {
+    ////////////////////////// MeshCmd /////////////////////////////
+    //MeshCmd_MeshType
+	class MeshCmd_MeshType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return F_GetMeshTypeName(pMesh->GetMeshType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetMeshType(F_ParseMeshType(strValue));
+		}
+	};
+    //MeshCmd_MeshVertexType
+	class MeshCmd_MeshVertexType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return F_GetMeshVertexTypeName(pMesh->GetMeshVertexType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetMeshVertexType(F_ParseMeshVertexType(strValue));
+		}
+	};
+    //MeshCmd_MeshGeometryType
+	class MeshCmd_MeshGeometryType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return F_GetMeshGeometryTypeName(pMesh->GetMeshGeometryType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetMeshGeometryType(F_ParseMeshGeometryType(strValue));
+		}
+	};
+    //MeshCmd_IsFlipY
+	class MeshCmd_IsFlipY : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return FUtilString::SaveBool(pMesh->GetIsFlipY());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetIsFlipY(FUtilString::ParserBool(strValue));
+		}
+	};
+    //MeshCmd_StreamUsageVertexType
+	class MeshCmd_StreamUsageVertexType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return E_GetStreamUsageTypeName(pMesh->GetStreamUsageVertex());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetStreamUsageVertex(E_ParseStreamUsageType(strValue));
+		}
+	};
+    //MeshCmd_StreamUsageIndexType
+	class MeshCmd_StreamUsageIndexType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return E_GetStreamUsageTypeName(pMesh->GetStreamUsageIndex());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetStreamUsageIndex(E_ParseStreamUsageType(strValue));
+		}
+	};
+    //MeshCmd_IsStreamUseShadowVertex
+	class MeshCmd_IsStreamUseShadowVertex : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return FUtilString::SaveBool(pMesh->GetIsStreamUseShadowVertex());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetIsStreamUseShadowVertex(FUtilString::ParserBool(strValue));
+		}
+	};
+    //MeshCmd_IsStreamUseShadowIndex
+	class MeshCmd_IsStreamUseShadowIndex : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Mesh* pMesh = static_cast<const Mesh*>(pTarget);
+			return FUtilString::SaveBool(pMesh->GetIsStreamUseShadowIndex());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Mesh* pMesh = static_cast<Mesh*>(pTarget);
+			pMesh->SetIsStreamUseShadowIndex(FUtilString::ParserBool(strValue));
+		}
+	};
+
+    ////////////////////////// Mesh ////////////////////////////////
+    static MeshCmd_MeshType s_MeshCmd_MeshType;
+	static MeshCmd_MeshVertexType s_MeshCmd_MeshVertexType;
+	static MeshCmd_MeshGeometryType s_MeshCmd_MeshGeometryType;
+	static MeshCmd_IsFlipY s_MeshCmd_IsFlipY;
+	static MeshCmd_StreamUsageVertexType s_MeshCmd_StreamUsageVertexType;
+	static MeshCmd_StreamUsageIndexType s_MeshCmd_StreamUsageIndexType;
+	static MeshCmd_IsStreamUseShadowVertex s_MeshCmd_IsStreamUseShadowVertex;
+	static MeshCmd_IsStreamUseShadowIndex s_MeshCmd_IsStreamUseShadowIndex;
+	
+
     const String Mesh::ms_nameMesh = "Mesh";
     Mesh::Mesh(ResourceManager* pResourceManager,
                uint32 nGroup, 
@@ -50,7 +178,7 @@ namespace LostPeterEngine
 
         , m_bInternalResourcesCreated(false)
     {
-         if (createParameterDictionary(ms_nameMesh))
+        if (createParameterDictionary(ms_nameMesh))
 		{
 			addParameterBase();
             addParameterInherit();
@@ -58,7 +186,15 @@ namespace LostPeterEngine
     }
         void Mesh::addParameterBase()
         {
-
+            FParameterDictionary* pDictionary = GetParameterDictionary();
+            pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_MeshType), MeshManager::GetMeshParamValue(E_MeshParam_MeshType), F_Parameter_Int, &s_MeshCmd_MeshType);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_MeshVertexType), MeshManager::GetMeshParamValue(E_MeshParam_MeshVertexType), F_Parameter_Int, &s_MeshCmd_MeshVertexType);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_MeshGeometryType), MeshManager::GetMeshParamValue(E_MeshParam_MeshGeometryType), F_Parameter_Int, &s_MeshCmd_MeshGeometryType);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_IsFlipY), MeshManager::GetMeshParamValue(E_MeshParam_IsFlipY), F_Parameter_Bool, &s_MeshCmd_IsFlipY);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_StreamUsageVertex), MeshManager::GetMeshParamValue(E_MeshParam_StreamUsageVertex), F_Parameter_Int, &s_MeshCmd_StreamUsageVertexType);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_StreamUsageIndex), MeshManager::GetMeshParamValue(E_MeshParam_StreamUsageIndex), F_Parameter_Int, &s_MeshCmd_StreamUsageIndexType);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowVertex), MeshManager::GetMeshParamValue(E_MeshParam_IsStreamUseShadowVertex), F_Parameter_Bool, &s_MeshCmd_IsStreamUseShadowVertex);
+			pDictionary->AddParameter(E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowIndex), MeshManager::GetMeshParamValue(E_MeshParam_IsStreamUseShadowIndex), F_Parameter_Bool, &s_MeshCmd_IsStreamUseShadowIndex);
         }
         void Mesh::addParameterInherit()
         {
@@ -73,7 +209,8 @@ namespace LostPeterEngine
 
     void Mesh::Destroy()
     {
-        
+        DeleteMeshSubAll();
+        F_DELETE(m_pDataVertexShared)
 
         Resource::Destroy();
     }
@@ -100,7 +237,7 @@ namespace LostPeterEngine
 		if (itFind != m_mapMeshSub.end())
 		{
 			F_Assert(false && "Mesh::CreateMeshSub: The same name mesh sub already exist !")
-			return itFind->second;
+			return nullptr;
 		}
 		
 		MeshSub* pMeshSub = new MeshSub(strName);
@@ -178,11 +315,6 @@ namespace LostPeterEngine
             }
 		}
     }
-        void Mesh::destroyInternalResourcesImpl()
-        {
-
-        }
-
 
     bool Mesh::createInternalResources()
     {
@@ -199,9 +331,5 @@ namespace LostPeterEngine
 		}
 		return true;
     }
-        void Mesh::createInternalResourcesImpl()
-        {
-
-        }
     
 }; //LostPeterEngine

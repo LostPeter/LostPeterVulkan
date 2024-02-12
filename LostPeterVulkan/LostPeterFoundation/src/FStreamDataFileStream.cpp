@@ -187,18 +187,18 @@ namespace LostPeterFoundation
 		m_pStream->seekg(static_cast<std::streamoff>(pos), std::ios::beg);
 	}
 
-	size_t FStreamDataFileStream::Tell(void) const
+	size_t FStreamDataFileStream::Tell() const
 	{
 		m_pStream->clear();
 		return m_pStream->tellg();
 	}
 
-	bool FStreamDataFileStream::Eof(void) const
+	bool FStreamDataFileStream::Eof() const
 	{
 		return m_pStream->eof();
 	}
 
-	void FStreamDataFileStream::Close(void)
+	void FStreamDataFileStream::Close()
 	{
 		if (m_pStream)
 		{

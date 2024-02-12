@@ -40,6 +40,22 @@ namespace LostPeterEngine
 		F_DELETE(m_pDataIndex)
     }
 
+    bool MeshSub::Init(FMeshData& meshData, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        UpdateBound(meshData.aabb, meshData.sphere, bIsTransformLocal, mat4TransformLocal);
+        
+
+        return true;
+    }
+    bool MeshSub::Init(FMeshDataPC& meshDataPC, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        UpdateBound(meshDataPC.aabb, meshDataPC.sphere, bIsTransformLocal, mat4TransformLocal);
+
+        
+        return true;
+    }
+
+
     bool MeshSub::GetDataVertexIndex(DataVertexIndex& dataVI, uint32 nIndexLOD /*= 0*/)
     {
         if (m_pMesh == nullptr)
@@ -61,5 +77,15 @@ namespace LostPeterEngine
 		return true;
     }
     
+    void MeshSub::UpdateBound(const FAABB& aabb, const FSphere& sphere, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        m_boundAABB = aabb;
+        m_boundSphere = sphere;
+        if (bIsTransformLocal)
+        {
+            m_boundAABB.TransformAffine(mat4TransformLocal);
+            m_boundSphere.Transform(mat4TransformLocal);
+        }
+    }
 
 }; //LostPeterEngine

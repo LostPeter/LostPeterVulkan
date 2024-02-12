@@ -17,6 +17,7 @@
 namespace LostPeterEngine
 {
     class engineExport Mesh : public Resource
+                            , public FNonCopyable
     {
         friend class MeshManager;
         friend class MeshSub;
@@ -56,7 +57,6 @@ namespace LostPeterEngine
         FSphere m_boundSphere;
         
         DataVertex*	m_pDataVertexShared;
-
 
         bool m_bInternalResourcesCreated;
 
