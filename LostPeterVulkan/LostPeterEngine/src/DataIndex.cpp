@@ -17,7 +17,7 @@ namespace LostPeterEngine
 {
     DataIndex::DataIndex()
 		: m_pStreamIndex(nullptr)
-		, m_bDelete(true)
+		, m_bIsDelete(true)
 		, m_nIndexStart(0)
 		, m_nIndexCount(0)
 		, m_nBatchCount(0)
@@ -26,9 +26,9 @@ namespace LostPeterEngine
 
 	}
 
-	DataIndex::DataIndex(StreamIndex* pStreamIndex, size_t nStart, size_t nCount, bool bDel)
+	DataIndex::DataIndex(StreamIndex* pStreamIndex, uint32 nStart, uint32 nCount, bool bDel)
 		: m_pStreamIndex(pStreamIndex)
-		, m_bDelete(bDel)
+		, m_bIsDelete(bDel)
 		, m_nIndexStart(nStart)
 		, m_nIndexCount(nCount)
 		, m_nBatchCount(0)
@@ -44,14 +44,14 @@ namespace LostPeterEngine
 
 	void DataIndex::Destroy()
 	{
-		if (m_bDelete)
+		if (m_bIsDelete)
 		{
 			if (m_pStreamIndex)
 			{
 				StreamManager::GetSingleton().DestroyStreamIndex(m_pStreamIndex);
 				m_pStreamIndex = nullptr;
 			}
-			m_bDelete = false;
+			m_bIsDelete = false;
 		}
 	}
 

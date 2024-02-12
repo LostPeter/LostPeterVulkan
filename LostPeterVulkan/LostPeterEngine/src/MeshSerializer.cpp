@@ -13,17 +13,21 @@
 
 namespace LostPeterEngine
 {
-    #define MESH_TAG_MESH_CFG								"cfg_mesh"
-    #define	MESH_TAG_MESH									"mesh"
+    #define MESH_TAG_MESH_CFG								    "cfg_mesh"
+    #define	MESH_TAG_MESH									        "mesh"
 
-#define MESH_TAG_ATTRIBUTE_NAME		            "name"
-#define MESH_TAG_ATTRIBUTE_PATH			        "path"
-#define MESH_TAG_ATTRIBUTE_TYPE_MESH			"type_mesh"
-#define MESH_TAG_ATTRIBUTE_TYPE_MESH_GEOMETRY	"type_mesh_geometry"
-#define MESH_TAG_ATTRIBUTE_TYPE_VERTEX	        "type_vertex"
-#define MESH_TAG_ATTRIBUTE_IS_FLIP_Y	        "is_flip_y"
-#define MESH_TAG_ATTRIBUTE_IS_TRANS_LOCAL	    "is_trans_local"
-#define MESH_TAG_ATTRIBUTE_TRANS_LOCAL	        "trans_local"
+#define MESH_TAG_ATTRIBUTE_NAME		                        "name"
+#define MESH_TAG_ATTRIBUTE_PATH			                    "path"
+#define MESH_TAG_ATTRIBUTE_TYPE_MESH			            "type_mesh"
+#define MESH_TAG_ATTRIBUTE_TYPE_MESH_GEOMETRY	            "type_mesh_geometry"
+#define MESH_TAG_ATTRIBUTE_TYPE_VERTEX	                    "type_vertex"
+#define MESH_TAG_ATTRIBUTE_IS_FLIP_Y	                    "is_flip_y"
+#define MESH_TAG_ATTRIBUTE_TYPE_STREAM_USAGE_VERTEX	        "type_stream_usage_vertex"
+#define MESH_TAG_ATTRIBUTE_TYPE_STREAM_USAGE_INDEX	        "type_stream_usage_index"
+#define MESH_TAG_ATTRIBUTE_IS_STREAM_USE_SHADOW_VERTEX	    "is_stream_use_shadow_vertex"
+#define MESH_TAG_ATTRIBUTE_IS_STREAM_USE_SHADOW_INDEX	    "is_stream_use_shadow_index"
+#define MESH_TAG_ATTRIBUTE_IS_TRANS_LOCAL	                "is_trans_local"
+#define MESH_TAG_ATTRIBUTE_TRANS_LOCAL	                    "trans_local"
 
 
     MeshSerializer::MeshSerializer()
@@ -182,6 +186,36 @@ namespace LostPeterEngine
                 F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'is_flip_y', mesh index: [%d] !", i);
                 continue;
             }
+            //type_stream_usage_vertex
+            String strTypeStreamUsageVertex;
+            if (!pChild->ParserAttribute_String(MESH_TAG_ATTRIBUTE_TYPE_STREAM_USAGE_VERTEX, strTypeStreamUsageVertex))
+            {
+                F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'type_stream_usage_vertex', mesh index: [%d] !", i);
+                continue;
+            }
+            EStreamUsageType eStreamUsageVertex = E_ParseStreamUsageType(strTypeStreamUsageVertex);
+            //type_stream_usage_index
+            String strTypeStreamUsageIndex;
+            if (!pChild->ParserAttribute_String(MESH_TAG_ATTRIBUTE_TYPE_STREAM_USAGE_INDEX, strTypeStreamUsageIndex))
+            {
+                F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'type_stream_usage_index', mesh index: [%d] !", i);
+                continue;
+            }
+            EStreamUsageType eStreamUsageIndex = E_ParseStreamUsageType(strTypeStreamUsageIndex);
+            //is_stream_use_shadow_vertex
+            bool bIsStreamUseShadowVertex = false;
+            if (!pChild->ParserAttribute_Bool(MESH_TAG_ATTRIBUTE_IS_STREAM_USE_SHADOW_VERTEX, bIsStreamUseShadowVertex))
+            {
+                F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'is_stream_use_shadow_vertex', mesh index: [%d] !", i);
+                continue;
+            }
+            //is_stream_use_shadow_index
+            bool bIsStreamUseShadowIndex = false;
+            if (!pChild->ParserAttribute_Bool(MESH_TAG_ATTRIBUTE_IS_STREAM_USE_SHADOW_INDEX, bIsStreamUseShadowIndex))
+            {
+                F_LogError("*********************** MeshSerializer::deserializeXML: Can not find attribute: 'is_stream_use_shadow_index', mesh index: [%d] !", i);
+                continue;
+            }
             //is_trans_local
             bool isTransLocal = false;
             if (!pChild->ParserAttribute_Bool(MESH_TAG_ATTRIBUTE_IS_TRANS_LOCAL, isTransLocal))
@@ -207,18 +241,26 @@ namespace LostPeterEngine
                                                eMeshGeometry,
                                                nullptr,
                                                isFlipY,
+                                               eStreamUsageVertex,
+                                               eStreamUsageIndex,
+                                               bIsStreamUseShadowIndex,
+                                               bIsStreamUseShadowIndex,
                                                isTransLocal,
                                                matTransformLocal);
             if (AddMeshInfo(pMeshInfo))
             {
-                F_LogInfo("MeshSerializer::deserializeXML: Add mesh info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%d]-[%d] !",
+                F_LogInfo("MeshSerializer::deserializeXML: Add mesh info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s] !",
                           strNameMesh.c_str(), 
                           strPathMesh.c_str(), 
                           strTypeMesh.c_str(), 
                           strTypeMeshGeometry.c_str(), 
                           strTypeVertex.c_str(), 
-                          isFlipY ? 1 : 0, 
-                          isTransLocal ? 1 : 0);
+                          isFlipY ? "true" : "false", 
+                          strTypeStreamUsageVertex.c_str(),
+                          strTypeStreamUsageIndex.c_str(),
+                          bIsStreamUseShadowIndex ? "true" : "false", 
+                          bIsStreamUseShadowIndex ? "true" : "false", 
+                          isTransLocal ? "true" : "false");
             }
         }
 

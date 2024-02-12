@@ -29,6 +29,7 @@ namespace LostPeterEngine
 		VertexDeclarationManager* m_pVertexDeclarationManager;
 		StreamVertexBindingManager* m_pVertexStreamBindingManager;
 		StreamManager* m_pStreamManager;
+		MeshManager* m_pMeshManager;
 		ShaderProgramManager* m_pShaderProgramManager;
 		ShaderProgramGroupManager* m_pShaderProgramGroupManager;
 		ShaderManager* m_pShaderManager;
@@ -42,11 +43,11 @@ namespace LostPeterEngine
 		Viewport* m_pActiveViewport;
 		ObjectCamera* m_pActiveObjectCamera;
 
-        bool m_bRendererIsInit;
+        bool m_bIsRendererInit;
 
-        bool m_bFullScreen;
-		bool m_bFakeFullScreen;
-		bool m_bVSync;
+        bool m_bIsFullScreen;
+		bool m_bIsFullScreenFake;
+		bool m_bIsVSync;
 		bool m_bWBuffer;
 		bool m_bEmptyGpuBuffer;
 
@@ -59,11 +60,11 @@ namespace LostPeterEngine
 		F_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
 		F_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
 		
-		F_FORCEINLINE bool IsRendererInit() const { return m_bRendererIsInit; }
+		F_FORCEINLINE bool IsRendererInit() const { return m_bIsRendererInit; }
 
-        F_FORCEINLINE bool IsFullScreen() const { return m_bFullScreen; }
-		F_FORCEINLINE bool IsFakeFullScreen() const { return m_bFakeFullScreen; }
-		F_FORCEINLINE bool IsVSync() const { return m_bVSync; }
+        F_FORCEINLINE bool IsFullScreen() const { return m_bIsFullScreen; }
+		F_FORCEINLINE bool IsFullScreenFake() const { return m_bIsFullScreenFake; }
+		F_FORCEINLINE bool IsVSync() const { return m_bIsVSync; }
 		F_FORCEINLINE bool GetWBufferEnable() const { return m_bWBuffer; }
 		F_FORCEINLINE void SetWBufferEnable(bool b) { m_bWBuffer = b;}
 		F_FORCEINLINE bool IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }

@@ -29,10 +29,6 @@ namespace LostPeterEngine
 
 
     //Set MeshParam
-    void MeshManager::SetMeshParam_Usage(NameValuePairMap& mapParam, uint32 nUsage)
-    {
-        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_Usage), FUtilString::SaveUInt(nUsage));
-    }
     void MeshManager::SetMeshParam_MeshType(NameValuePairMap& mapParam, FMeshType eMesh)
     {
         FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_MeshType), E_GetMeshParamTypeName(eMesh));
@@ -45,23 +41,28 @@ namespace LostPeterEngine
     {
         FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_MeshGeometryType), E_GetMeshParamTypeName(eMeshGeometry));
     }
-    void MeshManager::SetMesheParam_IsFlipY(NameValuePairMap& mapParam, bool bIsFlipY)
+    void MeshManager::SetMeshParam_IsFlipY(NameValuePairMap& mapParam, bool bIsFlipY)
     {
         FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_IsFlipY), FUtilString::SaveBool(bIsFlipY));
     }
+    void MeshManager::SetMeshParam_StreamUsageVertex(NameValuePairMap& mapParam, EStreamUsageType eStreamUsageVertex)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_StreamUsageVertex), FUtilString::SaveUInt((uint32)eStreamUsageVertex));
+    }
+    void MeshManager::SetMeshParam_StreamUsageIndex(NameValuePairMap& mapParam, EStreamUsageType eStreamUsageIndex)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_StreamUsageIndex), FUtilString::SaveUInt((uint32)eStreamUsageIndex));
+    }
+    void MeshManager::SetMeshParam_IsStreamUseShadowVertex(NameValuePairMap& mapParam, bool bIsStreamUseShadowVertex)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowVertex), FUtilString::SaveBool(bIsStreamUseShadowVertex));
+    }
+    void MeshManager::SetMeshParam_IsStreamUseShadowIndex(NameValuePairMap& mapParam, bool bIsStreamUseShadowIndex)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowIndex), FUtilString::SaveBool(bIsStreamUseShadowIndex));
+    }
 
     //Get MeshParam
-    uint32 MeshManager::GetMeshParam_Usage(NameValuePairMap& mapParam)
-    {
-        const String& strName = E_GetMeshParamTypeName(E_MeshParam_Usage);
-        NameValuePairMap::iterator itFind = mapParam.find(strName);
-        if (itFind == mapParam.end())
-        {
-            //F_LogError("*********************** MeshManager::GetMeshParam_Usage: Can not find param name: [%s] from param map !", strName.c_str());
-            return MeshManager::ms_nUsage_Default;
-        }
-        return FUtilString::ParserUInt(itFind->second);
-    }
     FMeshType MeshManager::GetMeshParam_MeshType(NameValuePairMap& mapParam)
     {
         const String& strName = E_GetMeshParamTypeName(E_MeshParam_MeshType);
@@ -106,14 +107,64 @@ namespace LostPeterEngine
         }
         return FUtilString::ParserBool(itFind->second);
     }
+    EStreamUsageType MeshManager::GetMeshParam_StreamUsageVertex(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_StreamUsageVertex);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_StreamUsageVertex: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_eStreamUsageVertex_Default;
+        }
+        return (EStreamUsageType)(FUtilString::ParserUInt(itFind->second));
 
+    }
+    EStreamUsageType MeshManager::GetMeshParam_StreamUsageIndex(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_StreamUsageIndex);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_StreamUsageIndex: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_eStreamUsageIndex_Default;
+        }
+        return (EStreamUsageType)(FUtilString::ParserUInt(itFind->second));
 
+    }
+    bool MeshManager::GetMeshParam_IsStreamUseShadowVertex(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowVertex);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_IsStreamUseShadowVertex: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_bIsStreamUseShadowVertex_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+    bool MeshManager::GetMeshParam_IsStreamUseShadowIndex(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetMeshParamTypeName(E_MeshParam_IsStreamUseShadowIndex);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** MeshManager::GetMeshParam_IsStreamUseShadowIndex: Can not find param name: [%s] from param map !", strName.c_str());
+            return MeshManager::ms_bIsStreamUseShadowIndex_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+
+    
     NameValuePairMap MeshManager::ms_mapParam_Default;
-        uint32 MeshManager::ms_nUsage_Default = 0;
         FMeshType MeshManager::ms_eMesh_Default = F_Mesh_File;
         FMeshVertexType MeshManager::ms_eMeshVertex_Default = F_MeshVertex_Pos3Color4Normal3Tangent3Tex2;
         FMeshGeometryType MeshManager::ms_eMeshGeometry_Default = F_MeshGeometry_EntityQuad;
         bool MeshManager::ms_bIsFlipY_Default = false;
+        EStreamUsageType MeshManager::ms_eStreamUsageVertex_Default = E_StreamUsage_StaticWriteOnly;
+        EStreamUsageType MeshManager::ms_eStreamUsageIndex_Default = E_StreamUsage_StaticWriteOnly;
+        bool MeshManager::ms_bIsStreamUseShadowVertex_Default = false;
+        bool MeshManager::ms_bIsStreamUseShadowIndex_Default = false;
+
 
     const String& MeshManager::GetMeshParamValue(EMeshParamType type)
     {
@@ -196,12 +247,15 @@ namespace LostPeterEngine
                                      pMI->group,
                                      pMI->nameMesh,
                                      ResourceGroupManager::ms_strNameResourceGroup_Internal,
-                                     0,
                                      pMI->eMesh,
                                      pMI->eMeshVertex,
                                      pMI->eMeshGeometry,
                                      pMI->isFlipY,
-                                     nullptr);
+                                     nullptr,
+                                     pMI->eStreamUsageVertex,
+                                     pMI->eStreamUsageIndex,
+                                     pMI->bIsStreamUseShadowVertex,
+                                     pMI->bIsStreamUseShadowIndex);
             if (!pMesh)
             {
                 F_LogError("*********************** MeshManager::loadMesh: CreateMesh failed, group: [%u], name: [%s], path: [%s] !", pMI->group, pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
@@ -240,12 +294,15 @@ namespace LostPeterEngine
                                                                      bool bIsManualLoad /*= false*/,
                                                                      ResourceManualLoader* pManualLoader /*= nullptr*/, 
                                                                      const NameValuePairMap* pLoadParams /*= nullptr*/,
-                                                                     uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
                                                                      FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
                                                                      FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
                                                                      FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
                                                                      bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
-                                                                     FMeshCreateParam* pMeshCreateParam /*= nullptr*/)
+                                                                     FMeshCreateParam* pMeshCreateParam /*= nullptr*/,
+                                                                     EStreamUsageType eStreamUsageVertex /*= MeshManager::ms_eStreamUsageVertex_Default*/,
+                                                                     EStreamUsageType eStreamUsageIndex /*= MeshManager::ms_eStreamUsageIndex_Default*/,
+                                                                     bool bIsStreamUseShadowVertex /*= MeshManager::ms_bIsStreamUseShadowVertex_Default*/,
+                                                                     bool bIsStreamUseShadowIndex /*= MeshManager::ms_bIsStreamUseShadowIndex_Default*/)
     {
         NameValuePairMap mapMeshParam;
         if (bIsManualLoad && pLoadParams)
@@ -267,12 +324,15 @@ namespace LostPeterEngine
 
         Mesh* pMesh = (Mesh*)result.first;
         pMesh->SetPath(strPath);
-        pMesh->SetUsage(nUsage);
         pMesh->SetMeshType(eMesh);
         pMesh->SetMeshVertexType(eMeshVertex);
         pMesh->SetMeshGeometryType(eMeshGeometry);
         pMesh->SetIsFlipY(bIsFlipY);
         pMesh->SetMeshCreateParam(pMeshCreateParam);
+        pMesh->SetStreamUsageVertex(eStreamUsageVertex);
+        pMesh->SetStreamUsageIndex(eStreamUsageIndex);
+        pMesh->SetIsStreamUseShadowVertex(bIsStreamUseShadowVertex);
+        pMesh->SetIsStreamUseShadowIndex(bIsStreamUseShadowIndex);
 
 		return result;
     }
@@ -281,12 +341,15 @@ namespace LostPeterEngine
                                uint32 nGroup, 
                                const String& strName, 
                                const String& strGroupName, 
-                               uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
                                FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
                                FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
                                FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
                                bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
-                               FMeshCreateParam* pMeshCreateParam /*= nullptr*/)
+                               FMeshCreateParam* pMeshCreateParam /*= nullptr*/,
+                               EStreamUsageType eStreamUsageVertex /*= MeshManager::ms_eStreamUsageVertex_Default*/,
+                               EStreamUsageType eStreamUsageIndex /*= MeshManager::ms_eStreamUsageIndex_Default*/,
+                               bool bIsStreamUseShadowVertex /*= MeshManager::ms_bIsStreamUseShadowVertex_Default*/,
+                               bool bIsStreamUseShadowIndex /*= MeshManager::ms_bIsStreamUseShadowIndex_Default*/)
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieveMesh(strPath,
                                                                      nGroup,
@@ -295,12 +358,15 @@ namespace LostPeterEngine
                                                                      false,
                                                                      nullptr,
                                                                      nullptr,
-                                                                     nUsage,
                                                                      eMesh,
                                                                      eMeshVertex,
                                                                      eMeshGeometry,
                                                                      bIsFlipY,
-                                                                     pMeshCreateParam);
+                                                                     pMeshCreateParam,
+                                                                     eStreamUsageVertex,
+                                                                     eStreamUsageIndex,
+                                                                     bIsStreamUseShadowVertex,
+                                                                     bIsStreamUseShadowIndex);
 		Mesh* pMesh = (Mesh*)result.first;
         if (!pMesh)
             return nullptr;
@@ -313,12 +379,15 @@ namespace LostPeterEngine
                                   uint32 nGroup, 
                                   const String& strName, 
                                   const String& strGroupName, 
-                                  uint32 nUsage /*= MeshManager::ms_nUsage_Default*/,
                                   FMeshType eMesh /*= MeshManager::ms_eMesh_Default*/,
                                   FMeshVertexType eMeshVertex /*= MeshManager::ms_eMeshVertex_Default*/,
                                   FMeshGeometryType eMeshGeometry /*= MeshManager::ms_eMeshGeometry_Default*/,
                                   bool bIsFlipY /*= MeshManager::ms_bIsFlipY_Default*/,
-                                  FMeshCreateParam* pMeshCreateParam /*= nullptr*/)         
+                                  FMeshCreateParam* pMeshCreateParam /*= nullptr*/,
+                                  EStreamUsageType eStreamUsageVertex /*= MeshManager::ms_eStreamUsageVertex_Default*/,
+                                  EStreamUsageType eStreamUsageIndex /*= MeshManager::ms_eStreamUsageIndex_Default*/,
+                                  bool bIsStreamUseShadowVertex /*= MeshManager::ms_bIsStreamUseShadowVertex_Default*/,
+                                  bool bIsStreamUseShadowIndex /*= MeshManager::ms_bIsStreamUseShadowIndex_Default*/)         
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieveMesh(strPath,
                                                                      nGroup,
@@ -327,12 +396,15 @@ namespace LostPeterEngine
                                                                      false,
                                                                      nullptr,
                                                                      nullptr,
-                                                                     nUsage,
                                                                      eMesh,
                                                                      eMeshVertex,
                                                                      eMeshGeometry,
                                                                      bIsFlipY,
-                                                                     pMeshCreateParam);
+                                                                     pMeshCreateParam,
+                                                                     eStreamUsageVertex,
+                                                                     eStreamUsageIndex,
+                                                                     bIsStreamUseShadowVertex,
+                                                                     bIsStreamUseShadowIndex);
 		Mesh* pMesh = (Mesh*)result.first;
         if (!pMesh)
             return nullptr;

@@ -12,6 +12,7 @@
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
 #include "../include/MeshManager.h"
+#include "../include/DataVertex.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -20,9 +21,6 @@
 
 namespace LostPeterEngine
 {
-
-
-
     const String Mesh::ms_nameMesh = "Mesh";
     Mesh::Mesh(ResourceManager* pResourceManager,
                uint32 nGroup, 
@@ -38,12 +36,17 @@ namespace LostPeterEngine
 				   nHandle,
 				   bIsManualLoad,
 				   pResourceManualLoader)
-        , m_nUsage(MeshManager::ms_nUsage_Default)
         , m_eMesh(MeshManager::ms_eMesh_Default)
         , m_eMeshVertex(MeshManager::ms_eMeshVertex_Default)
         , m_eMeshGeometry(MeshManager::ms_eMeshGeometry_Default)
         , m_bIsFlipY(MeshManager::ms_bIsFlipY_Default)
         , m_pMeshCreateParam(nullptr)
+        , m_eStreamUsageVertex(MeshManager::ms_eStreamUsageVertex_Default)
+        , m_eStreamUsageIndex(MeshManager::ms_eStreamUsageIndex_Default)
+        , m_bIsStreamUseShadowVertex(MeshManager::ms_bIsStreamUseShadowVertex_Default)
+        , m_bIsStreamUseShadowIndex(MeshManager::ms_bIsStreamUseShadowIndex_Default)
+
+        , m_pDataVertexShared(nullptr)
 
         , m_bInternalResourcesCreated(false)
     {

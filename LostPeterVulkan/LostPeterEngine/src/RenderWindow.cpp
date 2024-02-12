@@ -19,7 +19,7 @@ namespace LostPeterEngine
     RenderWindow::RenderWindow(const String& nameRenderWindow)
         : RenderTarget(nameRenderWindow)
         , m_bIsFullScreen(false)
-		, m_bFakeFullScreen(false)
+		, m_bIsFullScreenFake(false)
 		, m_bIsPrimary(false)
 		, m_bAutoDeactivatedOnFocusChange(true)
 		, m_bFocused(false)

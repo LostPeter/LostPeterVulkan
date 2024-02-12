@@ -25,36 +25,38 @@ namespace LostPeterEngine
 
 	public:
 	private:
+	////VertexDeclaration/StreamVertexBinding
 		VertexDeclaration* m_pVertexDeclaration;
 		StreamVertexBinding* m_pVertexStreamBinding;
 		bool m_bDel_VertexDeclaration;
 		bool m_bDel_VertexStreamBinding;
 
-		size_t m_nVertexStart;
-		size_t m_nVertexCount;
+	////Vertex Data
+		uint32 m_nVertexStart;
+		uint32 m_nVertexCount;
 
 	////Animation Data
 		// AnimationDataVector m_aAnimationData;
-		// size_t m_nAnimDataItemsUsed;
+		// uint32 m_nAnimDataItemsUsed;
 	
 	public:
 		F_FORCEINLINE const VertexDeclaration* GetVertexDeclaration() const { return m_pVertexDeclaration; }
 		F_FORCEINLINE VertexDeclaration* GetVertexDeclaration() { return m_pVertexDeclaration; }
-		F_FORCEINLINE void SetVertexDeclaration(VertexDeclaration* pDecl) { m_pVertexDeclaration = pDecl; }
-		F_FORCEINLINE StreamVertexBinding*	GetVertexStreamBinding() { return m_pVertexStreamBinding; }
-		F_FORCEINLINE size_t GetVertexStart() const { return m_nVertexStart; }
-		F_FORCEINLINE void SetVertexStart(size_t n) { m_nVertexStart = n; }
-		F_FORCEINLINE size_t GetVertexCount() const { return m_nVertexCount; }
-		F_FORCEINLINE void SetVertexCount(size_t n) { m_nVertexCount = n; }
-		F_FORCEINLINE size_t IncreaseVertexCount() { return ++m_nVertexCount; }
-		F_FORCEINLINE void IncreaseVertexCount(size_t n) { m_nVertexCount += n; }
-		F_FORCEINLINE void DecreaseVertexCount(size_t n) { m_nVertexCount -= n; }
+		F_FORCEINLINE void SetVertexDeclaration(VertexDeclaration* pVertexDeclaration) { m_pVertexDeclaration = pVertexDeclaration; }
+		F_FORCEINLINE StreamVertexBinding* GetVertexStreamBinding() { return m_pVertexStreamBinding; }
+		F_FORCEINLINE uint32 GetVertexStart() const { return m_nVertexStart; }
+		F_FORCEINLINE void SetVertexStart(uint32 nVertexStart) { m_nVertexStart = nVertexStart; }
+		F_FORCEINLINE uint32 GetVertexCount() const { return m_nVertexCount; }
+		F_FORCEINLINE void SetVertexCount(uint32 nVertexCount) { m_nVertexCount = nVertexCount; }
+		F_FORCEINLINE uint32 IncreaseVertexCount() { return ++m_nVertexCount; }
+		F_FORCEINLINE void IncreaseVertexCount(uint32 nVertexCount) { m_nVertexCount += nVertexCount; }
+		F_FORCEINLINE void DecreaseVertexCount(uint32 nVertexCount) { m_nVertexCount -= nVertexCount; }
 
 		// F_FORCEINLINE AnimationDataVector& GetAnimationData() { return m_aAnimationData; }
-		// F_FORCEINLINE size_t GetAnimDataUsed() const { return m_nAnimDataItemsUsed; }
-		// F_FORCEINLINE void	SetAnimDataUsed(size_t n) { m_nAnimDataItemsUsed = n; }
-		// F_FORCEINLINE size_t IncreaseAnimDataUsed() { return ++m_nAnimDataItemsUsed; }
-		// F_FORCEINLINE void	IncreaseAnimDataUsed(size_t n) { m_nAnimDataItemsUsed += n; }
+		// F_FORCEINLINE uint32 GetAnimDataUsed() const { return m_nAnimDataItemsUsed; }
+		// F_FORCEINLINE void	SetAnimDataUsed(uint32 n) { m_nAnimDataItemsUsed = n; }
+		// F_FORCEINLINE uint32 IncreaseAnimDataUsed() { return ++m_nAnimDataItemsUsed; }
+		// F_FORCEINLINE void	IncreaseAnimDataUsed(uint32 n) { m_nAnimDataItemsUsed += n; }
 		
 	public:
 		void Destroy();

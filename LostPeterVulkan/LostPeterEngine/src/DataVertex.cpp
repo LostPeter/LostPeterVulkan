@@ -76,7 +76,7 @@ namespace LostPeterEngine
 		pDest->SetVertexStart(m_nVertexStart);
 		pDest->SetVertexCount(m_nVertexCount);
 
-		//1> copy vertex buffers in turn
+		//1> Copy vertex buffers in turn
 		const StreamVertexPtrMap& bindings = m_pVertexStreamBinding->GetBindings();
 		for (StreamVertexPtrMap::const_iterator it = bindings.begin(); 
 			it != bindings.end(); ++it)
@@ -93,7 +93,7 @@ namespace LostPeterEngine
 			pDest->GetVertexStreamBinding()->SetBinding(it->first, pDstStream);
 		}
 
-		//2> copy elements
+		//2> Copy elements
 		const VertexElementList& listElements = m_pVertexDeclaration->GetVertexElementList();
 		for (VertexElementList::const_iterator it = listElements.begin(); 
 			 it != listElements.end();++it)
@@ -128,7 +128,7 @@ namespace LostPeterEngine
 		if (!m_pVertexStreamBinding->HasGaps())
 			return;
 
-		// Check for error first
+		//1> Check for error first
 		const VertexElementList& listElements = m_pVertexDeclaration->GetVertexElementList();
 		VertexElementList::const_iterator it,itEnd;
 		itEnd = listElements.end();
@@ -142,11 +142,11 @@ namespace LostPeterEngine
 			}
 		}
 
-		// Close gaps in the vertex buffer bindings
+		//2> Close gaps in the vertex buffer bindings
 		StreamVertexBinding::BindingIndexMap bindingIndexMap;
 		m_pVertexStreamBinding->CloseGaps(bindingIndexMap);
 
-		// Modify vertex elements to reference to new buffer index
+		//3> Modify vertex elements to reference to new buffer index
 		uint16 elemIndex = 0;
 		for (it = listElements.begin(); it != itEnd; ++it,++elemIndex)
 		{
@@ -182,7 +182,7 @@ namespace LostPeterEngine
 	// 	}
 	// 	F_Assert(nTexCoord <= C_CONFIG_MAX_TEXTURE_COORD_SETS_COUNT && "DataVertex::AllocateAnimationElements")
 
-	// 	// for (size_t i = m_aAnimationData.size(); i < nCount; ++i)
+	// 	// for (uint32 i = m_aAnimationData.size(); i < nCount; ++i)
 	// 	// {
 	// 	// 	AnimationData data;
 	// 	// 	data.pTargetVertexElement = &(m_pVertexDeclaration->AddVertexElement(m_pVertexStreamBinding->GetNextIndex(), 0, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float3, nTexCoord++));

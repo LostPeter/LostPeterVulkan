@@ -73,13 +73,63 @@ void Vulkan_018_Object::loadMeshes()
 {
     F_LogInfo("++++++++++ Vulkan_018_Object::loadMeshes: Load mesh test start !");
     {
+        uint nGroup = 5001;
 
+        //5001 - plane
+        String strNameMesh = "plane";
+        Mesh* pMesh1 = loadMesh(nGroup, strNameMesh);
+
+        //5001 - cube
+        strNameMesh = "cube";
+        Mesh* pMesh2 = loadMesh(nGroup, strNameMesh);
+
+        //5001 - sphere
+        strNameMesh = "sphere";
+        Mesh* pMesh3 = loadMesh(nGroup, strNameMesh);
+
+        nGroup = 5002;
+        //5002 - mountain
+        strNameMesh = "mountain";
+        Mesh* pMesh4 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - rock
+        strNameMesh = "rock";
+        Mesh* pMesh5 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - cliff
+        strNameMesh = "cliff";
+        Mesh* pMesh6 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - tree
+        strNameMesh = "tree";
+        Mesh* pMesh7 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - tree_spruce
+        strNameMesh = "tree_spruce";
+        Mesh* pMesh8 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - grass
+        strNameMesh = "grass";
+        Mesh* pMesh9 = loadMesh(nGroup, strNameMesh);
+
+        //5002 - flower
+        strNameMesh = "flower";
+        Mesh* pMesh10 = loadMesh(nGroup, strNameMesh);
     }
     F_LogInfo("---------- Vulkan_018_Object::loadMeshes: Load mesh test end !");
 }
     Mesh* Vulkan_018_Object::loadMesh(uint nGroup, const String& strNameMesh)
     {
-        return nullptr;
+        Mesh* pMesh = MeshManager::GetSingleton().LoadMesh(nGroup, strNameMesh);
+        if (pMesh == nullptr)
+        {
+            F_LogError("*********************** Vulkan_018_Object::loadMesh: Load mesh failed, group: [%u], name: [%s] !", nGroup, strNameMesh.c_str());
+            return nullptr;
+        }
+        F_LogInfo("Vulkan_018_Object::loadMesh: Load mesh success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
+                  nGroup, strNameMesh.c_str(), pMesh->GetPath().c_str(), 
+                  F_GetMeshTypeName(pMesh->GetMeshType()).c_str());
+        return pMesh;
     }
 
 void Vulkan_018_Object::loadTextures()
@@ -144,3 +194,7 @@ void Vulkan_018_Object::loadMaterials()
     }
     F_LogInfo("---------- Vulkan_018_Object::loadMaterials: Load material test end !");
 }
+    Material* Vulkan_018_Object::loadMaterial(uint nGroup, const String& strNameMaterial)
+    {
+        return nullptr;
+    }

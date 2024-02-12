@@ -34,7 +34,6 @@ namespace LostPeterEngine
         SceneManagerEnumerator* m_pSceneManagerEnumerator;
         SceneManager* m_pSceneManagerCurrent;
         RenderQueueManager* m_pRenderQueueManager;
-        MeshManager* m_pMeshManager;
         MaterialDataManager* m_pMaterialDataManager;
         MaterialManager* m_pMaterialManager;
 

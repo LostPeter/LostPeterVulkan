@@ -24,9 +24,9 @@ namespace LostPeterEngine
 		
 	public:
 	    FRenderPrimitiveType m_eRenderPrimitive;
-		DataVertex* m_pVertexData;
-		DataIndex* m_pIndexData;
-		bool m_bUseIndices;
+		DataVertex* m_pDataVertex;
+		DataIndex* m_pDataIndex;
+		bool m_bIsUseIndex;
 		const Renderable* m_pRenderable;
 
 		//ERenderInstanceType m_eRenderInstance;

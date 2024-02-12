@@ -92,6 +92,8 @@ namespace LostPeterEngine
 		E_StreamUsage_DynamicWriteOnly = E_StreamUsage_Dynamic | E_StreamUsage_WriteOnly, //CPU to GPU
 		E_StreamUsage_DynamicWriteOnlyDiscardable = E_StreamUsage_Dynamic | E_StreamUsage_WriteOnly | E_StreamUsage_Discardable, //CPU to GPU
 	};
+    engineExport const String& E_GetStreamUsageTypeName(EStreamUsageType type);
+    engineExport EStreamUsageType E_ParseStreamUsageType(const String& strName);
 
 
 	enum EStreamLockType
@@ -193,11 +195,14 @@ namespace LostPeterEngine
 
     enum EMeshParamType
     {
-        E_MeshParam_Usage = 0,                              //0:    Usage
-        E_MeshParam_MeshType,                               //1:    MeshType
-        E_MeshParam_MeshVertexType,                         //2:    MeshVertexType
-        E_MeshParam_MeshGeometryType,                       //3:    MeshGeometryType
-        E_MeshParam_IsFlipY,                                //4:    IsFlipY
+        E_MeshParam_MeshType = 0,                           //0:    MeshType
+        E_MeshParam_MeshVertexType,                         //1:    MeshVertexType
+        E_MeshParam_MeshGeometryType,                       //2:    MeshGeometryType
+        E_MeshParam_IsFlipY,                                //3:    IsFlipY
+        E_MeshParam_StreamUsageVertex,                      //4:    StreamUsageVertex
+        E_MeshParam_StreamUsageIndex,                       //5:    StreamUsageIndex
+        E_MeshParam_IsStreamUseShadowVertex,                //6:    IsStreamUseShadowVertex
+        E_MeshParam_IsStreamUseShadowIndex,                 //7:    IsStreamUseShadowIndex
 
         E_MeshParam_Count,                          
     };
@@ -533,6 +538,10 @@ namespace LostPeterEngine
                  FMeshGeometryType _eMeshGeometry,
                  FMeshCreateParam* _pMeshCreateParam,
                  bool _isFlipY,
+                 EStreamUsageType _eStreamUsageVertex,
+                 EStreamUsageType _eStreamUsageIndex,
+                 bool _bIsStreamUseShadowVertex,
+                 bool _bIsStreamUseShadowIndex,
                  bool _isTransformLocal,
                  const FMatrix4& _matTransformLocal);
         ~MeshInfo();
@@ -547,6 +556,12 @@ namespace LostPeterEngine
         FMeshCreateParam* pMeshCreateParam;
 
         bool isFlipY;
+
+        EStreamUsageType eStreamUsageVertex;
+		EStreamUsageType eStreamUsageIndex;
+		bool bIsStreamUseShadowVertex;
+		bool bIsStreamUseShadowIndex;
+
         bool isTransformLocal;
         FMatrix4 matTransformLocal;
     };

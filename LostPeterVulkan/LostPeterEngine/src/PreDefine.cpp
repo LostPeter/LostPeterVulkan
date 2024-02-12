@@ -46,6 +46,56 @@ namespace LostPeterEngine
     }
 
 
+    //EStreamUsageType
+    static String s_nameStreamUsages[] = 
+    {
+        "Static",                       //0:    E_StreamUsage_Static
+        "Dynamic",                      //1:    E_StreamUsage_Dynamic
+        "WriteOnly",                    //2:    E_StreamUsage_WriteOnly
+        "Discardable",                  //3:    E_StreamUsage_Discardable
+        "StaticWriteOnly",              //4:    E_StreamUsage_StaticWriteOnly
+        "DynamicWriteOnly",             //5:    E_StreamUsage_DynamicWriteOnly
+        "DynamicWriteOnlyDiscardable",  //6:    E_StreamUsage_DynamicWriteOnlyDiscardable
+    };
+    static std::map<EStreamUsageType, int> s_mapStreamUsage2Index
+    {
+        { E_StreamUsage_Static,                         0  },   //0:    E_StreamUsage_Static
+        { E_StreamUsage_Dynamic,                        1  },   //1:    E_StreamUsage_Dynamic
+        { E_StreamUsage_WriteOnly,                      2  },   //2:    E_StreamUsage_WriteOnly
+        { E_StreamUsage_Discardable,                    3  },   //3:    E_StreamUsage_Discardable
+        { E_StreamUsage_StaticWriteOnly,                4  },   //4:    E_StreamUsage_StaticWriteOnly
+        { E_StreamUsage_DynamicWriteOnly,               5  },   //5:    E_StreamUsage_DynamicWriteOnly
+        { E_StreamUsage_DynamicWriteOnlyDiscardable,    6  },   //6:    E_StreamUsage_DynamicWriteOnlyDiscardable
+    };
+    static std::map<int, EStreamUsageType> s_mapIndex2StreamUsage
+    {
+        { 0, E_StreamUsage_Static,                         },   //0:    E_StreamUsage_Static
+        { 1, E_StreamUsage_Dynamic,                        },   //1:    E_StreamUsage_Dynamic
+        { 2, E_StreamUsage_WriteOnly,                      },   //2:    E_StreamUsage_WriteOnly
+        { 3, E_StreamUsage_Discardable,                    },   //3:    E_StreamUsage_Discardable
+        { 4, E_StreamUsage_StaticWriteOnly,                },   //4:    E_StreamUsage_StaticWriteOnly
+        { 5, E_StreamUsage_DynamicWriteOnly,               },   //5:    E_StreamUsage_DynamicWriteOnly
+        { 6, E_StreamUsage_DynamicWriteOnlyDiscardable,    },   //6:    E_StreamUsage_DynamicWriteOnlyDiscardable
+    };
+    const String& E_GetStreamUsageTypeName(EStreamUsageType type)
+    {
+        return s_nameStreamUsages[s_mapStreamUsage2Index[type]];
+    }
+    EStreamUsageType E_ParseStreamUsageType(const String& strName)
+    {
+        int count = (int)s_mapIndex2StreamUsage.size();
+        for (int i = 0; i < count; i++)
+        {
+            if (s_nameStreamUsages[i] == strName)
+            {
+                return s_mapIndex2StreamUsage[i];
+            }
+        }
+        F_Assert(false && "E_ParseStreamUsageType: Wrong type name !")
+        return E_StreamUsage_StaticWriteOnly;
+    }
+
+
     //EObjectType
     static String s_nameObjectTypes[] = 
     {
@@ -112,11 +162,14 @@ namespace LostPeterEngine
     //EMeshParamType
     static String s_nameMeshParamTypes[] = 
     {
-        "Usage",                        //0:    Usage
-        "MeshType",                     //1:    MeshType
-        "MeshVertexType",               //2:    MeshVertexType
-        "MeshGeometryType",             //3:    MeshGeometryType
-        "IsFlipY",                      //4:    IsFlipY
+        "MeshType",                     //0:    MeshType
+        "MeshVertexType",               //1:    MeshVertexType
+        "MeshGeometryType",             //2:    MeshGeometryType
+        "IsFlipY",                      //3:    IsFlipY
+        "StreamUsageVertex",            //4:    StreamUsageVertex
+        "StreamUsageIndex",             //5:    StreamUsageIndex
+        "IsStreamUseShadowVertex",      //6:    IsStreamUseShadowVertex
+        "IsStreamUseShadowIndex",       //7:    IsStreamUseShadowIndex
     };
     const String& E_GetMeshParamTypeName(EMeshParamType type)
     {
@@ -134,7 +187,7 @@ namespace LostPeterEngine
                 return (EMeshParamType)(i);
         }
         F_Assert(false && "E_ParseMeshParamType: Wrong type name !")
-        return E_MeshParam_Usage;
+        return E_MeshParam_MeshType;
     }
 
 
@@ -347,6 +400,11 @@ namespace LostPeterEngine
         , eMeshGeometry(F_MeshGeometry_EntityGrid)
         , pMeshCreateParam(nullptr)
         , isFlipY(false)
+        , eStreamUsageVertex(E_StreamUsage_StaticWriteOnly)
+        , eStreamUsageIndex(E_StreamUsage_StaticWriteOnly)
+        , bIsStreamUseShadowVertex(false)
+        , bIsStreamUseShadowIndex(false)
+
         , isTransformLocal(false)
         , matTransformLocal(FMath::ms_mat4Unit)
     {
@@ -359,6 +417,10 @@ namespace LostPeterEngine
                        FMeshGeometryType _eMeshGeometry,
                        FMeshCreateParam* _pMeshCreateParam,
                        bool _isFlipY,
+                       EStreamUsageType _eStreamUsageVertex,
+                       EStreamUsageType _eStreamUsageIndex,
+                       bool _bIsStreamUseShadowVertex,
+                       bool _bIsStreamUseShadowIndex,
                        bool _isTransformLocal,
                        const FMatrix4& _matTransformLocal)
         : group(0)
@@ -369,6 +431,11 @@ namespace LostPeterEngine
         , eMeshGeometry(_eMeshGeometry)
         , pMeshCreateParam(_pMeshCreateParam)
         , isFlipY(_isFlipY)
+        , eStreamUsageVertex(_eStreamUsageVertex)
+        , eStreamUsageIndex(_eStreamUsageIndex)
+        , bIsStreamUseShadowVertex(_bIsStreamUseShadowVertex)
+        , bIsStreamUseShadowIndex(_bIsStreamUseShadowIndex)
+
         , isTransformLocal(_isTransformLocal)
         , matTransformLocal(_matTransformLocal)
     {

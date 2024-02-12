@@ -41,7 +41,7 @@ namespace LostPeterPluginRendererVulkan
     RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, 
                                        const String& strWndTitle /*= "Render Window"*/)
     {
-        F_Assert(!m_bRendererIsInit && "VulkanRenderer::Init")
+        F_Assert(!m_bIsRendererInit && "VulkanRenderer::Init")
 
         //1> VulkanInstance/VulkanDevice
         m_pVulkanInstance = new VulkanInstance();
@@ -83,7 +83,7 @@ namespace LostPeterPluginRendererVulkan
 
         }
 
-
+        m_bIsRendererInit = true;
         return nullptr;
     }
 

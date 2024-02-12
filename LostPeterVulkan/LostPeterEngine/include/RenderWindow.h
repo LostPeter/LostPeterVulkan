@@ -27,7 +27,7 @@ namespace LostPeterEngine
     public:
     protected:
 		bool m_bIsFullScreen;
-		bool m_bFakeFullScreen;
+		bool m_bIsFullScreenFake;
 		bool m_bIsPrimary;
 		bool m_bAutoDeactivatedOnFocusChange;
 		bool m_bFocused;
@@ -45,11 +45,11 @@ namespace LostPeterEngine
 
 	public:
 		virtual bool IsFullScreen() const { return m_bIsFullScreen; }
-		virtual void SetFullScreen(bool bFullScreen, int32 nWidth, int32 nHeight) { }
-		virtual void SetFullScreen(bool bFullscreen, int32 nWidth, int32 nHeight, int32 nWinWidth, int32 nWinHeight) { }
+		virtual void SetIsFullScreen(bool bFullScreen, int32 nWidth, int32 nHeight) { }
+		virtual void SetIsFullScreen(bool bFullscreen, int32 nWidth, int32 nHeight, int32 nWinWidth, int32 nWinHeight) { }
 
-		virtual bool IsFakeFullScreen() const { return m_bFakeFullScreen; }
-		virtual void SetFakeFullScreen(bool bVal) { m_bFakeFullScreen = bVal; }
+		virtual bool IsFullScreenFake() const { return m_bIsFullScreenFake; }
+		virtual void SetIsFullScreenFake(bool bIsFullScreenFake) { m_bIsFullScreenFake = bIsFullScreenFake; }
 			
 		virtual bool IsPrimary() const { return m_bIsPrimary; }
 		virtual void SetPrimary() { m_bIsPrimary = true; }

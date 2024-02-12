@@ -38,12 +38,16 @@ namespace LostPeterEngine
     protected:
         String m_strPath;
 
-        uint32 m_nUsage;
         FMeshType m_eMesh;
         FMeshVertexType m_eMeshVertex;
         FMeshGeometryType m_eMeshGeometry;
         bool m_bIsFlipY;
         FMeshCreateParam* m_pMeshCreateParam;
+
+        EStreamUsageType m_eStreamUsageVertex;
+		EStreamUsageType m_eStreamUsageIndex;
+		bool m_bIsStreamUseShadowVertex;
+		bool m_bIsStreamUseShadowIndex;
 
         MeshSubPtrVector m_aMeshSub;
         MeshSubPtrMap m_mapMeshSub;
@@ -51,6 +55,7 @@ namespace LostPeterEngine
         FAABB m_boundAABB;
         FSphere m_boundSphere;
         
+        DataVertex*	m_pDataVertexShared;
 
 
         bool m_bInternalResourcesCreated;
@@ -58,9 +63,7 @@ namespace LostPeterEngine
     public:
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }
 		F_FORCEINLINE void SetPath(const String& strPath) { m_strPath = strPath; }
-
-        F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
-		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
+        
         F_FORCEINLINE FMeshType GetMeshType() const { return m_eMesh; }
 		F_FORCEINLINE void SetMeshType(FMeshType eMesh) { m_eMesh = eMesh; }
         F_FORCEINLINE FMeshVertexType GetMeshVertexType() const { return m_eMeshVertex; }
@@ -72,10 +75,22 @@ namespace LostPeterEngine
         F_FORCEINLINE FMeshCreateParam* GetMeshCreateParam() const { return m_pMeshCreateParam; }
 		F_FORCEINLINE void SetMeshCreateParam(FMeshCreateParam* pMeshCreateParam) { m_pMeshCreateParam = pMeshCreateParam; }
 
+        F_FORCEINLINE EStreamUsageType GetStreamUsageVertex() const	{ return m_eStreamUsageVertex; }
+		F_FORCEINLINE void SetStreamUsageVertex(EStreamUsageType eStreamUsageVertex) { m_eStreamUsageVertex = eStreamUsageVertex; }
+		F_FORCEINLINE EStreamUsageType GetStreamUsageIndex() const { return m_eStreamUsageIndex; }
+		F_FORCEINLINE void SetStreamUsageIndex(EStreamUsageType eStreamUsageIndex) { m_eStreamUsageIndex = eStreamUsageIndex; }
+		F_FORCEINLINE bool GetIsStreamUseShadowVertex() const { return m_bIsStreamUseShadowVertex; }
+		F_FORCEINLINE void SetIsStreamUseShadowVertex(bool bIsStreamUseShadowVertex) { m_bIsStreamUseShadowVertex = bIsStreamUseShadowVertex; }
+		F_FORCEINLINE bool GetIsStreamUseShadowIndex() const { return m_bIsStreamUseShadowIndex; }
+		F_FORCEINLINE void SetIsStreamUseShadowIndex(bool bIsStreamUseShadowIndex) { m_bIsStreamUseShadowIndex = bIsStreamUseShadowIndex; }
+
         F_FORCEINLINE const FAABB& GetBoundAABB() const { return m_boundAABB; }
 		F_FORCEINLINE void SetBoundAABB(const FAABB& boundAABB)	{ m_boundAABB = boundAABB; }
         F_FORCEINLINE const FSphere& GetBoundSphere() const { return m_boundSphere; }
 		F_FORCEINLINE void SetBoundSphere(const FSphere& boundSphere)	{ m_boundSphere = boundSphere; }
+
+        F_FORCEINLINE DataVertex* GetDataVertexShared() const { return m_pDataVertexShared; }
+		F_FORCEINLINE void SetDataVertexShared(DataVertex* pDataVertexShared) { m_pDataVertexShared = pDataVertexShared; }
 
     public:
         virtual void Destroy();

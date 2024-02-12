@@ -14,6 +14,7 @@
 #include "../include/VertexDeclarationManager.h"
 #include "../include/StreamVertexBindingManager.h"
 #include "../include/StreamManager.h"
+#include "../include/MeshManager.h"
 #include "../include/ShaderProgramManager.h"
 #include "../include/ShaderProgramGroupManager.h"
 #include "../include/ShaderManager.h"
@@ -42,16 +43,17 @@ namespace LostPeterEngine
         , m_pActiveRenderTarget(nullptr)
         , m_pActiveViewport(nullptr)
         , m_pActiveObjectCamera(nullptr)
-        , m_bRendererIsInit(false)
-        , m_bFullScreen(false)
-		, m_bFakeFullScreen(false)
-		, m_bVSync(true)
+        , m_bIsRendererInit(false)
+        , m_bIsFullScreen(false)
+		, m_bIsFullScreenFake(false)
+		, m_bIsVSync(true)
 		, m_bWBuffer(false)
 		, m_bEmptyGpuBuffer(false)
 		, m_nCurWidth(0)
 		, m_nCurHeight(0)
     {
 		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
+		m_pMeshManager = new MeshManager();
 		m_pShaderProgramGroupManager = new ShaderProgramGroupManager();
 		m_pShaderManager = new ShaderManager();
 		m_pRenderPassManager = new RenderPassManager();
@@ -71,10 +73,12 @@ namespace LostPeterEngine
 		F_DELETE(m_pShaderManager)
 		F_DELETE(m_pShaderProgramGroupManager)
 		F_DELETE(m_pShaderProgramManager)
+		F_DELETE(m_pMeshManager)
 		F_DELETE(m_pStreamManager)
 		F_DELETE(m_pVertexStreamBindingManager)
 		F_DELETE(m_pVertexDeclarationManager)
 		F_DELETE(m_pRenderCapabilities)
+		m_bIsRendererInit = false;
     }
 
 	RenderTarget* Renderer::GetRenderTarget(const String& strName)

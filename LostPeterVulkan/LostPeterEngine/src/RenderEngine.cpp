@@ -50,7 +50,6 @@ namespace LostPeterEngine
 		, m_pSceneManagerEnumerator(nullptr)
 		, m_pSceneManagerCurrent(nullptr)
 		, m_pRenderQueueManager(nullptr)
-        , m_pMeshManager(nullptr)
         , m_pMaterialDataManager(nullptr)
         , m_pMaterialManager(nullptr)
         
@@ -164,7 +163,6 @@ namespace LostPeterEngine
 		//m_pSceneManagerEnumerator->ClearAllSceneManager();
 		F_DELETE(m_pSceneManagerEnumerator)
 		F_DELETE(m_pRenderPipeLineManager)
-		F_DELETE(m_pMeshManager)
 		F_DELETE(m_pMaterialManager)
 		F_DELETE(m_pMaterialDataManager)
 		DeleteMovableFactoryAll();
