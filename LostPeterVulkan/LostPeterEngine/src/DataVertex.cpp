@@ -31,8 +31,9 @@ namespace LostPeterEngine
 		m_bDel_VertexStreamBinding = true;
 	}
 
-	DataVertex::DataVertex(VertexDeclaration* pDecl, bool bDelVD, StreamVertexBinding* pBinding, bool bDelVB)
-		: m_pVertexDeclaration(pDecl)
+	DataVertex::DataVertex(VertexDeclaration* pVertexDeclaration, bool bDelVD, 
+						   StreamVertexBinding* pBinding, bool bDelVB)
+		: m_pVertexDeclaration(pVertexDeclaration)
 		, m_bDel_VertexDeclaration(bDelVD)
 		, m_pVertexStreamBinding(pBinding)
 		, m_bDel_VertexStreamBinding(bDelVB)
@@ -70,7 +71,7 @@ namespace LostPeterEngine
 		}
 	}
 
-	DataVertex* DataVertex::Clone(bool bCopyData /*= true*/, bool bSharedVD /*= false*/) const
+	DataVertex* DataVertex::Clone(bool bIsCopyData /*= true*/, bool bIsSharedVD /*= false*/) const
 	{
 		DataVertex* pDest = new DataVertex;
 		pDest->SetVertexStart(m_nVertexStart);
@@ -86,7 +87,7 @@ namespace LostPeterEngine
 									                                                    pSrcStream->GetStreamVertexNum(),
                                                                                         pSrcStream->GetStreamUsageType(),
                                                                                         pSrcStream->HasShadowStream());
-			if (bCopyData)
+			if (bIsCopyData)
 			{
 				pDstStream->CopyData(*pSrcStream, 0, 0, pSrcStream->GetStreamSizeInBytes(), true);
 			}
@@ -109,25 +110,25 @@ namespace LostPeterEngine
 		// pDest->m_aAnimationData = m_aAnimationData;
 		// pDest->m_nAnimDataItemsUsed = m_nAnimDataItemsUsed;
 		
-		if(bSharedVD)
-			pDest->UpdateVertexDeclarationPointer();
+		if (bIsSharedVD)
+			pDest->UpdateVertexDeclaration();
 		else
-			pDest->GetVertexDeclaration()->SetSharedVD(false);
+			pDest->GetVertexDeclaration()->SetIsShared(false);
 		return pDest;
 	}	
 
-	bool DataVertex::UpdateVertexDeclarationPointer()
+	bool DataVertex::UpdateVertexDeclaration()
 	{
 		m_pVertexDeclaration = VertexDeclarationManager::GetSingleton().GetSameVertexDeclaration(m_pVertexDeclaration);
-		F_Assert(m_pVertexDeclaration && "DataVertex::UpdateVertexDeclarationPointer")
-		return m_pVertexDeclaration?true:false;
+		F_Assert(m_pVertexDeclaration && "DataVertex::UpdateVertexDeclaration")
+		return m_pVertexDeclaration ? true : false;
 	}
 	
 	void DataVertex::CloseGapsInBindings()
 	{
 		if (!m_pVertexStreamBinding->HasGaps())
 			return;
-
+		
 		//1> Check for error first
 		const VertexElementList& listElements = m_pVertexDeclaration->GetVertexElementList();
 		VertexElementList::const_iterator it,itEnd;

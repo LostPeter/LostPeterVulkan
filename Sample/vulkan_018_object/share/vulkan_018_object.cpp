@@ -79,42 +79,42 @@ void Vulkan_018_Object::loadMeshes()
         String strNameMesh = "plane";
         Mesh* pMesh1 = loadMesh(nGroup, strNameMesh);
 
-        //5001 - cube
-        strNameMesh = "cube";
-        Mesh* pMesh2 = loadMesh(nGroup, strNameMesh);
+        // //5001 - cube
+        // strNameMesh = "cube";
+        // Mesh* pMesh2 = loadMesh(nGroup, strNameMesh);
 
-        //5001 - sphere
-        strNameMesh = "sphere";
-        Mesh* pMesh3 = loadMesh(nGroup, strNameMesh);
+        // //5001 - sphere
+        // strNameMesh = "sphere";
+        // Mesh* pMesh3 = loadMesh(nGroup, strNameMesh);
 
-        nGroup = 5002;
-        //5002 - mountain
-        strNameMesh = "mountain";
-        Mesh* pMesh4 = loadMesh(nGroup, strNameMesh);
+        // nGroup = 5002;
+        // //5002 - mountain
+        // strNameMesh = "mountain";
+        // Mesh* pMesh4 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - rock
-        strNameMesh = "rock";
-        Mesh* pMesh5 = loadMesh(nGroup, strNameMesh);
+        // //5002 - rock
+        // strNameMesh = "rock";
+        // Mesh* pMesh5 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - cliff
-        strNameMesh = "cliff";
-        Mesh* pMesh6 = loadMesh(nGroup, strNameMesh);
+        // //5002 - cliff
+        // strNameMesh = "cliff";
+        // Mesh* pMesh6 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - tree
-        strNameMesh = "tree";
-        Mesh* pMesh7 = loadMesh(nGroup, strNameMesh);
+        // //5002 - tree
+        // strNameMesh = "tree";
+        // Mesh* pMesh7 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - tree_spruce
-        strNameMesh = "tree_spruce";
-        Mesh* pMesh8 = loadMesh(nGroup, strNameMesh);
+        // //5002 - tree_spruce
+        // strNameMesh = "tree_spruce";
+        // Mesh* pMesh8 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - grass
-        strNameMesh = "grass";
-        Mesh* pMesh9 = loadMesh(nGroup, strNameMesh);
+        // //5002 - grass
+        // strNameMesh = "grass";
+        // Mesh* pMesh9 = loadMesh(nGroup, strNameMesh);
 
-        //5002 - flower
-        strNameMesh = "flower";
-        Mesh* pMesh10 = loadMesh(nGroup, strNameMesh);
+        // //5002 - flower
+        // strNameMesh = "flower";
+        // Mesh* pMesh10 = loadMesh(nGroup, strNameMesh);
     }
     F_LogInfo("---------- Vulkan_018_Object::loadMeshes: Load mesh test end !");
 }

@@ -26,7 +26,7 @@ namespace LostPeterEngine
         return (*ms_Singleton);  
     }
 
-    size_t VertexDeclarationManager::ms_nVDIncrementNum = 5;
+    uint32 VertexDeclarationManager::ms_nVertexDeclarationIncrementCount = 5;
     VertexDeclarationManager::VertexDeclarationManager()
         : Base("VertexDeclarationManager")
         , m_nCount(0)
@@ -48,17 +48,17 @@ namespace LostPeterEngine
 
 		//ENGINE_LOCK_MUTEX(m_mutexVertexDecl)
 		VertexDeclaration* pRet = pVertexDeclaration;
-		VertexDeclarationPtrMap::iterator itFind = m_mapVD.find(strKey);
-		if (itFind == m_mapVD.end())
+		VertexDeclarationPtrMap::iterator itFind = m_mapVertexDeclaration.find(strKey);
+		if (itFind == m_mapVertexDeclaration.end())
 		{
-			m_mapVD[strKey] = pVertexDeclaration;
-			m_nCount = (uint32)m_mapVD.size();
+			m_mapVertexDeclaration[strKey] = pVertexDeclaration;
+			m_nCount = (uint32)m_mapVertexDeclaration.size();
 			pVertexDeclaration->SetPoolIndex(m_nCount);
 		}
 		else
 		{
 			pRet = itFind->second;
-			//pRet->AddRef();
+			pRet->AddRef();
 			DestroyVertexDeclaration(pVertexDeclaration);
 		}
 		return pRet;
@@ -68,58 +68,52 @@ namespace LostPeterEngine
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexVertexDecl)
 		VertexDeclaration* pVertexDeclaration = nullptr;
-		if (m_listVDFree.empty())
+		if (m_listVertexDeclarationFree.empty())
 		{
-			for (size_t i = 0; i < ms_nVDIncrementNum; i++)
+			for (uint32 i = 0; i < ms_nVertexDeclarationIncrementCount; i++)
 			{
 				VertexDeclaration* p = createVertexDeclarationImpl();
 				F_Assert(p && "VertexDeclarationManager::CreateVertexDeclaration")
-				m_aVDPool.push_back(p);
-				m_listVDFree.push_back(p);
+				m_aVertexDeclarationPool.push_back(p);
+				m_listVertexDeclarationFree.push_back(p);
 			}
 		}
-		if (!m_listVDFree.empty())
-		{
-			pVertexDeclaration = m_listVDFree.front();
-			m_listVDFree.pop_front();
-		}
-		
-		//pVertexDeclaration->AddRef();
+		pVertexDeclaration = m_listVertexDeclarationFree.front();
+		m_listVertexDeclarationFree.pop_front();
+		pVertexDeclaration->AddRef();
 		return pVertexDeclaration;
 	}
 
 	void VertexDeclarationManager::DestroyVertexDeclaration(VertexDeclaration* pVertexDeclaration)
 	{
-		//pVertexDeclaration->DelRef();
-		//if(pVertexDeclaration->HasRef())
-		//	return;
+		pVertexDeclaration->DelRef();
+		if (pVertexDeclaration->HasRef())
+			return;
 		//ENGINE_LOCK_MUTEX(m_mutexVertexDecl)
-		//pVertexDeclaration->Reset();
+		pVertexDeclaration->ResetRef();
 		pVertexDeclaration->Clear();
-		m_listVDFree.push_back(pVertexDeclaration);
+		m_listVertexDeclarationFree.push_back(pVertexDeclaration);
 	}
-
 	void VertexDeclarationManager::DestroyVertexDeclarationAll()
 	{
 		VertexDeclarationPtrVector::iterator it,itEnd;
-		itEnd = m_aVDPool.end();
-		for (it = m_aVDPool.begin(); it != itEnd; ++it)
+		itEnd = m_aVertexDeclarationPool.end();
+		for (it = m_aVertexDeclarationPool.begin(); it != itEnd; ++it)
 		{
 			destroyVertexDeclarationImpl(*it);
 		}
-		m_aVDPool.clear();
-		m_listVDFree.clear();
-		m_mapVD.clear();
+		m_aVertexDeclarationPool.clear();
+		m_listVertexDeclarationFree.clear();
+		m_mapVertexDeclaration.clear();
 	}	
 
 	VertexDeclaration* VertexDeclarationManager::createVertexDeclarationImpl()
 	{
 		return new VertexDeclaration;
 	}
-
 	void VertexDeclarationManager::destroyVertexDeclarationImpl(VertexDeclaration* pVertexDeclaration)
 	{
-		delete pVertexDeclaration;
+		F_DELETE(pVertexDeclaration)
 	}
 
 }; //LostPeterEngine

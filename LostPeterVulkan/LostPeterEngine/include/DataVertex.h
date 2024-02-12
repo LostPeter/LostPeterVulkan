@@ -20,7 +20,8 @@ namespace LostPeterEngine
     {
     public:
         DataVertex();
-		DataVertex(VertexDeclaration* pDecl, bool bDelVD, StreamVertexBinding* pBinding, bool bDelVB);
+		DataVertex(VertexDeclaration* pVertexDeclaration, bool bDelVD, 
+				   StreamVertexBinding* pBinding, bool bDelVB);
 		virtual ~DataVertex();
 
 	public:
@@ -62,8 +63,8 @@ namespace LostPeterEngine
 		void Destroy();
 
     public:
-		DataVertex* Clone(bool bCopyData = true, bool bSharedVD = false) const;
-		bool UpdateVertexDeclarationPointer();
+		DataVertex* Clone(bool bIsCopyData = true, bool bIsSharedVD = false) const;
+		bool UpdateVertexDeclaration();
 		
 		void CloseGapsInBindings();
 

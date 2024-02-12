@@ -81,7 +81,7 @@ namespace LostPeterEngine
 		virtual void DestroyStreamIndex(StreamIndex* pStreamIndex);
 
 		virtual StreamVertex* AllocateStreamVertexCopy(StreamVertex* pStreamVertexSrc, EStreamReleaseType eStreamRelease,
-													   StreamTemp* pStreamTemp, bool bCopyData = false);
+													   StreamTemp* pStreamTemp, bool bIsCopyData = false);
 		virtual void ReleaseStreamVertexCopy(StreamVertex* pStreamVertex); 
 		virtual void TouchStreamVertexCopy(StreamVertex* pStreamVertex);
 

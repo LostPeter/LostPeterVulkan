@@ -55,13 +55,13 @@ namespace LostPeterEngine
 		}
 	}
 
-	DataIndex* DataIndex::Clone(bool bCopyData /*= true*/) const
+	DataIndex* DataIndex::Clone(bool bIsCopyData /*= true*/) const
 	{
 		StreamIndex* pStreamIndex = StreamManager::GetSingleton().CreateStreamIndex(m_pStreamIndex->GetStreamIndexType(),
 				                                                                    m_pStreamIndex->GetStreamIndexNum(), 
                                                                                     m_pStreamIndex->GetStreamUsageType(), 
                                                                                     m_pStreamIndex->HasShadowStream());
-		if (bCopyData)
+		if (bIsCopyData)
 		{
 			pStreamIndex->CopyData(*m_pStreamIndex, 0, 0, m_pStreamIndex->GetStreamSizeInBytes(), true);
 		}

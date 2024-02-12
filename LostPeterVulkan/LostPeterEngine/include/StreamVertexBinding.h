@@ -26,12 +26,12 @@ namespace LostPeterEngine
 		typedef std::map<uint16, uint16> BindingIndexMap;
 
 	protected:
-		StreamVertexPtrMap	m_mapBinding;			
+		StreamVertexPtrMap m_mapBinding;			
 		mutable uint16 m_nMaxIndex;
 		void* m_pCreator;
 
 	public:
-		F_FORCEINLINE size_t GetStreamCount() const { return m_mapBinding.size(); }
+		F_FORCEINLINE uint32 GetStreamCount() const { return (uint32)m_mapBinding.size(); }
 		F_FORCEINLINE const StreamVertexPtrMap& GetBindings() const { return m_mapBinding; }
 		F_FORCEINLINE uint16 GetNextIndex() const { return m_nMaxIndex++; }
 		F_FORCEINLINE void* GetCreator() { return m_pCreator; }
@@ -45,7 +45,7 @@ namespace LostPeterEngine
 		virtual StreamVertex* UnsetBinding(uint16 nIndex);
 		virtual StreamVertexPtrVector UnsetAllBindings();
 
-		virtual StreamVertex* GetVertexStream(uint16 nIndex) const;
+		virtual StreamVertex* GetStreamVertex(uint16 nIndex) const;
 		virtual bool IsStreamBound(uint16 nIndex) const;
 		virtual uint16 GetLastBoundIndex() const;
 		virtual bool HasGaps() const;

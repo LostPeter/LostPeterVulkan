@@ -28,12 +28,12 @@ namespace LostPeterEngine
 
 	void StreamVertexBinding::Destroy()
 	{
-		StreamManager* pSM = StreamManager::GetSingletonPtr();
+		StreamManager* pStreamManager = StreamManager::GetSingletonPtr();
 		StreamVertexPtrMap::iterator it,itEnd;
 		itEnd = m_mapBinding.end();
 		for (it = m_mapBinding.begin(); it != itEnd; ++it)
 		{
-			pSM->DestroyStreamVertex(it->second);
+			pStreamManager->DestroyStreamVertex(it->second);
 		}
 		m_mapBinding.clear();
 		m_nMaxIndex = 0;
@@ -71,12 +71,12 @@ namespace LostPeterEngine
 		return aRet;
 	}
 
-	StreamVertex* StreamVertexBinding::GetVertexStream(uint16 nIndex) const
+	StreamVertex* StreamVertexBinding::GetStreamVertex(uint16 nIndex) const
 	{
 		StreamVertexPtrMap::const_iterator itFind = m_mapBinding.find(nIndex);
 		if (itFind == m_mapBinding.end())
 		{
-			F_LogError("*********************** StreamVertexBinding::GetVertexStream: Can not find buffer binding from index: [%d] !", nIndex);
+			F_LogError("*********************** StreamVertexBinding::GetStreamVertex: Can not find buffer binding from index: [%d] !", nIndex);
 			return nullptr;
 		}
 		return itFind->second;

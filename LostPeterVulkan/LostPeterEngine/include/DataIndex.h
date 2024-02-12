@@ -52,7 +52,7 @@ namespace LostPeterEngine
 		void Destroy();
 
     public:
-		DataIndex* Clone(bool bCopyData = true) const;
+		DataIndex* Clone(bool bIsCopyData = true) const;
 	};
 
 }; //LostPeterEngine

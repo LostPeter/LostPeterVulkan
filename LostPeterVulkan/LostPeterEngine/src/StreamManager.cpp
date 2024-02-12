@@ -87,7 +87,7 @@ namespace LostPeterEngine
 	}
 
 	StreamVertex* StreamManager::AllocateStreamVertexCopy(StreamVertex* pStreamVertexSrc, EStreamReleaseType eStreamRelease,
-														  StreamTemp* pStreamTemp, bool bCopyData /*= false*/)
+														  StreamTemp* pStreamTemp, bool bIsCopyData /*= false*/)
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexVertexStreams)
 		{
@@ -104,7 +104,7 @@ namespace LostPeterEngine
 				m_mapFreeTempVertexStream.erase(itFind);
 			}
 
-			if (bCopyData)
+			if (bIsCopyData)
 			{
 				pStreamVertex->CopyData(*pStreamVertexSrc, 0, 0, pStreamVertexSrc->GetStreamSizeInBytes(), true);
 			}

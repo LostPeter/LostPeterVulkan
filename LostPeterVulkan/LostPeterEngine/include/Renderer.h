@@ -90,8 +90,9 @@ namespace LostPeterEngine
 	protected:
 		virtual bool initRenderCapabilities() = 0;
 		virtual void initFromRenderCapabilities(RenderTarget* pPrimary) = 0;
+		virtual bool initStreamManager() = 0;
+		virtual bool initShaderProgramManager() = 0;
 		virtual bool initTextureManager() = 0;
-
         
     public:
 		virtual void ConvertColorValue(const FColor& color, uint32* pDest);

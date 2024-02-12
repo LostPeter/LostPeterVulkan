@@ -38,8 +38,13 @@ namespace LostPeterEngine
 
     StreamVertexBindingManager::~StreamVertexBindingManager()
     {
-        DestroyVertexStreamBindingAll();
+		Destroy();
     }
+
+	void StreamVertexBindingManager::Destroy()
+	{
+		DestroyVertexStreamBindingAll();
+	}
 
     StreamVertexBinding* StreamVertexBindingManager::CreateVertexStreamBinding()
 	{
@@ -61,7 +66,7 @@ namespace LostPeterEngine
 		{
 			VertexStreamBindingPtrListNode* pNode = m_vsbFreeHeadNode.m_pNext;
 			m_vsbFreeHeadNode.m_pNext = pNode->m_pNext;
-			pNode->m_pNext->m_pPrev   = &m_vsbFreeHeadNode;
+			pNode->m_pNext->m_pPrev = &m_vsbFreeHeadNode;
 			pNode->m_pNext = &m_vsbActiveTailNode;
 			pNode->m_pPrev = m_vsbActiveTailNode.m_pPrev;
 			m_vsbActiveTailNode.m_pPrev->m_pNext = pNode;
@@ -71,11 +76,11 @@ namespace LostPeterEngine
 		return pBinding;
 	}
 
-	void StreamVertexBindingManager::DestroyVertexStreamBinding(StreamVertexBinding* pVSBinding)
+	void StreamVertexBindingManager::DestroyVertexStreamBinding(StreamVertexBinding* pStreamVertexBinding)
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexVertexBindings)
-		VertexStreamBindingPtrListNode* pNode = static_cast<VertexStreamBindingPtrListNode*>(pVSBinding->GetCreator());
-		pVSBinding->Destroy();
+		VertexStreamBindingPtrListNode* pNode = static_cast<VertexStreamBindingPtrListNode*>(pStreamVertexBinding->GetCreator());
+		pStreamVertexBinding->Destroy();
 		VertexStreamBindingPtrListNode* pPrev = pNode->m_pPrev;
 		VertexStreamBindingPtrListNode* pNext = pNode->m_pNext;
 		pPrev->m_pNext = pNext;
@@ -98,8 +103,8 @@ namespace LostPeterEngine
 			}
 			pNode = it;
 			it = it->m_pNext;
-			delete pNode;
-			pNode = nullptr;
+
+			F_DELETE(pNode)
 		}
 		it = m_vsbFreeHeadNode.m_pNext;
 		while (it != &m_vsbFreeTailNode)
@@ -110,8 +115,8 @@ namespace LostPeterEngine
 			}
 			pNode = it;
 			it = it->m_pNext;
-			delete pNode;
-			pNode = nullptr;
+
+			F_DELETE(pNode)
 		}
 		m_vsbActiveHeadNode.m_pNext = &m_vsbActiveTailNode;
 		m_vsbActiveTailNode.m_pPrev = &m_vsbActiveHeadNode;
@@ -124,9 +129,9 @@ namespace LostPeterEngine
 		return new StreamVertexBinding;
 	}
 
-	void StreamVertexBindingManager::destroyVertexStreamBindingImpl(StreamVertexBinding* pVSBinding)
+	void StreamVertexBindingManager::destroyVertexStreamBindingImpl(StreamVertexBinding* pStreamVertexBinding)
 	{
-		delete pVSBinding;
+		F_DELETE(pStreamVertexBinding)
 	}
 
 }; //LostPeterEngine

@@ -74,7 +74,7 @@ namespace LostPeterEngine
 		F_Assert(posElem && "StreamTempBlended::ExtractFrom: Positions are required !")
 
 		m_nPosBindIndex	= posElem->GetSourceIndex();
-		m_pSrcPosStream	= pBinding->GetVertexStream(m_nPosBindIndex);
+		m_pSrcPosStream	= pBinding->GetStreamVertex(m_nPosBindIndex);
 
 		if (!normElem)
 		{
@@ -94,7 +94,7 @@ namespace LostPeterEngine
 			else
 			{
 				m_bPosNormalShareStream = false;
-				m_pSrcNormalStream = pBinding->GetVertexStream(m_nNormBindIndex);
+				m_pSrcNormalStream = pBinding->GetStreamVertex(m_nNormBindIndex);
 			}
 		}
 	}

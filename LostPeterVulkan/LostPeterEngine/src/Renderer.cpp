@@ -52,6 +52,7 @@ namespace LostPeterEngine
 		, m_nCurWidth(0)
 		, m_nCurHeight(0)
     {
+		m_pVertexDeclarationManager = new VertexDeclarationManager();
 		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
 		m_pMeshManager = new MeshManager();
 		m_pShaderProgramGroupManager = new ShaderProgramGroupManager();

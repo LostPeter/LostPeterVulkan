@@ -36,14 +36,17 @@ namespace LostPeterEngine
         static StreamVertexBindingManager& GetSingleton();
         static StreamVertexBindingManager* GetSingletonPtr();
 
+	public:
+		virtual void Destroy();
+
     public:
 		virtual StreamVertexBinding* CreateVertexStreamBinding();
-		virtual void DestroyVertexStreamBinding(StreamVertexBinding* pVSBinding);
+		virtual void DestroyVertexStreamBinding(StreamVertexBinding* pStreamVertexBinding);
 		virtual void DestroyVertexStreamBindingAll();
 
 	protected:
 		virtual StreamVertexBinding* createVertexStreamBindingImpl();
-		virtual void destroyVertexStreamBindingImpl(StreamVertexBinding* pVSBinding);
+		virtual void destroyVertexStreamBindingImpl(StreamVertexBinding* pStreamVertexBinding);
     };
 
 }; //LostPeterEngine

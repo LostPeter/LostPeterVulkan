@@ -21,16 +21,16 @@ namespace LostPeterEngine
     {
     public:
         VertexDeclarationManager();
-        ~VertexDeclarationManager();
+        virtual ~VertexDeclarationManager();
 
     public:
-		static size_t ms_nVDIncrementNum;
+		static uint32 ms_nVertexDeclarationIncrementCount;
 
 	protected:
 		uint32 m_nCount;
-		VertexDeclarationPtrVector m_aVDPool;
-		VertexDeclarationPtrList m_listVDFree;
-		VertexDeclarationPtrMap m_mapVD;
+		VertexDeclarationPtrVector m_aVertexDeclarationPool;
+		VertexDeclarationPtrList m_listVertexDeclarationFree;
+		VertexDeclarationPtrMap m_mapVertexDeclaration;
         //ENGINE_MUTEX(m_mutexVertexDecl)
 
     public:

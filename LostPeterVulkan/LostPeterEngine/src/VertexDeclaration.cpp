@@ -15,8 +15,9 @@
 namespace LostPeterEngine
 {
     VertexDeclaration::VertexDeclaration()
-		: m_nPoolIndex(-1)
-		, m_bSharedVD(true)
+		: Base("VertexDeclaration")
+		, m_nPoolIndex(-1)
+		, m_bIsShared(true)
 	{
 
 	}
@@ -38,11 +39,12 @@ namespace LostPeterEngine
 			strKey += strTemp;
 			strKey += "_";
 		}
+		SetName(strKey);
 	}
 
 	const VertexElement* VertexDeclaration::GetVertexElement(uint16 nIndex)
 	{
-		F_Assert(nIndex >= 0 && nIndex < m_listElement.size() && "VertexDeclaration::GetVertexElement: Index out of bounds !")
+		F_Assert(nIndex >= 0 && nIndex < (uint16)m_listElement.size() && "VertexDeclaration::GetVertexElement: Index out of bounds !")
 
 		VertexElementList::iterator it = m_listElement.begin();
 		for (uint16 n = 0; n < nIndex; ++n)
@@ -50,7 +52,7 @@ namespace LostPeterEngine
 		return &(*it);
 	}
 
-	bool VertexDeclaration::VertexElementLess(const VertexElement& e1, const VertexElement& e2)
+	static bool s_VertexElementLess(const VertexElement& e1, const VertexElement& e2)
 	{
 		if (e1.GetSourceIndex() < e2.GetSourceIndex())
 		{
@@ -75,7 +77,7 @@ namespace LostPeterEngine
 
 	void VertexDeclaration::Sort()
 	{
-		m_listElement.sort(VertexDeclaration::VertexElementLess);
+		m_listElement.sort(s_VertexElementLess);
 	}
 	
 	void VertexDeclaration::Clear()
@@ -124,7 +126,7 @@ namespace LostPeterEngine
 		}
 		newDecl->Sort();
 	
-		size_t offset = 0;
+		uint32 offset = 0;
 		nCur = 0;
 		uint16 buffer = 0;
 		FVertexElementSemanticType prevSemantic = F_VertexElementSemantic_Position;
@@ -189,7 +191,7 @@ namespace LostPeterEngine
 		return nRet;
 	}
 
-	const VertexElement& VertexDeclaration::AddVertexElement(uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
+	const VertexElement& VertexDeclaration::AddVertexElement(uint16 nSourceIndex, uint32 nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
 	{
 		if (typeData == F_VertexElementData_Color)
 		{
@@ -197,7 +199,7 @@ namespace LostPeterEngine
 		}
 		m_listElement.push_back(VertexElement(nSourceIndex, nOffset, typeSemantic, typeData, nIndex));
 
-		if (static_cast<size_t>(nSourceIndex + 1) > m_aVertexSize.size())
+		if (static_cast<uint32>(nSourceIndex + 1) > (uint32)m_aVertexSize.size())
 		{
 			m_aVertexSize.resize(nSourceIndex + 1);
 			m_aVertexSize[nSourceIndex] = VertexElement::GetTypeSize(typeData);
@@ -210,9 +212,9 @@ namespace LostPeterEngine
 		return m_listElement.back();
 	}
 
-	const VertexElement& VertexDeclaration::InsertVertexElement(uint16 atPosition, uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
+	const VertexElement& VertexDeclaration::InsertVertexElement(uint16 atPosition, uint16 nSourceIndex, uint32 nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
 	{
-		if (atPosition >= m_listElement.size())
+		if (atPosition >= (uint16)m_listElement.size())
 		{
 			return AddVertexElement(nSourceIndex, nOffset, typeSemantic, typeData, nIndex);
 		}
@@ -221,7 +223,7 @@ namespace LostPeterEngine
 			++it;
 		it = m_listElement.insert(it,VertexElement(nSourceIndex, nOffset, typeSemantic, typeData, nIndex));
 		
-		if (static_cast<size_t>(nSourceIndex+1) > m_aVertexSize.size())
+		if (static_cast<uint32>(nSourceIndex+1) > (uint32)m_aVertexSize.size())
 		{
 			m_aVertexSize.resize(nSourceIndex+1);
 			m_aVertexSize[nSourceIndex]  = VertexElement::GetTypeSize(typeData);
@@ -236,7 +238,7 @@ namespace LostPeterEngine
 
 	void VertexDeclaration::RemoveVertexElement(uint16 nIndex)
 	{
-		F_Assert(nIndex >= 0 && nIndex < m_listElement.size() && "VertexDeclaration::RemoveVertexElement: Index out of bounds !")
+		F_Assert(nIndex >= 0 && nIndex < (uint16)m_listElement.size() && "VertexDeclaration::RemoveVertexElement: Index out of bounds !")
 		VertexElementList::iterator it = m_listElement.begin();
 		for (uint16 n = 0; n < nIndex; ++n)
 			++it;
@@ -266,17 +268,17 @@ namespace LostPeterEngine
 		m_listElement.clear();
 	}
 
-	void VertexDeclaration::ModifyVertexElement(uint16 nElementIndex, uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
+	void VertexDeclaration::ModifyVertexElement(uint16 nElementIndex, uint16 nSourceIndex, uint32 nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex /*= 0*/)
 	{
-		F_Assert(nElementIndex < m_listElement.size() && "VertexDeclaration::ModifyVertexElement: Index out of bounds !")
+		F_Assert(nElementIndex < (uint16)m_listElement.size() && "VertexDeclaration::ModifyVertexElement: Index out of bounds !")
+
 		VertexElementList::iterator it = m_listElement.begin();
 		std::advance(it, nElementIndex);
-
 		m_aVertexSize[it->GetSourceIndex()] -= it->GetSize();
 
 		(*it) = VertexElement(nSourceIndex, nOffset, typeSemantic, typeData, nIndex);
 
-		if (static_cast<size_t>(nSourceIndex+1) > m_aVertexSize.size())
+		if (static_cast<uint32>(nSourceIndex + 1) > (uint32)m_aVertexSize.size())
 		{
 			m_aVertexSize.resize(nSourceIndex+1);
 			m_aVertexSize[nSourceIndex] = VertexElement::GetTypeSize(typeData);
@@ -298,7 +300,7 @@ namespace LostPeterEngine
 				return &(*it);
 			}
 		}
-		return 0;
+		return nullptr;
 	}
 
 	VertexElementList VertexDeclaration::FindVertexElementsBySource(uint16 nSourceIndex)
@@ -316,21 +318,21 @@ namespace LostPeterEngine
 		return retList;
 	}
 
-	size_t VertexDeclaration::GetVertexSize(uint16 nSourceIndex)
+	uint32 VertexDeclaration::GetVertexSize(uint16 nSourceIndex)
 	{
 		return m_aVertexSize[nSourceIndex];
 	}
 
 	VertexDeclaration* VertexDeclaration::Clone()
 	{
-		VertexDeclaration* pVD = VertexDeclarationManager::GetSingleton().CreateVertexDeclaration();
+		VertexDeclaration* pVertexDeclaration = VertexDeclarationManager::GetSingleton().CreateVertexDeclaration();
 		VertexElementList::const_iterator it,itEnd;
 		itEnd = m_listElement.end();
 		for (it = m_listElement.begin(); it != itEnd; ++it)
 		{
-			pVD->AddVertexElement(it->GetSourceIndex(), it->GetOffset(), it->GetVertexElementSemanticType(), it->GetVertexElementDataType(), it->GetIndex());
+			pVertexDeclaration->AddVertexElement(it->GetSourceIndex(), it->GetOffset(), it->GetVertexElementSemanticType(), it->GetVertexElementDataType(), it->GetIndex());
 		}
-		return pVD;
+		return pVertexDeclaration;
 	}
 
 }; //LostPeterEngine
