@@ -21,7 +21,7 @@ namespace LostPeterEngine
     public:
         StreamLock();
         StreamLock(Stream* pStream, EStreamLockType eStreamLock);
-        StreamLock(Stream* pStream, size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+        StreamLock(Stream* pStream, uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
         ~StreamLock();
 
     public:
@@ -30,7 +30,7 @@ namespace LostPeterEngine
         
     public:
         void Lock(Stream* pStream, EStreamLockType eStreamLock);
-        void Lock(Stream* pStream, size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+        void Lock(Stream* pStream, uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
         void Unlock();
     };
 

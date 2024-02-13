@@ -13,8 +13,14 @@
 
 namespace LostPeterEngine
 {
-     StreamIndexSystem::StreamIndexSystem(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage)
-		: StreamIndex(eStreamIndex, nIndexNum, eStreamUsage, true, false) 
+     StreamIndexSystem::StreamIndexSystem(EStreamIndexType eStreamIndex, 
+	 									  uint32 nIndexCount, 
+										  EStreamUsageType eStreamUsage)
+		: StreamIndex(eStreamIndex, 
+					  nIndexCount, 
+					  eStreamUsage, 
+					  true, 
+					  false) 
 	{
 		m_pData = new uint8[m_nStreamSizeInBytes];
 	}
@@ -24,7 +30,7 @@ namespace LostPeterEngine
 		F_DELETE_T(m_pData)
 	}
 
-	void* StreamIndexSystem::Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+	void* StreamIndexSystem::Lock(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
 	{
 		m_bIsLocked = true;
 		return m_pData + nOffset;
@@ -35,19 +41,19 @@ namespace LostPeterEngine
 		m_bIsLocked = false;
 	}
 
-	void StreamIndexSystem::ReadData(size_t nOffset, size_t nLength, void* pDest)
+	void StreamIndexSystem::ReadData(uint32 nOffset, uint32 nLength, void* pDest)
 	{
 		F_Assert((nOffset + nLength) <= m_nStreamSizeInBytes && "StreamIndexSystem::ReadData !")
 		memcpy(pDest,m_pData + nOffset,nLength);
 	}
 
-	void StreamIndexSystem::WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream /*= false*/)
+	void StreamIndexSystem::WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream /*= false*/)
 	{
 		F_Assert((nOffset + nLength) <= m_nStreamSizeInBytes && "StreamIndexSystem::WriteData !")
 		memcpy(m_pData + nOffset,pSource,nLength);
 	}
 
-	void* StreamIndexSystem::lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+	void* StreamIndexSystem::lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
 	{
 		return m_pData + nOffset;
 	}

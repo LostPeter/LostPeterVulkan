@@ -28,20 +28,20 @@ namespace LostPeterPluginRendererVulkan
 
     }
 
-    StreamVertex* VulkanStreamManager::CreateStreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream /*= false*/)
+    StreamVertex* VulkanStreamManager::CreateStreamVertex(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream /*= false*/)
     {
-        return CreateStreamVertex(nVertexSize * nVertexNum, eStreamUsage, bUseShadowStream);
+        return CreateStreamVertex(nVertexSize * nVertexCount, eStreamUsage, bIsUseShadowStream);
     }
 
-	StreamVertex* VulkanStreamManager::CreateStreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage, bool bUseShadowStream /*= false*/)
+	StreamVertex* VulkanStreamManager::CreateStreamVertex(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream /*= false*/)
     {
-        VulkanStreamVertex* pStreamVertex = new VulkanStreamVertex(m_pDevice, 0, nSizeInBytes, eStreamUsage, false, bUseShadowStream);
+        VulkanStreamVertex* pStreamVertex = new VulkanStreamVertex(m_pDevice, 0, nSizeInBytes, eStreamUsage, false, bIsUseShadowStream);
         return pStreamVertex;
     }
 
-    StreamIndex* VulkanStreamManager::CreateStreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream /*= false*/)
+    StreamIndex* VulkanStreamManager::CreateStreamIndex(EStreamIndexType eStreamIndex, uint32 nIndexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream /*= false*/)
     {
-        VulkanStreamIndex* pStreamIndex = new VulkanStreamIndex(m_pDevice, 0, eStreamIndex, nIndexNum, eStreamUsage, false, bUseShadowStream);
+        VulkanStreamIndex* pStreamIndex = new VulkanStreamIndex(m_pDevice, 0, eStreamIndex, nIndexCount, eStreamUsage, false, bIsUseShadowStream);
         return pStreamIndex;
     }
 

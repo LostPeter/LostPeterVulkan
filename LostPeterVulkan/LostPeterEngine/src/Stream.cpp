@@ -13,21 +13,24 @@
 
 namespace LostPeterEngine
 {
-    Stream::Stream(EStreamUsageType eStreamUsage, bool bSystemMemory, bool bUseShadowStream)
-        : m_eStreamUsage(eStreamUsage)
+    Stream::Stream(EStreamUsageType eStreamUsage, 
+                   bool bIsUseSystemMemory, 
+                   bool bIsUseShadowStream)
+        : Base("Stream")
+        , m_eStreamUsage(eStreamUsage)
         , m_bIsLocked(false)
-        , m_bSystemMemory(bSystemMemory)
-        , m_bUseShadowStream(bUseShadowStream)
+        , m_bIsUseSystemMemory(bIsUseSystemMemory)
+        , m_bIsUseShadowStream(bIsUseShadowStream)
         , m_pStreamShadow(nullptr)
-        , m_bShadowUpdated(false)
-        , m_bSuppressUpdate(false)
+        , m_bIsShadowUpdated(false)
+        , m_bIsSuppressUpdate(false)
         , m_pResourceBuf(nullptr)
     {
-        if (bUseShadowStream && eStreamUsage == E_StreamUsage_Dynamic)
+        if (bIsUseShadowStream && eStreamUsage == E_StreamUsage_Dynamic)
         {
             m_eStreamUsage = E_StreamUsage_WriteOnly;
         }
-        else if (bUseShadowStream && eStreamUsage == E_StreamUsage_Static)
+        else if (bIsUseShadowStream && eStreamUsage == E_StreamUsage_Static)
         {
             m_eStreamUsage = E_StreamUsage_StaticWriteOnly;
         }
@@ -38,14 +41,14 @@ namespace LostPeterEngine
         F_DELETE_T(m_pResourceBuf)
     }
 
-    void* Stream::Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+    void* Stream::Lock(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
     {
         F_Assert(!IsLocked() && "Stream::Lock: Cannot lock this stream, it is already locked !")
         void* pRet = nullptr;
-        if (m_bUseShadowStream)
+        if (m_bIsUseShadowStream)
         {
             if (E_StreamLock_ReadOnly != eStreamLock)
-                m_bShadowUpdated = true;
+                m_bIsShadowUpdated = true;
 
             pRet = m_pStreamShadow->Lock(nOffset, nLength, eStreamLock);
         }
@@ -69,7 +72,7 @@ namespace LostPeterEngine
     {
         F_Assert(IsLocked() && "Stream::Lock: Cannot unlock this stream, it is not locked !")
 
-        if (m_bUseShadowStream && m_pStreamShadow->IsLocked())
+        if (m_bIsUseShadowStream && m_pStreamShadow->IsLocked())
         {
             m_pStreamShadow->Unlock();
             UpdateFromShadow();
@@ -87,22 +90,22 @@ namespace LostPeterEngine
 		m_pResourceBuf = new uint8[m_nStreamSizeInBytes];
     }
 
-    void Stream::CopyData(Stream& streamSrc, size_t nSrcOffset, size_t nDstOffset, size_t nLength, bool bDiscardWholeStream /*= false*/)
+    void Stream::CopyData(Stream& streamSrc, uint32 nSrcOffset, uint32 nDstOffset, uint32 nLength, bool bIsDiscardWholeStream /*= false*/)
     {
         const void* pDataSrc = streamSrc.Lock(nSrcOffset, nLength, E_StreamLock_ReadOnly);
-        this->WriteData(nDstOffset, nLength, pDataSrc, bDiscardWholeStream);
+        this->WriteData(nDstOffset, nLength, pDataSrc, bIsDiscardWholeStream);
         streamSrc.Unlock();
     }
 
     void Stream::CopyData(Stream& streamSrc)
     {
-        size_t size = FMath::Min(GetStreamSizeInBytes(), streamSrc.GetStreamSizeInBytes()); 
+        uint32 size = FMath::Min(GetStreamSizeInBytes(), streamSrc.GetStreamSizeInBytes()); 
         CopyData(streamSrc, 0, 0, size, true);
     }
 
     void Stream::UpdateFromShadow()
     {
-        if (m_bUseShadowStream && m_bShadowUpdated && !m_bSuppressUpdate)
+        if (m_bIsUseShadowStream && m_bIsShadowUpdated && !m_bIsSuppressUpdate)
         {
             const void* pDataSrc = m_pStreamShadow->lockImpl(m_nLockStart, m_nLockSize, E_StreamLock_ReadOnly);
             
@@ -116,13 +119,13 @@ namespace LostPeterEngine
             memcpy(pDataDst, pDataSrc, m_nLockSize);
             this->unlockImpl();
             m_pStreamShadow->unlockImpl();
-            m_bShadowUpdated = false;
+            m_bIsShadowUpdated = false;
         }
     }
 
     void Stream::SuppressHardwareUpdate(bool bSuppress) 
     {
-        m_bSuppressUpdate = bSuppress;
+        m_bIsSuppressUpdate = bSuppress;
         if (!bSuppress)
         {
             UpdateFromShadow();

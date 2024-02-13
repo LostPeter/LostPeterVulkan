@@ -28,8 +28,8 @@ namespace LostPeterEngine
         return (*ms_Singleton);  
     }
 
-    const size_t StreamManager::ms_nUnderUsedFrameThreshold = 30000;
-	const size_t StreamManager::ms_nExpiredDelayFrameThreshold = 5;
+    const uint32 StreamManager::ms_nUnderUsedFrameThreshold = 30000;
+	const uint32 StreamManager::ms_nExpiredDelayFrameThreshold = 5;
     StreamManager::StreamManager()
         : Base("StreamManager")
         , m_nUnderUsedFrameCount(0)
@@ -145,13 +145,13 @@ namespace LostPeterEngine
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexTempStreams)
 
-		size_t nNumFreed = 0;
+		uint32 nNumFreed = 0;
 		FreeTemporaryVertexStreamMap::iterator it,itEnd;
 		itEnd = m_mapFreeTempVertexStream.end();
 		for (it = m_mapFreeTempVertexStream.begin(); it != itEnd; ++it)
 		{
 			StreamVertex* pStreamVertex = it->second;
-			//if (pStreamVertex->GetRef() <= 1)
+			if (pStreamVertex->GetRef() <= 1)
 			{
 				DestroyStreamVertex(pStreamVertex);
 				m_mapFreeTempVertexStream.erase(it);
@@ -166,8 +166,8 @@ namespace LostPeterEngine
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexTempStreams)
 
-		size_t nNumUnused = m_mapFreeTempVertexStream.size();
-		size_t nNumUsed = m_mapTempVertexStreamInfos.size();
+		uint32 nNumUnused = m_mapFreeTempVertexStream.size();
+		uint32 nNumUsed = m_mapTempVertexStreamInfos.size();
 
 		TemporaryVertexStreamInfoMap::iterator it,itEnd;
 		itEnd = m_mapTempVertexStreamInfos.end();
@@ -231,7 +231,7 @@ namespace LostPeterEngine
 			for (_Iter it = range.first; it != range.second; ++it)
 			{
 				StreamVertex* pStreamVertex = it->second;
-				//if (pStreamVertex->GetRef() <= 1)
+				if (pStreamVertex->GetRef() <= 1)
 				{
 					DestroyStreamVertex(pStreamVertex);
 					holdForDelayDestroy.push_back(pStreamVertex);
@@ -241,10 +241,10 @@ namespace LostPeterEngine
 		}
 	}
 
-	StreamVertex* StreamManager::makeStreamCopy(StreamVertex* pStreamVertexSrc, EStreamUsageType eStreamUsage, bool bUseShadowStream)
+	StreamVertex* StreamManager::makeStreamCopy(StreamVertex* pStreamVertexSrc, EStreamUsageType eStreamUsage, bool bIsUseShadowStream)
 	{
-		StreamVertex* pStreamVertex = this->CreateStreamVertex(pStreamVertexSrc->GetStreamVertexSize(), pStreamVertexSrc->GetStreamVertexNum(), eStreamUsage, bUseShadowStream);
-		//pStreamVertex->AddRef();
+		StreamVertex* pStreamVertex = this->CreateStreamVertex(pStreamVertexSrc->GetStreamVertexSize(), pStreamVertexSrc->GetStreamVertexCount(), eStreamUsage, bIsUseShadowStream);
+		pStreamVertex->AddRef();
 		return pStreamVertex;
 	}
 

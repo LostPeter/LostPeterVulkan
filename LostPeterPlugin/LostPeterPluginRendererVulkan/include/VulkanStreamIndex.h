@@ -19,10 +19,13 @@ namespace LostPeterPluginRendererVulkan
     class VulkanStreamIndex : public StreamIndex
     {
     public:
-        VulkanStreamIndex(VulkanDevice* pDevice, uint32 nTarget, 
-                          EStreamIndexType eStreamIndex, size_t nIndexNum, 
+        VulkanStreamIndex(VulkanDevice* pDevice, 
+                          uint32 nTarget, 
+                          EStreamIndexType eStreamIndex, 
+                          uint32 nIndexCount, 
                           EStreamUsageType eStreamUsage,
-					      bool bUseSystemMemory, bool bUseShadowStream);
+					      bool bIsUseSystemMemory, 
+                          bool bIsUseShadowStream);
         virtual ~VulkanStreamIndex();
 
     public:
@@ -38,15 +41,15 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
 
     public:
-        virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
-		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false);
+        virtual void ReadData(uint32 nOffset, uint32 nLength, void* pDest);
+		virtual void WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream = false);
 
-		virtual void CopyData(Stream& streamSrc, size_t nSrcOffset, size_t nDstOffset, size_t nLength, bool bDiscardWholeStream = false);
+		virtual void CopyData(Stream& streamSrc, uint32 nSrcOffset, uint32 nDstOffset, uint32 nLength, bool bIsDiscardWholeStream = false);
 
         virtual void UpdateFromShadow();
 
     protected:
-		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void unlockImpl();
 
     private:

@@ -14,10 +14,16 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    VulkanStreamVertex::VulkanStreamVertex(VulkanDevice* pDevice, uint32 nTarget, 
-                                           size_t nSizeInBytes, EStreamUsageType eStreamUsage,
-					                       bool bSystemMemory, bool bUseShadowStream)
-        : StreamVertex(nSizeInBytes, eStreamUsage, bSystemMemory, bUseShadowStream)
+    VulkanStreamVertex::VulkanStreamVertex(VulkanDevice* pDevice, 
+                                           uint32 nTarget, 
+                                           uint32 nSizeInBytes, 
+                                           EStreamUsageType eStreamUsage,
+					                       bool bIsUseSystemMemory, 
+                                           bool bIsUseShadowStream)
+        : StreamVertex(nSizeInBytes, 
+                       eStreamUsage, 
+                       bIsUseSystemMemory, 
+                       bIsUseShadowStream)
         , m_pDevice(pDevice)
         , m_nTarget(nTarget)
         , m_vkBuffer(nullptr)
@@ -27,6 +33,7 @@ namespace LostPeterPluginRendererVulkan
         createVkBuffer();
         if (m_eStreamUsage == E_StreamUsage_Dynamic)
         {
+            F_DELETE(m_pStreamShadow)
             m_pStreamShadow = new VulkanStreamVertex(pDevice, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, nSizeInBytes, E_StreamUsage_Static, true, false);
         }
     }
@@ -71,19 +78,19 @@ namespace LostPeterPluginRendererVulkan
         }
     }
 
-    void VulkanStreamVertex::ReadData(size_t nOffset, size_t nLength, void* pDest)
+    void VulkanStreamVertex::ReadData(uint32 nOffset, uint32 nLength, void* pDest)
     {
         StreamLock streamLock(this, nOffset, nLength, E_StreamLock_ReadOnly);
         memcpy(pDest, streamLock.m_pData, nLength);
     }
 
-	void VulkanStreamVertex::WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream /*= false*/)
+	void VulkanStreamVertex::WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream /*= false*/)
     {
-        StreamLock streamLock(this, nOffset, nLength, bDiscardWholeStream ? E_StreamLock_Discard : E_StreamLock_Normal);
+        StreamLock streamLock(this, nOffset, nLength, bIsDiscardWholeStream ? E_StreamLock_Discard : E_StreamLock_Normal);
         memcpy(streamLock.m_pData, pSource, nLength);
     }
 
-	void VulkanStreamVertex::CopyData(Stream& streamSrc, size_t nSrcOffset, size_t nDstOffset, size_t nLength, bool bDiscardWholeStream /*= false*/)
+	void VulkanStreamVertex::CopyData(Stream& streamSrc, uint32 nSrcOffset, uint32 nDstOffset, uint32 nLength, bool bIsDiscardWholeStream /*= false*/)
     {
         VulkanStreamVertex* pBufferSrc = dynamic_cast<VulkanStreamVertex*>(&streamSrc);
         if (pBufferSrc && (m_eStreamUsage & E_StreamUsage_Dynamic) == 0)
@@ -93,22 +100,22 @@ namespace LostPeterPluginRendererVulkan
         else
         {
             const void* pDataSrc = streamSrc.Lock(nSrcOffset, nLength, E_StreamLock_ReadOnly);
-            WriteData(nDstOffset, nLength, pDataSrc, bDiscardWholeStream);
+            WriteData(nDstOffset, nLength, pDataSrc, bIsDiscardWholeStream);
             streamSrc.Unlock();
         }
     }
 
     void VulkanStreamVertex::UpdateFromShadow()
     {
-        if(m_pStreamShadow && m_bShadowUpdated && !m_bSuppressUpdate)
+        if(m_pStreamShadow && m_bIsShadowUpdated && !m_bIsSuppressUpdate)
 		{
-			bool bDiscardWholeStream = m_nLockStart == 0 && m_nLockSize == m_nStreamSizeInBytes;
-			CopyData(*m_pStreamShadow, m_nLockStart, m_nLockStart, m_nLockSize, bDiscardWholeStream);
-			m_bShadowUpdated = false;
+			bool bIsDiscardWholeStream = m_nLockStart == 0 && m_nLockSize == m_nStreamSizeInBytes;
+			CopyData(*m_pStreamShadow, m_nLockStart, m_nLockStart, m_nLockSize, bIsDiscardWholeStream);
+			m_bIsShadowUpdated = false;
         }
     }
 
-	void* VulkanStreamVertex::lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+	void* VulkanStreamVertex::lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
     {
         if (m_pStreamShadow)
             return m_pStreamShadow->Lock(nOffset, nLength, eStreamLock);

@@ -14,11 +14,16 @@
 
 namespace LostPeterEngine
 {
-    StreamIndex::StreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, 
-                             EStreamUsageType eStreamUsage, bool bUseSystemMemory, bool bUseShadowStream)
-		: Stream(eStreamUsage, bUseSystemMemory, bUseShadowStream)
+    StreamIndex::StreamIndex(EStreamIndexType eStreamIndex, 
+							 uint32 nIndexCount, 
+                             EStreamUsageType eStreamUsage, 
+							 bool bIsUseSystemMemory, 
+							 bool bIsUseShadowStream)
+		: Stream(eStreamUsage, 
+				 bIsUseSystemMemory, 
+				 bIsUseShadowStream)
 		, m_eStreamIndex(eStreamIndex)
-		, m_eStreamIndexNum(nIndexNum)
+		, m_eStreamIndexNum(nIndexCount)
 	{
 		switch ((int32)m_eStreamIndex)
 		{
@@ -31,7 +36,7 @@ namespace LostPeterEngine
 		}
 		m_nStreamSizeInBytes = m_eStreamIndexTypeSize * m_eStreamIndexNum;
 
-		if (m_bUseShadowStream)
+		if (m_bIsUseShadowStream)
 		{
 			m_pStreamShadow = new StreamIndexSystem(m_eStreamIndex, m_eStreamIndexNum, E_StreamUsage_Dynamic);
 		}

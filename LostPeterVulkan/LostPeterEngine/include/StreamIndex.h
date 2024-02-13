@@ -19,20 +19,23 @@ namespace LostPeterEngine
     class engineExport StreamIndex : public Stream
     {
     public:
-        StreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, 
-                    EStreamUsageType eStreamUsage, bool bUseSystemMemory, bool bUseShadowStream);
+        StreamIndex(EStreamIndexType eStreamIndex, 
+				    uint32 nIndexCount, 
+                    EStreamUsageType eStreamUsage, 
+					bool bIsUseSystemMemory, 
+					bool bIsUseShadowStream);
 		virtual ~StreamIndex();
 	
 	public:
 	protected:
 		EStreamIndexType m_eStreamIndex;
-		size_t m_eStreamIndexTypeSize;
-		size_t m_eStreamIndexNum;			
+		uint32 m_eStreamIndexTypeSize;
+		uint32 m_eStreamIndexNum;			
 		
 	public:
 		EStreamIndexType GetStreamIndexType() const { return m_eStreamIndex; }
-		size_t GetStreamIndexSize() const { return m_eStreamIndexTypeSize; }
-		size_t GetStreamIndexNum() const { return m_eStreamIndexNum; }
+		uint32 GetStreamIndexSize() const { return m_eStreamIndexTypeSize; }
+		uint32 GetStreamIndexCount() const { return m_eStreamIndexNum; }
     };
 
 }; //LostPeterEngine

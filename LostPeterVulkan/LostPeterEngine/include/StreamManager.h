@@ -27,8 +27,11 @@ namespace LostPeterEngine
         class engineExport VertexStreamInfo
 		{
 		public:
-			VertexStreamInfo(StreamVertex* pStreamVertexOriginal, EStreamReleaseType eStreamRelease, size_t nDelay,
-							 StreamVertex* pStreamVertex, StreamTemp* pStreamTemp) 
+			VertexStreamInfo(StreamVertex* pStreamVertexOriginal, 
+							 EStreamReleaseType eStreamRelease, 
+							 uint32 nDelay,
+							 StreamVertex* pStreamVertex, 
+							 StreamTemp* pStreamTemp) 
 				: m_pStreamVertexOriginal(pStreamVertexOriginal)
 				, m_eStreamRelease(eStreamRelease)
 				, m_nExpiredDelay(nDelay)
@@ -41,7 +44,7 @@ namespace LostPeterEngine
 		public:
 			StreamVertex* m_pStreamVertexOriginal;
 			EStreamReleaseType m_eStreamRelease;
-			size_t m_nExpiredDelay;
+			uint32 m_nExpiredDelay;
 			StreamVertex* m_pStreamVertex;
 			StreamTemp* m_pStreamTemp;
 		};
@@ -49,8 +52,8 @@ namespace LostPeterEngine
 		typedef std::map<StreamVertex*, VertexStreamInfo> TemporaryVertexStreamInfoMap;
 
     protected:		
-        static const size_t ms_nUnderUsedFrameThreshold;
-		static const size_t ms_nExpiredDelayFrameThreshold;
+        static const uint32 ms_nUnderUsedFrameThreshold;
+		static const uint32 ms_nExpiredDelayFrameThreshold;
 
 		StreamVertexPtrSet m_setStreamVertex;
 		StreamIndexPtrSet m_setStreamIndex;
@@ -58,7 +61,7 @@ namespace LostPeterEngine
 		FreeTemporaryVertexStreamMap m_mapFreeTempVertexStream;
 		TemporaryVertexStreamInfoMap m_mapTempVertexStreamInfos;
 
-		size_t m_nUnderUsedFrameCount;
+		uint32 m_nUnderUsedFrameCount;
 
 		//ENGINE_MUTEX(m_mutexVertexStreams)
 		//ENGINE_MUTEX(m_mutexIndexStreams)
@@ -73,11 +76,11 @@ namespace LostPeterEngine
 		void Destroy();
 
 	public:
-		virtual StreamVertex* CreateStreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream = false) = 0;
-		virtual StreamVertex* CreateStreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage, bool bUseShadowStream = false) = 0;
+		virtual StreamVertex* CreateStreamVertex(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
+		virtual StreamVertex* CreateStreamVertex(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
 		virtual void DestroyStreamVertex(StreamVertex* pStreamVertex);
 
-		virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream = false) = 0;
+		virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, uint32 nIndexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
 		virtual void DestroyStreamIndex(StreamIndex* pStreamIndex);
 
 		virtual StreamVertex* AllocateStreamVertexCopy(StreamVertex* pStreamVertexSrc, EStreamReleaseType eStreamRelease,
@@ -91,7 +94,7 @@ namespace LostPeterEngine
 		virtual void ForceReleaseStreamCopies(StreamVertex* pStreamVertex);
 
 	protected:
-		StreamVertex* makeStreamCopy(StreamVertex* pStreamVertexSrc, EStreamUsageType eStreamUsage, bool bUseShadowStream);
+		StreamVertex* makeStreamCopy(StreamVertex* pStreamVertexSrc, EStreamUsageType eStreamUsage, bool bIsUseShadowStream);
     };
 
 }; //LostPeterEngine

@@ -28,7 +28,7 @@ namespace LostPeterEngine
         Lock(pStream, eStreamLock);
     }
     
-    StreamLock::StreamLock(Stream* pStream, size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+    StreamLock::StreamLock(Stream* pStream, uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
         : m_pStream(nullptr)
         , m_pData(nullptr) 
     { 
@@ -48,7 +48,7 @@ namespace LostPeterEngine
         m_pData = m_pStream->Lock(eStreamLock);
     }
     
-    void StreamLock::Lock(Stream* pStream, size_t nOffset, size_t nLength, EStreamLockType eStreamLock)
+    void StreamLock::Lock(Stream* pStream, uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock)
     {
         F_Assert(pStream && "StreamLock::Lock !")
         Unlock();

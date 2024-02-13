@@ -19,22 +19,22 @@ namespace LostPeterEngine
     class engineExport StreamVertexSystem : public StreamVertex 
 	{
 	public:
-		StreamVertexSystem(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage);
-		StreamVertexSystem(size_t nSizeInBytes, EStreamUsageType eStreamUsage);
+		StreamVertexSystem(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage);
+		StreamVertexSystem(uint32 nSizeInBytes, EStreamUsageType eStreamUsage);
 		virtual ~StreamVertexSystem();
 
 	protected:
 		uint8* m_pData;
 
 	public:
-		virtual void* Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* Lock(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void Unlock();
 
-		virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
-		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false);
+		virtual void ReadData(uint32 nOffset, uint32 nLength, void* pDest);
+		virtual void WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream = false);
 
 	protected:
-		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void unlockImpl();
 	};
 

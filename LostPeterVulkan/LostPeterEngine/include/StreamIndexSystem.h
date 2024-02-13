@@ -19,21 +19,23 @@ namespace LostPeterEngine
     class engineExport StreamIndexSystem : public StreamIndex
     {
     public:
-		StreamIndexSystem(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage);
+		StreamIndexSystem(EStreamIndexType eStreamIndex, 
+						  uint32 nIndexCount, 
+						  EStreamUsageType eStreamUsage);
 		virtual ~StreamIndexSystem();
 
 	protected:
 		uint8* m_pData;
 
 	public:
-		virtual void* Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* Lock(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void Unlock();
 
-		virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
-		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false);
+		virtual void ReadData(uint32 nOffset, uint32 nLength, void* pDest);
+		virtual void WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream = false);
 
 	protected:
-		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void unlockImpl();
     };
 

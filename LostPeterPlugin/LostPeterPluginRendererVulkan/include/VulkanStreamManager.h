@@ -28,10 +28,10 @@ namespace LostPeterPluginRendererVulkan
 
     ////StreamManager
     public:
-        virtual StreamVertex* CreateStreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream = false);
-		virtual StreamVertex* CreateStreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage, bool bUseShadowStream = false);
+        virtual StreamVertex* CreateStreamVertex(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
+		virtual StreamVertex* CreateStreamVertex(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
 
-        virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage, bool bUseShadowStream = false);
+        virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, uint32 nIndexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
 
     
     };

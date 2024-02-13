@@ -14,31 +14,40 @@
 
 namespace LostPeterEngine
 {
-    StreamVertex::StreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage,
-		                       bool bSystemMemory, bool bUseShadowStream)
-		: Stream(eStreamUsage, bSystemMemory, bUseShadowStream)
+    StreamVertex::StreamVertex(uint32 nVertexSize, 
+							   uint32 nVertexCount, 
+							   EStreamUsageType eStreamUsage,
+		                       bool bIsUseSystemMemory, 
+							   bool bIsUseShadowStream)
+		: Stream(eStreamUsage, 
+				 bIsUseSystemMemory, 
+				 bIsUseShadowStream)
 		, m_nStreamVertexSize(nVertexSize)
-		, m_nStreamVertexNum(nVertexNum)
+		, m_nStreamVertexCount(nVertexCount)
 		, m_bSingleFormat(false)
 	{
-		m_nStreamSizeInBytes = m_nStreamVertexSize * m_nStreamVertexNum;
-		if (m_bUseShadowStream)
+		m_nStreamSizeInBytes = m_nStreamVertexSize * m_nStreamVertexCount;
+		if (m_bIsUseShadowStream)
 		{
-			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexNum, E_StreamUsage_Dynamic);
+			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexCount, E_StreamUsage_Dynamic);
 		}
 	}	
 
-	StreamVertex::StreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage,
-		                       bool bSystemMemory, bool bUseShadowStream)
-		: Stream(eStreamUsage, bSystemMemory, bUseShadowStream)
+	StreamVertex::StreamVertex(uint32 nSizeInBytes, 
+							   EStreamUsageType eStreamUsage,
+		                       bool bIsUseSystemMemory, 
+							   bool bIsUseShadowStream)
+		: Stream(eStreamUsage, 
+				 bIsUseSystemMemory, 
+				 bIsUseShadowStream)
 		, m_nStreamVertexSize(0)
-		, m_nStreamVertexNum(1)
+		, m_nStreamVertexCount(1)
 		, m_bSingleFormat(true)
 	{
 		m_nStreamSizeInBytes = nSizeInBytes;
-		if (m_bUseShadowStream)
+		if (m_bIsUseShadowStream)
 		{
-			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexNum, E_StreamUsage_Dynamic);
+			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexCount, E_StreamUsage_Dynamic);
 		}
 	}
 
@@ -47,7 +56,7 @@ namespace LostPeterEngine
 		F_DELETE(m_pStreamShadow)
 	}
 
-	void StreamVertex::SetStreamVertexSize(size_t nVertexSize)
+	void StreamVertex::SetStreamVertexSize(uint32 nVertexSize)
 	{
 		if (!m_bSingleFormat)
 		{

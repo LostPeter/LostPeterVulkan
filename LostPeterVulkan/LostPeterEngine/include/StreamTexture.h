@@ -19,38 +19,42 @@ namespace LostPeterEngine
     class engineExport StreamTexture : public Stream
     {
     public:
-        StreamTexture(size_t nWidth, size_t nHeight, size_t nDepth,
-			          FPixelFormatType ePixelFormat, EStreamUsageType eStreamUsage, 
-			          bool bSystemMemory, bool bUseShadowStream);
+        StreamTexture(uint32 nWidth, 
+					  uint32 nHeight, 
+					  uint32 nDepth,
+			          FPixelFormatType ePixelFormat, 
+					  EStreamUsageType eStreamUsage, 
+			          bool bIsUseSystemMemory, 
+					  bool bIsUseShadowStream);
         virtual ~StreamTexture();
 
     public:
     protected:
-		size_t m_nWidth;
-		size_t m_nHeight;
-		size_t m_nDepth;
+		uint32 m_nWidth;
+		uint32 m_nHeight;
+		uint32 m_nDepth;
 
-		size_t m_nRowPitch;		
-		size_t m_nSlicePitch;		
+		uint32 m_nRowPitch;		
+		uint32 m_nSlicePitch;		
 
 		FPixelFormatType m_ePixelFormat;		
 		FPixelBox m_CurrentLock;
 
 	public:
-		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
-		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
-		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE uint32 GetWidth() const { return m_nWidth; }
+		F_FORCEINLINE uint32 GetHeight() const { return m_nHeight; }
+		F_FORCEINLINE uint32 GetDepth() const { return m_nDepth; }
 
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
 		
 		const FPixelBox& GetCurrentLock();
 
 	public:
-		virtual void* Lock(size_t nOffset, size_t nLength, EStreamLockType eLockType);
+		virtual void* Lock(uint32 nOffset, uint32 nLength, EStreamLockType eLockType);
 		virtual const FPixelBox& Lock(const FBox& lockBox, EStreamLockType eLockType);
 
-		virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
-		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false);
+		virtual void ReadData(uint32 nOffset, uint32 nLength, void* pDest);
+		virtual void WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream = false);
 
 		virtual void Blit(StreamTexture* pSrc, const FBox& srcBox, const FBox& dstBox);
 		void Blit(StreamTexture* pSrc);
@@ -67,11 +71,11 @@ namespace LostPeterEngine
 			BlitToMemory(FBox(0, 0, 0, m_nWidth, m_nHeight, m_nDepth), dst);
 		}
 
-		virtual RenderTexture* GetRenderTarget(size_t nSlice = 0);
-		virtual void ClearSliceRTT(size_t zoffset);
+		virtual RenderTexture* GetRenderTarget(uint32 nSlice = 0);
+		virtual void ClearSliceRTT(uint32 zoffset);
 
 	protected:
-		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eLockType);
+		virtual void* lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eLockType);
 		virtual FPixelBox lockImpl(const FBox lockBox, EStreamLockType eLockType) = 0;
     };
 

@@ -15,10 +15,14 @@
 
 namespace LostPeterEngine
 {
-    StreamTexture::StreamTexture(size_t nWidth, size_t nHeight, size_t nDepth,
-								 FPixelFormatType ePixelFormat, EStreamUsageType eStreamUsage, 
-								 bool bSystemMemory, bool bUseShadowStream)
-		: Stream(eStreamUsage, bSystemMemory, bUseShadowStream)
+    StreamTexture::StreamTexture(uint32 nWidth, 
+								 uint32 nHeight, 
+								 uint32 nDepth,
+								 FPixelFormatType ePixelFormat, 
+								 EStreamUsageType eStreamUsage, 
+								 bool bIsUseSystemMemory, 
+								 bool bIsUseShadowStream)
+		: Stream(eStreamUsage, bIsUseSystemMemory, bIsUseShadowStream)
 		, m_nWidth(nWidth)
 		, m_nHeight(nHeight)
 		, m_nDepth(nDepth)
@@ -41,7 +45,7 @@ namespace LostPeterEngine
 		return m_CurrentLock; 
 	}
 	
-	void* StreamTexture::Lock(size_t nOffset, size_t nLength, EStreamLockType eLockType)
+	void* StreamTexture::Lock(uint32 nOffset, uint32 nLength, EStreamLockType eLockType)
 	{
 		F_Assert(!IsLocked() && "StreamTexture::Lock: Cannot lock this stream, it is already locked !")
 		F_Assert(nOffset == 0 && nLength == m_nStreamSizeInBytes && "StreamTexture::Lock: Cannot lock memory region, most lock box or entire buffer !")
@@ -53,11 +57,11 @@ namespace LostPeterEngine
 
 	const FPixelBox& StreamTexture::Lock(const FBox& lockBox, EStreamLockType eLockType)
 	{
-		if (m_bUseShadowStream)
+		if (m_bIsUseShadowStream)
 		{
 			if (eLockType != E_StreamLock_ReadOnly)
 			{
-				m_bShadowUpdated = true;
+				m_bIsShadowUpdated = true;
 			}
 			m_CurrentLock = static_cast<StreamTexture*>(m_pStreamShadow)->Lock(lockBox,eLockType);
 		}
@@ -70,12 +74,12 @@ namespace LostPeterEngine
 		return m_CurrentLock;
 	}
 
-	void StreamTexture::ReadData(size_t nOffset, size_t nLength, void* pDest)
+	void StreamTexture::ReadData(uint32 nOffset, uint32 nLength, void* pDest)
 	{
 		F_Assert(false && "StreamTexture::ReadData: Reading a byte range is not implemented. Use BlitToMemory !")
 	}
 
-	void StreamTexture::WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream /*= false*/)
+	void StreamTexture::WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream /*= false*/)
 	{	
 		F_Assert(false && "StreamTexture::WriteData: Writing a byte range is not implemented. Use BlitFromMemory !")
 	}
@@ -123,21 +127,21 @@ namespace LostPeterEngine
 		Blit(pSrc, FBox(0, 0, 0, pSrc->GetWidth(), pSrc->GetHeight(), pSrc->GetDepth()), FBox(0, 0, 0, m_nWidth, m_nHeight, m_nDepth));
 	}
 	
-	RenderTexture* StreamTexture::GetRenderTarget(size_t nSlice /*= 0*/)
+	RenderTexture* StreamTexture::GetRenderTarget(uint32 nSlice /*= 0*/)
 	{
 		F_Assert(false && "StreamTexture::GetRenderTarget: Not yet implemented !")
-		return 0;
+		return nullptr;
 	}
 
-	void StreamTexture::ClearSliceRTT(size_t zoffset)
+	void StreamTexture::ClearSliceRTT(uint32 zoffset)
 	{
 		
 	}
 
-	void* StreamTexture::lockImpl(size_t nOffset, size_t nLength, EStreamLockType eLockType)
+	void* StreamTexture::lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eLockType)
 	{
 		F_Assert(false && "StreamTexture::lockImpl: must sub class called !")
-		return 0;
+		return nullptr;
 	}
 
 }; //LostPeterEngine

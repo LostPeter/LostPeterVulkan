@@ -84,9 +84,9 @@ namespace LostPeterEngine
 		{
 			StreamVertex* pSrcStream = it->second;
 			StreamVertex* pDstStream = StreamManager::GetSingleton().CreateStreamVertex(pSrcStream->GetStreamVertexSize(),
-									                                                    pSrcStream->GetStreamVertexNum(),
+									                                                    pSrcStream->GetStreamVertexCount(),
                                                                                         pSrcStream->GetStreamUsageType(),
-                                                                                        pSrcStream->HasShadowStream());
+                                                                                        pSrcStream->IsUseShadowStream());
 			if (bIsCopyData)
 			{
 				pDstStream->CopyData(*pSrcStream, 0, 0, pSrcStream->GetStreamSizeInBytes(), true);
@@ -128,7 +128,7 @@ namespace LostPeterEngine
 	{
 		if (!m_pVertexStreamBinding->HasGaps())
 			return;
-		
+
 		//1> Check for error first
 		const VertexElementList& listElements = m_pVertexDeclaration->GetVertexElementList();
 		VertexElementList::const_iterator it,itEnd;

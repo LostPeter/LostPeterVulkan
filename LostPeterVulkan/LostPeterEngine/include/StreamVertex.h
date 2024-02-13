@@ -19,23 +19,28 @@ namespace LostPeterEngine
     class engineExport StreamVertex : public Stream
     {
     public:
-        StreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage,
-					 bool bSystemMemory, bool bUseShadowStream);
-		StreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage,
-					 bool bSystemMemory, bool bUseShadowStream);
+        StreamVertex(uint32 nVertexSize, 
+					 uint32 nVertexCount, 
+					 EStreamUsageType eStreamUsage,
+					 bool bIsUseSystemMemory, 
+					 bool bIsUseShadowStream);
+		StreamVertex(uint32 nSizeInBytes, 
+					 EStreamUsageType eStreamUsage,
+					 bool bIsUseSystemMemory, 
+					 bool bIsUseShadowStream);
 		virtual ~StreamVertex();
 
 	public:
 	protected:
-		size_t m_nStreamVertexSize;	
-		size_t m_nStreamVertexNum;
+		uint32 m_nStreamVertexSize;	
+		uint32 m_nStreamVertexCount;
 
 		bool m_bSingleFormat;
 
 	public:
-		F_FORCEINLINE size_t GetStreamVertexSize() const { return m_nStreamVertexSize; }
-		void SetStreamVertexSize(size_t nVertexSize);
-		F_FORCEINLINE size_t GetStreamVertexNum() const { return m_nStreamVertexNum; }
+		F_FORCEINLINE uint32 GetStreamVertexSize() const { return m_nStreamVertexSize; }
+		void SetStreamVertexSize(uint32 nVertexSize);
+		F_FORCEINLINE uint32 GetStreamVertexCount() const { return m_nStreamVertexCount; }
     };
 
 }; //LostPeterEngine

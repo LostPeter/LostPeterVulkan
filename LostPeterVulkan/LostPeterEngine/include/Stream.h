@@ -12,60 +12,63 @@
 #ifndef _STREAM_H_
 #define _STREAM_H_
 
-#include "PreDefine.h"
+#include "Base.h"
 
 namespace LostPeterEngine
 {
-    class engineExport Stream
+    class engineExport Stream : public Base
+							  , public FNonCopyable
 	{
 	public:
-		Stream(EStreamUsageType eStreamUsage, bool bSystemMemory, bool bUseShadowStream);
+		Stream(EStreamUsageType eStreamUsage, 
+			   bool bIsUseSystemMemory, 
+			   bool bIsUseShadowStream);
 		virtual ~Stream();
 
 	public:
 	protected:
-		size_t m_nStreamSizeInBytes;					
+		uint32 m_nStreamSizeInBytes;					
 		EStreamUsageType m_eStreamUsage;	
 		bool m_bIsLocked;					
-		size_t m_nLockStart;					
-		size_t m_nLockSize;					
-		bool m_bSystemMemory;				
-		bool m_bUseShadowStream;
+		uint32 m_nLockStart;					
+		uint32 m_nLockSize;					
+		bool m_bIsUseSystemMemory;				
+		bool m_bIsUseShadowStream;
 		Stream* m_pStreamShadow;
-		bool m_bShadowUpdated;	
-		bool m_bSuppressUpdate;
+		bool m_bIsShadowUpdated;	
+		bool m_bIsSuppressUpdate;
 
 		uint8* m_pResourceBuf;
 	
 	public:
-		F_FORCEINLINE size_t GetStreamSizeInBytes() const { return m_nStreamSizeInBytes; }
+		F_FORCEINLINE uint32 GetStreamSizeInBytes() const { return m_nStreamSizeInBytes; }
 		F_FORCEINLINE EStreamUsageType GetStreamUsageType() const { return m_eStreamUsage; }
-		F_FORCEINLINE bool IsSystemMemory() const { return m_bSystemMemory; }
-		F_FORCEINLINE bool HasShadowStream() const { return m_bUseShadowStream; }
+		F_FORCEINLINE bool IsUseSystemMemory() const { return m_bIsUseSystemMemory; }
+		F_FORCEINLINE bool IsUseShadowStream() const { return m_bIsUseShadowStream; }
 		F_FORCEINLINE bool IsLocked() const 
 		{ 
-			return m_bIsLocked || (m_bUseShadowStream && m_pStreamShadow->IsLocked()); 
+			return m_bIsLocked || (m_bIsUseShadowStream && m_pStreamShadow->IsLocked()); 
 		}
 
 	public:
-		virtual void* Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void* Lock(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock);
 		virtual void* Lock(EStreamLockType eStreamLock);
 
 		virtual void Unlock();
 
 		virtual void CreateResourceBuf();
 
-		virtual void ReadData(size_t nOffset, size_t nLength, void* pDest)	= 0;
-		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false) = 0;
+		virtual void ReadData(uint32 nOffset, uint32 nLength, void* pDest)	= 0;
+		virtual void WriteData(uint32 nOffset, uint32 nLength, const void* pSource, bool bIsDiscardWholeStream = false) = 0;
 
-		virtual void CopyData(Stream& streamSrc, size_t nSrcOffset, size_t nDstOffset, size_t nLength, bool bDiscardWholeStream = false);
+		virtual void CopyData(Stream& streamSrc, uint32 nSrcOffset, uint32 nDstOffset, uint32 nLength, bool bIsDiscardWholeStream = false);
 		virtual void CopyData(Stream& streamSrc);
 		virtual void UpdateFromShadow();
 
 		void SuppressHardwareUpdate(bool bSuppress);
 
 	protected:
-		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock) = 0;
+		virtual void* lockImpl(uint32 nOffset, uint32 nLength, EStreamLockType eStreamLock) = 0;
 		virtual void unlockImpl() = 0;
 	};
 
