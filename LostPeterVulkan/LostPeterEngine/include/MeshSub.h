@@ -74,6 +74,11 @@ namespace LostPeterEngine
         F_FORCEINLINE const FSphere& GetBoundSphere() const { return m_boundSphere; }
 		F_FORCEINLINE void SetBoundSphere(const FSphere& boundSphere) { m_boundSphere = boundSphere; }
 
+        F_FORCEINLINE uint32 GetVertexCount() const { return m_nVertexCount; }
+        F_FORCEINLINE uint32 GetVertexBufferSize() const { return m_nIndexBuffer_Size; }
+        F_FORCEINLINE uint32 GetIndexCount() const { return m_nIndexCount; }
+        F_FORCEINLINE uint32 GetIndexBufferSize() const { return m_nIndexBuffer_Size; }
+
     public:
         void Destroy();
 
@@ -89,6 +94,8 @@ namespace LostPeterEngine
         virtual bool createDataVertex();
         virtual bool createDataIndex();
 
+    private:
+        virtual uint32 calculateSize() const;
     };
 
 }; //LostPeterEngine

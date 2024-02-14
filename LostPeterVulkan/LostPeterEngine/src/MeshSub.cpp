@@ -14,6 +14,13 @@
 #include "../include/DataVertex.h"
 #include "../include/DataIndex.h"
 #include "../include/DataVertexIndex.h"
+#include "../include/VertexDeclaration.h"
+#include "../include/VertexDeclarationManager.h"
+#include "../include/StreamVertexBinding.h"
+#include "../include/StreamVertexBindingManager.h"
+#include "../include/StreamVertex.h"
+#include "../include/StreamIndex.h"
+#include "../include/StreamManager.h"
 
 namespace LostPeterEngine
 {
@@ -63,30 +70,30 @@ namespace LostPeterEngine
         else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tex2) //6:    F_MeshVertex_Pos3Color4Normal3Tex2
         {
             FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex2(meshData, m_aVertices_Pos3Color4Normal3Tex2, bIsTransformLocal, mat4TransformLocal);
-            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tex2.size();
+            m_nVertexCount = (uint32)m_aVertices_Pos3Color4Normal3Tex2.size();
             m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
-            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tex2[0];
+            m_pVertexBuffer_Data = &m_aVertices_Pos3Color4Normal3Tex2[0];
         }
         else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tex4) //7:    F_MeshVertex_Pos3Color4Normal3Tex4
         {
             FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex4(meshData, m_aVertices_Pos3Color4Normal3Tex4, bIsTransformLocal, mat4TransformLocal);
-            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tex4.size();
+            m_nVertexCount = (uint32)m_aVertices_Pos3Color4Normal3Tex4.size();
             m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex4);
-            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tex4[0];
+            m_pVertexBuffer_Data = &m_aVertices_Pos3Color4Normal3Tex4[0];
         }
         else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex2) //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
         {
             FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex2(meshData, m_aVertices_Pos3Color4Normal3Tangent3Tex2, bIsTransformLocal, mat4TransformLocal);
-            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tangent3Tex2.size();
+            m_nVertexCount = (uint32)m_aVertices_Pos3Color4Normal3Tangent3Tex2.size();
             m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
-            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tangent3Tex2[0];
+            m_pVertexBuffer_Data = &m_aVertices_Pos3Color4Normal3Tangent3Tex2[0];
         }
         else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex4) //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
         {
             FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex4(meshData, m_aVertices_Pos3Color4Normal3Tangent3Tex4, bIsTransformLocal, mat4TransformLocal);
-            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tangent3Tex4.size();
+            m_nVertexCount = (uint32)m_aVertices_Pos3Color4Normal3Tangent3Tex4.size();
             m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
-            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tangent3Tex4[0];
+            m_pVertexBuffer_Data = &m_aVertices_Pos3Color4Normal3Tangent3Tex4[0];
         }
         else
         {
@@ -101,9 +108,9 @@ namespace LostPeterEngine
 
         //2> DataIndex
         FMeshDataLoader::ExtractIndexData(meshData, m_aIndices);
-        this->m_nIndexCount = (uint32)m_aIndices.size();
-        this->m_nIndexBuffer_Size = this->m_nIndexCount * sizeof(uint32);
-        this->m_pIndexBuffer_Data = &m_aIndices[0];
+        m_nIndexCount = (uint32)m_aIndices.size();
+        m_nIndexBuffer_Size = m_nIndexCount * sizeof(uint32);
+        m_pIndexBuffer_Data = &m_aIndices[0];
         if (!createDataIndex())
         {
             F_LogError("*********************** MeshSub::Init: create mesh sub data index failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
@@ -119,9 +126,9 @@ namespace LostPeterEngine
 
         //1> DataVertex
         FMeshDataLoader::ExtractVertexData_Pos3Color4Tex2(meshDataPC, m_aVertices_Pos3Color4, bIsTransformLocal, mat4TransformLocal);
-        m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4.size();
+        m_nVertexCount = (uint32)m_aVertices_Pos3Color4.size();
         m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4);
-        m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4[0];
+        m_pVertexBuffer_Data = &m_aVertices_Pos3Color4[0];
         if (!createDataVertex())
         {
             F_LogError("*********************** MeshSub::Init: create mesh sub data vertex failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
@@ -130,9 +137,9 @@ namespace LostPeterEngine
 
         //2> DataIndex
         FMeshDataLoader::ExtractIndexData(meshDataPC, m_aIndices);
-        this->m_nIndexCount = (uint32)m_aIndices.size();
-        this->m_nIndexBuffer_Size = this->m_nIndexCount * sizeof(uint32);
-        this->m_pIndexBuffer_Data = &m_aIndices[0];
+        m_nIndexCount = (uint32)m_aIndices.size();
+        m_nIndexBuffer_Size = m_nIndexCount * sizeof(uint32);
+        m_pIndexBuffer_Data = &m_aIndices[0];
         if (!createDataIndex())
         {
             F_LogError("*********************** MeshSub::Init: create mesh sub data index failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
@@ -143,15 +150,38 @@ namespace LostPeterEngine
     }
     bool MeshSub::createDataVertex()
     {
+        if (m_nVertexCount <= 0 ||
+            m_nVertexBuffer_Size <= 0 ||
+            m_pVertexBuffer_Data == nullptr)
+        {
+            return false;
+        }   
 
-
+        VertexDeclaration* pVertexDeclaration = VertexDeclarationManager::GetSingleton().GetVertexDeclaration(m_pMesh->GetMeshVertexType());
+        StreamVertex* pStreamVertex = StreamManager::GetSingleton().CreateStreamVertex(m_nVertexBuffer_Size, m_pMesh->GetStreamUsageVertex(), m_pMesh->GetIsStreamUseShadowVertex());
+        pStreamVertex->WriteData(0, m_nVertexBuffer_Size, m_pVertexBuffer_Data);
+        StreamVertexBinding* pStreamVertexBinding = StreamVertexBindingManager::GetSingleton().CreateStreamVertexBinding();
+        pStreamVertexBinding->SetBinding(0, pStreamVertex);
+        m_pDataVertex = new DataVertex(pVertexDeclaration, false,
+                                       pStreamVertexBinding, true);
+        
         return true;
     }
     bool MeshSub::createDataIndex()
     {
+        if (m_nIndexCount <= 0 ||
+            m_nIndexBuffer_Size <= 0 ||
+            m_pIndexBuffer_Data == nullptr)
+        {
+            return false;
+        }   
+
+        StreamIndex* pStreamIndex = StreamManager::GetSingleton().CreateStreamIndex(E_StreamIndex_32Bit, m_nIndexCount, m_pMesh->GetStreamUsageIndex(), m_pMesh->GetIsStreamUseShadowIndex());
+        pStreamIndex->WriteData(0, m_nIndexBuffer_Size, m_pIndexBuffer_Data);
+        m_pDataIndex = new DataIndex(pStreamIndex, 0, m_nIndexCount, true);
+
         return true;
     }
-
 
     bool MeshSub::GetDataVertexIndex(DataVertexIndex& dataVI, uint32 nIndexLOD /*= 0*/)
     {
@@ -183,6 +213,13 @@ namespace LostPeterEngine
             m_boundAABB.TransformAffine(mat4TransformLocal);
             m_boundSphere.Transform(mat4TransformLocal);
         }
+    }
+
+    uint32 MeshSub::calculateSize() const
+    {
+        return GetName().size() * sizeof(char) + 
+            m_nVertexBuffer_Size + 
+            m_nIndexBuffer_Size;
     }
 
 }; //LostPeterEngine

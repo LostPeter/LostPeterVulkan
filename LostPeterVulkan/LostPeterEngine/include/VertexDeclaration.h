@@ -20,8 +20,11 @@ namespace LostPeterEngine
     class engineExport VertexDeclaration : public Base
 										 , public FNonCopyable
 	{
-	public:
+		friend class VertexDeclarationManager;
+
+	private:
 		VertexDeclaration();
+	public:
 		virtual ~VertexDeclaration();
 		
 	public:

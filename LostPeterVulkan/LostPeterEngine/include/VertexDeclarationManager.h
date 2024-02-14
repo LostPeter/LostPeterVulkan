@@ -23,6 +23,9 @@ namespace LostPeterEngine
         VertexDeclarationManager();
         virtual ~VertexDeclarationManager();
 
+	public:
+		typedef std::map<FMeshVertexType, VertexDeclaration*> MeshVertexType2VertexDeclarationPtrMap;
+
     public:
 		static uint32 ms_nVertexDeclarationIncrementCount;
 
@@ -31,22 +34,32 @@ namespace LostPeterEngine
 		VertexDeclarationPtrVector m_aVertexDeclarationPool;
 		VertexDeclarationPtrList m_listVertexDeclarationFree;
 		VertexDeclarationPtrMap m_mapVertexDeclaration;
+		MeshVertexType2VertexDeclarationPtrMap m_mapVertexDeclarationDefault;
         //ENGINE_MUTEX(m_mutexVertexDecl)
 
     public:
         static VertexDeclarationManager& GetSingleton();
         static VertexDeclarationManager* GetSingletonPtr();
 
+	public:
+		virtual void Destroy();
+		virtual bool Init();
+
     public:
 		F_FORCEINLINE uint32 GetVertexDeclarationCount() { return m_nCount; }
-		VertexDeclaration* GetSameVertexDeclaration(VertexDeclaration* pVertexDeclaration);
+		
 
 	public:
+		VertexDeclaration* GetVertexDeclaration(FMeshVertexType eMeshVertex);
+		VertexDeclaration* GetSameVertexDeclaration(VertexDeclaration* pVertexDeclaration);
+
 		virtual VertexDeclaration* CreateVertexDeclaration();
 		virtual void DestroyVertexDeclaration(VertexDeclaration* pVertexDeclaration);
 		virtual void DestroyVertexDeclarationAll();
 
 	protected:
+		virtual bool createVertexDeclarationDefault();
+
 		virtual VertexDeclaration* createVertexDeclarationImpl();
 		virtual void destroyVertexDeclarationImpl(VertexDeclaration* pVertexDeclaration);
     };

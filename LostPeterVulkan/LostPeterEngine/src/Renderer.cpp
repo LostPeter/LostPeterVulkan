@@ -11,6 +11,7 @@
 
 #include "../include/Renderer.h"
 #include "../include/RendererListener.h"
+#include "../include/RenderEngine.h"
 #include "../include/VertexDeclarationManager.h"
 #include "../include/StreamVertexBindingManager.h"
 #include "../include/StreamManager.h"
@@ -52,13 +53,7 @@ namespace LostPeterEngine
 		, m_nCurWidth(0)
 		, m_nCurHeight(0)
     {
-		m_pVertexDeclarationManager = new VertexDeclarationManager();
-		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
-		m_pMeshManager = new MeshManager();
-		m_pShaderProgramGroupManager = new ShaderProgramGroupManager();
-		m_pShaderManager = new ShaderManager();
-		m_pRenderPassManager = new RenderPassManager();
-        m_pRenderTargetManager = new RenderTargetManager(this);
+		
     }
     
     Renderer::~Renderer()
@@ -81,6 +76,44 @@ namespace LostPeterEngine
 		F_DELETE(m_pRenderCapabilities)
 		m_bIsRendererInit = false;
     }
+
+	bool Renderer::initManagers()
+	{
+		//1> VertexDeclarationManager
+		m_pVertexDeclarationManager = new VertexDeclarationManager();
+		if (!m_pVertexDeclarationManager->Init())
+		{
+			F_LogError("*********************** Renderer::initManagers: Failed to init vertex declaration manager !");
+            return false;
+		}
+
+		//2> StreamVertexBindingManager
+		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
+
+		//3> MeshManager
+		m_pMeshManager = new MeshManager();
+		uint32 nGroup = RenderEngine::GetSingleton().GetCfgGroup(E_EngineConfig_Render_MeshGroup);
+        const String& strNameCfg =  RenderEngine::GetSingleton().GetCfgConfigName(E_EngineConfig_Render_MeshConfigName);
+		if (!m_pMeshManager->Init(nGroup, strNameCfg))
+		{	
+			F_LogError("*********************** Renderer::initManagers: Failed to init mesh manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+            return false;
+		}
+
+		//4> ShaderProgramGroupManager
+		m_pShaderProgramGroupManager = new ShaderProgramGroupManager();
+
+		//5> ShaderManager
+		m_pShaderManager = new ShaderManager();
+
+		//6> RenderPassManager
+		m_pRenderPassManager = new RenderPassManager();
+
+		//7> RenderTargetManager
+        m_pRenderTargetManager = new RenderTargetManager(this);
+
+		return true;
+	}
 
 	RenderTarget* Renderer::GetRenderTarget(const String& strName)
 	{

@@ -18,8 +18,11 @@ namespace LostPeterEngine
 {
     class engineExport StreamVertexBinding
 	{
-	public:
+		friend class StreamVertexBindingManager;
+	
+	private:
 		StreamVertexBinding();
+	public:
 		virtual ~StreamVertexBinding();
 
 	public:

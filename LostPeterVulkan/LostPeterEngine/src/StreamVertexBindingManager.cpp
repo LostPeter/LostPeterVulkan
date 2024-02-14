@@ -43,17 +43,17 @@ namespace LostPeterEngine
 
 	void StreamVertexBindingManager::Destroy()
 	{
-		DestroyVertexStreamBindingAll();
+		DestroyStreamVertexBindingAll();
 	}
 
-    StreamVertexBinding* StreamVertexBindingManager::CreateVertexStreamBinding()
+    StreamVertexBinding* StreamVertexBindingManager::CreateStreamVertexBinding()
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexVertexBindings)
 		StreamVertexBinding* pBinding = nullptr;
 		if (m_vsbFreeHeadNode.m_pNext == &m_vsbFreeTailNode)
 		{		
 			VertexStreamBindingPtrListNode* pNode = new VertexStreamBindingPtrListNode;
-			pNode->m_pPointer = createVertexStreamBindingImpl();	
+			pNode->m_pPointer = createStreamVertexBindingImpl();	
 			pNode->m_pPointer->SetCreator(pNode);
 			pNode->m_pNext = &m_vsbActiveTailNode;
 			pNode->m_pPrev = m_vsbActiveTailNode.m_pPrev;
@@ -76,7 +76,7 @@ namespace LostPeterEngine
 		return pBinding;
 	}
 
-	void StreamVertexBindingManager::DestroyVertexStreamBinding(StreamVertexBinding* pStreamVertexBinding)
+	void StreamVertexBindingManager::DestroyStreamVertexBinding(StreamVertexBinding* pStreamVertexBinding)
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexVertexBindings)
 		VertexStreamBindingPtrListNode* pNode = static_cast<VertexStreamBindingPtrListNode*>(pStreamVertexBinding->GetCreator());
@@ -91,7 +91,7 @@ namespace LostPeterEngine
 		m_vsbFreeTailNode.m_pPrev = pNode;
 	}
 
-	void StreamVertexBindingManager::DestroyVertexStreamBindingAll()
+	void StreamVertexBindingManager::DestroyStreamVertexBindingAll()
 	{
 		VertexStreamBindingPtrListNode* it = m_vsbActiveHeadNode.m_pNext;
 		VertexStreamBindingPtrListNode* pNode = nullptr;
@@ -99,7 +99,7 @@ namespace LostPeterEngine
 		{
 			if (it->m_pPointer)
 			{
-				destroyVertexStreamBindingImpl(it->m_pPointer);
+				destroyStreamVertexBindingImpl(it->m_pPointer);
 			}
 			pNode = it;
 			it = it->m_pNext;
@@ -111,7 +111,7 @@ namespace LostPeterEngine
 		{
 			if (it->m_pPointer)
 			{
-				destroyVertexStreamBindingImpl(it->m_pPointer);
+				destroyStreamVertexBindingImpl(it->m_pPointer);
 			}
 			pNode = it;
 			it = it->m_pNext;
@@ -124,12 +124,12 @@ namespace LostPeterEngine
 		m_vsbFreeTailNode.m_pPrev = &m_vsbFreeHeadNode;
 	}
 
-	StreamVertexBinding* StreamVertexBindingManager::createVertexStreamBindingImpl()
+	StreamVertexBinding* StreamVertexBindingManager::createStreamVertexBindingImpl()
 	{
 		return new StreamVertexBinding;
 	}
 
-	void StreamVertexBindingManager::destroyVertexStreamBindingImpl(StreamVertexBinding* pStreamVertexBinding)
+	void StreamVertexBindingManager::destroyStreamVertexBindingImpl(StreamVertexBinding* pStreamVertexBinding)
 	{
 		F_DELETE(pStreamVertexBinding)
 	}

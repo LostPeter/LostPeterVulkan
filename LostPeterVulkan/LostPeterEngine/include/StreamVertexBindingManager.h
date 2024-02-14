@@ -40,13 +40,13 @@ namespace LostPeterEngine
 		virtual void Destroy();
 
     public:
-		virtual StreamVertexBinding* CreateVertexStreamBinding();
-		virtual void DestroyVertexStreamBinding(StreamVertexBinding* pStreamVertexBinding);
-		virtual void DestroyVertexStreamBindingAll();
+		virtual StreamVertexBinding* CreateStreamVertexBinding();
+		virtual void DestroyStreamVertexBinding(StreamVertexBinding* pStreamVertexBinding);
+		virtual void DestroyStreamVertexBindingAll();
 
 	protected:
-		virtual StreamVertexBinding* createVertexStreamBindingImpl();
-		virtual void destroyVertexStreamBindingImpl(StreamVertexBinding* pStreamVertexBinding);
+		virtual StreamVertexBinding* createStreamVertexBindingImpl();
+		virtual void destroyStreamVertexBindingImpl(StreamVertexBinding* pStreamVertexBinding);
     };
 
 }; //LostPeterEngine

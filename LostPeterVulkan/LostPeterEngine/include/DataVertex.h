@@ -25,7 +25,7 @@ namespace LostPeterEngine
 		virtual ~DataVertex();
 
 	public:
-	private:
+	protected:
 	////VertexDeclaration/StreamVertexBinding
 		VertexDeclaration* m_pVertexDeclaration;
 		StreamVertexBinding* m_pVertexStreamBinding;

@@ -39,10 +39,17 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pVulkanInstance)
     }
 
-    RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, 
-                                       const String& strWndTitle /*= "Render Window"*/)
+    RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, const String& strWndTitle /*= "Render Window"*/)
     {
         F_Assert(!m_bIsRendererInit && "VulkanRenderer::Init")
+
+        //0> initManagers
+        if (!initManagers())
+        {
+            F_LogError("*********************** VulkanRenderer::Init: 0> Failed to init Managers !");
+            return nullptr;
+        }
+        F_LogInfo("VulkanRenderer::Init: 0> Init managers success !");
 
         //1> VulkanInstance/VulkanDevice
         m_pVulkanInstance = new VulkanInstance();

@@ -71,8 +71,7 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        virtual RenderWindow* Init(bool bAutoCreateWindow, 
-								   const String& strWndTitle = "Render Window") = 0;
+        virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window") = 0;
 
 		virtual RenderTarget* GetRenderTarget(const String& strName);
 		virtual void AttachRenderTarget(RenderTarget* pRenderTarget);
@@ -88,6 +87,7 @@ namespace LostPeterEngine
 		virtual void RemoveRendererListener(RendererListener* pRendererListener);
 
 	protected:
+		virtual bool initManagers();
 		virtual bool initRenderCapabilities() = 0;
 		virtual void initFromRenderCapabilities(RenderTarget* pPrimary) = 0;
 		virtual bool initStreamManager() = 0;

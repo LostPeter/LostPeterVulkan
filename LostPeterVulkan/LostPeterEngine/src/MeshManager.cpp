@@ -179,7 +179,17 @@ namespace LostPeterEngine
         : ResourceManager(E_GetResourceTypeName(E_Resource_Mesh), E_Resource_Mesh)
         , m_pMeshSerializer(nullptr)
     {
-
+        if (ms_mapParam_Default.size() <= 0)
+        {
+            SetMeshParam_MeshType(ms_mapParam_Default, MeshManager::ms_eMesh_Default);
+            SetMeshParam_MeshVertexType(ms_mapParam_Default, MeshManager::ms_eMeshVertex_Default);
+            SetMeshParam_MeshGeometryType(ms_mapParam_Default, MeshManager::ms_eMeshGeometry_Default);
+            SetMeshParam_IsFlipY(ms_mapParam_Default, MeshManager::ms_bIsFlipY_Default);
+            SetMeshParam_StreamUsageVertex(ms_mapParam_Default, MeshManager::ms_eStreamUsageVertex_Default);
+            SetMeshParam_StreamUsageIndex(ms_mapParam_Default, MeshManager::ms_eStreamUsageIndex_Default);
+            SetMeshParam_IsStreamUseShadowVertex(ms_mapParam_Default,MeshManager::ms_bIsStreamUseShadowVertex_Default);
+            SetMeshParam_IsStreamUseShadowIndex(ms_mapParam_Default, MeshManager::ms_bIsStreamUseShadowIndex_Default);
+        }
     }
 
     MeshManager::~MeshManager()

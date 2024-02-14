@@ -146,7 +146,7 @@ namespace LostPeterEngine
         nMemSize += m_strSource.size() * sizeof(char);
         nMemSize += m_strSyntaxCode.size() * sizeof(char);
 
-        size_t nParamsSize = 0;
+        uint32 nParamsSize = 0;
         if (m_pShaderParameter)
             nParamsSize += m_pShaderParameter->CalculateSize();
 

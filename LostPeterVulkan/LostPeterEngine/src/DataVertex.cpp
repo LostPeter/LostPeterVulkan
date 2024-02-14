@@ -26,7 +26,7 @@ namespace LostPeterEngine
 		//, m_nAnimDataItemsUsed(0)
 	{
 		m_pVertexDeclaration = VertexDeclarationManager::GetSingleton().CreateVertexDeclaration();
-		m_pVertexStreamBinding = StreamVertexBindingManager::GetSingleton().CreateVertexStreamBinding();
+		m_pVertexStreamBinding = StreamVertexBindingManager::GetSingleton().CreateStreamVertexBinding();
 		m_bDel_VertexDeclaration = true;
 		m_bDel_VertexStreamBinding = true;
 	}
@@ -64,7 +64,7 @@ namespace LostPeterEngine
 		{
 			if (m_pVertexStreamBinding)
 			{
-				StreamVertexBindingManager::GetSingleton().DestroyVertexStreamBinding(m_pVertexStreamBinding);
+				StreamVertexBindingManager::GetSingleton().DestroyStreamVertexBinding(m_pVertexStreamBinding);
 				m_pVertexStreamBinding = nullptr;
 			}
 			m_bDel_VertexStreamBinding = false;

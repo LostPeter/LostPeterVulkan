@@ -26,7 +26,7 @@ namespace LostPeterEngine
         return (*ms_Singleton);  
     }
 
-    uint32 VertexDeclarationManager::ms_nVertexDeclarationIncrementCount = 5;
+    uint32 VertexDeclarationManager::ms_nVertexDeclarationIncrementCount = 10;
     VertexDeclarationManager::VertexDeclarationManager()
         : Base("VertexDeclarationManager")
         , m_nCount(0)
@@ -36,8 +36,167 @@ namespace LostPeterEngine
 
     VertexDeclarationManager::~VertexDeclarationManager()
     {
-        DestroyVertexDeclarationAll();
+		Destroy();
     }
+
+	void VertexDeclarationManager::Destroy()
+	{
+		DestroyVertexDeclarationAll();
+	}
+
+	bool VertexDeclarationManager::Init()
+	{
+		if (!createVertexDeclarationDefault())
+		{
+			F_LogError("*********************** VertexDeclarationManager::Init: Failed to init VertexDeclaration Default !");
+            return false;
+		}
+		return true;
+	}
+		bool VertexDeclarationManager::createVertexDeclarationDefault()
+		{
+			m_mapVertexDeclarationDefault.clear();
+
+			//0:	F_MeshVertex_Pos2Color4
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float2);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 2, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos2Color4] = pVertexDeclaration;
+			}
+			//1:	F_MeshVertex_Pos3Color4
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4] = pVertexDeclaration;
+			}
+			//2:	F_MeshVertex_Pos3Normal3
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Normal3] = pVertexDeclaration;
+			}
+			//3:	F_MeshVertex_Pos3Normal3Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 6, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Normal3Tex2] = pVertexDeclaration;
+			}
+			//4:	F_MeshVertex_Pos2Color4Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float2);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 2, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 6, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos2Color4Tex2] = pVertexDeclaration;
+			}
+			//5:	F_MeshVertex_Pos3Color4Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Tex2] = pVertexDeclaration;
+			}
+			//6:	F_MeshVertex_Pos3Color4Normal3Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(3, sizeof(float) * 10, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Normal3Tex2] = pVertexDeclaration;
+			}
+			//7:	F_MeshVertex_Pos3Color4Normal3Tex4
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(3, sizeof(float) * 10, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float4);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Normal3Tex4] = pVertexDeclaration;
+			}
+			//8:	F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(3, sizeof(float) * 10, F_VertexElementSemantic_Tangent, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(4, sizeof(float) * 13, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Normal3Tangent3Tex2] = pVertexDeclaration;
+			}
+			//9:	F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(3, sizeof(float) * 10, F_VertexElementSemantic_Tangent, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(4, sizeof(float) * 13, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float4);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Normal3Tangent3Tex4] = pVertexDeclaration;
+			}
+			//10:	F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 6, F_VertexElementSemantic_Tangent, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(3, sizeof(float) * 9, F_VertexElementSemantic_BlendWeights, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(4, sizeof(float) * 13, F_VertexElementSemantic_BlendIndices, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(5, sizeof(float) * 17, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2] = pVertexDeclaration;
+			}
+			//11:	F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+			{
+				VertexDeclaration* pVertexDeclaration = CreateVertexDeclaration();
+				pVertexDeclaration->AddVertexElement(0, 0, F_VertexElementSemantic_Position, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(1, sizeof(float) * 3, F_VertexElementSemantic_Diffuse, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(2, sizeof(float) * 7, F_VertexElementSemantic_Normal, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(4, sizeof(float) * 10, F_VertexElementSemantic_Tangent, F_VertexElementData_Float3);
+				pVertexDeclaration->AddVertexElement(5, sizeof(float) * 13, F_VertexElementSemantic_BlendWeights, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(6, sizeof(float) * 17, F_VertexElementSemantic_BlendIndices, F_VertexElementData_Float4);
+				pVertexDeclaration->AddVertexElement(7, sizeof(float) * 21, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float2);
+				pVertexDeclaration = GetSameVertexDeclaration(pVertexDeclaration);
+				F_Assert(pVertexDeclaration && "VertexDeclarationManager::createVertexDeclarationDefault")
+				m_mapVertexDeclarationDefault[F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2] = pVertexDeclaration;
+			}
+
+			return true;
+		}
+
+	VertexDeclaration* VertexDeclarationManager::GetVertexDeclaration(FMeshVertexType eMeshVertex)
+	{
+		MeshVertexType2VertexDeclarationPtrMap::iterator itFind = m_mapVertexDeclarationDefault.find(eMeshVertex);
+		F_Assert(itFind != m_mapVertexDeclarationDefault.end() && "VertexDeclarationManager::GetVertexDeclaration")
+		return itFind->second;
+	}
 
     VertexDeclaration* VertexDeclarationManager::GetSameVertexDeclaration(VertexDeclaration* pVertexDeclaration)
 	{

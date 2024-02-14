@@ -29,8 +29,7 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         virtual void Destroy();
-        virtual RenderWindow* Init(bool bAutoCreateWindow, 
-                                   const String& strWndTitle = "Render Window");
+        virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window");
             
     protected:
 		virtual bool initRenderCapabilities();
