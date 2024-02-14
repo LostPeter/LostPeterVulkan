@@ -14,6 +14,7 @@
 
 #include "FPreDefine.h"
 #include "FMeshData.h"
+#include "FMeshVertex.h"
 
 namespace LostPeterFoundation
 {
@@ -29,9 +30,17 @@ namespace LostPeterFoundation
 
 
     public:
-    protected:
-        
+        //FMeshData
+        static void ExtractVertexData_Pos3Color4Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractVertexData_Pos3Color4Normal3Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractVertexData_Pos3Color4Normal3Tex4(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tex4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractVertexData_Pos3Color4Normal3Tangent3Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractVertexData_Pos3Color4Normal3Tangent3Tex4(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractIndexData(FMeshData& meshData, std::vector<uint32_t>& aIndices);
 
+        //FMeshDataPC
+        static void ExtractVertexData_Pos3Color4Tex2(FMeshDataPC& meshDataPC, std::vector<FVertex_Pos3Color4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
+        static void ExtractIndexData(FMeshDataPC& meshDataPC, std::vector<uint32_t>& aIndices);
     };
 
 }; //LostPeterFoundation

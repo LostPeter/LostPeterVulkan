@@ -9,16 +9,16 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_018_OBJECT_H_
-#define _VULKAN_018_OBJECT_H_
+#ifndef _VULKAN_200_ENGINE_H_
+#define _VULKAN_200_ENGINE_H_
 
 #include "Sample.h"
 using namespace LostPeterEngine;
 
-class Vulkan_018_Object : public Sample
+class Vulkan_200_Engine : public Sample
 {
 public:
-    Vulkan_018_Object(const String& nameSample, int width, int height);
+    Vulkan_200_Engine(const String& nameSample, int width, int height);
 
 public: 
     

@@ -10,10 +10,10 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_018_object.h"
+#include "vulkan_200_engine.h"
 
 
-Vulkan_018_Object::Vulkan_018_Object(const String& nameSample, int width, int height)
+Vulkan_200_Engine::Vulkan_200_Engine(const String& nameSample, int width, int height)
     : Sample(nameSample, width, height)
 {
     m_cfg_bIsWindowSceneUsed = true;
@@ -21,7 +21,7 @@ Vulkan_018_Object::Vulkan_018_Object(const String& nameSample, int width, int he
 }
 
 
-void Vulkan_018_Object::OnLoad()
+void Vulkan_200_Engine::OnLoad()
 {   
     loadShaders();
     loadMeshes();
@@ -29,9 +29,9 @@ void Vulkan_018_Object::OnLoad()
     loadMaterials();
 }
 
-void Vulkan_018_Object::loadShaders()
+void Vulkan_200_Engine::loadShaders()
 {
-    F_LogInfo("++++++++++ Vulkan_018_Object::loadShaders: Load shader test start !");
+    F_LogInfo("++++++++++ Vulkan_200_Engine::loadShaders: Load shader test start !");
     {
         uint nGroup = 4000;
 
@@ -53,25 +53,25 @@ void Vulkan_018_Object::loadShaders()
         //4000 - frag_default_transparent
         ShaderProgram* pSP_FragDefaultTransparent = loadShader(nGroup, "frag_default_transparent");
     }
-    F_LogInfo("---------- Vulkan_018_Object::loadShaders: Load shader test end !");
+    F_LogInfo("---------- Vulkan_200_Engine::loadShaders: Load shader test end !");
 }
-    ShaderProgram* Vulkan_018_Object::loadShader(uint nGroup, const String& strNameShaderProgram)
+    ShaderProgram* Vulkan_200_Engine::loadShader(uint nGroup, const String& strNameShaderProgram)
     {
         ShaderProgram* pShaderProgram = ShaderProgramManager::GetSingleton().LoadShaderProgram(nGroup, strNameShaderProgram);
         if (pShaderProgram == nullptr)
         {
-            F_LogError("*********************** Vulkan_018_Object::loadShader: Load shader program failed, group: [%u], name: [%s] !", nGroup, strNameShaderProgram.c_str());
+            F_LogError("*********************** Vulkan_200_Engine::loadShader: Load shader program failed, group: [%u], name: [%s] !", nGroup, strNameShaderProgram.c_str());
             return nullptr;
         }
-        F_LogInfo("Vulkan_018_Object::loadShader: Load shader program success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
+        F_LogInfo("Vulkan_200_Engine::loadShader: Load shader program success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
                   nGroup, strNameShaderProgram.c_str(), pShaderProgram->GetPath().c_str(), 
                   F_GetShaderTypeName(pShaderProgram->GetShaderType()).c_str());
         return pShaderProgram;
     }
 
-void Vulkan_018_Object::loadMeshes()
+void Vulkan_200_Engine::loadMeshes()
 {
-    F_LogInfo("++++++++++ Vulkan_018_Object::loadMeshes: Load mesh test start !");
+    F_LogInfo("++++++++++ Vulkan_200_Engine::loadMeshes: Load mesh test start !");
     {
         uint nGroup = 5001;
 
@@ -116,25 +116,25 @@ void Vulkan_018_Object::loadMeshes()
         // strNameMesh = "flower";
         // Mesh* pMesh10 = loadMesh(nGroup, strNameMesh);
     }
-    F_LogInfo("---------- Vulkan_018_Object::loadMeshes: Load mesh test end !");
+    F_LogInfo("---------- Vulkan_200_Engine::loadMeshes: Load mesh test end !");
 }
-    Mesh* Vulkan_018_Object::loadMesh(uint nGroup, const String& strNameMesh)
+    Mesh* Vulkan_200_Engine::loadMesh(uint nGroup, const String& strNameMesh)
     {
         Mesh* pMesh = MeshManager::GetSingleton().LoadMesh(nGroup, strNameMesh);
         if (pMesh == nullptr)
         {
-            F_LogError("*********************** Vulkan_018_Object::loadMesh: Load mesh failed, group: [%u], name: [%s] !", nGroup, strNameMesh.c_str());
+            F_LogError("*********************** Vulkan_200_Engine::loadMesh: Load mesh failed, group: [%u], name: [%s] !", nGroup, strNameMesh.c_str());
             return nullptr;
         }
-        F_LogInfo("Vulkan_018_Object::loadMesh: Load mesh success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
+        F_LogInfo("Vulkan_200_Engine::loadMesh: Load mesh success, group: [%u], name: [%s], path: [%s], type: [%s] !", 
                   nGroup, strNameMesh.c_str(), pMesh->GetPath().c_str(), 
                   F_GetMeshTypeName(pMesh->GetMeshType()).c_str());
         return pMesh;
     }
 
-void Vulkan_018_Object::loadTextures()
+void Vulkan_200_Engine::loadTextures()
 {
-    F_LogInfo("++++++++++ Vulkan_018_Object::loadTextures: Load texture test start !");
+    F_LogInfo("++++++++++ Vulkan_200_Engine::loadTextures: Load texture test start !");
     {
         //6001 - default_blackwhite
         uint nGroup = 6001;
@@ -156,19 +156,19 @@ void Vulkan_018_Object::loadTextures()
         strNameTexture = "texturecubemap";
         Texture* pTexture4 = loadTexture(nGroup, strNameTexture, true);
     }
-    F_LogInfo("---------- Vulkan_018_Object::loadTextures: Load texture test end !");
+    F_LogInfo("---------- Vulkan_200_Engine::loadTextures: Load texture test end !");
 }
-    Texture* Vulkan_018_Object::loadTexture(uint nGroup, const String& strNameTexture, bool bIsArray)
+    Texture* Vulkan_200_Engine::loadTexture(uint nGroup, const String& strNameTexture, bool bIsArray)
     {
         Texture* pTexture = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
         if (pTexture == nullptr)
         {
-            F_LogError("*********************** Vulkan_018_Object::loadTexture: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+            F_LogError("*********************** Vulkan_200_Engine::loadTexture: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return nullptr;
         }
         if (bIsArray)
         {
-            F_LogInfo("Vulkan_018_Object::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
+            F_LogInfo("Vulkan_200_Engine::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
                       nGroup, strNameTexture.c_str(),
                       pTexture->GetPath().at(0).c_str(), 
                       pTexture->GetPath().at(1).c_str(),
@@ -179,22 +179,22 @@ void Vulkan_018_Object::loadTextures()
         }
         else
         {
-            F_LogInfo("Vulkan_018_Object::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
+            F_LogInfo("Vulkan_200_Engine::loadTexture: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
                       nGroup, strNameTexture.c_str(), pTexture->GetPath().at(0).c_str(),
                       FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatDesired()).c_str(),
                       FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormatSrc()).c_str());
         }
         return pTexture;
     }
-void Vulkan_018_Object::loadMaterials()
+void Vulkan_200_Engine::loadMaterials()
 {
-    F_LogInfo("++++++++++ Vulkan_018_Object::loadMaterials: Load material test start !");
+    F_LogInfo("++++++++++ Vulkan_200_Engine::loadMaterials: Load material test start !");
     {
 
     }
-    F_LogInfo("---------- Vulkan_018_Object::loadMaterials: Load material test end !");
+    F_LogInfo("---------- Vulkan_200_Engine::loadMaterials: Load material test end !");
 }
-    Material* Vulkan_018_Object::loadMaterial(uint nGroup, const String& strNameMaterial)
+    Material* Vulkan_200_Engine::loadMaterial(uint nGroup, const String& strNameMaterial)
     {
         return nullptr;
     }

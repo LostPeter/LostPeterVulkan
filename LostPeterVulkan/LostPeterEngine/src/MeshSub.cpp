@@ -25,6 +25,13 @@ namespace LostPeterEngine
         , m_pDataVertex(nullptr)
         , m_pDataIndex(nullptr)
         , m_bIsUseSharedVertex(false)
+
+        , m_nVertexCount(0)
+        , m_nVertexBuffer_Size(0)
+        , m_pVertexBuffer_Data(nullptr)
+        , m_nIndexCount(0)
+        , m_nIndexBuffer_Size(0)
+        , m_pIndexBuffer_Data(nullptr)
     {
 
     }
@@ -44,14 +51,104 @@ namespace LostPeterEngine
     {
         UpdateBound(meshData.aabb, meshData.sphere, bIsTransformLocal, mat4TransformLocal);
         
+        //1> DataVertex
+        FMeshVertexType eMeshVertex = m_pMesh->GetMeshVertexType();
+        if (eMeshVertex == F_MeshVertex_Pos3Color4Tex2) //5:    F_MeshVertex_Pos3Color4Tex2 (FMeshVertexPCT)
+        {
+            FMeshDataLoader::ExtractVertexData_Pos3Color4Tex2(meshData, m_aVertices_Pos3Color4Tex2, bIsTransformLocal, mat4TransformLocal);
+            m_nVertexCount = (uint32)m_aVertices_Pos3Color4Tex2.size();
+            m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Tex2);
+            m_pVertexBuffer_Data = &m_aVertices_Pos3Color4Tex2[0];
+        }
+        else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tex2) //6:    F_MeshVertex_Pos3Color4Normal3Tex2
+        {
+            FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex2(meshData, m_aVertices_Pos3Color4Normal3Tex2, bIsTransformLocal, mat4TransformLocal);
+            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tex2.size();
+            m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
+            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tex2[0];
+        }
+        else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tex4) //7:    F_MeshVertex_Pos3Color4Normal3Tex4
+        {
+            FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex4(meshData, m_aVertices_Pos3Color4Normal3Tex4, bIsTransformLocal, mat4TransformLocal);
+            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tex4.size();
+            m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex4);
+            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tex4[0];
+        }
+        else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex2) //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
+        {
+            FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex2(meshData, m_aVertices_Pos3Color4Normal3Tangent3Tex2, bIsTransformLocal, mat4TransformLocal);
+            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tangent3Tex2.size();
+            m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
+            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tangent3Tex2[0];
+        }
+        else if (eMeshVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex4) //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
+        {
+            FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex4(meshData, m_aVertices_Pos3Color4Normal3Tangent3Tex4, bIsTransformLocal, mat4TransformLocal);
+            m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4Normal3Tangent3Tex4.size();
+            m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
+            m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4Normal3Tangent3Tex4[0];
+        }
+        else
+        {
+            F_LogError("*********************** MeshSub::Init: create mesh sub failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
+            return false; 
+        }
+        if (!createDataVertex())
+        {
+            F_LogError("*********************** MeshSub::Init: create mesh sub data vertex failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
+            return false; 
+        }
+
+        //2> DataIndex
+        FMeshDataLoader::ExtractIndexData(meshData, m_aIndices);
+        this->m_nIndexCount = (uint32)m_aIndices.size();
+        this->m_nIndexBuffer_Size = this->m_nIndexCount * sizeof(uint32);
+        this->m_pIndexBuffer_Data = &m_aIndices[0];
+        if (!createDataIndex())
+        {
+            F_LogError("*********************** MeshSub::Init: create mesh sub data index failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
+            return false; 
+        }
 
         return true;
     }
     bool MeshSub::Init(FMeshDataPC& meshDataPC, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
     {
         UpdateBound(meshDataPC.aabb, meshDataPC.sphere, bIsTransformLocal, mat4TransformLocal);
+        FMeshVertexType eMeshVertex = m_pMesh->GetMeshVertexType();
 
-        
+        //1> DataVertex
+        FMeshDataLoader::ExtractVertexData_Pos3Color4Tex2(meshDataPC, m_aVertices_Pos3Color4, bIsTransformLocal, mat4TransformLocal);
+        m_nVertexCount = (uint32)this->m_aVertices_Pos3Color4.size();
+        m_nVertexBuffer_Size = m_nVertexCount * sizeof(FVertex_Pos3Color4);
+        m_pVertexBuffer_Data = &this->m_aVertices_Pos3Color4[0];
+        if (!createDataVertex())
+        {
+            F_LogError("*********************** MeshSub::Init: create mesh sub data vertex failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
+            return false; 
+        }
+
+        //2> DataIndex
+        FMeshDataLoader::ExtractIndexData(meshDataPC, m_aIndices);
+        this->m_nIndexCount = (uint32)m_aIndices.size();
+        this->m_nIndexBuffer_Size = this->m_nIndexCount * sizeof(uint32);
+        this->m_pIndexBuffer_Data = &m_aIndices[0];
+        if (!createDataIndex())
+        {
+            F_LogError("*********************** MeshSub::Init: create mesh sub data index failed: [%s], wrong FMeshVertexType: [%s] !", GetName().c_str(), F_GetMeshVertexTypeName(eMeshVertex).c_str());
+            return false; 
+        }
+
+        return true;
+    }
+    bool MeshSub::createDataVertex()
+    {
+
+
+        return true;
+    }
+    bool MeshSub::createDataIndex()
+    {
         return true;
     }
 

@@ -38,6 +38,22 @@ namespace LostPeterEngine
         FAABB m_boundAABB;
         FSphere m_boundSphere;
 
+    protected:
+        std::vector<FVertex_Pos3Color4> m_aVertices_Pos3Color4;
+        std::vector<FVertex_Pos3Color4Tex2> m_aVertices_Pos3Color4Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> m_aVertices_Pos3Color4Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex4> m_aVertices_Pos3Color4Normal3Tex4;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> m_aVertices_Pos3Color4Normal3Tangent3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4> m_aVertices_Pos3Color4Normal3Tangent3Tex4;
+        uint32 m_nVertexCount;
+        uint32 m_nVertexBuffer_Size;
+        void* m_pVertexBuffer_Data;
+        
+        std::vector<uint32> m_aIndices;
+        uint32 m_nIndexCount;
+        uint32 m_nIndexBuffer_Size;
+        void* m_pIndexBuffer_Data;
+
     public:
         F_FORCEINLINE Mesh* GetMesh() const { return m_pMesh; }
 		F_FORCEINLINE void SetMesh(Mesh* pMesh) { m_pMesh = pMesh; }
@@ -69,8 +85,9 @@ namespace LostPeterEngine
 
         void UpdateBound(const FAABB& aabb, const FSphere& sphere, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal);
 
-    private:
-        
+    protected:
+        virtual bool createDataVertex();
+        virtual bool createDataIndex();
 
     };
 

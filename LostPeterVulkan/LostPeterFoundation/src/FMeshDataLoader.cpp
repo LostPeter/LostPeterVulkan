@@ -10,7 +10,9 @@
 ****************************************************************************/
 
 #include "../include/FMeshDataLoader.h"
+#include "../include/FMath.h"
 #include "../include/FUtil.h"
+
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -176,6 +178,152 @@ namespace LostPeterFoundation
 	    s_ProcessNode_MeshDatas(&identity, pScene->mRootNode, pScene, aMeshDatas, isFlipY);
 
         return true;
+    }
+
+
+    //FMeshData
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Tex2 v;
+            v.pos = vertex.pos;
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.texCoord = vertex.texCoord;
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+    }
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = vertex.texCoord;
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+    }
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tex4(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tex4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+    }
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex2(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = vertex.texCoord;
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+    }
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Normal3Tangent3Tex4(FMeshData& meshData, std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+    }
+    void FMeshDataLoader::ExtractIndexData(FMeshData& meshData, std::vector<uint32_t>& aIndices)
+    {
+        int count_index = (int)meshData.indices32.size();
+        aIndices.clear();
+        aIndices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            aIndices.push_back(meshData.indices32[i]);
+        }
+    }
+
+
+    //FMeshDataPC
+    void FMeshDataLoader::ExtractVertexData_Pos3Color4Tex2(FMeshDataPC& meshDataPC, std::vector<FVertex_Pos3Color4>& aVertices, bool bIsTransformLocal, const FMatrix4& mat4TransformLocal)
+    {
+        int count_vertex = (int)meshDataPC.vertices.size();
+        aVertices.clear();
+        aVertices.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertexPC& vertex = meshDataPC.vertices[i];
+            FVertex_Pos3Color4 v;
+            v.pos = vertex.pos;
+            v.color = vertex.color;
+            if (bIsTransformLocal)
+            {
+                v.pos = FMath::Transform(mat4TransformLocal, v.pos);
+            }
+            aVertices.push_back(v);
+        }
+
+    }
+    void FMeshDataLoader::ExtractIndexData(FMeshDataPC& meshDataPC, std::vector<uint32_t>& aIndices)
+    {
+        int count_index = (int)meshDataPC.indices32.size();
+        aIndices.clear();
+        aIndices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            aIndices.push_back(meshDataPC.indices32[i]);
+        }
     }
 
 }; //LostPeterFoundation

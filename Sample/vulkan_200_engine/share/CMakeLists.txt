@@ -10,7 +10,7 @@
 #****************************************************************************/
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
-SET(NAME_PROJECT "share_vulkan_018_object")
+SET(NAME_PROJECT "share_vulkan_200_engine")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")

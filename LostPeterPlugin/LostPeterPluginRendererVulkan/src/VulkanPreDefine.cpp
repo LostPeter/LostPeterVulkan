@@ -75,6 +75,196 @@ namespace LostPeterPluginRendererVulkan
         // }
     }
 
+
+    //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
+    //0: F_MeshVertex_Pos2Color4
+    VkVertexInputBindingDescriptionVector Vertex_Pos2Color4::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos2Color4::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4 //////////////////////////////
+    //1: F_MeshVertex_Pos3Color4
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
+    //2: F_MeshVertex_Pos3Normal3
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
+    //3: F_MeshVertex_Pos3Normal3Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
+    //4: F_MeshVertex_Pos2Color4Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos2Color4Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos2Color4Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
+    //5: F_MeshVertex_Pos3Color4Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
+    //6: F_MeshVertex_Pos3Color4Normal3Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
+    //7: F_MeshVertex_Pos3Color4Normal3Tex4
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////
+    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aAttributeDescriptions;
+    
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////
+    //9: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
+    //10: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
+    //11: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
+
+    const VkVertexInputBindingDescriptionVector& E_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)
+    {
+        switch ((int)type)
+        {
+            case F_MeshVertex_Pos2Color4:                                                   //0:    F_MeshVertex_Pos2Color4                                            
+                return Vertex_Pos2Color4::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4:                                                   //1:    F_MeshVertex_Pos3Color4 (FMeshVertexPC)                                            
+                return Vertex_Pos3Color4::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Normal3:                                                  //2:    F_MeshVertex_Pos3Normal3                                             
+                return Vertex_Pos3Normal3::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Normal3Tex2:                                              //3:    F_MeshVertex_Pos3Normal3Tex2     
+                return Vertex_Pos3Normal3Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos2Color4Tex2:                                               //4:    F_MeshVertex_Pos2Color4Tex2 
+                return Vertex_Pos2Color4Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Tex2:                                               //5:    F_MeshVertex_Pos3Color4Tex2 (FMeshVertexPCT)
+                return Vertex_Pos3Color4Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tex2:                                        //6:    F_MeshVertex_Pos3Color4Normal3Tex2
+                return Vertex_Pos3Color4Normal3Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tex4:                                        //7:    F_MeshVertex_Pos3Color4Normal3Tex4
+                return Vertex_Pos3Color4Normal3Tex4::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex2:                                //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2 (FMeshVertex)
+                return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:                                //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4 (FMeshVertexUV2)
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2:                              //10:   F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+                return Vertex_Pos3Normal3Tangent3BlendWI8Tex2::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2:                        //11:   F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 (FMeshVertexSkin)
+                return Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::GetBindingDescriptions();
+        }
+        F_Assert(false && "E_GetVkVertexInputBindingDescriptionVector: Wrong type !")
+        return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
+    }
+    const VkVertexInputAttributeDescriptionVector& E_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type)
+    {
+        switch ((int)type)
+        {
+            case F_MeshVertex_Pos2Color4:                                                   //0:    F_MeshVertex_Pos2Color4  
+                return Vertex_Pos2Color4::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4:                                                   //1:    F_MeshVertex_Pos3Color4 (FMeshVertexPC) 
+                return Vertex_Pos3Color4::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Normal3:                                                  //2:    F_MeshVertex_Pos3Normal3        
+                return Vertex_Pos3Normal3::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Normal3Tex2:                                              //3:    F_MeshVertex_Pos3Normal3Tex2 
+                return Vertex_Pos3Normal3Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos2Color4Tex2:                                               //4:    F_MeshVertex_Pos2Color4Tex2 
+                return Vertex_Pos2Color4Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Tex2:                                               //5:    F_MeshVertex_Pos3Color4Tex2 (FMeshVertexPCT)
+                return Vertex_Pos3Color4Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tex2:                                        //6:    F_MeshVertex_Pos3Color4Normal3Tex2
+                return Vertex_Pos3Color4Normal3Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tex4:                                        //7:    F_MeshVertex_Pos3Color4Normal3Tex4
+                return Vertex_Pos3Color4Normal3Tex4::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex2:                                //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2 (FMeshVertex)
+                return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:                                //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4 (FMeshVertexUV2)
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2:                              //10:   F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+                return Vertex_Pos3Normal3Tangent3BlendWI8Tex2::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2:                        //11:   F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 (FMeshVertexSkin)
+                return Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::GetAttributeDescriptions();
+        }
+        F_Assert(false && "E_GetVkVertexInputAttributeDescriptionVector: Wrong type !")
+        return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
+    }
+    VkVertexInputBindingDescriptionVector* E_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type)
+    {
+        switch ((int)type)
+        {
+            case F_MeshVertex_Pos2Color4:                                                   //0:    F_MeshVertex_Pos2Color4  
+                return Vertex_Pos2Color4::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4:                                                   //1:    F_MeshVertex_Pos3Color4 (FMeshVertexPC) 
+                return Vertex_Pos3Color4::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3:                                                  //2:    F_MeshVertex_Pos3Normal3        
+                return Vertex_Pos3Normal3::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3Tex2:                                              //3:    F_MeshVertex_Pos3Normal3Tex2 
+                return Vertex_Pos3Normal3Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos2Color4Tex2:                                               //4:    F_MeshVertex_Pos2Color4Tex2 
+                return Vertex_Pos2Color4Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Tex2:                                               //5:    F_MeshVertex_Pos3Color4Tex2 (FMeshVertexPCT)
+                return Vertex_Pos3Color4Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tex2:                                        //6:    F_MeshVertex_Pos3Color4Normal3Tex2
+                return Vertex_Pos3Color4Normal3Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tex4:                                        //7:    F_MeshVertex_Pos3Color4Normal3Tex4
+                return Vertex_Pos3Color4Normal3Tex4::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex2:                                //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2 (FMeshVertex)
+                return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:                                //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4 (FMeshVertexUV2)
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2:                              //10:   F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+                return Vertex_Pos3Normal3Tangent3BlendWI8Tex2::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2:                        //11:   F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 (FMeshVertexSkin)
+                return Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::GetBindingDescriptionsPtr();
+        }
+        F_Assert(false && "E_GetVkVertexInputBindingDescriptionVectorPtr: Wrong type !")
+        return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
+    }
+    VkVertexInputAttributeDescriptionVector* E_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type)
+    {
+        switch ((int)type)
+        {
+            case F_MeshVertex_Pos2Color4:                                                   //0:    F_MeshVertex_Pos2Color4  
+                return Vertex_Pos2Color4::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4:                                                   //1:    F_MeshVertex_Pos3Color4 (FMeshVertexPC) 
+                return Vertex_Pos3Color4::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3:                                                  //2:    F_MeshVertex_Pos3Normal3        
+                return Vertex_Pos3Normal3::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3Tex2:                                              //3:    F_MeshVertex_Pos3Normal3Tex2 
+                return Vertex_Pos3Normal3Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos2Color4Tex2:                                               //4:    F_MeshVertex_Pos2Color4Tex2 
+                return Vertex_Pos2Color4Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Tex2:                                               //5:    F_MeshVertex_Pos3Color4Tex2 (FMeshVertexPCT)
+                return Vertex_Pos3Color4Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tex2:                                        //6:    F_MeshVertex_Pos3Color4Normal3Tex2
+                return Vertex_Pos3Color4Normal3Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tex4:                                        //7:    F_MeshVertex_Pos3Color4Normal3Tex4
+                return Vertex_Pos3Color4Normal3Tex4::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex2:                                //8:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex2 (FMeshVertex)
+                return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:                                //9:    F_MeshVertex_Pos3Color4Normal3Tangent3Tex4 (FMeshVertexUV2)
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2:                              //10:   F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+                return Vertex_Pos3Normal3Tangent3BlendWI8Tex2::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2:                        //11:   F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 (FMeshVertexSkin)
+                return Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::GetAttributeDescriptionsPtr();
+        }
+        F_Assert(false && "E_GetVkVertexInputAttributeDescriptionVectorPtr: Wrong type !")
+        return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();
+    }
+
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
     
 }; //LostPeterPluginRendererVulkan

@@ -498,7 +498,7 @@ namespace LostPeterFoundation
 
     //////////////////////////////// FVertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
     //10: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
-    struct FVertex_Pos3Normal3Tangent3BlendWI8Tex2
+    struct foundationExport FVertex_Pos3Normal3Tangent3BlendWI8Tex2
     {
         FVector3 pos;
         FVector3 normal;
@@ -569,7 +569,7 @@ namespace LostPeterFoundation
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
     //11: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
-    struct FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 //FMeshVertexSkin
+    struct foundationExport FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 //FMeshVertexSkin
     {
         FVector3 pos;
         FVector4 color;
