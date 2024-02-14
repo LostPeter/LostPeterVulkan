@@ -71,10 +71,10 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        bool Init(uint32 nGroup, const String& strNameCfg);
 
     public:
-        Mesh* LoadMesh(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+        Mesh* LoadMesh(uint32 nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
         void UnloadMesh(Mesh* pMesh);
 
         bool HasMesh(const String& strName);

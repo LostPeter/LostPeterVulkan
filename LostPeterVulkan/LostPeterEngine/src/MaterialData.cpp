@@ -13,12 +13,41 @@
 
 namespace LostPeterEngine
 {
-    MaterialData::MaterialData(const String& nameMaterialData)
-        : Base(nameMaterialData)
+    const String MaterialData::ms_nameMaterialData = "MaterialData";
+    MaterialData::MaterialData(ResourceManager* pResourceManager,
+                               uint32 nGroup, 
+                               const String& strName,
+                               const String& strGroupName,
+                               ResourceHandle nHandle,
+                               bool bIsManualLoad /*= false*/,
+                               ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
+        : Resource(pResourceManager,
+				   nGroup, 
+				   strName,
+				   strGroupName,
+				   nHandle,
+				   bIsManualLoad,
+				   pResourceManualLoader)
         , m_strPath("")
-    {
         
+        , m_bInternalResourcesCreated(false)
+    {
+        if (createParameterDictionary(ms_nameMaterialData))
+		{
+			addParameterBase();
+            addParameterInherit();
+		}
     }
+        void MaterialData::addParameterBase()
+        {
+            FParameterDictionary* pDictionary = GetParameterDictionary();
+
+        }
+        void MaterialData::addParameterInherit()
+        {
+
+        }
+
     MaterialData::~MaterialData()
     {
         Destroy();
@@ -27,6 +56,8 @@ namespace LostPeterEngine
     void MaterialData::Destroy()
 	{
 		DeleteRenderStateAll();
+
+        Resource::Destroy();
 	}
 
 	bool MaterialData::HasRenderState(const String& strName)
@@ -87,5 +118,65 @@ namespace LostPeterEngine
     {
 
     }
+
+    void MaterialData::loadImpl()
+    {
+        createInternalResources();
+    }
+
+    void MaterialData::unloadImpl()
+    {
+        destroyInternalResources();
+    }
+
+    uint32 MaterialData::calculateSize() const
+    {
+		uint32 nMemSize = sizeof(*this);
+		nMemSize += m_strPath.size() * sizeof(char);
+        nMemSize += GetName().size() * sizeof(char);
+
+        
+
+        return nMemSize;
+    }
+
+    void MaterialData::destroyInternalResources()
+    {
+        if (m_bInternalResourcesCreated)
+		{
+			destroyInternalResourcesImpl();
+			m_bInternalResourcesCreated = false;
+
+			if (m_eResourceLoading.load() != E_ResourceLoading_Unloading)
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Unloaded);
+                _FireUnloadingComplete();
+            }
+		}
+    }
+        void MaterialData::destroyInternalResourcesImpl()
+        {
+
+        }
+
+    bool MaterialData::createInternalResources()
+    {
+        if (!m_bInternalResourcesCreated)
+		{
+			createInternalResourcesImpl();
+			m_bInternalResourcesCreated = true;
+
+			if (!IsLoading())
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Loaded);
+                _FireLoadingComplete(false);
+            }
+		}
+		return true;
+    }
+        void MaterialData::createInternalResourcesImpl()
+        {
+
+        }
 
 }; //LostPeterEngine

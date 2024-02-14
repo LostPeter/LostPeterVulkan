@@ -548,7 +548,7 @@ namespace LostPeterEngine
         
 		if (strPath.find(MATERIAL_DATA_FILE_BINARY_EXT) != String::npos)
 		{
-			if (!ParserBinary(strPath.c_str(), pMaterialData, pRet))
+			if (!ParserBinary(nGroup, strName, strPath, pMaterialData, pRet))
 			{
                 F_LogError("*********************** MaterialDataSerializer::Parser: Parser material binary file failed, path: [%s] !", strPath.c_str());
 				return false;
@@ -557,7 +557,7 @@ namespace LostPeterEngine
 		}
 		else if(strPath.find(MATERIAL_DATA_FILE_XML_EXT) != String::npos)
 		{
-			if (!ParserXML(strPath.c_str(), pMaterialData, pRet))
+			if (!ParserXML(nGroup, strName, strPath, pMaterialData, pRet))
 			{
                 F_LogError("*********************** MaterialDataSerializer::Parser: Parser material xml file failed, path: [%s] !", strPath.c_str());
 				return false;
@@ -581,15 +581,15 @@ namespace LostPeterEngine
 			return false;
 		}
 		
-		return ParserXML(strPath.c_str(), nullptr, pRet);
+		return ParserXML(nGroup, strName, strPath, nullptr, pRet);
     }
 
-    bool MaterialDataSerializer::ParserXML(const char* szFilePath, MaterialData* pMaterialData /*= nullptr*/, MaterialDataPtrVector* pRet /*= nullptr*/)
+    bool MaterialDataSerializer::ParserXML(uint32 nGroup, const String& strName, const String& strPath, MaterialData* pMaterialData /*= nullptr*/, MaterialDataPtrVector* pRet /*= nullptr*/)
     {
         FFileXML xml;
-		if (!xml.LoadXMLIndirect(szFilePath))
+		if (!xml.LoadXMLIndirect(strPath))
         {
-            F_LogError("*********************** MaterialDataSerializer::ParserXML: Load material file: [%s] failed !", szFilePath);
+            F_LogError("*********************** MaterialDataSerializer::ParserXML: Load material file: [%s] failed !", strPath.c_str());
 			return false;
         }
 
@@ -609,7 +609,7 @@ namespace LostPeterEngine
             }
             F_LogInfo("MaterialDataSerializer::ParserXML: Start to parser material data: [%s] !", strNameMaterial.c_str());
 
-            MaterialData* pMD = m_pMaterialDataManager->findMaterialData(strNameMaterial);
+            MaterialData* pMD = m_pMaterialDataManager->GetMaterialData(strNameMaterial);
             if (pMD != nullptr)
             {
                 F_LogWarning("####################### MaterialDataSerializer::ParserXML: Material data [%s] already exist !", strNameMaterial.c_str());
@@ -619,9 +619,9 @@ namespace LostPeterEngine
                 bool bExtern = pMaterialData ? true : false;
 				if (!bExtern)
 				{
-					pMaterialData = new MaterialData(strNameMaterial);
+					pMaterialData = m_pMaterialDataManager->NewMaterialData(nGroup, strNameMaterial);
 				}
-                pMaterialData->SetPath(String(szFilePath));
+                pMaterialData->SetPath(strPath);
 
                 if (!s_parserXML_MaterialData(pElementMaterialData, pMaterialData))
 				{
@@ -633,7 +633,7 @@ namespace LostPeterEngine
 
                 if (!bExtern)
 				{
-					if (m_pMaterialDataManager->addMaterialData(pMaterialData))
+					if (m_pMaterialDataManager->AddMaterialData(pMaterialData))
 					{
 						pMD = pMaterialData;
 						F_LogInfo("MaterialDataSerializer::ParserXML: Parser material data [%s] success !", strNameMaterial.c_str());
@@ -675,10 +675,10 @@ namespace LostPeterEngine
 			return false;
 		}
 		
-		return ParserBinary(strPath.c_str(), nullptr, pRet);
+		return ParserBinary(nGroup, strName, strPath, nullptr, pRet);
     }
 
-    bool MaterialDataSerializer::ParserBinary(const char* szFilePath, MaterialData* pMaterialData /*= nullptr*/, MaterialDataPtrVector* pRet /*= nullptr*/)
+    bool MaterialDataSerializer::ParserBinary(uint32 nGroup, const String& strName, const String& strPath, MaterialData* pMaterialData /*= nullptr*/, MaterialDataPtrVector* pRet /*= nullptr*/)
     {
 
         return true;
@@ -704,7 +704,7 @@ namespace LostPeterEngine
 
         return true;
     }
-    bool MaterialDataSerializer::SaveXML(const char* szFilePath, MaterialPtrVector& aMA)
+    bool MaterialDataSerializer::SaveXML(const String& strPath, MaterialPtrVector& aMA)
     {
 
         return true;
@@ -730,7 +730,7 @@ namespace LostPeterEngine
 
         return true;
     }
-    bool MaterialDataSerializer::SaveBinary(const char* szFilePath, MaterialPtrVector& aMA)
+    bool MaterialDataSerializer::SaveBinary(const String& strPath, MaterialPtrVector& aMA)
     {
 
         return true;

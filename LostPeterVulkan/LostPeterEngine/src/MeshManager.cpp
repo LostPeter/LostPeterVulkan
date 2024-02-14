@@ -200,11 +200,10 @@ namespace LostPeterEngine
     void MeshManager::Destroy()
     {
         F_DELETE(m_pMeshSerializer)
-        
         ResourceManager::Destroy();
     }
     
-    bool MeshManager::Init(uint nGroup, const String& strNameCfg)
+    bool MeshManager::Init(uint32 nGroup, const String& strNameCfg)
     {
         //1> Mesh Cfg Path 
         String strPathCfgMesh = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
@@ -225,7 +224,7 @@ namespace LostPeterEngine
         return true;
     }
 
-    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
+    Mesh* MeshManager::LoadMesh(uint32 nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pMeshSerializer == nullptr)
             return nullptr;
@@ -273,6 +272,12 @@ namespace LostPeterEngine
             }
             return pMesh;
         }
+    void MeshManager::UnloadMesh(Mesh* pMesh)
+    {
+        if (!pMesh)
+            return;
+        Delete(pMesh);
+    }
 
     bool MeshManager::HasMesh(const String& strName)
     {
@@ -328,7 +333,7 @@ namespace LostPeterEngine
                                                                                   &mapMeshParam);
 		if (!result.first || !result.second)
 		{
-            F_LogError("*********************** Mesh::CreateOrRetrieveMesh: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+            F_LogError("*********************** MeshManager::CreateOrRetrieveMesh: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
 			return result;
 		}
 

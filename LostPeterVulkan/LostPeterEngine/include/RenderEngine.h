@@ -41,12 +41,10 @@ namespace LostPeterEngine
 		uint32 m_nNextMovableTypeFlag;
 		
 		bool m_bIsInit;
-		bool m_bFirstInitAfterWndCreated;
 
 		RenderEngineListenerPtrVector m_aRenderEngineListener;
         
-
-
+		
     public:
         static RenderEngine& GetSingleton();
 		static RenderEngine* GetSingletonPtr();
@@ -99,7 +97,10 @@ namespace LostPeterEngine
 
     private:
 		void initRendererCfgItems();
-		void firstInitAfterWndCreated();
+		bool initRenderPipelineManager();
+		bool initSceneManager();
+		bool initRenderQueueManager();
+		bool initMaterialManager();
 
 		uint32 allocateNextMovableTypeFlag();
     };

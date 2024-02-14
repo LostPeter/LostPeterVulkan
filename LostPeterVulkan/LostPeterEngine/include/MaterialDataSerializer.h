@@ -29,23 +29,23 @@ namespace LostPeterEngine
         bool Parser(uint32 nGroup, const String& strName, MaterialData* pMaterialData, MaterialDataPtrVector* pRet = nullptr);
 
 		bool ParserXML(uint32 nGroup, const String& strName, MaterialDataPtrVector* pRet = nullptr);
-		bool ParserXML(const char* szFilePath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
+		bool ParserXML(uint32 nGroup, const String& strName, const String& strPath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
 
 		bool ParserBinary(uint32 nGroup, const String& strName, MaterialDataPtrVector* pRet = nullptr);
-		bool ParserBinary(const char* szFilePath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
+		bool ParserBinary(uint32 nGroup, const String& strName, const String& strPath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
 
     public:
         bool SaveXML(Material* pMaterial);
 		bool SaveXML(uint32 nGroup, Material* pMaterial);
 		bool SaveXML(Mesh* pMesh);
 		bool SaveXML(Object* pObject, const String& strPath);
-		bool SaveXML(const char* szFilePath, MaterialPtrVector& aMA);
+		bool SaveXML(const String& strPath, MaterialPtrVector& aMA);
 		
 		bool SaveBinary(Material* pMaterial);
 		bool SaveBinary(uint32 nGroup, Material* pMaterial);
 		bool SaveBinary(Mesh* pMesh);
 		bool SaveBinary(Object* pObject, const String& strPath);
-		bool SaveBinary(const char* szFilePath, MaterialPtrVector& aMA);
+		bool SaveBinary(const String& strPath, MaterialPtrVector& aMA);
     };
 
 }; //LostPeterEngine

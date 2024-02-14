@@ -206,11 +206,32 @@ void Vulkan_200_Engine::loadMaterials()
 {
     F_LogInfo("++++++++++ Vulkan_200_Engine::loadMaterials: Load material test start !");
     {
+        uint nGroup = 7000;
+        String strNameMaterial;
 
+        //7000 - Default
+        strNameMaterial = "Default";
+        Material* pMaterial1 = loadMaterial(nGroup, strNameMaterial);
+
+        //7000 - Default_Opaque
+        strNameMaterial = "Default_Opaque";
+        Material* pMaterial2 = loadMaterial(nGroup, strNameMaterial);
+
+        //7000 - Default_Transparent
+        strNameMaterial = "Default_Transparent";
+        Material* pMaterial3 = loadMaterial(nGroup, strNameMaterial);
     }
     F_LogInfo("---------- Vulkan_200_Engine::loadMaterials: Load material test end !");
 }
     Material* Vulkan_200_Engine::loadMaterial(uint nGroup, const String& strNameMaterial)
     {
-        return nullptr;
+        Material* pMaterial = MaterialManager::GetSingleton().LoadMaterial(nGroup, strNameMaterial);
+        if (pMaterial == nullptr)
+        {
+            F_LogError("*********************** Vulkan_200_Engine::loadMaterial: Load material failed, group: [%u], name: [%s] !", nGroup, strNameMaterial.c_str());
+            return nullptr;
+        }
+        F_LogInfo("Vulkan_200_Engine::loadMaterial: Load material success, group: [%u], name: [%s], path: [%s] !", 
+                  nGroup, strNameMaterial.c_str(), pMaterial->GetMaterialData()->GetPath().c_str());
+        return pMaterial;
     }

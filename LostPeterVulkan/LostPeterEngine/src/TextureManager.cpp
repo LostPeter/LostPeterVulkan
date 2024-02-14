@@ -362,7 +362,7 @@ namespace LostPeterEngine
         ResourceManager::Destroy();
     }
 
-    bool TextureManager::Init(uint nGroup, const String& strNameCfg)
+    bool TextureManager::Init(uint32 nGroup, const String& strNameCfg)
     {
         //1> Texture Cfg Path 
         String strPathCfgTexture = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
@@ -383,7 +383,7 @@ namespace LostPeterEngine
         return true;
     }
 
-    Texture* TextureManager::LoadTexture(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
+    Texture* TextureManager::LoadTexture(uint32 nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pTextureSerializer == nullptr)
             return nullptr;

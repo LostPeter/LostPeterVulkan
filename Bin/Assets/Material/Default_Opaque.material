@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cfg_material_data>
-	<material_data group="7001" name="Default_Opaque">
+	<material_data group="7000" name="Default_Opaque">
 		<pass name="Pass_Opaque" type="ForwardLit">
 			<state_common>
 				

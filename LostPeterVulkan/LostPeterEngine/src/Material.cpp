@@ -33,18 +33,20 @@ namespace LostPeterEngine
 
     bool Material::LoadMaterial(bool bIsFromFile /*= true*/)
     {
+        uint32 nGroup = GetGroup();
+        const String& strName = GetName();
         if (!IsGroupNameValid())
 		{
-            F_LogError("*********************** Material::LoadMaterial: Group, Name is not valid: group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
+            F_LogError("*********************** Material::LoadMaterial: Group, Name is not valid: group: [%u], name: [%s] !", nGroup, strName.c_str());
             return false;
         }
         
         if (!m_pMaterialData)
 		{
-			m_pMaterialData = MaterialDataManager::GetSingleton().CreateMaterialData(GetGroup(), GetName(), bIsFromFile);
+			m_pMaterialData = MaterialDataManager::GetSingleton().LoadMaterialData(nGroup, strName, bIsFromFile);
             if (m_pMaterialData == nullptr)
             {
-                F_LogError("*********************** Material::LoadMaterial: CreateMaterialData failed, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
+                F_LogError("*********************** Material::LoadMaterial: LoadMaterialData failed, group: [%u], name: [%s] !", nGroup, strName.c_str());
                 return false;
             }
 		}
@@ -55,7 +57,7 @@ namespace LostPeterEngine
     {
         if (m_pMaterialData)
 		{
-			MaterialDataManager::GetSingleton().DestroyMaterialData(m_pMaterialData);
+			MaterialDataManager::GetSingleton().UnloadMaterialData(m_pMaterialData);
 		}
         m_pMaterialData = nullptr;
     }

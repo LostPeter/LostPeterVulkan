@@ -185,6 +185,7 @@ namespace LostPeterEngine
         E_Resource_Mesh = 0,                                //0:    Mesh
         E_Resource_Texture,                                 //1:    Texture
         E_Resource_Shader,                                  //2:    Shader
+        E_Resource_Material,                                //3:    Material
 
         E_Resource_Count,
     };
@@ -248,6 +249,8 @@ namespace LostPeterEngine
     engineExport const String& E_GetShaderParamTypeName(EShaderParamType type);
     engineExport const String& E_GetShaderParamTypeName(int type);
     engineExport EShaderParamType E_ParseShaderParamType(const String& strName);
+
+    
 
 
     enum EResourceLoadingType

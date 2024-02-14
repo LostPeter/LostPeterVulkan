@@ -59,6 +59,7 @@ namespace LostPeterEngine
 
         bool IsMaterialDefault(Material* pMaterial);
         Material* GetMaterialDefault(const String& strName);
+        Material* GetMaterialDefault(uint32 nGroup, const String& strName);
         Material* GetMaterial_Default();
         Material* GetMaterial_DefaultOpaque();
         Material* GetMaterial_DefaultTransparent();
@@ -75,7 +76,7 @@ namespace LostPeterEngine
 
     public:
         void Destroy();
-        bool Init(uint nGroupCfgMesh, const String& strNameCfg);
+        bool Init(uint32 nGroup, const String& strNameCfg);
 
     protected:
         void destroyMaterialDefaults();
@@ -86,16 +87,16 @@ namespace LostPeterEngine
 
     public:
         bool LoadMaterialAll();
-        Material* LoadMaterial(uint nGroup, const String& strName);
+        Material* LoadMaterial(uint32 nGroup, const String& strName);
 
-        bool HasMaterial(uint nGroup, const String& strName);
-        Material* GetMaterial(uint nGroup, const String& strName);
-        bool AddMaterial(uint nGroup, Material* pMaterial);
-        void DeleteMaterial(uint nGroup, const String& strName);
+        bool HasMaterial(uint32 nGroup, const String& strName);
+        Material* GetMaterial(uint32 nGroup, const String& strName);
+        bool AddMaterial(uint32 nGroup, Material* pMaterial);
+        void DeleteMaterial(uint32 nGroup, const String& strName);
         void DeleteMaterialAll();
 
     private:
-        Material* loadMaterial(uint nGroup, const String& strName, bool bIsFromFile = true);
+        Material* loadMaterial(uint32 nGroup, const String& strName, bool bIsFromFile = true);
         Material* loadMaterial(MaterialInfo* pMI);
 
     public:
@@ -107,7 +108,6 @@ namespace LostPeterEngine
 		MaterialInstance* CreateMaterialInstance(uint32 nGroup, const String& strMaterialName, bool bIsUnique);
         void DestroyMaterialInstance(MaterialInstance* pMaterialInstance);
 		void DestroyMaterialInstanceAll();
-
     };
 
 }; //LostPeterEngine

@@ -138,6 +138,7 @@ namespace LostPeterEngine
         "Mesh",                     //0:    Mesh            
         "Texture",                  //1:    Texture
         "Shader",                   //2:    Shader
+        "Material",                 //3:    Material
     };
     const String& E_GetResourceTypeName(EResourceType type)
     {

@@ -32,6 +32,7 @@ namespace LostPeterEngine
     uint32 MaterialManager::ms_nInstanceID = 0;
 
     static const int s_nCountDefaults = 3;
+    static uint32 s_nGroupDefault = FPathManager::PathGroup_Material;
     static String s_aNameDefaults[s_nCountDefaults] = 
     {
         "Default",
@@ -80,6 +81,12 @@ namespace LostPeterEngine
         if (itFind == m_mapMaterialDefaults.end())
             return nullptr;
         return itFind->second;
+    }
+    Material* MaterialManager::GetMaterialDefault(uint32 nGroup, const String& strName)
+    {
+        if (nGroup != s_nGroupDefault)
+            return nullptr;
+        return GetMaterialDefault(strName);
     }
     Material* MaterialManager::GetMaterial_Default()
     {
@@ -132,7 +139,7 @@ namespace LostPeterEngine
         destroyMaterialInstanceDefaults();
         destroyMaterialDefaults();
     }
-    bool MaterialManager::Init(uint nGroup, const String& strNameCfg)
+    bool MaterialManager::Init(uint32 nGroup, const String& strNameCfg)
     {
         Destroy();
 
@@ -173,7 +180,7 @@ namespace LostPeterEngine
         for (int i = 0; i < count; i++)
         {
             String& nameMaterial = s_aNameDefaults[i];
-            Material* pMaterial = loadMaterial(FPathManager::PathGroup_Material, nameMaterial, true);
+            Material* pMaterial = loadMaterial(s_nGroupDefault, nameMaterial, true);
             if (pMaterial == nullptr)
             {
                 F_LogError("*********************** MaterialManager::initMaterialDefaults: Load default material: [%s] failed !", nameMaterial.c_str());
@@ -184,7 +191,7 @@ namespace LostPeterEngine
         }
         return true;
     }
-    Material* MaterialManager::loadMaterial(uint nGroup, const String& strName, bool bIsFromFile /*= true*/)
+    Material* MaterialManager::loadMaterial(uint32 nGroup, const String& strName, bool bIsFromFile /*= true*/)
     {   
         Material* pMaterial = new Material(nGroup, strName);
         if (!pMaterial->LoadMaterial(bIsFromFile))
@@ -249,7 +256,7 @@ namespace LostPeterEngine
 
         return true;
     }
-    Material* MaterialManager::LoadMaterial(uint nGroup, const String& strName)
+    Material* MaterialManager::LoadMaterial(uint32 nGroup, const String& strName)
     {
         if (m_pMaterialSerializer == nullptr)
             return nullptr;
@@ -263,7 +270,8 @@ namespace LostPeterEngine
                 F_LogError("*********************** MaterialManager::LoadMaterial: Can not find material info, group: [%u], name: [%s] !", nGroup, strName.c_str());
                 return nullptr;
             }
-            if (!loadMaterial(pMaterialInfo))
+            pMaterial = loadMaterial(pMaterialInfo);
+            if (!pMaterial)
             {
                 return nullptr;
             }
@@ -291,13 +299,17 @@ namespace LostPeterEngine
         return pMaterial;
     }
 
-    bool MaterialManager::HasMaterial(uint nGroup, const String& strName)
+    bool MaterialManager::HasMaterial(uint32 nGroup, const String& strName)
     {
         return GetMaterial(nGroup, strName) != nullptr;
     }
 
-    Material* MaterialManager::GetMaterial(uint nGroup, const String& strName)
+    Material* MaterialManager::GetMaterial(uint32 nGroup, const String& strName)
     {
+        Material* pMaterial = GetMaterialDefault(nGroup, strName);
+        if (pMaterial != nullptr)
+            return pMaterial;
+
         MaterialGroupPtrMap::iterator itFindGroup = m_mapMaterialGroup.find(nGroup);
         if (itFindGroup == m_mapMaterialGroup.end())
         {
@@ -312,7 +324,7 @@ namespace LostPeterEngine
         return itFindMaterial->second;
     }
 
-    bool MaterialManager::AddMaterial(uint nGroup, Material* pMaterial)
+    bool MaterialManager::AddMaterial(uint32 nGroup, Material* pMaterial)
     {
         MaterialGroupPtrMap::iterator itFind = m_mapMaterialGroup.find(nGroup);
         if (itFind == m_mapMaterialGroup.end())
@@ -335,7 +347,7 @@ namespace LostPeterEngine
         return true;
     }
 
-    void MaterialManager::DeleteMaterial(uint nGroup, const String& strName)
+    void MaterialManager::DeleteMaterial(uint32 nGroup, const String& strName)
     {
         MaterialGroupPtrMap::iterator itFind = m_mapMaterialGroup.find(nGroup);
         if (itFind == m_mapMaterialGroup.end())

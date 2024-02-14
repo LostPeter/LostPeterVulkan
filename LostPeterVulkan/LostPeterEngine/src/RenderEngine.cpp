@@ -55,10 +55,8 @@ namespace LostPeterEngine
         
 		, m_nNextMovableTypeFlag(1)
 		, m_bIsInit(false)
-		, m_bFirstInitAfterWndCreated(false)
     {
 		initRendererCfgItems();
-
     }
 
     RenderEngine::~RenderEngine()
@@ -173,7 +171,6 @@ namespace LostPeterEngine
 		}
 		m_pRenderWindowAuto = nullptr;
 		F_DELETE(m_pRenderQueueManager)
-		m_bFirstInitAfterWndCreated = false;
 		m_mapRenderer.clear();
 
         m_bIsInit = false;
@@ -187,14 +184,14 @@ namespace LostPeterEngine
 			ConfigItemMap::iterator itFind = m_mapRendererCfgItem.find(nameItem);
 			if (itFind == m_mapRendererCfgItem.end())
 			{
-				F_LogError("RenderEngine::Init: 1> Can not find renderer config item: [%s] !", nameItem.c_str());
+				F_LogError("*********************** RenderEngine::Init: 1> Can not find renderer config item: [%s] !", nameItem.c_str());
 				return false;
 			}
 			String strRendererName(itFind->second.strCurValue);
 			m_pRendererCurrent = GetRendererByName(strRendererName);
 			if (!m_pRendererCurrent)
 			{
-				F_LogError("RenderEngine::Init: 1> Can not find renderer: [%s] !", strRendererName.c_str());
+				F_LogError("*********************** RenderEngine::Init: 1> Can not find renderer: [%s] !", strRendererName.c_str());
 				return false;
 			}
 			F_LogInfo("RenderEngine::Init: 1> Get renderer: [%s] success !", strRendererName.c_str());
@@ -210,8 +207,73 @@ namespace LostPeterEngine
 			m_pRenderWindowAuto = m_pRendererCurrent->Init(bAutoCreateWindow);
 		}
 
+		//4> Init managers
+		{
+			if (!initRenderPipelineManager())
+			{
+				F_LogError("*********************** RenderEngine::Init: 4> Init RenderPipelineManager failed !");
+				return false;
+			}
+			if (!initSceneManager())
+			{
+				F_LogError("*********************** RenderEngine::Init: 4> Init SceneManager failed !");
+				return false;
+			}
+			if (!initRenderQueueManager())
+			{
+				F_LogError("*********************** RenderEngine::Init: 4> Init RenderQueueManager failed !");
+				return false;
+			}
+			if (!initMaterialManager())
+			{
+				F_LogError("*********************** RenderEngine::Init: 4> Init MaterialManager failed !");
+				return false;
+			}
+		}
+
         return true;
     }
+		bool RenderEngine::initRenderPipelineManager()
+		{
+			m_pRenderPipeLineManager = new RenderPipelineManager();
+			const String& nameItem = E_GetEngineConfigTypeName(E_EngineConfig_Render_PipelineName);
+			ConfigItemMap::iterator itFind = m_mapRendererCfgItem.find(nameItem);
+			if (itFind == m_mapRendererCfgItem.end())
+			{
+				F_LogError("*********************** RenderEngine::initRenderPipelineManager: Can not find renderer config item: [%s] !", nameItem.c_str());
+				return false;
+			}
+			const String& strNamePipeline = itFind->second.strCurValue;
+			if (!m_pRenderPipeLineManager->Init(strNamePipeline))
+			{
+				F_LogError("*********************** RenderEngine::initRenderPipelineManager: Failed to init pipeline manager, pipeline Name: [%s] !", strNamePipeline.c_str());
+            	return false;
+			}
+			return true;
+		}
+		bool RenderEngine::initSceneManager()
+		{
+			m_pSceneManagerEnumerator = new SceneManagerEnumerator();
+			return true;
+		}
+		bool RenderEngine::initRenderQueueManager()
+		{
+			m_pRenderQueueManager = new RenderQueueManager();
+			return true;
+		}
+		bool RenderEngine::initMaterialManager()
+		{
+			m_pMaterialDataManager = new MaterialDataManager();
+			m_pMaterialManager = new MaterialManager();
+			uint32 nGroup = GetCfgGroup(E_EngineConfig_Render_MaterialGroup);
+        	const String& strNameCfg = GetCfgConfigName(E_EngineConfig_Render_MaterialConfigName);
+			if (!m_pMaterialManager->Init(nGroup, strNameCfg))
+			{
+				F_LogError("*********************** RenderEngine::initMaterialManager: Failed to init material manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+            	return false;
+			}
+			return true;
+		}
 
     bool RenderEngine::SetRendererCurrent(Renderer* pRenderer)
 	{
@@ -395,9 +457,6 @@ namespace LostPeterEngine
 			return nullptr;
 		}
 		
-		//firstInitAfterWndCreated();
-		//pRet->SetPrimary();
-
 		return pRenderWindow;
 	}
 
@@ -464,16 +523,6 @@ namespace LostPeterEngine
             
         }
     }
-
-    void RenderEngine::firstInitAfterWndCreated()
-	{	
-		if (!m_bFirstInitAfterWndCreated)
-		{
-			//m_pMaterialManager->InitDefaultMaterials();
-
-			m_bFirstInitAfterWndCreated = true;
-		}
-	}
 
 	uint32 RenderEngine::allocateNextMovableTypeFlag()
 	{

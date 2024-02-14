@@ -104,10 +104,10 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        bool Init(uint32 nGroup, const String& strNameCfg);
 
     public:
-        Texture* LoadTexture(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+        Texture* LoadTexture(uint32 nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
         void UnloadTexture(Texture* pTexture);
 
         bool HasTexture(const String& strName);

@@ -17,7 +17,7 @@
 namespace LostPeterEngine
 {
     class engineExport RenderPipelineManager : public FSingleton<RenderPipelineManager>
-                                           , public Base
+                                             , public Base
     {
     public:
         RenderPipelineManager();
@@ -26,7 +26,6 @@ namespace LostPeterEngine
     public:
     protected:
 		RenderPipeline* m_pPipeLineCurrent;
-
 		RenderPipelinePtrMap m_mapRenderPipeLine;
 
     public:
@@ -39,10 +38,9 @@ namespace LostPeterEngine
 	public:
         void Destroy();
 		bool Init(const String& strPipeLineName);
-		
-		
+        
+	public:
 		bool RenderOneFrame(RenderFrameEvent& event);
-
 		bool ChangePipeLineTo(FRenderPipelineType eRenderPipeline);
     };
 

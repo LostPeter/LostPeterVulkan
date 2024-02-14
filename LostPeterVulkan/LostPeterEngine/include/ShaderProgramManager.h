@@ -39,7 +39,7 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        bool Init(uint32 nGroup, const String& strNameCfg);
 
         ShaderProgramFactory* GetShaderProgramFactory(const String& strShaderLanguage);
         void AddShaderProgramFactory(ShaderProgramFactory* pShaderProgramFactory);
@@ -47,7 +47,7 @@ namespace LostPeterEngine
         void RemoveShaderProgramFactoryAll();
 
     public:
-        ShaderProgram* LoadShaderProgram(uint nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+        ShaderProgram* LoadShaderProgram(uint32 nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
         void UnloadShaderProgram(ShaderProgram* pShaderProgram);
 
         bool HasShaderProgram(const String& strName);

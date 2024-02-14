@@ -49,7 +49,7 @@ namespace LostPeterEngine
         ResourceManager::Destroy();
     }
 
-    bool ShaderProgramManager::Init(uint nGroup, const String& strNameCfg)
+    bool ShaderProgramManager::Init(uint32 nGroup, const String& strNameCfg)
     {
         //1> ShaderProgram Cfg Path 
         String strPathCfgShaderProgram = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
@@ -105,7 +105,7 @@ namespace LostPeterEngine
     }
 
 
-    ShaderProgram* ShaderProgramManager::LoadShaderProgram(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
+    ShaderProgram* ShaderProgramManager::LoadShaderProgram(uint32 nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pShaderProgramSerializer == nullptr)
             return nullptr;
