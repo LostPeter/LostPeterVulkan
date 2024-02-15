@@ -20,7 +20,8 @@ namespace LostPeterPluginRendererVulkan
     {
     public:
         static VkPrimitiveTopology Transform2VkPrimitiveTopology(FRenderPrimitiveType eRenderPrimitive);
-        static VkCullModeFlags Transform2VkCullModeFlags(FCullingType eCulling);
+        static VkFrontFace Transform2VkFrontFace(FFrontFaceType eFrontFace);
+        static VkCullModeFlagBits Transform2VkCullModeFlagBits(FCullingType eCulling);
         static VkCompareOp Transform2VkCompareOp(FCompareFuncType eCompareFunc);
         static VkPolygonMode Transform2VkPolygonMode(FPolygonType ePolygon);
         static VkBlendOp Transform2VkBlendOp(FSceneBlendingOPType eSceneBlendingOP);
@@ -43,6 +44,19 @@ namespace LostPeterPluginRendererVulkan
         static VkFormat Transform2VkFormat(FPixelFormatType ePixelFormat);
         static VkComponentMapping Transform2VkComponentMapping(FPixelFormatType ePixelFormat);
         static VkImageAspectFlags Transform2VkImageAspectFlags(FPixelFormatType ePixelFormat, const bool bPreferDepthOverStencil = false);
+
+        static VkStencilOpState Transform2VkStencilOpState(FCompareFuncType eStencilCompareFunc,
+                                                           uint32 nStencilRefValue,
+                                                           uint32 nStencilCompareMask,
+                                                           uint32 nStencilWriteMask,
+                                                           FStencilOPType eStencilFailOP,
+                                                           FStencilOPType eStencilDepthFailOP,
+                                                           FStencilOPType eStencilPassOP);
+
+        static VkColorComponentFlags Transform2VkColorComponentFlags(bool m_bColorRWriteEnabled,
+                                                                     bool m_bColorGWriteEnabled,
+                                                                     bool m_bColorBWriteEnabled,
+                                                                     bool m_bColorAWriteEnabled);
     };
 
 }; //LostPeterPluginRendererVulkan

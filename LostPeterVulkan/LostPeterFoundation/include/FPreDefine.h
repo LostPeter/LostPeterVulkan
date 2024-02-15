@@ -1155,33 +1155,45 @@ namespace LostPeterFoundation
 
     enum FVertexElementSemanticType
 	{
-		F_VertexElementSemantic_Position = 0,		        //0: Position
-		F_VertexElementSemantic_BlendWeights,			    //1: BlendWeights
-		F_VertexElementSemantic_BlendIndices,			    //2: BlendIndices
-		F_VertexElementSemantic_Normal,				        //3: Normal
-		F_VertexElementSemantic_Diffuse,				    //4: Diffuse
-		F_VertexElementSemantic_Specular,				    //5: Specular
-		F_VertexElementSemantic_TextureCoordinates,	        //6: TextureCoordinates
-		F_VertexElementSemantic_BiNormal,				    //7: BiNormal
-		F_VertexElementSemantic_Tangent,				    //8: Tangent
+		F_VertexElementSemantic_Position = 0,		    //0: Position
+		F_VertexElementSemantic_BlendWeights,			//1: BlendWeights
+		F_VertexElementSemantic_BlendIndices,			//2: BlendIndices
+		F_VertexElementSemantic_Normal,				    //3: Normal
+		F_VertexElementSemantic_Diffuse,			    //4: Diffuse
+		F_VertexElementSemantic_Specular,				//5: Specular
+		F_VertexElementSemantic_TextureCoordinates,	    //6: TextureCoordinates
+		F_VertexElementSemantic_BiNormal,				//7: BiNormal
+		F_VertexElementSemantic_Tangent,			    //8: Tangent
 	};			
 
 
 	enum FVertexElementDataType
 	{
-		F_VertexElementData_Float1 = 0,				        //0:  Float1
-		F_VertexElementData_Float2,					        //1:  Float2
-		F_VertexElementData_Float3,					        //2:  Float3
-		F_VertexElementData_Float4,					        //3:  Float4
-		F_VertexElementData_Color,					        //4:  Color
-		F_VertexElementData_Short1,					        //5:  Short1
-		F_VertexElementData_Short2,					        //6:  Short2
-		F_VertexElementData_Short3,					        //7:  Short3
-		F_VertexElementData_Short4,					        //8:  Short4
-		F_VertexElementData_UByte4,					        //9:  UByte4
-		F_VertexElementData_ColorARGB,			            //10: ColorARGB, D3D
-		F_VertexElementData_ColorABGR		                //11: ColorABGR, OpenGL
+		F_VertexElementData_Float1 = 0,				    //0:  Float1
+		F_VertexElementData_Float2,					    //1:  Float2
+		F_VertexElementData_Float3,					    //2:  Float3
+		F_VertexElementData_Float4,					    //3:  Float4
+		F_VertexElementData_Color,					    //4:  Color
+		F_VertexElementData_Short1,					    //5:  Short1
+		F_VertexElementData_Short2,					    //6:  Short2
+		F_VertexElementData_Short3,					    //7:  Short3
+		F_VertexElementData_Short4,					    //8:  Short4
+		F_VertexElementData_UByte4,					    //9:  UByte4
+		F_VertexElementData_ColorARGB,			        //10: ColorARGB, D3D
+		F_VertexElementData_ColorABGR		            //11: ColorABGR, OpenGL
 	};
+
+
+    enum FFrontFaceType
+    {
+        F_FrontFace_ClockWise = 0,                      //0: ClockWise
+        F_FrontFace_CounterClockWise,                   //1: CounterClockWise
+
+        F_FrontFace_Count,
+    };
+    foundationExport const String& F_GetFrontFaceTypeName(FFrontFaceType type);
+    foundationExport const String& F_GetFrontFaceTypeName(int type);
+    foundationExport FFrontFaceType F_ParseFrontFaceType(const String& strName);
 
 
     enum FCullingType
@@ -1244,22 +1256,7 @@ namespace LostPeterFoundation
     foundationExport const String& F_GetCompareFuncTypeName(FCompareFuncType type);
     foundationExport const String& F_GetCompareFuncTypeName(int type);
     foundationExport FCompareFuncType F_ParseCompareFuncType(const String& strName);
-
-
-    enum FSceneBlendingType
-	{
-		F_SceneBlending_Alpha = 0,		                //0: Alpha
-		F_SceneBlending_Color,				            //1: Color
-		F_SceneBlending_Add,					        //2: Add
-		F_SceneBlending_Modulate,				        //3: Modulate
-		F_SceneBlending_Replace,				        //4: Replace
-
-        F_SceneBlending_Count,
-	};
-    foundationExport const String& F_GetSceneBlendingTypeName(FSceneBlendingType type);
-    foundationExport const String& F_GetSceneBlendingTypeName(int type);
-    foundationExport FSceneBlendingType F_ParseSceneBlendingType(const String& strName);
-
+    
 
     enum FSceneBlendingOPType
 	{

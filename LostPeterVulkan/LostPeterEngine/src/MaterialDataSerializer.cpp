@@ -28,14 +28,19 @@ namespace LostPeterEngine
         #define	MATERIAL_DATA_TAG_PASS                                                  "pass"
             #define	MATERIAL_DATA_TAG_STATE_COMMON							                "state_common"
                 #define	MATERIAL_DATA_TAG_STATE_COMMON_POLYGON_TYPE				                "polygon_type"					//1
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_CULLING_TYPE				                "culling_type"					//2
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING				            "point_setting"					//3
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING				            "depth_setting"					//4
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING			                "stencil_setting"				//5
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST			                    "scissor_test"					//6
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST			                    "alpha_test"					//7
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING	                "scene_blending_setting"		//8
-                #define	MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE				                "color_write"					//9
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_FRONT_FACE_TYPE				            "front_face_type"			    //2
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_CULLING_TYPE				                "culling_type"					//3
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING				            "point_setting"					//4
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING				            "depth_setting"					//5
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING			                "stencil_setting"				//6
+                    #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING_FROENT			        "front"				
+                    #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING_BACK			            "back"				
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST			                    "scissor_test"					//7
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST			                    "alpha_test"					//8
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING	                "scene_blending_setting"		//9
+                    #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING_COLOR			    "color"				
+                    #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING_ALPHA			    "alpha"		
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE				                "color_write"					//10
                 
             #define	MATERIAL_DATA_TAG_STATE_LIGHTING							            "state_lighting"
                 #define	MATERIAL_DATA_TAG_STATE_LIGHTING_LIGHTING_SETTING			            "light_setting"					//1
@@ -63,12 +68,11 @@ namespace LostPeterEngine
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_TYPE				        "type"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE			            "src"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_DST				            "dst"
-#define	MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE2			            "src2"
-#define	MATERIAL_DATA_TAG_ATTRIBUTE_DST2				        "dst2"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE			            "enable"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC			    "compare_func"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_VALUE			            "value"
-#define	MATERIAL_DATA_TAG_ATTRIBUTE_MASK				        "mask"
+#define	MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_MASK				"compare_mask"
+#define	MATERIAL_DATA_TAG_ATTRIBUTE_WRITE_MASK				    "write_mask"
 #define MATERIAL_DATA_TAG_ATTRIBUTE_FLAG				        "flag"
 #define MATERIAL_DATA_TAG_ATTRIBUTE_LAYOUT				        "layout"
 
@@ -94,10 +98,7 @@ namespace LostPeterEngine
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_TOP                "top"
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_RIGHT              "right"
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_BOTTOM             "bottom"
-    #define MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_TYPE			    "scene_blending_type"
     #define MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP_TYPE		    "scene_blending_op_type"
-    #define MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_SEPERATE_ENABLE  "seperate_enable"
-    #define MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP2_TYPE		    "scene_blending_op2_type"
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_R_ENABLE	                "color_r_enable"
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_G_ENABLE	                "color_g_enable"
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_B_ENABLE	                "color_b_enable"
@@ -152,7 +153,16 @@ namespace LostPeterEngine
                         pSC->m_ePolygon = F_ParsePolygonType(pAttr->GetValue());
                     }
                 }
-                //2> culling_type
+                //2> front_face_type
+                else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_FRONT_FACE_TYPE)
+                {
+                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_TYPE);
+                    if (pAttr != nullptr)
+                    {
+                        pSC->m_eFrontFace = F_ParseFrontFaceType(pAttr->GetValue());
+                    }
+                }
+                //3> culling_type
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_CULLING_TYPE)
                 {
                     pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_TYPE);
@@ -161,7 +171,7 @@ namespace LostPeterEngine
                         pSC->m_eCulling = F_ParseCullingType(pAttr->GetValue());
                     }
                 }
-                //3> point_setting
+                //4> point_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING)
                 {
                     pElemItem->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SIZE, pSC->m_fPointSize);
@@ -173,7 +183,7 @@ namespace LostPeterEngine
                     pElemItem->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MIN_SIZE, pSC->m_fPointMinSize);
                     pElemItem->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MAX_SIZE, pSC->m_fPointMaxSize);
                 }
-                //4> depth_setting
+                //5> depth_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_TEST_ENABLE, pSC->m_bDepthTestEnabled);
@@ -186,35 +196,77 @@ namespace LostPeterEngine
                     pElemItem->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_CONSTANT, pSC->m_fDepthBiasConstant);
                     pElemItem->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_SLOPE_SCALE, pSC->m_fDepthBiasSlopeScale);
                 }
-                //5> stencil_setting
+                //6> stencil_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->m_bStencilEnabled);
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eStencilCompareFunc = F_ParseCompareFuncType(pAttr->GetValue());
-                    }
-                    pElemItem->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->m_nStencilRefValue);
-                    pElemItem->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_MASK, pSC->m_nStencilMask);
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_FAIL_OP);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eStencilFailOP = F_ParseStencilOPType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_DEPTH_FAIL_OP);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eStencilDepthFailOP = F_ParseStencilOPType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_PASS_OP);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eStencilPassOP = F_ParseStencilOPType(pAttr->GetValue());
-                    }
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_TWO_SIDED_ENABLE, pSC->m_bStencilTwoSidedEnabled);
+
+                    if (pSC->m_bStencilEnabled)
+                    {
+                        //Front
+                        FXMLElement* pElemItem_Front = pElemItem->FindElementChild(MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING_FROENT);
+                        F_Assert(pElemItem_Front && "s_parserXML_StateCommon:: stencil_setting front !")
+                        {
+                            pAttr = pElemItem_Front->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eStencilCompareFunc_Front = F_ParseCompareFuncType(pAttr->GetValue());
+                            }
+                            pElemItem_Front->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->m_nStencilRefValue_Front);
+                            pElemItem_Front->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_MASK, pSC->m_nStencilCompareMask_Front);
+                            pElemItem_Front->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_WRITE_MASK, pSC->m_nStencilWriteMask_Front);
+                            pAttr = pElemItem_Front->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_FAIL_OP);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eStencilFailOP_Front = F_ParseStencilOPType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem_Front->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_DEPTH_FAIL_OP);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eStencilDepthFailOP_Front = F_ParseStencilOPType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem_Front->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_PASS_OP);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eStencilPassOP_Front = F_ParseStencilOPType(pAttr->GetValue());
+                            }
+                        }
+
+                        if (pSC->m_bStencilTwoSidedEnabled)
+                        {
+                            //Back
+                            FXMLElement* pElemItem_Back = pElemItem->FindElementChild(MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING_BACK);
+                            F_Assert(pElemItem_Back && "s_parserXML_StateCommon:: stencil_setting front !")
+                            {
+                                pAttr = pElemItem_Back->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
+                                if (pAttr != nullptr)
+                                {
+                                    pSC->m_eStencilCompareFunc_Back = F_ParseCompareFuncType(pAttr->GetValue());
+                                }
+                                pElemItem_Back->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->m_nStencilRefValue_Back);
+                                pElemItem_Front->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_MASK, pSC->m_nStencilCompareMask_Back);
+                                pElemItem_Front->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_WRITE_MASK, pSC->m_nStencilWriteMask_Back);
+                                pAttr = pElemItem_Back->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_FAIL_OP);
+                                if (pAttr != nullptr)
+                                {
+                                    pSC->m_eStencilFailOP_Back = F_ParseStencilOPType(pAttr->GetValue());
+                                }
+                                pAttr = pElemItem_Back->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_DEPTH_FAIL_OP);
+                                if (pAttr != nullptr)
+                                {
+                                    pSC->m_eStencilDepthFailOP_Back = F_ParseStencilOPType(pAttr->GetValue());
+                                }
+                                pAttr = pElemItem_Back->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_PASS_OP);
+                                if (pAttr != nullptr)
+                                {
+                                    pSC->m_eStencilPassOP_Back = F_ParseStencilOPType(pAttr->GetValue());
+                                }
+                            }
+                        }
+                    }
                 }
-                //6> scissor_test
+                //7> scissor_test
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->m_bScissorTestEnabled);
@@ -223,7 +275,7 @@ namespace LostPeterEngine
                     pElemItem->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_RIGHT, pSC->m_nScissorTest_Right);
                     pElemItem->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_BOTTOM, pSC->m_nScissorTest_Bottom);
                 }
-                //7> alpha_test
+                //8> alpha_test
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->m_bAlphaTestEnabled);
@@ -234,49 +286,58 @@ namespace LostPeterEngine
                     }
                     pElemItem->ParserAttribute_UInt8(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->m_nAlphaRejectValue);
                 }
-                //8> scene_blending_setting
+                //9> scene_blending_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->m_bSceneBlendingEnabled);
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_TYPE);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlending = F_ParseSceneBlendingType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP_TYPE);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlendingOP = F_ParseSceneBlendingOPType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlendingFactorSrc = F_ParseSceneBlendingFactorType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlendingFactorDst = F_ParseSceneBlendingFactorType(pAttr->GetValue());
-                    }
 
-                    pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_SEPERATE_ENABLE, pSC->m_bSceneBlendingSeperateEnabled);
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP2_TYPE);
-                    if (pAttr != nullptr)
+                    if (pSC->m_bSceneBlendingEnabled)
                     {
-                        pSC->m_eSceneBlendingOP2 = F_ParseSceneBlendingOPType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE2);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlendingFactorSrc2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
-                    }
-                    pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST2);
-                    if (pAttr != nullptr)
-                    {
-                        pSC->m_eSceneBlendingFactorDst2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                        //Color
+                        {
+                            FXMLElement* pElemItem_Color = pElemItem->FindElementChild(MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING_COLOR);
+                            F_Assert(pElemItem_Color && "s_parserXML_StateCommon:: scene_blending_setting color !")
+                            
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP_TYPE);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingOP_Color = F_ParseSceneBlendingOPType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingFactorSrc_Color = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingFactorDst_Color = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                            }
+                        }
+                        //Alpha
+                        {
+                            FXMLElement* pElemItem_Alpha = pElemItem->FindElementChild(MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING_ALPHA);
+                            F_Assert(pElemItem_Alpha && "s_parserXML_StateCommon:: scene_blending_setting alpha !")
+
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP_TYPE);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingOP_Alpha = F_ParseSceneBlendingOPType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingFactorSrc_Alpha = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                            }
+                            pAttr = pElemItem->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST);
+                            if (pAttr != nullptr)
+                            {
+                                pSC->m_eSceneBlendingFactorDst_Alpha = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                            }
+                        }
                     }
                 }
-                //9> color_write
+                //10> color_write
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE)
                 {
                     pElemItem->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_R_ENABLE, pSC->m_bColorRWriteEnabled);

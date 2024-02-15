@@ -73,7 +73,8 @@ namespace LostPeterPluginRendererVulkan
     }
     VulkanShaderModule* VulkanShaderModuleManager::CreateShaderModule(const String& nameShaderModule,
                                                                       FShaderType eShader, 
-                                                                      const String& pathFile)
+                                                                      const String& pathFile,
+                                                                      const String& nameEntry /*= "main"*/)
     {
         VulkanShaderModule* pShaderModule = GetShaderModule(nameShaderModule);
         if (pShaderModule != nullptr)
@@ -84,7 +85,8 @@ namespace LostPeterPluginRendererVulkan
 
         pShaderModule = new VulkanShaderModule(nameShaderModule, this->m_pDevice);
         if (!pShaderModule->Init(eShader,
-                                 pathFile))
+                                 pathFile,
+                                 nameEntry))
         {
             F_LogError("*********************** VulkanShaderModuleManager::CreateShaderModule: Failed to init VulkanShaderModule, name: [%s] !", nameShaderModule.c_str());
             F_DELETE(pShaderModule)

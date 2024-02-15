@@ -25,18 +25,29 @@ namespace LostPeterPluginRendererVulkan
         case F_RenderPrimitive_TriangleFan:   return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
         }
         F_Assert(false && "VulkanConverter::Transform2VkPrimitiveTopology: Wrong FRenderPrimitiveType type !")
-        return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST; 
+        return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; 
     }
 
-    VkCullModeFlags VulkanConverter::Transform2VkCullModeFlags(FCullingType eCulling)
+    VkFrontFace VulkanConverter::Transform2VkFrontFace(FFrontFaceType eFrontFace)
+    {
+        switch ((int32)eFrontFace)
+        {
+        case F_FrontFace_ClockWise:        return VK_FRONT_FACE_CLOCKWISE;
+        case F_FrontFace_CounterClockWise: return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        }
+        F_Assert(false && "VulkanConverter::Transform2VkFrontFace: Wrong FFrontFaceType type !")
+        return VK_FRONT_FACE_CLOCKWISE;
+    }
+
+    VkCullModeFlagBits VulkanConverter::Transform2VkCullModeFlagBits(FCullingType eCulling)
     {
         switch ((int32)eCulling)
         {
         case F_Culling_None:             return VK_CULL_MODE_NONE;
-        case F_Culling_ClockWise:        return VK_CULL_MODE_BACK_BIT;
-        case F_Culling_CounterClockWise: return VK_CULL_MODE_FRONT_BIT;
+        case F_Culling_ClockWise:        return VK_CULL_MODE_FRONT_BIT;
+        case F_Culling_CounterClockWise: return VK_CULL_MODE_BACK_BIT;
         }
-        F_Assert(false && "VulkanConverter::Transform2VkCullModeFlags: Wrong FCullingType type !")
+        F_Assert(false && "VulkanConverter::Transform2VkCullModeFlagBits: Wrong FCullingType type !")
         return VK_CULL_MODE_BACK_BIT;
     }
 
@@ -583,6 +594,42 @@ namespace LostPeterPluginRendererVulkan
             retVal = VK_IMAGE_ASPECT_COLOR_BIT;
         }
         return retVal;
+    }
+
+    VkStencilOpState VulkanConverter::Transform2VkStencilOpState(FCompareFuncType eStencilCompareFunc,
+                                                                 uint32 nStencilRefValue,
+                                                                 uint32 nStencilCompareMask,
+                                                                 uint32 nStencilWriteMask,
+                                                                 FStencilOPType eStencilFailOP,
+                                                                 FStencilOPType eStencilDepthFailOP,
+                                                                 FStencilOPType eStencilPassOP)
+    {
+        VkStencilOpState stencilOpState = {};
+        stencilOpState.failOp = Transform2VkStencilOp(eStencilFailOP);
+        stencilOpState.passOp = Transform2VkStencilOp(eStencilPassOP);
+        stencilOpState.depthFailOp = Transform2VkStencilOp(eStencilDepthFailOP);
+        stencilOpState.compareOp = Transform2VkCompareOp(eStencilCompareFunc);
+        stencilOpState.compareMask = nStencilCompareMask;
+        stencilOpState.writeMask = nStencilWriteMask;
+        stencilOpState.reference = nStencilRefValue;
+        return stencilOpState;
+    }
+
+    VkColorComponentFlags VulkanConverter::Transform2VkColorComponentFlags(bool m_bColorRWriteEnabled,
+                                                                           bool m_bColorGWriteEnabled,
+                                                                           bool m_bColorBWriteEnabled,
+                                                                           bool m_bColorAWriteEnabled)
+    {
+        VkColorComponentFlags colorComponentFlags = 0;
+        if (m_bColorRWriteEnabled)
+            colorComponentFlags |= VK_COLOR_COMPONENT_R_BIT;
+        if (m_bColorGWriteEnabled)
+            colorComponentFlags |= VK_COLOR_COMPONENT_G_BIT;
+        if (m_bColorBWriteEnabled)
+            colorComponentFlags |= VK_COLOR_COMPONENT_B_BIT;
+        if (m_bColorAWriteEnabled)
+            colorComponentFlags |= VK_COLOR_COMPONENT_A_BIT;
+        return colorComponentFlags;
     }
 
 }; //LostPeterPluginRendererVulkan

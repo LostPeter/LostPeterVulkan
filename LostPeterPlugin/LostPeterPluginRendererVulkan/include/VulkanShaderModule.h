@@ -31,13 +31,20 @@ namespace LostPeterPluginRendererVulkan
         VulkanDevice* m_pDevice;
         VkShaderModule m_vkShaderModule;
 
+        FShaderType m_eShader;
+        String m_strPathFile;
+        String m_strNameEntry;
+        VkPipelineShaderStageCreateInfo m_vkipelineShaderStageCreateInfo;
+
     public:
         F_FORCEINLINE VkShaderModule GetVkShaderModule() const { return m_vkShaderModule; }
+        F_FORCEINLINE const VkPipelineShaderStageCreateInfo& GetVkPipelineShaderStageCreateInfo() const { return m_vkipelineShaderStageCreateInfo; }
 
     public:
         void Destroy();
         bool Init(FShaderType eShader, 
-                  const String& pathFile);
+                  const String& pathFile,
+                  const String& nameEntry = "main");
 
     };
 

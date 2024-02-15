@@ -11,6 +11,7 @@
 
 #include "../include/VulkanShaderModule.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -18,6 +19,9 @@ namespace LostPeterPluginRendererVulkan
         : Base(nameShaderModule)
         , m_pDevice(pDevice)
         , m_vkShaderModule(VK_NULL_HANDLE)
+        , m_eShader(F_Shader_Vertex)
+        , m_strPathFile("")
+        , m_strNameEntry("main")
     {
         F_Assert(m_pDevice && "VulkanShaderModule::VulkanShaderModule")
     }
@@ -37,7 +41,8 @@ namespace LostPeterPluginRendererVulkan
     }
 
     bool VulkanShaderModule::Init(FShaderType eShader, 
-                                  const String& pathFile)
+                                  const String& pathFile,
+                                  const String& nameEntry /*= "main"*/)
     {
         Destroy();
         if (!m_pDevice->CreateVkShaderModule(eShader,
@@ -48,6 +53,16 @@ namespace LostPeterPluginRendererVulkan
             return false;
         }
 
+        m_eShader = eShader;
+        m_strPathFile = pathFile;
+        m_strNameEntry = nameEntry;
+
+        m_vkipelineShaderStageCreateInfo = {};
+        m_vkipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        m_vkipelineShaderStageCreateInfo.stage = VulkanConverter::Transform2VkShaderStageFlagBits(eShader);
+        m_vkipelineShaderStageCreateInfo.module = this->m_vkShaderModule;
+        m_vkipelineShaderStageCreateInfo.pName = nameEntry.c_str();
+        
         return true;
     }
 

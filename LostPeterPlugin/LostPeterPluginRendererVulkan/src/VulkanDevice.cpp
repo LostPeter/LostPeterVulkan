@@ -25,6 +25,9 @@
 #include "../include/VulkanDescriptorSetLayoutManager.h"
 #include "../include/VulkanDescriptorSetManager.h"
 #include "../include/VulkanCommandPoolManager.h"
+#include "../include/VulkanPipelineCache.h"
+#include "../include/VulkanPipelineLayoutManager.h"
+#include "../include/VulkanPipelineManager.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -50,6 +53,9 @@ namespace LostPeterPluginRendererVulkan
         , m_pDescriptorSetLayoutManager(nullptr)
         , m_pDescriptorSetManager(nullptr)
         , m_pCommandPoolManager(nullptr)
+        , m_pPipelineCache(nullptr)
+        , m_pPipelineLayoutManager(nullptr)
+        , m_pPipelineManager(nullptr)
         , m_vkDescriptorPool(VK_NULL_HANDLE)
         , m_vkDescriptorPool_ImGUI(VK_NULL_HANDLE)
     {
@@ -76,6 +82,8 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
+        F_DELETE(m_pPipelineManager)
+        F_DELETE(m_pPipelineLayoutManager)
         F_DELETE(m_pCommandPoolManager)
         F_DELETE(m_pDescriptorSetManager)
         F_DELETE(m_pDescriptorSetLayoutManager)
@@ -85,6 +93,7 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pFenceManager)
         F_DELETE(m_pDeviceMemoryManager)
+        F_DELETE(m_pPipelineCache)
 
         DestroyVkCommandPool(this->m_vkCommandPoolCompute);
         this->m_vkCommandPoolCompute = VK_NULL_HANDLE;
@@ -124,6 +133,7 @@ namespace LostPeterPluginRendererVulkan
         m_pDeviceMemoryManager->Init(this);
 
         //4> Vulkan Manager
+        m_pPipelineCache = new VulkanPipelineCache(this);
         m_pFenceManager = new VulkanFenceManager(this);
         m_pRenderPassManager = new VulkanRenderPassManager(this);
         m_pFrameBufferManager = new VulkanFrameBufferManager(this);
@@ -132,6 +142,8 @@ namespace LostPeterPluginRendererVulkan
         m_pDescriptorSetLayoutManager = new VulkanDescriptorSetLayoutManager(this);
         m_pDescriptorSetManager = new VulkanDescriptorSetManager(this);
         m_pCommandPoolManager = new VulkanCommandPoolManager(this);
+        m_pPipelineLayoutManager = new VulkanPipelineLayoutManager(this);
+        m_pPipelineManager = new VulkanPipelineManager(this);
 
         //5> 
 

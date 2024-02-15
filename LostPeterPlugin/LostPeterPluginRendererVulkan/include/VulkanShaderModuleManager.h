@@ -48,7 +48,8 @@ namespace LostPeterPluginRendererVulkan
         bool AddShaderModule(VulkanShaderModule* pShaderModule);
         VulkanShaderModule* CreateShaderModule(const String& nameShaderModule,
                                                FShaderType eShader, 
-                                               const String& pathFile);
+                                               const String& pathFile,
+                                               const String& nameEntry = "main");
 
         void DeleteShaderModule(const String& strName);
         void DeleteShaderModule(VulkanShaderModule* pShaderModule);

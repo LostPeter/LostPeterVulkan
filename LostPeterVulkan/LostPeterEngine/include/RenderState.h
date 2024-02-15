@@ -25,6 +25,7 @@ namespace LostPeterEngine
 
 	public:
 		FPolygonType m_ePolygon;
+		FFrontFaceType m_eFrontFace;
 		FCullingType m_eCulling;
 
 		float m_fPointSize;
@@ -43,14 +44,22 @@ namespace LostPeterEngine
 		float m_fDepthBiasSlopeScale;
 
 		bool m_bStencilEnabled;
-		FCompareFuncType m_eStencilCompareFunc;
-		uint32 m_nStencilRefValue;
-		uint32 m_nStencilMask;
-		FStencilOPType m_eStencilFailOP;
-		FStencilOPType m_eStencilDepthFailOP;
-		FStencilOPType m_eStencilPassOP;
 		bool m_bStencilTwoSidedEnabled;
-
+		FCompareFuncType m_eStencilCompareFunc_Front;
+		uint32 m_nStencilRefValue_Front;
+		uint32 m_nStencilCompareMask_Front;
+		uint32 m_nStencilWriteMask_Front;
+		FStencilOPType m_eStencilFailOP_Front;
+		FStencilOPType m_eStencilDepthFailOP_Front;
+		FStencilOPType m_eStencilPassOP_Front;
+		FCompareFuncType m_eStencilCompareFunc_Back;
+		uint32 m_nStencilRefValue_Back;
+		uint32 m_nStencilCompareMask_Back;
+		uint32 m_nStencilWriteMask_Back;
+		FStencilOPType m_eStencilFailOP_Back;
+		FStencilOPType m_eStencilDepthFailOP_Back;
+		FStencilOPType m_eStencilPassOP_Back;
+			
 		bool m_bScissorTestEnabled;
 		uint32 m_nScissorTest_Left;
 		uint32 m_nScissorTest_Top;
@@ -62,14 +71,12 @@ namespace LostPeterEngine
 		uint8 m_nAlphaRejectValue;
 		
 		bool m_bSceneBlendingEnabled;
-		FSceneBlendingType m_eSceneBlending;
-		FSceneBlendingOPType m_eSceneBlendingOP;
-		FSceneBlendingFactorType m_eSceneBlendingFactorSrc;
-		FSceneBlendingFactorType m_eSceneBlendingFactorDst;
-		bool m_bSceneBlendingSeperateEnabled;
-		FSceneBlendingOPType m_eSceneBlendingOP2;
-		FSceneBlendingFactorType m_eSceneBlendingFactorSrc2;
-		FSceneBlendingFactorType m_eSceneBlendingFactorDst2;
+		FSceneBlendingOPType m_eSceneBlendingOP_Color;
+		FSceneBlendingFactorType m_eSceneBlendingFactorSrc_Color;
+		FSceneBlendingFactorType m_eSceneBlendingFactorDst_Color;
+		FSceneBlendingOPType m_eSceneBlendingOP_Alpha;
+		FSceneBlendingFactorType m_eSceneBlendingFactorSrc_Alpha;
+		FSceneBlendingFactorType m_eSceneBlendingFactorDst_Alpha;
 
 		bool m_bColorRWriteEnabled;
 		bool m_bColorGWriteEnabled;
@@ -275,6 +282,8 @@ namespace LostPeterEngine
 	////RenderStateCommon
 		F_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->m_ePolygon; }
 		F_FORCEINLINE void SetPolygonType(const FPolygonType& ePolygon) { m_pStateCommon->m_ePolygon = ePolygon; }
+		F_FORCEINLINE FFrontFaceType GetFrontFaceType() const { return m_pStateCommon->m_eFrontFace; }
+		F_FORCEINLINE void SetFrontFaceType(const FFrontFaceType& eFrontFace) { m_pStateCommon->m_eFrontFace = eFrontFace; }
 		F_FORCEINLINE FCullingType GetCullingType() const { return m_pStateCommon->m_eCulling; }
 		F_FORCEINLINE void SetCullingType(const FCullingType& eCulling) { m_pStateCommon->m_eCulling = eCulling; }
 
@@ -356,47 +365,106 @@ namespace LostPeterEngine
 
 		F_FORCEINLINE bool GetStencilEnabled() const { return m_pStateCommon->m_bStencilEnabled; }
 		F_FORCEINLINE void SetStencilEnabled(const bool& bEnabled) { m_pStateCommon->m_bStencilEnabled = bEnabled; }
-		F_FORCEINLINE FCompareFuncType GetStencilCompareFunc() const { return m_pStateCommon->m_eStencilCompareFunc; }
-		F_FORCEINLINE void SetStencilCompareFunc(const FCompareFuncType& eStencilCompareFunc) { m_pStateCommon->m_eStencilCompareFunc = eStencilCompareFunc; }
-		F_FORCEINLINE uint32 GetStencilRefValue() const { return m_pStateCommon->m_nStencilRefValue; }
-		F_FORCEINLINE void SetStencilRefValue(const uint32& nStencilRefValue) { m_pStateCommon->m_nStencilRefValue = nStencilRefValue; }
-		F_FORCEINLINE uint32 GetStencilMask() const { return m_pStateCommon->m_nStencilMask; }
-		F_FORCEINLINE void SetStencilMask(const uint32& nStencilMask) { m_pStateCommon->m_nStencilMask = nStencilMask; }
-		F_FORCEINLINE FStencilOPType GetStencilFailOP() const { return m_pStateCommon->m_eStencilFailOP; }
-		F_FORCEINLINE void SetStencilFailOP(const FStencilOPType& eStencilFailOP) { m_pStateCommon->m_eStencilFailOP = eStencilFailOP; }
-		F_FORCEINLINE FStencilOPType GetStencilDepthFailOP() const { return m_pStateCommon->m_eStencilDepthFailOP; }
-		F_FORCEINLINE void SetStencilDepthFailOP(const FStencilOPType& eStencilDepthFailOP) { m_pStateCommon->m_eStencilDepthFailOP = eStencilDepthFailOP; }
-		F_FORCEINLINE FStencilOPType GetStencilPassOP() const { return m_pStateCommon->m_eStencilPassOP; }
-		F_FORCEINLINE void SetStencilPassOP(const FStencilOPType& eStencilPassOP) { m_pStateCommon->m_eStencilPassOP = eStencilPassOP; }
 		F_FORCEINLINE bool GetStencilTwoSidedEnabled() const { return m_pStateCommon->m_bStencilTwoSidedEnabled; }
 		F_FORCEINLINE void SetStencilTwoSidedEnabled(const bool& bEnabled) { m_pStateCommon->m_bStencilTwoSidedEnabled = bEnabled; }
-		F_FORCEINLINE void GetStencilSetting(bool& bEnabled, FCompareFuncType& eType,
-											 uint32& nRefValue, uint32& nMask,
-											 FStencilOPType& eFailOP, FStencilOPType& eDepthFailOP, FStencilOPType& ePassOP,
-										     bool& bTwoSided) const
+		//Front
+		F_FORCEINLINE FCompareFuncType GetStencilCompareFunc_Front() const { return m_pStateCommon->m_eStencilCompareFunc_Front; }
+		F_FORCEINLINE void SetStencilCompareFunc_Front(const FCompareFuncType& eStencilCompareFunc) { m_pStateCommon->m_eStencilCompareFunc_Front = eStencilCompareFunc; }
+		F_FORCEINLINE uint32 GetStencilRefValue_Front() const { return m_pStateCommon->m_nStencilRefValue_Front; }
+		F_FORCEINLINE void SetStencilRefValue_Front(const uint32& nStencilRefValue) { m_pStateCommon->m_nStencilRefValue_Front = nStencilRefValue; }
+		F_FORCEINLINE uint32 GetStencilCompareMask_Front() const { return m_pStateCommon->m_nStencilCompareMask_Front; }
+		F_FORCEINLINE void SetStencilCompareMask_Front(const uint32& nStencilCompareMask) { m_pStateCommon->m_nStencilCompareMask_Front = nStencilCompareMask; }
+		F_FORCEINLINE uint32 GetStencilWriteMask_Front() const { return m_pStateCommon->m_nStencilWriteMask_Front; }
+		F_FORCEINLINE void SetStencilWriteMask_Front(const uint32& nStencilWriteMask) { m_pStateCommon->m_nStencilWriteMask_Front = nStencilWriteMask; }
+		F_FORCEINLINE FStencilOPType GetStencilFailOP_Front() const { return m_pStateCommon->m_eStencilFailOP_Front; }
+		F_FORCEINLINE void SetStencilFailOP_Front(const FStencilOPType& eStencilFailOP) { m_pStateCommon->m_eStencilFailOP_Front = eStencilFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilDepthFailOP_Front() const { return m_pStateCommon->m_eStencilDepthFailOP_Front; }
+		F_FORCEINLINE void SetStencilDepthFailOP_Front(const FStencilOPType& eStencilDepthFailOP) { m_pStateCommon->m_eStencilDepthFailOP_Front = eStencilDepthFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilPassOP_Front() const { return m_pStateCommon->m_eStencilPassOP_Front; }
+		F_FORCEINLINE void SetStencilPassOP_Front(const FStencilOPType& eStencilPassOP) { m_pStateCommon->m_eStencilPassOP_Front = eStencilPassOP; }
+		//Back
+		F_FORCEINLINE FCompareFuncType GetStencilCompareFunc_Back() const { return m_pStateCommon->m_eStencilCompareFunc_Back; }
+		F_FORCEINLINE void SetStencilCompareFunc_Back(const FCompareFuncType& eStencilCompareFunc) { m_pStateCommon->m_eStencilCompareFunc_Back = eStencilCompareFunc; }
+		F_FORCEINLINE uint32 GetStencilRefValue_Back() const { return m_pStateCommon->m_nStencilRefValue_Back; }
+		F_FORCEINLINE void SetStencilRefValue_Back(const uint32& nStencilRefValue) { m_pStateCommon->m_nStencilRefValue_Back = nStencilRefValue; }
+		F_FORCEINLINE uint32 GetStencilCompareMask_Back() const { return m_pStateCommon->m_nStencilCompareMask_Back; }
+		F_FORCEINLINE void SetStencilCompareMask_Back(const uint32& nStencilCompareMask) { m_pStateCommon->m_nStencilCompareMask_Back = nStencilCompareMask; }
+		F_FORCEINLINE uint32 GetStencilWriteMask_Back() const { return m_pStateCommon->m_nStencilWriteMask_Back; }
+		F_FORCEINLINE void SetStencilWriteMask_Back(const uint32& nStencilWriteMask) { m_pStateCommon->m_nStencilWriteMask_Back = nStencilWriteMask; }
+		F_FORCEINLINE FStencilOPType GetStencilFailOP_Back() const { return m_pStateCommon->m_eStencilFailOP_Back; }
+		F_FORCEINLINE void SetStencilFailOP_Back(const FStencilOPType& eStencilFailOP) { m_pStateCommon->m_eStencilFailOP_Back = eStencilFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilDepthFailOP_Back() const { return m_pStateCommon->m_eStencilDepthFailOP_Back; }
+		F_FORCEINLINE void SetStencilDepthFailOP_Back(const FStencilOPType& eStencilDepthFailOP) { m_pStateCommon->m_eStencilDepthFailOP_Back = eStencilDepthFailOP; }
+		F_FORCEINLINE FStencilOPType GetStencilPassOP_Back() const { return m_pStateCommon->m_eStencilPassOP_Back; }
+		F_FORCEINLINE void SetStencilPassOP_Back(const FStencilOPType& eStencilPassOP) { m_pStateCommon->m_eStencilPassOP_Back = eStencilPassOP; }
+		
+		F_FORCEINLINE void GetStencilSetting(bool& bEnabled, 
+											 bool& bTwoSided,
+											 FCompareFuncType& eType,
+											 uint32& nRefValue, 
+											 uint32& nCompareMask,
+											 uint32& nWriteMask,
+											 FStencilOPType& eFailOP, 
+											 FStencilOPType& eDepthFailOP, 
+											 FStencilOPType& ePassOP,
+											 bool bIsFront = true) const
 		{
 			bEnabled = m_pStateCommon->m_bStencilEnabled;
-			eType = m_pStateCommon->m_eStencilCompareFunc;
-			nRefValue = m_pStateCommon->m_nStencilRefValue;
-			nMask = m_pStateCommon->m_nStencilMask;
-			eFailOP = m_pStateCommon->m_eStencilFailOP;
-			eDepthFailOP = m_pStateCommon->m_eStencilDepthFailOP;
-			ePassOP	= m_pStateCommon->m_eStencilPassOP;
 			bTwoSided = m_pStateCommon->m_bStencilTwoSidedEnabled;
+			if (bIsFront)
+			{
+				eType = m_pStateCommon->m_eStencilCompareFunc_Front;
+				nRefValue = m_pStateCommon->m_nStencilRefValue_Front;
+				nCompareMask = m_pStateCommon->m_nStencilCompareMask_Front;
+				nWriteMask = m_pStateCommon->m_nStencilWriteMask_Front;
+				eFailOP = m_pStateCommon->m_eStencilFailOP_Front;
+				eDepthFailOP = m_pStateCommon->m_eStencilDepthFailOP_Front;
+				ePassOP	= m_pStateCommon->m_eStencilPassOP_Front;
+			}
+			else
+			{
+				eType = m_pStateCommon->m_eStencilCompareFunc_Back;
+				nRefValue = m_pStateCommon->m_nStencilRefValue_Back;
+				nCompareMask = m_pStateCommon->m_nStencilCompareMask_Back;
+				nWriteMask = m_pStateCommon->m_nStencilWriteMask_Back;
+				eFailOP = m_pStateCommon->m_eStencilFailOP_Back;
+				eDepthFailOP = m_pStateCommon->m_eStencilDepthFailOP_Back;
+				ePassOP	= m_pStateCommon->m_eStencilPassOP_Back;
+			}
 		}
-		F_FORCEINLINE void SetStencilSetting(bool bEnabled, FCompareFuncType eType,
-											 uint32 nRefValue, uint32 nMask,
-											 FStencilOPType eFailOP, FStencilOPType eDepthFailOP, FStencilOPType ePassOP,
-											 bool bTwoSided)
+		F_FORCEINLINE void SetStencilSetting(bool bEnabled, 
+											 bool bTwoSided,
+											 FCompareFuncType eType,
+											 uint32 nRefValue, 
+											 uint32 nCompareMask,
+											 uint32 nWriteMask,
+											 FStencilOPType eFailOP, 
+											 FStencilOPType eDepthFailOP, 
+											 FStencilOPType ePassOP,
+											 bool bIsFront = true)
 		{
 			m_pStateCommon->m_bStencilEnabled = bEnabled;
-			m_pStateCommon->m_eStencilCompareFunc = eType;		  
-			m_pStateCommon->m_nStencilRefValue = nRefValue;	  
-			m_pStateCommon->m_nStencilMask = nMask;		  
-			m_pStateCommon->m_eStencilFailOP = eFailOP;		  
-			m_pStateCommon->m_eStencilDepthFailOP = eDepthFailOP;  
-			m_pStateCommon->m_eStencilPassOP = ePassOP;		  
 			m_pStateCommon->m_bStencilTwoSidedEnabled = bTwoSided;
+			if (bIsFront)
+			{
+				m_pStateCommon->m_eStencilCompareFunc_Front = eType;		  
+				m_pStateCommon->m_nStencilRefValue_Front = nRefValue;	  
+				m_pStateCommon->m_nStencilCompareMask_Front = nCompareMask;		
+				m_pStateCommon->m_nStencilWriteMask_Front = nWriteMask;		  
+				m_pStateCommon->m_eStencilFailOP_Front = eFailOP;		  
+				m_pStateCommon->m_eStencilDepthFailOP_Front = eDepthFailOP;  
+				m_pStateCommon->m_eStencilPassOP_Front = ePassOP;		  
+			}
+			else
+			{
+				m_pStateCommon->m_eStencilCompareFunc_Back = eType;		  
+				m_pStateCommon->m_nStencilRefValue_Back = nRefValue;	  
+				m_pStateCommon->m_nStencilCompareMask_Back = nCompareMask;		
+				m_pStateCommon->m_nStencilWriteMask_Back = nWriteMask;			  
+				m_pStateCommon->m_eStencilFailOP_Back = eFailOP;		  
+				m_pStateCommon->m_eStencilDepthFailOP_Back = eDepthFailOP;  
+				m_pStateCommon->m_eStencilPassOP_Back = ePassOP;		 
+			}
 		}
 
 
@@ -441,64 +509,52 @@ namespace LostPeterEngine
 
 		F_FORCEINLINE bool GetSceneBlendingEnabled() const	{ return m_pStateCommon->m_bSceneBlendingEnabled; }
 		F_FORCEINLINE void SetSceneBlendingEnabled(const bool& bEnabled) { m_pStateCommon->m_bSceneBlendingEnabled = bEnabled; }
-		F_FORCEINLINE FSceneBlendingType GetSceneBlendingType() const { return m_pStateCommon->m_eSceneBlending; }
-		F_FORCEINLINE void SetSceneBlendingType(const FSceneBlendingType& eSceneBlending) { m_pStateCommon->m_eSceneBlending = eSceneBlending; }
-		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType() const { return m_pStateCommon->m_eSceneBlendingOP; }
-		F_FORCEINLINE void SetSceneBlendingOperationOPType(const FSceneBlendingOPType& t) { m_pStateCommon->m_eSceneBlendingOP = t; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType() const { return m_pStateCommon->m_eSceneBlendingFactorSrc; }
-		F_FORCEINLINE void SetSceneBlendingFactorSrcType(const FSceneBlendingFactorType& eSceneBlendingFactorSrc) { m_pStateCommon->m_eSceneBlendingFactorSrc = eSceneBlendingFactorSrc; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType() const { return m_pStateCommon->m_eSceneBlendingFactorDst; }
-		F_FORCEINLINE void SetSceneBlendingFactorDstType(const FSceneBlendingFactorType& eSceneBlendingFactorDst) { m_pStateCommon->m_eSceneBlendingFactorDst = eSceneBlendingFactorDst; }
-		F_FORCEINLINE bool GetSceneBlendingSeperateEnabled() const { return m_pStateCommon->m_bSceneBlendingSeperateEnabled; }
-		F_FORCEINLINE void SetSceneBlendingSeperateEnabled(const bool& bEnabled) { m_pStateCommon->m_bSceneBlendingSeperateEnabled = bEnabled; }
-		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType2() const { return m_pStateCommon->m_eSceneBlendingOP2; }
-		F_FORCEINLINE void SetSceneBlendingOperationOPType2(const FSceneBlendingOPType& eSceneBlendingOP2) { m_pStateCommon->m_eSceneBlendingOP2 = eSceneBlendingOP2; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType2() const { return m_pStateCommon->m_eSceneBlendingFactorSrc2; }
-		F_FORCEINLINE void SetSceneBlendingFactorSrcType2(const FSceneBlendingFactorType& eSceneBlendingFactorSrc2) { m_pStateCommon->m_eSceneBlendingFactorSrc2 = eSceneBlendingFactorSrc2; }
-		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType2() const { return m_pStateCommon->m_eSceneBlendingFactorDst2; }
-		F_FORCEINLINE void SetSceneBlendingFactorDstType2(const FSceneBlendingFactorType& eSceneBlendingFactorDst2) { m_pStateCommon->m_eSceneBlendingFactorDst2 = eSceneBlendingFactorDst2; }
-		F_FORCEINLINE void GetSceneBlendingSetting(bool& bEnabled, FSceneBlendingOPType& eSBOT,
-												   FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst) const
-		{
-			bEnabled = m_pStateCommon->m_bSceneBlendingEnabled;
-			eSBOT = m_pStateCommon->m_eSceneBlendingOP;
-			eSrc = m_pStateCommon->m_eSceneBlendingFactorSrc;
-			eDst = m_pStateCommon->m_eSceneBlendingFactorDst;
-		}
-		F_FORCEINLINE void SetSceneBlendingSetting(bool bEnabled, FSceneBlendingOPType eSBOT,
-												   FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst)
-		{
-			m_pStateCommon->m_bSceneBlendingEnabled = bEnabled;
-			m_pStateCommon->m_eSceneBlendingOP = eSBOT; 
-			m_pStateCommon->m_eSceneBlendingFactorSrc = eSrc;
-			m_pStateCommon->m_eSceneBlendingFactorDst = eDst;
-		}
+		
+		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType_Color() const { return m_pStateCommon->m_eSceneBlendingOP_Color; }
+		F_FORCEINLINE void SetSceneBlendingOperationOPType_Color(const FSceneBlendingOPType& eSceneBlendingOP) { m_pStateCommon->m_eSceneBlendingOP_Color = eSceneBlendingOP; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType_Color() const { return m_pStateCommon->m_eSceneBlendingFactorSrc_Color; }
+		F_FORCEINLINE void SetSceneBlendingFactorSrcType_Color(const FSceneBlendingFactorType& eSceneBlendingFactorSrc) { m_pStateCommon->m_eSceneBlendingFactorSrc_Color = eSceneBlendingFactorSrc; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType_Color() const { return m_pStateCommon->m_eSceneBlendingFactorDst_Color; }
+		F_FORCEINLINE void SetSceneBlendingFactorDstType_Color(const FSceneBlendingFactorType& eSceneBlendingFactorDst) { m_pStateCommon->m_eSceneBlendingFactorDst_Color = eSceneBlendingFactorDst; }
+		
+		F_FORCEINLINE FSceneBlendingOPType GetSceneBlendingOperationOPType_Alpha() const { return m_pStateCommon->m_eSceneBlendingOP_Alpha; }
+		F_FORCEINLINE void SetSceneBlendingOperationOPType_Alpha(const FSceneBlendingOPType& eSceneBlendingOP) { m_pStateCommon->m_eSceneBlendingOP_Alpha = eSceneBlendingOP; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorSrcType_Alpha() const { return m_pStateCommon->m_eSceneBlendingFactorSrc_Alpha; }
+		F_FORCEINLINE void SetSceneBlendingFactorSrcType_Alpha(const FSceneBlendingFactorType& eSceneBlendingFactorSrc) { m_pStateCommon->m_eSceneBlendingFactorSrc_Alpha = eSceneBlendingFactorSrc; }
+		F_FORCEINLINE FSceneBlendingFactorType GetSceneBlendingFactorDstType_Alpha() const { return m_pStateCommon->m_eSceneBlendingFactorDst_Alpha; }
+		F_FORCEINLINE void SetSceneBlendingFactorDstType_Alpha(const FSceneBlendingFactorType& eSceneBlendingFactorDst) { m_pStateCommon->m_eSceneBlendingFactorDst_Alpha = eSceneBlendingFactorDst; }
 
-		F_FORCEINLINE void GetSceneBlendingSeperateSetting(bool& bEnabled, bool& bSeperateEnabled,
-														   FSceneBlendingOPType& eSBOT, FSceneBlendingFactorType& eSrc, FSceneBlendingFactorType& eDst,
-														   FSceneBlendingOPType& eSBOT2, FSceneBlendingFactorType& eSrc2, FSceneBlendingFactorType& eDst2) const
+		F_FORCEINLINE void GetSceneBlendingSetting(bool& bEnabled, 
+												   FSceneBlendingOPType& eSBOT_Color, 
+												   FSceneBlendingFactorType& eSrc_Color, 
+												   FSceneBlendingFactorType& eDst_Color,
+												   FSceneBlendingOPType& eSBOT_Alpha, 
+												   FSceneBlendingFactorType& eSrc_Alpha, 
+												   FSceneBlendingFactorType& eDst_Alpha) const
 		{
 			bEnabled = m_pStateCommon->m_bSceneBlendingEnabled;
-			bSeperateEnabled = m_pStateCommon->m_bSceneBlendingSeperateEnabled;
-			eSBOT = m_pStateCommon->m_eSceneBlendingOP;
-			eSrc = m_pStateCommon->m_eSceneBlendingFactorSrc;
-			eDst = m_pStateCommon->m_eSceneBlendingFactorDst;
-			eSBOT2 = m_pStateCommon->m_eSceneBlendingOP2;
-			eSrc2 = m_pStateCommon->m_eSceneBlendingFactorSrc2;
-			eDst2 = m_pStateCommon->m_eSceneBlendingFactorDst2;
+			eSBOT_Color = m_pStateCommon->m_eSceneBlendingOP_Color;
+			eSrc_Color = m_pStateCommon->m_eSceneBlendingFactorSrc_Color;
+			eDst_Color = m_pStateCommon->m_eSceneBlendingFactorDst_Color;
+			eSBOT_Alpha = m_pStateCommon->m_eSceneBlendingOP_Alpha;
+			eSrc_Alpha = m_pStateCommon->m_eSceneBlendingFactorSrc_Alpha;
+			eDst_Alpha = m_pStateCommon->m_eSceneBlendingFactorDst_Alpha;
 		}
-		F_FORCEINLINE void SetSceneBlendingSeperateSetting(bool bEnabled, bool bSeperateEnabled,
-														   FSceneBlendingOPType eSBOT, FSceneBlendingFactorType eSrc, FSceneBlendingFactorType eDst,
-														   FSceneBlendingOPType eSBOT2, FSceneBlendingFactorType eSrc2, FSceneBlendingFactorType eDst2)
+		F_FORCEINLINE void SetSceneBlendingSetting(bool bEnabled,
+												   FSceneBlendingOPType eSBOT_Color, 
+												   FSceneBlendingFactorType eSrc_Color, 
+												   FSceneBlendingFactorType eDst_Color,
+												   FSceneBlendingOPType eSBOT_Alpha, 
+												   FSceneBlendingFactorType eSrc_Alpha, 
+												   FSceneBlendingFactorType eDst_Alpha)
 		{
 			m_pStateCommon->m_bSceneBlendingEnabled = bEnabled;
-			m_pStateCommon->m_bSceneBlendingSeperateEnabled = bSeperateEnabled;
-			m_pStateCommon->m_eSceneBlendingOP = eSBOT; 
-			m_pStateCommon->m_eSceneBlendingFactorSrc = eSrc;
-			m_pStateCommon->m_eSceneBlendingFactorDst = eDst;
-			m_pStateCommon->m_eSceneBlendingOP2 = eSBOT2; 
-			m_pStateCommon->m_eSceneBlendingFactorSrc2 = eSrc2;
-			m_pStateCommon->m_eSceneBlendingFactorDst2 = eDst2;
+			m_pStateCommon->m_eSceneBlendingOP_Color = eSBOT_Color; 
+			m_pStateCommon->m_eSceneBlendingFactorSrc_Color = eSrc_Color;
+			m_pStateCommon->m_eSceneBlendingFactorDst_Color = eDst_Color;
+			m_pStateCommon->m_eSceneBlendingOP_Alpha = eSBOT_Alpha; 
+			m_pStateCommon->m_eSceneBlendingFactorSrc_Alpha = eSrc_Alpha;
+			m_pStateCommon->m_eSceneBlendingFactorDst_Alpha = eDst_Alpha;
 		}
 
 		

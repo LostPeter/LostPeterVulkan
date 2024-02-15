@@ -58,6 +58,9 @@ namespace LostPeterPluginRendererVulkan
         VulkanDescriptorSetLayoutManager* m_pDescriptorSetLayoutManager;
         VulkanDescriptorSetManager* m_pDescriptorSetManager;
         VulkanCommandPoolManager* m_pCommandPoolManager;
+        VulkanPipelineCache* m_pPipelineCache;
+        VulkanPipelineLayoutManager* m_pPipelineLayoutManager;
+        VulkanPipelineManager* m_pPipelineManager;
 
         VkDescriptorPool m_vkDescriptorPool;
         VkDescriptorPool m_vkDescriptorPool_ImGUI;
@@ -96,6 +99,9 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VulkanDescriptorSetLayoutManager* GetDescriptorSetLayoutManager() const { return m_pDescriptorSetLayoutManager; }
         F_FORCEINLINE VulkanDescriptorSetManager* GetDescriptorSetManager() const { return m_pDescriptorSetManager; }
         F_FORCEINLINE VulkanCommandPoolManager* GetCommandPoolManager() const { return m_pCommandPoolManager; } 
+        F_FORCEINLINE VulkanPipelineCache* GetPipelineCache() const { return m_pPipelineCache; } 
+        F_FORCEINLINE VulkanPipelineLayoutManager* GetPipelineLayoutManager() const { return m_pPipelineLayoutManager; } 
+        F_FORCEINLINE VulkanPipelineManager* GetPipelineManager() const { return m_pPipelineManager; } 
         
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool() const { return m_vkDescriptorPool; }
         F_FORCEINLINE VkDescriptorPool GetVkDescriptorPool_ImGUI() const { return m_vkDescriptorPool_ImGUI; }

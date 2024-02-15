@@ -68,7 +68,8 @@ namespace LostPeterPluginRendererVulkan
 	    F_FORCEINLINE const VkImageViewVector& GetSwapChainVkImageViews() const { return m_aSwapChainVkImageViews; }
         F_FORCEINLINE VulkanSwapChain* GetSwapChain() const { return m_pSwapChain; }
         F_FORCEINLINE const VkCommandBufferVector& GetCommandBuffers() const { return m_aCommandBuffers; }
-
+        F_FORCEINLINE const VkViewportVector& GetVkViewports() const { return m_aVkViewports; }
+        F_FORCEINLINE const VkRect2DVector& GetVkScissors() const { return m_aVkScissors; }
 
     public:
         virtual void Destroy();

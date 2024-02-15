@@ -1188,6 +1188,11 @@ namespace LostPeterPluginRendererVulkan
     class VulkanFrameBufferAttachment;
     class VulkanFrameBufferManager;
 	class VulkanInstance;
+    class VulkanPipelineCache;
+    class VulkanPipelineLayout;
+    class VulkanPipelineLayoutManager;
+    class VulkanPipeline;
+    class VulkanPipelineManager;
 	class VulkanPlugin;
 	class VulkanQueue;
 	class VulkanRenderer;
@@ -1246,8 +1251,14 @@ namespace LostPeterPluginRendererVulkan
     typedef std::vector<VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrVector;
     typedef std::map<String, VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrMap;
 
-     typedef std::vector<VulkanShaderModule*> VulkanShaderModulePtrVector;
+    typedef std::vector<VulkanShaderModule*> VulkanShaderModulePtrVector;
     typedef std::map<String, VulkanShaderModule*> VulkanShaderModulePtrMap;
+
+    typedef std::vector<VulkanPipelineLayout*> VulkanPipelineLayoutPtrVector;
+    typedef std::map<String, VulkanPipelineLayout*> VulkanPipelineLayoutPtrMap;
+
+    typedef std::vector<VulkanPipeline*> VulkanPipelinePtrVector;
+    typedef std::map<String, VulkanPipeline*> VulkanPipelinePtrMap;
 
     typedef std::vector<VulkanViewport*> VulkanViewportPtrVector;
     

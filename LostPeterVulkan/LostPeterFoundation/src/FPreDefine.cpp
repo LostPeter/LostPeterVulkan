@@ -1079,6 +1079,32 @@ namespace LostPeterFoundation
     }
 
 
+    //FFrontFaceType
+    static const String s_nameFrontFaceTypes[] = 
+    {
+        "ClockWise",                //0: ClockWise
+        "CounterClockWise",         //1: CounterClockWise
+    };
+    const String& F_GetFrontFaceTypeName(FFrontFaceType type)
+    {
+        return s_nameFrontFaceTypes[(int)type];
+    }
+    const String& F_GetFrontFaceTypeName(int type)
+    {
+        return s_nameFrontFaceTypes[(int)type];
+    }
+    FFrontFaceType F_ParseFrontFaceType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_FrontFace_Count; i++)
+        {
+            if (s_nameFrontFaceTypes[i] == strName)
+                return (FFrontFaceType)(i);
+        }
+        F_Assert(false && "F_ParseFrontFaceType: Wrong type name !")
+        return F_FrontFace_ClockWise;
+    }
+
+
     //FCullingType
     static const String s_nameCullingTypes[] = 
     {
@@ -1195,36 +1221,7 @@ namespace LostPeterFoundation
         F_Assert(false && "F_ParseCompareFuncType: Wrong type name !")
         return F_CompareFunc_LessEqual;
     }
-
-
-    //FSceneBlendingType
-    static const String s_nameSceneBlendingTypes[] = 
-    {
-        "Alpha",                     //0: Alpha
-        "Color",                     //1: Color
-        "Add",                       //2: Add
-        "Modulate",                  //3: Modulate
-        "Replace",                   //4: Replace
-    };
-    const String& F_GetSceneBlendingTypeName(FSceneBlendingType type)
-    {
-        return s_nameSceneBlendingTypes[(int)type];
-    }
-    const String& F_GetSceneBlendingTypeName(int type)
-    {
-        return s_nameSceneBlendingTypes[(int)type];
-    }
-    FSceneBlendingType F_ParseSceneBlendingType(const String& strName)
-    {
-        for (int i = 0; i < (int)F_SceneBlending_Count; i++)
-        {
-            if (s_nameSceneBlendingTypes[i] == strName)
-                return (FSceneBlendingType)(i);
-        }
-        F_Assert(false && "F_ParseSceneBlendingType: Wrong type name !")
-        return F_SceneBlending_Color;
-    }
-
+    
 
     //FSceneBlendingOPType
     static const String s_nameSceneBlendingOPTypes[] = 
