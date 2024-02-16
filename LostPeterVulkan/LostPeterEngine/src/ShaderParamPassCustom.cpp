@@ -10,11 +10,14 @@
 ****************************************************************************/
 
 #include "../include/ShaderParamPassCustom.h"
+#include "../include/ShaderParamPassManager.h"
+#include "../include/ShaderParamSourceAuto.h"
+#include "../include/ShaderParameter.h"
 
 namespace LostPeterEngine
 {
-    ShaderParamPassCustom::ShaderParamPassCustom(const String& strNameShaderParamPassCustom)
-        : ShaderParamPass(strNameShaderParamPassCustom)
+    ShaderParamPassCustom::ShaderParamPassCustom()
+        : ShaderParamPass(F_GetShaderPassTypeName(F_ShaderPass_Custom))
     {
         m_eShaderPass = F_ShaderPass_Custom;
     }
@@ -22,6 +25,19 @@ namespace LostPeterEngine
     ShaderParamPassCustom::~ShaderParamPassCustom()
     {
 
+    }
+
+    void ShaderParamPassCustom::Destroy()
+    {
+
+        ShaderParamPass::Destroy();
+    }
+
+    bool ShaderParamPassCustom::createParamPass()
+    {
+        
+
+        return true;
     }
 
 }; //LostPeterEngine

@@ -466,6 +466,93 @@ namespace LostPeterFoundation
     }
 
 
+    //FShaderParamUsedType
+    static String s_nameShaderParamUseTypes[] = 
+    {
+        "vert",                 //0: Vertex
+        "tesc",                 //1: TessellationControl
+        "tese",                 //2: TessellationEvaluation
+        "geom",                 //3: Geometry
+        "frag",                 //4: Fragment
+        "comp",                 //5: Compute
+    };
+    static std::map<FShaderParamUsedType, int> s_ShaderParamUse2Index
+    {
+        { F_ShaderParamUsed_Vertex,                     0 },    //0: Vertex
+        { F_ShaderParamUsed_TessellationControl,        1 },    //1: TessellationControl
+        { F_ShaderParamUsed_TessellationEvaluation,     2 },    //2: TessellationEvaluation
+        { F_ShaderParamUsed_Geometry,                   3 },    //3: Geometry
+        { F_ShaderParamUsed_Fragment,                   4 },    //4: Fragment
+        { F_ShaderParamUsed_Compute,                    5 },    //5: Compute
+    };
+    static std::map<int, FShaderParamUsedType> s_Index2ShaderParamUse
+    {
+        { 0, F_ShaderParamUsed_Vertex,                    },    //0: Vertex
+        { 1, F_ShaderParamUsed_TessellationControl,       },    //1: TessellationControl
+        { 2, F_ShaderParamUsed_TessellationEvaluation,    },    //2: TessellationEvaluation
+        { 3, F_ShaderParamUsed_Geometry,                  },    //3: Geometry
+        { 4, F_ShaderParamUsed_Fragment,                  },    //4: Fragment
+        { 5, F_ShaderParamUsed_Compute,                   },    //5: Compute
+    };
+    const String& F_GetShaderParamUsedTypeName(FShaderParamUsedType type)
+    {
+        return s_nameShaderParamUseTypes[s_ShaderParamUse2Index[type]];
+    }
+    FShaderParamUsedType F_ParseShaderParamUsedType(const String& strName)
+    {
+        int count = (int)s_Index2ShaderParamUse.size();
+        for (int i = 0; i < count; i++)
+        {
+            if (s_nameShaderParamUseTypes[i] == strName)
+                return s_Index2ShaderParamUse[i];
+        }
+        F_Assert(false && "F_ParseShaderParamUsedType: Wrong type name !")
+        return F_ShaderParamUsed_Vertex;
+    }
+    uint32 F_ParseShaderParamUsedTypes(const StringVector& aNames)
+    {
+        uint32 nType = 0;
+        int count = (int)aNames.size();
+        for (int i = 0; i < count; i++)
+        {
+            const String& strName = aNames[i];
+            FShaderParamUsedType type = F_ParseShaderParamUsedType(strName);
+            nType |= type;
+        }
+        return nType;
+    }
+
+
+    //FShaderParamDescriptorType
+    static String s_nameShaderParamDescriptorTypes[] = 
+    {
+        "UniformBuffer",                    //0: UniformBuffer
+        "StorageBuffer",                    //1: StorageBuffer
+        "Sampler",                          //2: Sampler
+        "SampledImage",                     //3: SampledImage
+        "CombinedImageSampler",             //4: CombinedImageSampler
+        "StorageImage",                     //5: StorageImage
+    };
+    const String& F_GetShaderParamDescriptorTypeName(FShaderParamDescriptorType type)
+    {
+        return s_nameShaderParamDescriptorTypes[(int)type];
+    }
+    const String& F_GetShaderParamDescriptorTypeName(int type)
+    {
+        return s_nameShaderParamDescriptorTypes[type];
+    }
+    FShaderParamDescriptorType F_ParseShaderParamDescriptorType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_ShaderParamDescriptor_Count; i++)
+        {
+            if (s_nameShaderParamDescriptorTypes[i] == strName)
+                return (FShaderParamDescriptorType)(i);
+        }
+        F_Assert(false && "F_ParseShaderParamDescriptorType: Wrong type name !")
+        return F_ShaderParamDescriptor_UniformBuffer;
+    }
+
+
     //FShaderPassType
     static String s_nameShaderPassTypes[] = 
     {
@@ -1221,7 +1308,7 @@ namespace LostPeterFoundation
         F_Assert(false && "F_ParseCompareFuncType: Wrong type name !")
         return F_CompareFunc_LessEqual;
     }
-    
+
 
     //FSceneBlendingOPType
     static const String s_nameSceneBlendingOPTypes[] = 

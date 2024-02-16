@@ -18,21 +18,21 @@ namespace LostPeterEngine
 {
     class engineExport ShaderParamPassDepth : public ShaderParamPass
     {
+        friend class ShaderParamPassManager;
+
+    private:
+        ShaderParamPassDepth();
     public:
-        ShaderParamPassDepth(const String& strNameShaderParamPassDepth);
         virtual ~ShaderParamPassDepth();
 
     public: 
     protected:
 
     public:
-        
-        
+        virtual void Destroy();
 
-    public:
     protected:
-        
-
+        virtual bool createParamPass();
     };
 
 }; //LostPeterEngine

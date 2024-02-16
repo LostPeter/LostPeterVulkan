@@ -833,6 +833,36 @@ namespace LostPeterFoundation
     foundationExport FShaderType F_ParseShaderType(const String& strName);
 
 
+    enum FShaderParamUsedType
+    {
+        F_ShaderParamUsed_Vertex = 0x01,                    //0: Vertex
+        F_ShaderParamUsed_TessellationControl = 0x02,       //1: TessellationControl
+        F_ShaderParamUsed_TessellationEvaluation = 0x04,    //2: TessellationEvaluation
+        F_ShaderParamUsed_Geometry = 0x08,                  //3: Geometry
+        F_ShaderParamUsed_Fragment = 0x10,                  //4: Fragment
+        F_ShaderParamUsed_Compute = 0x20,                   //5: Compute
+    };
+    foundationExport const String& F_GetShaderParamUsedTypeName(FShaderParamUsedType type);
+    foundationExport FShaderParamUsedType F_ParseShaderParamUsedType(const String& strName);
+    foundationExport uint32 F_ParseShaderParamUsedTypes(const StringVector& aNames);
+
+
+    enum FShaderParamDescriptorType
+    {
+        F_ShaderParamDescriptor_UniformBuffer = 0,          //0: UniformBuffer
+        F_ShaderParamDescriptor_StorageBuffer,              //1: StorageBuffer
+        F_ShaderParamDescriptor_Sampler,                    //2: Sampler
+        F_ShaderParamDescriptor_SampledImage,               //3: SampledImage
+        F_ShaderParamDescriptor_CombinedImageSampler,       //4: CombinedImageSampler
+        F_ShaderParamDescriptor_StorageImage,               //5: StorageImage
+
+        F_ShaderParamDescriptor_Count,
+    };
+    foundationExport const String& F_GetShaderParamDescriptorTypeName(FShaderParamDescriptorType type);
+    foundationExport const String& F_GetShaderParamDescriptorTypeName(int type);
+    foundationExport FShaderParamDescriptorType F_ParseShaderParamDescriptorType(const String& strName);
+
+    
     enum FShaderPassType
     {
         F_ShaderPass_Main = 0,                          //0: Main
@@ -1256,7 +1286,7 @@ namespace LostPeterFoundation
     foundationExport const String& F_GetCompareFuncTypeName(FCompareFuncType type);
     foundationExport const String& F_GetCompareFuncTypeName(int type);
     foundationExport FCompareFuncType F_ParseCompareFuncType(const String& strName);
-    
+
 
     enum FSceneBlendingOPType
 	{

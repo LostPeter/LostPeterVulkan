@@ -10,11 +10,14 @@
 ****************************************************************************/
 
 #include "../include/ShaderParamPassDepth.h"
+#include "../include/ShaderParamPassManager.h"
+#include "../include/ShaderParamSourceAuto.h"
+#include "../include/ShaderParameter.h"
 
 namespace LostPeterEngine
 {
-    ShaderParamPassDepth::ShaderParamPassDepth(const String& strNameShaderParamPassDepth)
-        : ShaderParamPass(strNameShaderParamPassDepth)
+    ShaderParamPassDepth::ShaderParamPassDepth()
+        : ShaderParamPass(F_GetShaderPassTypeName(F_ShaderPass_Depth))
     {
         m_eShaderPass = F_ShaderPass_Depth;
     }
@@ -24,6 +27,17 @@ namespace LostPeterEngine
 
     }
 
-    
+    void ShaderParamPassDepth::Destroy()
+    {
+
+        ShaderParamPass::Destroy();
+    }
+
+    bool ShaderParamPassDepth::createParamPass()
+    {
+        
+
+        return true;
+    }
 
 }; //LostPeterEngine

@@ -18,20 +18,23 @@ namespace LostPeterEngine
 {
     class engineExport ShaderParamPassMain : public ShaderParamPass
     {
+        friend class ShaderParamPassManager;
+
+    private:
+        ShaderParamPassMain();
     public:
-        ShaderParamPassMain(const String& strNameShaderParamPassMain);
         virtual ~ShaderParamPassMain();
 
     public: 
     protected:
-
-    public:
-        
+        PassConstants m_passConstants;
         
 
     public:
+        virtual void Destroy();
+
     protected:
-        
+        virtual bool createParamPass();
 
     };
 

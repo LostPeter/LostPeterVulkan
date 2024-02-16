@@ -11,7 +11,7 @@
 
 #include "../include/ShaderProgram.h"
 #include "../include/ShaderProgramManager.h"
-#include "../include/ShaderParameter.h"
+#include "../include/ShaderParamPass.h"
 
 namespace LostPeterEngine
 {
@@ -89,7 +89,7 @@ namespace LostPeterEngine
         , m_strPath("")
         , m_eShader(F_Shader_Vertex)
         , m_bInternalResourcesCreated(false)
-        , m_pShaderParameter(nullptr)
+        , m_pShaderParamPass(nullptr)
     {
         if (createParameterDictionary(ms_nameShaderProgram))
 		{
@@ -112,22 +112,6 @@ namespace LostPeterEngine
         Resource::Destroy();
     }
 
-    ShaderParameter* ShaderProgram::GetShaderParameter()
-	{
-		if (nullptr == m_pShaderParameter)
-		{
-            m_pShaderParameter = createShaderParameter();
-        }
-		return m_pShaderParameter;
-	}
-
-	void ShaderProgram::SetShaderParameter(ShaderParameter* pShaderParameter)
-	{
-		F_Assert(pShaderParameter && "ShaderProgram::SetShaderParameter")
-		F_DELETE(m_pShaderParameter)
-		m_pShaderParameter = pShaderParameter;
-	}
-
     void ShaderProgram::loadImpl()
     {
         createInternalResources();
@@ -147,8 +131,7 @@ namespace LostPeterEngine
         nMemSize += m_strSyntaxCode.size() * sizeof(char);
 
         uint32 nParamsSize = 0;
-        if (m_pShaderParameter)
-            nParamsSize += m_pShaderParameter->CalculateSize();
+
 
         return nMemSize + nParamsSize;
     }
@@ -182,12 +165,6 @@ namespace LostPeterEngine
             }
 		}
 		return true;
-    }
-
-    ShaderParameter* ShaderProgram::createShaderParameter()
-    {
-        ShaderParameter* pShaderParameter = new ShaderParameter;
-		return pShaderParameter;
     }
 
 }; //LostPeterEngine

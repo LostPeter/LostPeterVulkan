@@ -184,10 +184,10 @@ namespace LostPeterEngine
 		const FMatrix4& GetWorldViewProjectionMatrix_Transpose() const;
 		const FMatrix4& GetWorldViewProjectionMatrix_Inverse() const;
 		const FMatrix4& GetWorldViewProjectionMatrix_InverseTranspose() const;
-		F_FORCEINLINE void  SetWorldViewProjectionMatrixDirty(bool bWorldViewProjectionMatrixDirty) { m_bWorldViewProjectionMatrixDirty = bWorldViewProjectionMatrixDirty; }
-		F_FORCEINLINE void  SetWorldViewProjectionMatrixTransposeDirty(bool bWorldViewProjectionMatrixTransposeDirty) { m_bWorldViewProjectionMatrixTransposeDirty = bWorldViewProjectionMatrixTransposeDirty; }
-		F_FORCEINLINE void  SetWorldViewProjectionMatrixInverseDirty(bool bWorldViewProjectionMatrixInverseDirty)	{ m_bWorldViewProjectionMatrixInverseDirty = bWorldViewProjectionMatrixInverseDirty; }
-		F_FORCEINLINE void  SetWorldViewProjectionMatrixInverseTransposeDirty(bool bWorldViewProjectionMatrixInverseTransposeDirty) { m_bWorldViewProjectionMatrixInverseTransposeDirty = bWorldViewProjectionMatrixInverseTransposeDirty; }
+		F_FORCEINLINE void SetWorldViewProjectionMatrixDirty(bool bWorldViewProjectionMatrixDirty) { m_bWorldViewProjectionMatrixDirty = bWorldViewProjectionMatrixDirty; }
+		F_FORCEINLINE void SetWorldViewProjectionMatrixTransposeDirty(bool bWorldViewProjectionMatrixTransposeDirty) { m_bWorldViewProjectionMatrixTransposeDirty = bWorldViewProjectionMatrixTransposeDirty; }
+		F_FORCEINLINE void SetWorldViewProjectionMatrixInverseDirty(bool bWorldViewProjectionMatrixInverseDirty) { m_bWorldViewProjectionMatrixInverseDirty = bWorldViewProjectionMatrixInverseDirty; }
+		F_FORCEINLINE void SetWorldViewProjectionMatrixInverseTransposeDirty(bool bWorldViewProjectionMatrixInverseTransposeDirty) { m_bWorldViewProjectionMatrixInverseTransposeDirty = bWorldViewProjectionMatrixInverseTransposeDirty; }
 	////Renderable,RenderTarget,ObjectCamera,Viewport,SceneManager
 		void SetCurRenderable(const Renderable* pRenderable);
 		void SetCurRenderableGrouped(const Renderable* pRenderable);
@@ -219,21 +219,24 @@ namespace LostPeterEngine
 		void SetCurLightArray(const ObjectLightPtrVector* pLights);
 		const ObjectLight* GetLight(uint32 nIndex) const;
 		const FColor& GetGlobalAmbient(uint8 nIndex = 0) const;
-		void	SetGlobalAmbient(const FColor& clAmbient,uint8 nIndex = 0);
+		void SetGlobalAmbient(const FColor& clAmbient,uint8 nIndex = 0);
 	////Material
 		F_FORCEINLINE const FColor& GetAmbient() const { return m_clAmbient; }
 		F_FORCEINLINE const FColor& GetDiffuse() const { return m_clDiffuse; }
 		F_FORCEINLINE const FColor& GetSpecular() const { return m_clSpecular; }
 		F_FORCEINLINE const FColor& GetEmissive() const { return m_clEmissive; }
-		F_FORCEINLINE float	 GetShininess() const { return m_fShininess; }
-		F_FORCEINLINE void SetMaterialParam(const FColor& clAmbient,const FColor& clDiffuse,const FColor& clSpecular,
-									const FColor& clEmissive,float fShininess)
+		F_FORCEINLINE float GetShininess() const { return m_fShininess; }
+		F_FORCEINLINE void SetMaterialParam(const FColor& clAmbient,
+											const FColor& clDiffuse,
+											const FColor& clSpecular,
+											const FColor& clEmissive,
+											float fShininess)
 		{
-			m_clAmbient		= clAmbient;
-			m_clDiffuse		= clDiffuse;
-			m_clSpecular	= clSpecular;
-			m_clEmissive	= clEmissive;
-			m_fShininess	= fShininess;
+			m_clAmbient	= clAmbient;
+			m_clDiffuse	= clDiffuse;
+			m_clSpecular = clSpecular;
+			m_clEmissive = clEmissive;
+			m_fShininess = fShininess;
 		}
 	////Fog
 
@@ -248,24 +251,24 @@ namespace LostPeterEngine
 		const FMatrix4& GetTextureUVTransformMatrix(uint32 nTexUnit) const;
 
 	////Time
-		float	GetTimeElapsed() const;
-		float	GetTimeElapsed_0_X(float x) const;
-		float	GetTimeElapsed_Sin_0_X(float x) const;
-		float	GetTimeElapsed_Cos_0_X(float x) const;
-		float	GetTimeElapsed_Tan_0_X(float x) const;
+		float GetTimeElapsed() const;
+		float GetTimeElapsed_0_X(float x) const;
+		float GetTimeElapsed_Sin_0_X(float x) const;
+		float GetTimeElapsed_Cos_0_X(float x) const;
+		float GetTimeElapsed_Tan_0_X(float x) const;
 		const FVector4& GetTimeElapsed_Packed_0_X(float x) const;
-		float	GetTimeElapsed_0_1(float x) const;
-		float	GetTimeElapsed_Sin_0_1(float x) const;
-		float	GetTimeElapsed_Cos_0_1(float x) const;
-		float	GetTimeElapsed_Tan_0_1(float x) const;
+		float GetTimeElapsed_0_1(float x) const;
+		float GetTimeElapsed_Sin_0_1(float x) const;
+		float GetTimeElapsed_Cos_0_1(float x) const;
+		float GetTimeElapsed_Tan_0_1(float x) const;
 		const FVector4& GetTimeElapsed_Packed_0_1(float x) const;
-		float	GetTimeElapsed_0_2PI(float x) const;
-		float	GetTimeElapsed_Sin_0_2PI(float x) const;
-		float	GetTimeElapsed_Cos_0_2PI(float x) const;
-		float	GetTimeElapsed_Tan_0_2PI(float x) const;
+		float GetTimeElapsed_0_2PI(float x) const;
+		float GetTimeElapsed_Sin_0_2PI(float x) const;
+		float GetTimeElapsed_Cos_0_2PI(float x) const;
+		float GetTimeElapsed_Tan_0_2PI(float x) const;
 		const FVector4& GetTimeElapsed_Packed_0_2PI(float x) const;
-		float	GetFrameTime() const;
-		float	GetFPS() const;
+		float GetFrameTime() const;
+		float GetFPS() const;
     };
 
 }; //LostPeterEngine

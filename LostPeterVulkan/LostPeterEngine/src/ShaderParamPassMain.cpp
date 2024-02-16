@@ -10,11 +10,14 @@
 ****************************************************************************/
 
 #include "../include/ShaderParamPassMain.h"
+#include "../include/ShaderParamPassManager.h"
+#include "../include/ShaderParamSourceAuto.h"
+#include "../include/ShaderParameter.h"
 
 namespace LostPeterEngine
 {
-    ShaderParamPassMain::ShaderParamPassMain(const String& strNameShaderParamPassMain)
-        : ShaderParamPass(strNameShaderParamPassMain)
+    ShaderParamPassMain::ShaderParamPassMain()
+        : ShaderParamPass(F_GetShaderPassTypeName(F_ShaderPass_Main))
     {
         m_eShaderPass = F_ShaderPass_Main;
     }
@@ -24,6 +27,18 @@ namespace LostPeterEngine
 
     }
 
+    void ShaderParamPassMain::Destroy()
+    {
 
+        ShaderParamPass::Destroy();
+    }
+
+    bool ShaderParamPassMain::createParamPass()
+    {
+        m_pShaderParameter = new ShaderParameter();
+        
+
+        return true;
+    }
 
 }; //LostPeterEngine

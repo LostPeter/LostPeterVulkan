@@ -17,6 +17,7 @@
 namespace LostPeterEngine
 {
     class engineExport ShaderParamPass : public Base
+                                       , public FNonCopyable
     {
     public:
         ShaderParamPass(const String& strNameShaderParamPass);
@@ -26,15 +27,23 @@ namespace LostPeterEngine
     protected:
         FShaderPassType m_eShaderPass;
 
+        ShaderParamSourceAuto* m_pShaderParamSourceAuto;
+        bool m_bIsUseShaderParamSourceAutoGlobal;
+        ShaderParameter* m_pShaderParameter;    
+
     public:
         F_FORCEINLINE FShaderPassType GetShaderPassType() const { return m_eShaderPass; }
-
+        F_FORCEINLINE ShaderParamSourceAuto* GetShaderParamSourceAuto() const { return m_pShaderParamSourceAuto; }
+        F_FORCEINLINE bool GetIsUseShaderParamSourceAutoGlobal() const { return m_bIsUseShaderParamSourceAutoGlobal; }
+        F_FORCEINLINE ShaderParameter* GetShaderParameter() const { return m_pShaderParameter; }
 
     public: 
-        
+        virtual void Destroy();
+        virtual bool Init();
 
     protected:
-
+        virtual bool createParamSourceAuto();
+        virtual bool createParamPass() = 0;
     };
 
 }; //LostPeterEngine

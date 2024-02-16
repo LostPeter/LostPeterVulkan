@@ -153,12 +153,8 @@ namespace LostPeterEngine
 
         bool m_bInternalResourcesCreated;
 
-        ShaderParameter* m_pShaderParameter;
-
-        mutable ShaderLogicalBufferStruct m_FloatLogicalToPhysical;
-		mutable ShaderLogicalBufferStruct m_IntLogicalToPhysical;
-		mutable ShaderPhysicalBufferStruct m_FloatPhysicalToLogical;
-
+        ShaderParamPass* m_pShaderParamPass;
+                
     public:
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }
 		F_FORCEINLINE void SetPath(const String& strPath) { m_strPath = strPath; }
@@ -168,16 +164,10 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetSource(const String& strSource) { m_strSource = strSource; }
         F_FORCEINLINE String GetSyntaxCode() const { return m_strSyntaxCode; }
 		F_FORCEINLINE void SetSyntaxCode(const String& strSyntaxCode) { m_strSyntaxCode = strSyntaxCode; }
+        F_FORCEINLINE ShaderParamPass* GetShaderParamPass() const { return m_pShaderParamPass; }
 
     public:
         virtual void Destroy();
-
-
-    public:
-        virtual bool HasShaderParameter() const { return nullptr != m_pShaderParameter; }
-		virtual ShaderParameter* GetShaderParameter();
-		virtual void SetShaderParameter(ShaderParameter* pShaderParameter);
-
         
     protected:
         virtual void loadImpl();
@@ -190,8 +180,6 @@ namespace LostPeterEngine
 
 		virtual bool createInternalResources();
 			virtual void createInternalResourcesImpl() = 0;
-
-        virtual ShaderParameter* createShaderParameter();
 
 	protected:
         virtual void addParameterBase();

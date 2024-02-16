@@ -33,11 +33,12 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         F_FORCEINLINE VulkanDescriptorSetManager* GetDescriptorSetManager() { return m_pDescriptorSetManager; }
-        F_FORCEINLINE const VkDescriptorSet& GetVkDescriptorSet() const { return m_vkDescriptorSet; }
         F_FORCEINLINE VkDescriptorSet GetVkDescriptorSet() { return m_vkDescriptorSet; }
 
     public:
         void Destroy();
+
+        bool Init();
     };
 
 }; //LostPeterPluginRendererVulkan
