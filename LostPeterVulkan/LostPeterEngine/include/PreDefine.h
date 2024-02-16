@@ -743,10 +743,32 @@ namespace LostPeterEngine
     class RenderPassDescriptor;
     class RenderPassDescriptorManager;
     class RenderPass;
+    
+    class RenderPassReflection;
+    class RenderPassRefraction;
+    class RenderPassDepthOnly;
+    class RenderPassGBuffer;
+    class RenderPassShadowCaster;
     class RenderPassForwardLit;
     class RenderPassDeferredLit;
-    class RenderPassShadowCaster;
-    class RenderPassDepthOnly;
+    class RenderPassSky;
+    class RenderPassSkinMesh;
+    class RenderPassMesh;
+    class RenderPassGrass;
+    class RenderPassTree;
+    class RenderPassTerrain;
+    class RenderPassWater;
+    class RenderPassOcean;
+    class RenderPassBillboard;
+    class RenderPassParticle;
+    class RenderPassLensFlare;
+    class RenderPassVolumeFog;
+    class RenderPassCameraFog;
+    class RenderPassPostProcess;
+    class RenderPassUI3D;
+    class RenderPassUI;
+    class RenderPassBackBuffer;
+    
     class RenderPassManager;
     class RenderPipeline;
     class RenderPipelineForward;

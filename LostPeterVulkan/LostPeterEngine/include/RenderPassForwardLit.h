@@ -19,7 +19,7 @@ namespace LostPeterEngine
     class engineExport RenderPassForwardLit : public RenderPass
     {
     public:
-        RenderPassForwardLit(const String& nameRenderPass);
+        RenderPassForwardLit();
         virtual ~RenderPassForwardLit();
 
     public:

@@ -19,7 +19,7 @@ namespace LostPeterEngine
     class engineExport RenderPassShadowCaster : public RenderPass
     {
     public:
-        RenderPassShadowCaster(const String& nameRenderPass);
+        RenderPassShadowCaster();
         virtual ~RenderPassShadowCaster();
 
     public:

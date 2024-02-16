@@ -131,7 +131,7 @@ namespace LostPeterEngine
 	public:
 		ShaderParameter();
 		ShaderParameter(uint32 nStartRangeIndex, uint32 nEndRangeIndex);
-		~ShaderParameter();
+		virtual ~ShaderParameter();
 
 		ShaderParameter& operator= (const ShaderParameter& src);
 

@@ -1493,17 +1493,36 @@ namespace LostPeterFoundation
     //FRenderPassType
     static const String s_nameRenderPassTypes[] = 
     {
-        "BackGround",               //0:  BackGround
-        "ForwardLit",               //1:  ForwardLit
-        "DeferredLit",              //2:  DeferredLit
-        "ShadowCaster",             //3:  ShadowCaster
-        "DepthOnly",                //4:  DepthOnly
+        "Reflection",               //0:  Reflection
+        "Refraction",               //1:  Refraction
+        "DepthOnly",                //2:  DepthOnly
+        "GBuffer",                  //3:  GBuffer
+        "ShadowCaster",             //4:  ShadowCaster
+        "ForwardLit",               //5:  ForwardLit
+        "DeferredLit",              //6:  DeferredLit
+        "Sky",                      //7:  Sky
+        "SkinMesh",                 //8:  SkinMesh
+        "Mesh",                     //9:  Mesh
+        "Grass",                    //10: Grass
+        "Tree",                     //11: Tree
+        "Terrain",                  //12: Terrain
+        "Water",                    //13: Water
+        "Ocean",                    //14: Ocean
+        "Billboard",                //15: Billboard
+        "Particle",                 //16: Particle
+        "LensFlare",                //17: LensFlare
+        "VolumeFog",                //18: VolumeFog
+        "CameraFog",                //19: CameraFog
+        "PostProcess",              //20: PostProcess
+        "UI3D",                     //21: UI3D
+        "UI",                       //22: UI
+        "BackBuffer",               //23: BackBuffer
 
-        "Custom1",                  //5:  Custom1
-        "Custom2",                  //6:  Custom2
-        "Custom3",                  //7:  Custom3
-        "Custom4",                  //8:  Custom4
-        "Custom5",                  //9:  Custom5
+        "Custom1",                  //24: Custom1
+        "Custom2",                  //25: Custom2
+        "Custom3",                  //26: Custom3
+        "Custom4",                  //27: Custom4
+        "Custom5",                  //28: Custom5
     };
     const String& F_GetRenderPassTypeName(FRenderPassType type)
     {
@@ -1521,7 +1540,7 @@ namespace LostPeterFoundation
                 return (FRenderPassType)(i);
         }
         F_Assert(false && "F_ParseRenderPassType: Wrong type name !")
-        return F_RenderPass_BackGround;
+        return F_RenderPass_Mesh;
     }
 
 

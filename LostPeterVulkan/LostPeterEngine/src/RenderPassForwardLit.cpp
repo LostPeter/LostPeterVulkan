@@ -13,8 +13,10 @@
 
 namespace LostPeterEngine
 {
-    RenderPassForwardLit::RenderPassForwardLit(const String& nameRenderPass)
-        : RenderPass(nameRenderPass, F_RenderPass_ForwardLit, nameRenderPass)
+    RenderPassForwardLit::RenderPassForwardLit()
+        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_ForwardLit), 
+                     F_RenderPass_ForwardLit, 
+                     F_GetRenderPassTypeName(F_RenderPass_ForwardLit))
     {
 
     }

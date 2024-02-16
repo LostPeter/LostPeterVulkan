@@ -46,7 +46,7 @@ namespace LostPeterEngine
         //1> createRenderPassDescriptor
         if (!createRenderPassDescriptor())
         {
-            F_LogError("*********************** RenderPass::Init: createRenderPassDescriptor failed, typeRenderPass: [%s] !", F_GetRenderPassTypeName(this->m_eRenderPass).c_str());
+            F_LogError("*********************** RenderPass::Init: createRenderPassDescriptor failed, RenderPass Type: [%s] !", F_GetRenderPassTypeName(this->m_eRenderPass).c_str());
             return false;
         }
 

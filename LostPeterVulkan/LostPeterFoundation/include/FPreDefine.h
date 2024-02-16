@@ -1371,17 +1371,36 @@ namespace LostPeterFoundation
 
     enum FRenderPassType
     {
-        F_RenderPass_BackGround = 0,                    //0:  BackGround
-        F_RenderPass_ForwardLit,                        //1:  ForwardLit
-        F_RenderPass_DeferredLit,                       //2:  DeferredLit  
-        F_RenderPass_ShadowCaster,                      //3:  ShadowCaster
-        F_RenderPass_DepthOnly,                         //4:  DepthOnly
+        F_RenderPass_Reflection = 0,			        //0	  Reflection
+        F_RenderPass_Refraction,                        //1:  Refraction
+        F_RenderPass_DepthOnly,                         //2:  DepthOnly
+        F_RenderPass_GBuffer,                           //3:  GBuffer
+        F_RenderPass_ShadowCaster,                      //4:  ShadowCaster
+        F_RenderPass_ForwardLit,                        //5:  ForwardLit
+        F_RenderPass_DeferredLit,                       //6:  DeferredLit  
+        F_RenderPass_Sky,                               //7:  Sky
+        F_RenderPass_SkinMesh,                          //8:  SkinMesh
+        F_RenderPass_Mesh,                              //9:  Mesh
+        F_RenderPass_Grass,                             //10: Grass
+        F_RenderPass_Tree,                              //11: Tree
+        F_RenderPass_Terrain,                           //12: Terrain
+        F_RenderPass_Water,                             //13: Water
+        F_RenderPass_Ocean,                             //14: Ocean
+        F_RenderPass_Billboard,                         //15: Billboard
+        F_RenderPass_Particle,                          //16: Particle
+        F_RenderPass_LensFlare,                         //17: LensFlare
+        F_RenderPass_VolumeFog,                         //18: VolumeFog
+        F_RenderPass_CameraFog,                         //19: CameraFog
+        F_RenderPass_PostProcess,                       //20: PostProcess
+        F_RenderPass_UI3D,                              //21: UI3D
+        F_RenderPass_UI,                                //22: UI
+        F_RenderPass_BackBuffer,                        //23: BackBuffer
 
-        F_RenderPass_Custom1,                           //5:  Custom1
-        F_RenderPass_Custom2,                           //6:  Custom2
-        F_RenderPass_Custom3,                           //7:  Custom3
-        F_RenderPass_Custom4,                           //8:  Custom4
-        F_RenderPass_Custom5,                           //9:  Custom5
+        F_RenderPass_Custom1,                           //24: Custom1
+        F_RenderPass_Custom2,                           //25: Custom2
+        F_RenderPass_Custom3,                           //26: Custom3
+        F_RenderPass_Custom4,                           //27: Custom4
+        F_RenderPass_Custom5,                           //28: Custom5
 
         F_RenderPass_Count,
     };
