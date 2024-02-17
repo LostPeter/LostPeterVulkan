@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassBackBuffer::RenderPassBackBuffer()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_BackBuffer), 
-                     F_RenderPass_BackBuffer, 
-                     F_GetRenderPassTypeName(F_RenderPass_BackBuffer))
+        : RenderPassQuad(F_RenderPass_BackBuffer)
     {
 
     }

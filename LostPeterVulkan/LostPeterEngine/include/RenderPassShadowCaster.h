@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_SHADOW_CASTER_H_
 #define _RENDER_PASS_SHADOW_CASTER_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassShadowCaster : public RenderPass
+    class engineExport RenderPassShadowCaster : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassShadowCaster();
+    public:
         virtual ~RenderPassShadowCaster();
 
     public:

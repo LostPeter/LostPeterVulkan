@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassSky::RenderPassSky()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Sky), 
-                     F_RenderPass_Sky, 
-                     F_GetRenderPassTypeName(F_RenderPass_Sky))
+        : RenderPassQueue(F_RenderPass_Sky)
     {
 
     }

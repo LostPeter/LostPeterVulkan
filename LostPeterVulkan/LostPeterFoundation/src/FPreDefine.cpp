@@ -1523,6 +1523,11 @@ namespace LostPeterFoundation
         "Custom3",                  //26: Custom3
         "Custom4",                  //27: Custom4
         "Custom5",                  //28: Custom5
+        "Custom6",                  //29: Custom6
+        "Custom7",                  //30: Custom7
+        "Custom8",                  //31: Custom8
+        "Custom9",                  //32: Custom9
+        "Custom10",                 //33: Custom10
     };
     const String& F_GetRenderPassTypeName(FRenderPassType type)
     {
@@ -1544,30 +1549,83 @@ namespace LostPeterFoundation
     }
 
 
-    //FFrameBufferType
-    static const String s_nameFrameBufferTypes[] = 
+    //FRenderPassSortType
+    static const String s_nameRenderPassSortTypes[] = 
     {
-        "Color",                    //0: Color
-        "Depth",                    //1: Depth
-        "DepthStencil",             //2: DepthStencil
+        "Queue",                    //0: Queue
+        "Simple",                   //1: Simple
+        "Quad",                     //2: Quad
     };
-    const String& F_GetFrameBufferTypeName(FFrameBufferType type)
+    const String& F_GetRenderPassSortTypeName(FRenderPassSortType type)
     {
-        return s_nameFrameBufferTypes[(int)type];
+        return s_nameRenderPassSortTypes[(int)type];
     }
-    const String& F_GetFrameBufferTypeName(int type)
+    const String& F_GetRenderPassSortTypeName(int type)
     {
-        return s_nameFrameBufferTypes[(int)type];
+        return s_nameRenderPassSortTypes[(int)type];
     }
-    FFrameBufferType F_ParseFrameBufferType(const String& strName)
+    FRenderPassSortType F_ParseRenderPassSortType(const String& strName)
     {
-        for (int i = 0; i < (int)F_FrameBuffer_Count; i++)
+        for (int i = 0; i < (int)F_RenderPassSort_Count; i++)
         {
-            if (s_nameFrameBufferTypes[i] == strName)
-                return (FFrameBufferType)(i);
+            if (s_nameRenderPassSortTypes[i] == strName)
+                return (FRenderPassSortType)(i);
         }
-        F_Assert(false && "F_ParseFrameBufferType: Wrong type name !")
-        return F_FrameBuffer_Color;
+        F_Assert(false && "F_ParseRenderPassSortType: Wrong type name !")
+        return F_RenderPassSort_Queue;
+    }
+
+
+    //FFrameBufferType
+    uint32 F_GetFrameBufferColor() 
+    { 
+        return F_FrameBuffer_Color; 
+    }
+    uint32 F_GetFrameBufferDepth() 
+    { 
+        return F_FrameBuffer_Depth; 
+    }
+    uint32 F_GetFrameBufferStencil() 
+    { 
+        return F_FrameBuffer_Stencil; 
+    }
+    uint32 F_GetFrameBufferDepthStencil() 
+    { 
+        uint32 nFlags = 0;
+        nFlags |= F_FrameBuffer_Depth;
+        nFlags |= F_FrameBuffer_Stencil;
+        return nFlags; 
+    }
+    uint32 F_GetFrameBufferColorDepthStencil() 
+    { 
+        uint32 nFlags = 0;
+        nFlags |= F_FrameBuffer_Color;
+        nFlags |= F_FrameBuffer_Depth;
+        nFlags |= F_FrameBuffer_Stencil;
+        return nFlags; 
+    }
+    bool F_HasFrameBufferColor(uint32 nFlags) 
+    { 
+        return (nFlags | F_FrameBuffer_Color) != 0; 
+    }
+    bool F_HasFrameBufferDepth(uint32 nFlags) 
+    { 
+        return (nFlags | F_FrameBuffer_Depth) != 0; 
+    }
+    bool F_HasFrameBufferStencil(uint32 nFlags) 
+    { 
+        return (nFlags | F_FrameBuffer_Stencil) != 0; 
+    }
+    bool F_HasFrameBufferDepthStencil(uint32 nFlags) 
+    { 
+        return ((nFlags | F_FrameBuffer_Depth) != 0) &&
+            ((nFlags | F_FrameBuffer_Stencil) != 0); 
+    }
+    bool F_HasFrameBufferColorDepthStencil(uint32 nFlags) 
+    { 
+        return ((nFlags | F_FrameBuffer_Color) != 0) &&
+            ((nFlags | F_FrameBuffer_Depth) != 0) &&
+            ((nFlags | F_FrameBuffer_Stencil) != 0); 
     }
 
 

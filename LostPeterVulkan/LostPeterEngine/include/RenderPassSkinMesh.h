@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_SKIN_MESH_H_
 #define _RENDER_PASS_SKIN_MESH_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassSkinMesh : public RenderPass
+    class engineExport RenderPassSkinMesh : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassSkinMesh();
+    public:
         virtual ~RenderPassSkinMesh();
 
     public:

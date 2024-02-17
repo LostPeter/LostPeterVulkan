@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassRefraction::RenderPassRefraction()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Refraction), 
-                     F_RenderPass_Refraction, 
-                     F_GetRenderPassTypeName(F_RenderPass_Refraction))
+        : RenderPassQueue(F_RenderPass_Reflection)
     {
 
     }

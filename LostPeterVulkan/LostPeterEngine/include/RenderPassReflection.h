@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_REFLECTION_H_
 #define _RENDER_PASS_REFLECTION_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassReflection : public RenderPass
+    class engineExport RenderPassReflection : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassReflection();
+    public:
         virtual ~RenderPassReflection();
 
     public:

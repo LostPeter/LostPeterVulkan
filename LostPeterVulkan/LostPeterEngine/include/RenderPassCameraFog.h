@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_CAMERA_FOG_H_
 #define _RENDER_PASS_CAMERA_FOG_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassCameraFog : public RenderPass
+    class engineExport RenderPassCameraFog : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassCameraFog();
+    public:
         virtual ~RenderPassCameraFog();
 
     public:

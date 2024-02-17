@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_BILLBOARD_H_
 #define _RENDER_PASS_BILLBOARD_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassBillboard : public RenderPass
+    class engineExport RenderPassBillboard : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassBillboard();
+    public:
         virtual ~RenderPassBillboard();
 
     public:

@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_POST_PROCESS_H_
 #define _RENDER_PASS_POST_PROCESS_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassPostProcess : public RenderPass
+    class engineExport RenderPassPostProcess : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassPostProcess();
+    public:
         virtual ~RenderPassPostProcess();
 
     public:

@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_GRASS_H_
 #define _RENDER_PASS_GRASS_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassGrass : public RenderPass
+    class engineExport RenderPassGrass : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassGrass();
+    public:
         virtual ~RenderPassGrass();
 
     public:

@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_G_BUFFER_H_
 #define _RENDER_PASS_G_BUFFER_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassGBuffer : public RenderPass
+    class engineExport RenderPassGBuffer : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassGBuffer();
+    public:
         virtual ~RenderPassGBuffer();
 
     public:

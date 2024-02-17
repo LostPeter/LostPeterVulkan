@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassGrass::RenderPassGrass()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Grass), 
-                     F_RenderPass_Grass, 
-                     F_GetRenderPassTypeName(F_RenderPass_Grass))
+        : RenderPassQueue(F_RenderPass_Grass)
     {
 
     }

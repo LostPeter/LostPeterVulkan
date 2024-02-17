@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassTerrain::RenderPassTerrain()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Terrain), 
-                     F_RenderPass_Terrain, 
-                     F_GetRenderPassTypeName(F_RenderPass_Terrain))
+        : RenderPassQueue(F_RenderPass_Terrain)
     {
 
     }

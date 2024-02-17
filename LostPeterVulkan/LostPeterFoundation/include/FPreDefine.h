@@ -1401,6 +1401,11 @@ namespace LostPeterFoundation
         F_RenderPass_Custom3,                           //26: Custom3
         F_RenderPass_Custom4,                           //27: Custom4
         F_RenderPass_Custom5,                           //28: Custom5
+        F_RenderPass_Custom6,                           //29: Custom6
+        F_RenderPass_Custom7,                           //30: Custom7
+        F_RenderPass_Custom8,                           //31: Custom8
+        F_RenderPass_Custom9,                           //32: Custom9
+        F_RenderPass_Custom10,                          //33: Custom10
 
         F_RenderPass_Count,
     };
@@ -1409,17 +1414,35 @@ namespace LostPeterFoundation
     foundationExport FRenderPassType F_ParseRenderPassType(const String& strName);
 
 
+    enum FRenderPassSortType
+	{
+		F_RenderPassSort_Queue = 0,                     //0: Queue
+		F_RenderPassSort_Simple,                        //1: Simple
+		F_RenderPassSort_Quad,                          //2: Quad
+
+        F_RenderPassSort_Count,
+	};
+    foundationExport const String& F_GetRenderPassSortTypeName(FRenderPassSortType type);
+    foundationExport const String& F_GetRenderPassSortTypeName(int type);
+    foundationExport FRenderPassSortType F_ParseRenderPassSortType(const String& strName);
+
+
     enum FFrameBufferType 
 	{
-		F_FrameBuffer_Color = 0,	                    //0: Color
-		F_FrameBuffer_Depth,	                        //1: Depth
-		F_FrameBuffer_DepthStencil,	                    //2: DepthStencil
-
-        F_FrameBuffer_Count,
+		F_FrameBuffer_Color = 0x01,	                    //0: Color
+		F_FrameBuffer_Depth = 0x02,	                    //1: Depth
+		F_FrameBuffer_Stencil = 0x04,	                //2: DepthStencil
 	};
-    foundationExport const String& F_GetFrameBufferTypeName(FFrameBufferType type);
-    foundationExport const String& F_GetFrameBufferTypeName(int type);
-    foundationExport FFrameBufferType F_ParseFrameBufferType(const String& strName);
+    foundationExport uint32 F_GetFrameBufferColor();
+    foundationExport uint32 F_GetFrameBufferDepth();
+    foundationExport uint32 F_GetFrameBufferStencil();
+    foundationExport uint32 F_GetFrameBufferDepthStencil();
+    foundationExport uint32 F_GetFrameBufferColorDepthStencil();
+    foundationExport bool F_HasFrameBufferColor(uint32 nFlags);
+    foundationExport bool F_HasFrameBufferDepth(uint32 nFlags);
+    foundationExport bool F_HasFrameBufferStencil(uint32 nFlags);
+    foundationExport bool F_HasFrameBufferDepthStencil(uint32 nFlags);
+    foundationExport bool F_HasFrameBufferColorDepthStencil(uint32 nFlags);
 
 
     enum FPixelFormatType                                       // RGBA -> [R->4][G->3][B->2][A->1]  High -> Low

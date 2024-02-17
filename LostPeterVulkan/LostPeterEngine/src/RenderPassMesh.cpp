@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassMesh::RenderPassMesh()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Mesh), 
-                     F_RenderPass_Mesh, 
-                     F_GetRenderPassTypeName(F_RenderPass_Mesh))
+        : RenderPassQueue(F_RenderPass_Mesh)
     {
 
     }

@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassCameraFog::RenderPassCameraFog()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_CameraFog), 
-                     F_RenderPass_CameraFog, 
-                     F_GetRenderPassTypeName(F_RenderPass_CameraFog))
+        : RenderPassQueue(F_RenderPass_CameraFog)
     {
 
     }

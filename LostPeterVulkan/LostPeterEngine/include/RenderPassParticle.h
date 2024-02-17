@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_PARTICLE_H_
 #define _RENDER_PASS_PARTICLE_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassParticle : public RenderPass
+    class engineExport RenderPassParticle : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassParticle();
+    public:
         virtual ~RenderPassParticle();
 
     public:

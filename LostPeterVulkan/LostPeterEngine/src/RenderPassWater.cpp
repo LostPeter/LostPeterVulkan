@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassWater::RenderPassWater()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Water), 
-                     F_RenderPass_Water, 
-                     F_GetRenderPassTypeName(F_RenderPass_Water))
+        : RenderPassQueue(F_RenderPass_Water)
     {
 
     }

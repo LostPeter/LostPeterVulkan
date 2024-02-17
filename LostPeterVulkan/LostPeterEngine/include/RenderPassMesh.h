@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_MESH_H_
 #define _RENDER_PASS_MESH_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassMesh : public RenderPass
+    class engineExport RenderPassMesh : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassMesh();
+    public:
         virtual ~RenderPassMesh();
 
     public:

@@ -17,10 +17,10 @@ namespace LostPeterPluginRendererVulkan
 {
     VulkanFrameBufferAttachment::VulkanFrameBufferAttachment(const String& nameFrameBufferAttachment,
                                                              VulkanDevice* pDevice, 
-                                                             FFrameBufferType eFrameBuffer)
+                                                             uint32 nFrameBufferFlags)
         : Base(nameFrameBufferAttachment)
         , m_pDevice(pDevice)
-        , m_eFrameBuffer(eFrameBuffer)
+        , m_nFrameBufferFlags(nFrameBufferFlags)
         , m_bIsImageArray(false)
         , m_vkImage(VK_NULL_HANDLE)
         , m_vkImageMemory(VK_NULL_HANDLE)

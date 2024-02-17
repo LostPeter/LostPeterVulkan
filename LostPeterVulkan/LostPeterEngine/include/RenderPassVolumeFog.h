@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_VOLUME_FOG_H_
 #define _RENDER_PASS_VOLUME_FOG_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassVolumeFog : public RenderPass
+    class engineExport RenderPassVolumeFog : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassVolumeFog();
+    public:
         virtual ~RenderPassVolumeFog();
 
     public:

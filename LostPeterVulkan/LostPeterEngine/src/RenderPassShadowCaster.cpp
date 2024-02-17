@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassShadowCaster::RenderPassShadowCaster()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_ShadowCaster), 
-                     F_RenderPass_ShadowCaster, 
-                     F_GetRenderPassTypeName(F_RenderPass_ShadowCaster))
+        : RenderPassQueue(F_RenderPass_ShadowCaster)
     {
 
     }

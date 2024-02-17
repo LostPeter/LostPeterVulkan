@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_LENS_FLARE_H_
 #define _RENDER_PASS_LENS_FLARE_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassLensFlare : public RenderPass
+    class engineExport RenderPassLensFlare : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassLensFlare();
+    public:
         virtual ~RenderPassLensFlare();
 
     public:

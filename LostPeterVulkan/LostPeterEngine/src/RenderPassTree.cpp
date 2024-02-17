@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassTree::RenderPassTree()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Tree), 
-                     F_RenderPass_Tree, 
-                     F_GetRenderPassTypeName(F_RenderPass_Tree))
+        : RenderPassQueue(F_RenderPass_Tree)
     {
 
     }

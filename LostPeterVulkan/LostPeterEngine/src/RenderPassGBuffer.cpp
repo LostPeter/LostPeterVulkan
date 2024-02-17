@@ -14,11 +14,9 @@
 namespace LostPeterEngine
 {
     RenderPassGBuffer::RenderPassGBuffer()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_GBuffer), 
-                     F_RenderPass_GBuffer, 
-                     F_GetRenderPassTypeName(F_RenderPass_GBuffer))
+        : RenderPassQueue(F_RenderPass_GBuffer)
     {
-
+        
     }
     
     RenderPassGBuffer::~RenderPassGBuffer()

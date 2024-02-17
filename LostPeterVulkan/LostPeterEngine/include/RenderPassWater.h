@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_WATER_H_
 #define _RENDER_PASS_WATER_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassWater : public RenderPass
+    class engineExport RenderPassWater : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassWater();
+    public:
         virtual ~RenderPassWater();
 
     public:

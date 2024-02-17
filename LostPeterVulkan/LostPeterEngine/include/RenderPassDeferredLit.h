@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_DEFERRED_LIT_H_
 #define _RENDER_PASS_DEFERRED_LIT_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassDeferredLit : public RenderPass
+    class engineExport RenderPassDeferredLit : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassDeferredLit();
+    public:
         virtual ~RenderPassDeferredLit();
 
     public:

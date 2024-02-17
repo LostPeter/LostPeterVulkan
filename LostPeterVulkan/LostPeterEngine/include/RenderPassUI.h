@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_UI_H_
 #define _RENDER_PASS_UI_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassUI : public RenderPass
+    class engineExport RenderPassUI : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassUI();
+    public:
         virtual ~RenderPassUI();
 
     public:

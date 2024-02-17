@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassLensFlare::RenderPassLensFlare()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_LensFlare), 
-                     F_RenderPass_LensFlare, 
-                     F_GetRenderPassTypeName(F_RenderPass_LensFlare))
+        : RenderPassQueue(F_RenderPass_LensFlare)
     {
 
     }

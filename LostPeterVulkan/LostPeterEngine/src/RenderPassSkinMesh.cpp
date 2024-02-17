@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassSkinMesh::RenderPassSkinMesh()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_SkinMesh), 
-                     F_RenderPass_SkinMesh, 
-                     F_GetRenderPassTypeName(F_RenderPass_SkinMesh))
+        : RenderPassQueue(F_RenderPass_SkinMesh)
     {
 
     }

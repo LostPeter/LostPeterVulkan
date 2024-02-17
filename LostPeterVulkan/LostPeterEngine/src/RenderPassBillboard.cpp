@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassBillboard::RenderPassBillboard()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_Billboard), 
-                     F_RenderPass_Billboard, 
-                     F_GetRenderPassTypeName(F_RenderPass_Billboard))
+        : RenderPassQueue(F_RenderPass_Billboard)
     {
 
     }

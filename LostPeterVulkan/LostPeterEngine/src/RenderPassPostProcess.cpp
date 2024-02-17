@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassPostProcess::RenderPassPostProcess()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_PostProcess), 
-                     F_RenderPass_PostProcess, 
-                     F_GetRenderPassTypeName(F_RenderPass_PostProcess))
+        : RenderPassQueue(F_RenderPass_PostProcess)
     {
 
     }

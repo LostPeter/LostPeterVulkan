@@ -12,14 +12,17 @@
 #ifndef _RENDER_PASS_DEPTH_ONLY_H_
 #define _RENDER_PASS_DEPTH_ONLY_H_
 
-#include "RenderPass.h"
+#include "RenderPassQueue.h"
 
 namespace LostPeterEngine
 {
-    class engineExport RenderPassDepthOnly : public RenderPass
+    class engineExport RenderPassDepthOnly : public RenderPassQueue
     {
-    public:
+        friend class RenderPassManager;
+
+    private:
         RenderPassDepthOnly();
+    public:
         virtual ~RenderPassDepthOnly();
 
     public:

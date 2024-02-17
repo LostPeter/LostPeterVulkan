@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassDeferredLit::RenderPassDeferredLit()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_DeferredLit), 
-                     F_RenderPass_DeferredLit,
-                     F_GetRenderPassTypeName(F_RenderPass_DeferredLit))
+        : RenderPassQueue(F_RenderPass_DeferredLit)
     {
 
     }

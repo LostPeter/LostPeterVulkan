@@ -25,14 +25,14 @@ namespace LostPeterEngine
 
     public:
     protected:
-        RenderPassPtrVector m_aRenderPass;
+        RenderPass*	m_ppRenderPass[F_RenderPass_Count];
         RenderPassPtrMap m_mapRenderPass;
 
     public:
-        F_FORCEINLINE const RenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
-        F_FORCEINLINE RenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
         F_FORCEINLINE const RenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
         F_FORCEINLINE RenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
+        RenderPass* GetRenderPassByType(FRenderPassType eRenderPass);
+        RenderPass* GetRenderPassByName(const String& strName);
 
     public:
         static RenderPassManager& GetSingleton();
@@ -42,9 +42,13 @@ namespace LostPeterEngine
         void Destroy();
         bool Init();
 
-    public:
-        void DestroyRenderPassAll();
+        void SetRenderTarget(RenderTarget* pRenderTarget);
+		void SetSceneManager(SceneManager* pSceneManager);
+		void SetRenderTargetAndSceneManager(RenderTarget* pRenderTarget, SceneManager* pSceneManager);
         
+    public:
+        bool RegisterRenderPassCustom(RenderPass* pRenerPass);
+		bool UnRegisterRenderPassCustom(RenderPass* pRenerPass);
     };
 
 }; //LostPeterEngine

@@ -14,9 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassVolumeFog::RenderPassVolumeFog()
-        : RenderPass(F_GetRenderPassTypeName(F_RenderPass_VolumeFog), 
-                     F_RenderPass_VolumeFog, 
-                     F_GetRenderPassTypeName(F_RenderPass_VolumeFog))
+        : RenderPassQueue(F_RenderPass_VolumeFog)
     {
 
     }
