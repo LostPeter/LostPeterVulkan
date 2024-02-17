@@ -23,17 +23,29 @@ namespace LostPeterEngine
     
     RenderPassQueue::~RenderPassQueue()
     {
-
+        ClearQueue();
     }
 
     void RenderPassQueue::AddQueue(Renderable* pRenderable)
     {
-
+        if(m_listRenderable.empty())
+			m_listRenderable.push_back(pRenderable);
+		else
+		{
+			RenderablePtrList::iterator it,itEnd;
+			itEnd = m_listRenderable.end();
+			for (it = m_listRenderable.begin(); it != itEnd; ++it)
+			{
+				if((*it)->GetRendOrderID() > pRenderable->GetRendOrderID())
+					break;
+			}
+			m_listRenderable.insert(it, pRenderable);
+		}
     }
 
     void RenderPassQueue::ClearQueue()
     {
-
+        m_listRenderable.clear();
     }
 
 	void RenderPassQueue::Render(Renderer* pRenderer)

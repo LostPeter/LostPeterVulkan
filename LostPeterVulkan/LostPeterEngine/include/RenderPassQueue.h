@@ -23,7 +23,8 @@ namespace LostPeterEngine
         virtual ~RenderPassQueue();
 
     public:
-        
+    protected:
+        RenderablePtrList m_listRenderable;
 
     public:
         virtual void AddQueue(Renderable* pRenderable);

@@ -944,6 +944,7 @@ namespace LostPeterEngine
     typedef std::map<String, MaterialData*> MaterialDataPtrMap;
 
     typedef std::vector<Renderable*> RenderablePtrVector;
+    typedef std::list<Renderable*> RenderablePtrList;
     typedef std::map<String, Renderable*> RenderablePtrMap;
 
     typedef std::vector<RenderableIndirect*> RenderableIndirectPtrVector;

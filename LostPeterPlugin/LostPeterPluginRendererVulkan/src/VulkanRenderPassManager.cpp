@@ -79,8 +79,11 @@ namespace LostPeterPluginRendererVulkan
     {
         VulkanRenderPass* pRenderPass = GetRenderPass(nameRenderPass);
         if (pRenderPass != nullptr)
+        {
+            pRenderPass->AddRef();
             return pRenderPass;
-        
+        }
+
         pRenderPass = new VulkanRenderPass(nameRenderPass, this->m_pDevice);
         if (!pRenderPass->Init(aAttachmentDescription,
                                aSubpassDescription,
@@ -91,6 +94,7 @@ namespace LostPeterPluginRendererVulkan
             return nullptr;
         }
         AddRenderPass(pRenderPass);
+        pRenderPass->AddRef();
         return pRenderPass;
     }
     VulkanRenderPass* VulkanRenderPassManager::CreateRenderPass_KhrDepth(const String& nameRenderPass,
@@ -542,11 +546,15 @@ namespace LostPeterPluginRendererVulkan
             return;
         }
 
-        VulkanRenderPassPtrVector::iterator itFindA = std::find(m_aRenderPass.begin(), m_aRenderPass.end(), itFind->second);
-        if (itFindA != m_aRenderPass.end())
-            m_aRenderPass.erase(itFindA);
-        F_DELETE(itFind->second)
-        m_mapRenderPass.erase(itFind);
+        itFind->second->DelRef();
+        if (itFind->second->CanDel())
+        {
+            VulkanRenderPassPtrVector::iterator itFindA = std::find(m_aRenderPass.begin(), m_aRenderPass.end(), itFind->second);
+            if (itFindA != m_aRenderPass.end())
+                m_aRenderPass.erase(itFindA);
+            F_DELETE(itFind->second)
+            m_mapRenderPass.erase(itFind);
+        }
     }
     void VulkanRenderPassManager::DeleteRenderPass(VulkanRenderPass* pRenderPass)
     {

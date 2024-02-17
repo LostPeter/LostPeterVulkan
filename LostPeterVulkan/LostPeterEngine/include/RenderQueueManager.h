@@ -38,6 +38,17 @@ namespace LostPeterEngine
         static RenderQueueManager& GetSingleton();
 		static RenderQueueManager* GetSingletonPtr();
 
+    public:
+        void Destroy();
+
+    public:
+        bool HasRenderQueue(const String& strName);
+        RenderQueue* GetRenderQueue(const String& strName);
+        bool AddRenderQueue(RenderQueue* pRenderQueue);
+        RenderQueue* CreateRenderQueue(const String& strName);
+        void DeleteRenderQueue(const String& strName);
+		void DeleteRenderQueue(RenderQueue* pRenderQueue);
+        void DeleteRenderQueueAll();
 
     };
 

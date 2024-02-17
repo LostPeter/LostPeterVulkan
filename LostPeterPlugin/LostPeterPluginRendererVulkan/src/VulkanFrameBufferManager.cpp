@@ -81,7 +81,10 @@ namespace LostPeterPluginRendererVulkan
     {
         VulkanFrameBuffer* pFrameBuffer = GetFrameBuffer(nameFrameBuffer);
         if (pFrameBuffer != nullptr)
+        {
+            pFrameBuffer->AddRef();
             return pFrameBuffer;
+        }
         
         pFrameBuffer = new VulkanFrameBuffer(nameFrameBuffer, this->m_pDevice);
         if (!pFrameBuffer->Init(aImageView,
@@ -96,6 +99,7 @@ namespace LostPeterPluginRendererVulkan
             return nullptr;
         }
         AddFrameBuffer(pFrameBuffer);
+        pFrameBuffer->AddRef();
         return pFrameBuffer;
     }
     void VulkanFrameBufferManager::DeleteFrameBuffer(const String& strName)
@@ -106,11 +110,15 @@ namespace LostPeterPluginRendererVulkan
             return;
         }
 
-        VulkanFrameBufferPtrVector::iterator itFindA = std::find(m_aFrameBuffer.begin(), m_aFrameBuffer.end(), itFind->second);
-        if (itFindA != m_aFrameBuffer.end())
-            m_aFrameBuffer.erase(itFindA);
-        F_DELETE(itFind->second)
-        m_mapFrameBuffer.erase(itFind);
+        itFind->second->DelRef();
+        if (itFind->second->CanDel())
+        {
+            VulkanFrameBufferPtrVector::iterator itFindA = std::find(m_aFrameBuffer.begin(), m_aFrameBuffer.end(), itFind->second);
+            if (itFindA != m_aFrameBuffer.end())
+                m_aFrameBuffer.erase(itFindA);
+            F_DELETE(itFind->second)
+            m_mapFrameBuffer.erase(itFind);
+        }
     }
     void VulkanFrameBufferManager::DeleteFrameBuffer(VulkanFrameBuffer* pFrameBuffer)
     {

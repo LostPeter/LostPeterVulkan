@@ -24,8 +24,19 @@ namespace LostPeterEngine
         virtual ~RenderQueue();
 
     public:
-        
+    protected:
+		SceneManager* m_pSceneManager;
 
+    public:
+		F_FORCEINLINE SceneManager* GetSceneManager() const { return m_pSceneManager; }
+		F_FORCEINLINE void SetSceneManager(SceneManager* pSceneManager) { m_pSceneManager = pSceneManager; }
+
+    public:
+        void Destroy();
+        bool Init();
+		
+	public:
+		bool AddRenderable(Renderable* pRenderable);
     };
 
 }; //LostPeterEngine

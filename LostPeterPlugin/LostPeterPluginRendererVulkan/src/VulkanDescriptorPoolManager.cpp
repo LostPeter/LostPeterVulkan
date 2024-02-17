@@ -76,8 +76,11 @@ namespace LostPeterPluginRendererVulkan
     {
         VulkanDescriptorPool* pDescriptorPool = GetDescriptorPool(nameDescriptorPool);
         if (pDescriptorPool != nullptr)
+        {
+            pDescriptorPool->AddRef();
             return pDescriptorPool;
-        
+        }
+
         pDescriptorPool = new VulkanDescriptorPool(nameDescriptorPool, this->m_pDevice);
         if (!pDescriptorPool->Init(descriptorCount))
         {
@@ -86,6 +89,7 @@ namespace LostPeterPluginRendererVulkan
             return nullptr;
         }
         AddDescriptorPool(pDescriptorPool);
+        pDescriptorPool->AddRef();
         return pDescriptorPool;
     }
     void VulkanDescriptorPoolManager::DeleteDescriptorPool(const String& strName)
@@ -96,11 +100,15 @@ namespace LostPeterPluginRendererVulkan
             return;
         }
 
-        VulkanDescriptorPoolPtrVector::iterator itFindA = std::find(m_aDescriptorPool.begin(), m_aDescriptorPool.end(), itFind->second);
-        if (itFindA != m_aDescriptorPool.end())
-            m_aDescriptorPool.erase(itFindA);
-        F_DELETE(itFind->second)
-        m_mapDescriptorPool.erase(itFind);
+        itFind->second->DelRef();
+        if (itFind->second->CanDel())
+        {   
+            VulkanDescriptorPoolPtrVector::iterator itFindA = std::find(m_aDescriptorPool.begin(), m_aDescriptorPool.end(), itFind->second);
+            if (itFindA != m_aDescriptorPool.end())
+                m_aDescriptorPool.erase(itFindA);
+            F_DELETE(itFind->second)
+            m_mapDescriptorPool.erase(itFind);
+        }
     }
     void VulkanDescriptorPoolManager::DeleteDescriptorPool(VulkanDescriptorPool* pDescriptorPool)
     {

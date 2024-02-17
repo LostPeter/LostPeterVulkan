@@ -77,8 +77,11 @@ namespace LostPeterPluginRendererVulkan
     {
         VulkanCommandPool* pCommandPool = GetCommandPool(nameCommandPool);
         if (pCommandPool != nullptr)
+        {
+            pCommandPool->AddRef();
             return pCommandPool;
-        
+        }
+
         pCommandPool = new VulkanCommandPool(nameCommandPool, this->m_pDevice);
         if (!pCommandPool->Init(flags,
                                 queueFamilyIndex))
@@ -88,6 +91,7 @@ namespace LostPeterPluginRendererVulkan
             return nullptr;
         }
         AddCommandPool(pCommandPool);
+        pCommandPool->AddRef();
         return pCommandPool;
     }
     void VulkanCommandPoolManager::DeleteCommandPool(const String& strName)
@@ -98,11 +102,15 @@ namespace LostPeterPluginRendererVulkan
             return;
         }
 
-        VulkanCommandPoolPtrVector::iterator itFindA = std::find(m_aCommandPool.begin(), m_aCommandPool.end(), itFind->second);
-        if (itFindA != m_aCommandPool.end())
-            m_aCommandPool.erase(itFindA);
-        F_DELETE(itFind->second)
-        m_mapCommandPool.erase(itFind);
+        itFind->second->DelRef();
+        if (itFind->second->CanDel())
+        {
+            VulkanCommandPoolPtrVector::iterator itFindA = std::find(m_aCommandPool.begin(), m_aCommandPool.end(), itFind->second);
+            if (itFindA != m_aCommandPool.end())
+                m_aCommandPool.erase(itFindA);
+            F_DELETE(itFind->second)
+            m_mapCommandPool.erase(itFind);
+        }
     }
     void VulkanCommandPoolManager::DeleteCommandPool(VulkanCommandPool* pCommandPool)
     {

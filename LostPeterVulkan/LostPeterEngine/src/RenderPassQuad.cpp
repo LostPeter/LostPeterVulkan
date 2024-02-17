@@ -28,7 +28,7 @@ namespace LostPeterEngine
 
     void RenderPassQuad::AddQueue(Renderable* pRenderable)
     {
-
+        
     }
     
     void RenderPassQuad::ClearQueue()
