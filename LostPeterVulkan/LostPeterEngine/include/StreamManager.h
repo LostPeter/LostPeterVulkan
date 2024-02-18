@@ -57,6 +57,7 @@ namespace LostPeterEngine
 
 		StreamVertexPtrSet m_setStreamVertex;
 		StreamIndexPtrSet m_setStreamIndex;
+		StreamUniformPtrSet m_setStreamUniform;
 
 		FreeTemporaryVertexStreamMap m_mapFreeTempVertexStream;
 		TemporaryVertexStreamInfoMap m_mapTempVertexStreamInfos;
@@ -65,6 +66,7 @@ namespace LostPeterEngine
 
 		//ENGINE_MUTEX(m_mutexVertexStreams)
 		//ENGINE_MUTEX(m_mutexIndexStreams)
+		//ENGINE_MUTEX(m_mutexUniformStreams)
 
 		//ENGINE_MUTEX(m_mutexTempStreams)
 
@@ -76,13 +78,21 @@ namespace LostPeterEngine
 		void Destroy();
 
 	public:
+		//StreamVertex
 		virtual StreamVertex* CreateStreamVertex(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
 		virtual StreamVertex* CreateStreamVertex(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
 		virtual void DestroyStreamVertex(StreamVertex* pStreamVertex);
 
+		//StreamIndex
 		virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, uint32 nIndexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
 		virtual void DestroyStreamIndex(StreamIndex* pStreamIndex);
 
+		//StreamUniform
+		virtual StreamUniform* CreateStreamUniform(uint32 nUniformSize, uint32 nUniformCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
+		virtual StreamUniform* CreateStreamUniform(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false) = 0;
+		virtual void DestroyStreamUniform(StreamUniform* pStreamUniform);
+
+	public:
 		virtual StreamVertex* AllocateStreamVertexCopy(StreamVertex* pStreamVertexSrc, EStreamReleaseType eStreamRelease,
 													   StreamTemp* pStreamTemp, bool bIsCopyData = false);
 		virtual void ReleaseStreamVertexCopy(StreamVertex* pStreamVertex); 

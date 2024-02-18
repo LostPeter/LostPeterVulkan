@@ -26,7 +26,7 @@ namespace LostPeterEngine
 	}
 
 	VertexElement::VertexElement(uint16 nSourceIndex,
-                                 size_t nOffset,
+                                 uint32 nOffset,
                                  FVertexElementSemanticType typeSemantic,
 		                         FVertexElementDataType typeData,
                                  uint16 nIndex /*= 0*/)
@@ -68,12 +68,12 @@ namespace LostPeterEngine
 		strKey = FUtilString::SaveUInt(nKey);
 	}
 
-	size_t VertexElement::GetSize() const
+	uint32 VertexElement::GetSize() const
 	{
 		return GetTypeSize(m_eVertexElementData);
 	}
 
-	size_t VertexElement::GetTypeSize(FVertexElementDataType typeData)
+	uint32 VertexElement::GetTypeSize(FVertexElementDataType typeData)
 	{
 		switch ((int32)typeData)
 		{

@@ -61,6 +61,7 @@
 #include "../include/VulkanStreamManager.h"
 #include "../include/VulkanStreamTexture.h"
 #include "../include/VulkanStreamVertex.h"
+#include "../include/VulkanStreamUniform.h"
 #include "../include/VulkanSwapChain.h"
 #include "../include/VulkanTexture.h"
 #include "../include/VulkanTextureManager.h"

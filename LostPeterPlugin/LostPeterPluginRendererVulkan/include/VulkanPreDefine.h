@@ -1213,6 +1213,7 @@ namespace LostPeterPluginRendererVulkan
     class VulkanStreamManager;
     class VulkanStreamTexture;
     class VulkanStreamVertex;
+    class VulkanStreamUniform;
 	class VulkanSwapChain;
     class VulkanTexture;
     class VulkanTextureManager;

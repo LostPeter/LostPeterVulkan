@@ -841,6 +841,8 @@ namespace LostPeterEngine
 	class StreamVertexBinding;
 	class StreamVertexBindingManager;
 	class StreamVertexSystem;
+    class StreamUniform;
+    class StreamUniformSystem;
     class SystemCapabilities;
     class Texture;
     class TextureManager;
@@ -1040,6 +1042,11 @@ namespace LostPeterEngine
 	typedef std::set<StreamIndex*> StreamIndexPtrSet;
 	typedef std::map<StreamIndex*, int32> StreamIndexPtrMap;
 
+    typedef std::vector<StreamUniform*> StreamUniformPtrVector;
+	typedef std::list<StreamUniform*> StreamUniformPtrList;
+	typedef std::set<StreamUniform*> StreamUniformPtrSet;
+    typedef std::map<uint16, StreamUniform*> StreamUniformPtrMap;
+
 	typedef std::vector<StreamTexture*> StreamTexturePtrVector;
 	typedef std::list<StreamTexture*> StreamTexturePtrList;
 	typedef std::set<StreamTexture*> StreamTexturePtrSet;
@@ -1050,7 +1057,7 @@ namespace LostPeterEngine
 	typedef std::list<StreamVertexBinding*> StreamVertexBindingPtrList;
 	typedef std::set<StreamVertexBinding*> StreamVertexBindingPtrSet;
 
-    typedef std::vector<size_t> VertexSizeVector;
+    typedef std::vector<uint32> VertexSizeVector;
     typedef std::vector<VertexElement> VertexElementVector;
 	typedef std::list<VertexElement> VertexElementList;
 

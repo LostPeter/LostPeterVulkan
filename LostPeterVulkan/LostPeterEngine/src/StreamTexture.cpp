@@ -30,7 +30,7 @@ namespace LostPeterEngine
 	{
 		m_nRowPitch	= m_nWidth;
 		m_nSlicePitch = m_nHeight * m_nWidth;
-		m_nStreamSizeInBytes = m_nHeight * m_nWidth * FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);
+		m_nStreamSizeInBytes = m_nHeight * m_nWidth * (uint32)FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);
 	}
 
 	StreamTexture::~StreamTexture()

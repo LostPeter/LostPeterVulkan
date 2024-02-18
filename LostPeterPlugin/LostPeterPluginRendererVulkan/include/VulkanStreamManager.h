@@ -26,14 +26,19 @@ namespace LostPeterPluginRendererVulkan
     private:
         VulkanDevice* m_pDevice;
 
-    ////StreamManager
+
     public:
+        //StreamVertex
         virtual StreamVertex* CreateStreamVertex(uint32 nVertexSize, uint32 nVertexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
 		virtual StreamVertex* CreateStreamVertex(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
 
+        //StreamIndex
         virtual StreamIndex* CreateStreamIndex(EStreamIndexType eStreamIndex, uint32 nIndexCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
 
-    
+        //StreamUniform
+		virtual StreamUniform* CreateStreamUniform(uint32 nUniformSize, uint32 nUniformCount, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
+		virtual StreamUniform* CreateStreamUniform(uint32 nSizeInBytes, EStreamUsageType eStreamUsage, bool bIsUseShadowStream = false);
+
     };
 
 }; //LostPeterPluginRendererVulkan

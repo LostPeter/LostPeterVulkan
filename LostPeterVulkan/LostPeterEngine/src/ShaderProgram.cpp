@@ -125,11 +125,11 @@ namespace LostPeterEngine
     uint32 ShaderProgram::calculateSize() const
     {
         uint32 nMemSize = sizeof(*this);
-        nMemSize += m_strPath.size() * sizeof(char);
-        nMemSize += GetName().size() * sizeof(char);
-        nMemSize += m_strSource.size() * sizeof(char);
-        nMemSize += m_strSyntaxCode.size() * sizeof(char);
-
+        nMemSize += (uint32)(m_strPath.size() * sizeof(char));
+        nMemSize += (uint32)(GetName().size() * sizeof(char));
+        nMemSize += (uint32)(m_strSource.size() * sizeof(char));
+        nMemSize += (uint32)(m_strSyntaxCode.size() * sizeof(char));
+        
         uint32 nParamsSize = 0;
 
 

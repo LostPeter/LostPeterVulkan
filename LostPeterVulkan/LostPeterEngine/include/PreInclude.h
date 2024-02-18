@@ -163,6 +163,8 @@
 #include "StreamVertexBinding.h"
 #include "StreamVertexBindingManager.h"
 #include "StreamVertexSystem.h"
+#include "StreamUniform.h"
+#include "StreamUniformSystem.h"
 #include "SystemCapabilities.h"
 #include "Texture.h"
 #include "TextureManager.h"

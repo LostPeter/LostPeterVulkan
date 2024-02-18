@@ -297,8 +297,8 @@ namespace LostPeterEngine
     uint32 Mesh::calculateSize() const
     {
 		uint32 nMemSize = sizeof(*this);
-		nMemSize += m_strPath.size() * sizeof(char);
-        nMemSize += GetName().size() * sizeof(char);
+		nMemSize += (uint32)(m_strPath.size() * sizeof(char));
+        nMemSize += (uint32)(GetName().size() * sizeof(char));
 
         int count = (int)m_aMeshSub.size();
 		for (int i = 0; i < count; i++)

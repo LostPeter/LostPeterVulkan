@@ -21,7 +21,7 @@ namespace LostPeterEngine
 	public:	
 		VertexElement();
 		VertexElement(uint16 nSourceIndex,    
-                      size_t nOffset, 
+                      uint32 nOffset, 
                       FVertexElementSemanticType typeSemantic,
 					  FVertexElementDataType typeData,
                       uint16 nIndex = 0);
@@ -29,14 +29,14 @@ namespace LostPeterEngine
 		
 	public:
 		uint16 m_nSourceIndex;
-		size_t m_nOffset;
+		uint32 m_nOffset;
 		FVertexElementSemanticType m_eVertexElementSemantic;
 		FVertexElementDataType m_eVertexElementData;
 		uint16 m_nIndex;	
 
 	public:
 		F_FORCEINLINE uint16 GetSourceIndex() const { return m_nSourceIndex; }
-		F_FORCEINLINE size_t GetOffset() const { return m_nOffset; }
+		F_FORCEINLINE uint32 GetOffset() const { return m_nOffset; }
 		F_FORCEINLINE FVertexElementSemanticType GetVertexElementSemanticType() const { return m_eVertexElementSemantic; }
 		F_FORCEINLINE FVertexElementDataType GetVertexElementDataType() const { return m_eVertexElementData; }
 		F_FORCEINLINE uint16 GetIndex() const { return m_nIndex; }
@@ -45,8 +45,8 @@ namespace LostPeterEngine
 		void GetElementKey(String& strKey);
 			
 	public:
-		size_t GetSize() const;
-		static size_t GetTypeSize(FVertexElementDataType typeData);
+		uint32 GetSize() const;
+		static uint32 GetTypeSize(FVertexElementDataType typeData);
 		static uint16 GetTypeCount(FVertexElementDataType typeData);
 		static FVertexElementDataType MultiplyTypeCount(FVertexElementDataType typeData, uint16 nCount);
 		static FVertexElementDataType GetBaseType(FVertexElementDataType typeData);

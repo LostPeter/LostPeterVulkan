@@ -217,9 +217,10 @@ namespace LostPeterEngine
 
     uint32 MeshSub::calculateSize() const
     {
-        return GetName().size() * sizeof(char) + 
-            m_nVertexBuffer_Size + 
-            m_nIndexBuffer_Size;
+        uint32 nMemSize = (uint32)(GetName().size() * sizeof(char));
+        nMemSize += m_nVertexBuffer_Size;
+        nMemSize += m_nIndexBuffer_Size;
+        return nMemSize;
     }
 
 }; //LostPeterEngine

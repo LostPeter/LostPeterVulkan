@@ -12,6 +12,7 @@
 #include "../include/StreamManager.h"
 #include "../include/StreamVertex.h"
 #include "../include/StreamIndex.h"
+#include "../include/StreamUniform.h"
 #include "../include/StreamTemp.h"
 
 template<> LostPeterEngine::StreamManager* LostPeterFoundation::FSingleton<LostPeterEngine::StreamManager>::ms_Singleton = nullptr;
@@ -39,12 +40,12 @@ namespace LostPeterEngine
 
     StreamManager::~StreamManager()
     {
-        Destroy();
+        
     }
 
     void StreamManager::Destroy()
 	{	
-		//vertex
+		//StreamVertex
 		{
 			StreamVertexPtrSet::iterator it,itEnd;
 			itEnd = m_setStreamVertex.end();
@@ -54,7 +55,7 @@ namespace LostPeterEngine
 			}
 			m_setStreamVertex.clear();
 		}
-		//index
+		//StreamIndex
 		{
 			StreamIndexPtrSet::iterator it,itEnd;
 			itEnd = m_setStreamIndex.end();
@@ -63,6 +64,16 @@ namespace LostPeterEngine
 				delete (*it);
 			}
 			m_setStreamIndex.clear();
+		}
+		//StreamUniform
+		{
+			StreamUniformPtrSet::iterator it,itEnd;
+			itEnd = m_setStreamUniform.end();
+			for (it = m_setStreamUniform.begin(); it != itEnd; ++it)
+			{
+				delete (*it);
+			}
+			m_setStreamUniform.clear();
 		}
 	}
 
@@ -84,6 +95,16 @@ namespace LostPeterEngine
 		if (itFind != m_setStreamIndex.end())
 			m_setStreamIndex.erase(itFind);
 		F_DELETE(pStreamIndex)
+	}
+
+	void StreamManager::DestroyStreamUniform(StreamUniform* pStreamUniform)
+	{
+		//ENGINE_LOCK_MUTEX(m_mutexUniformStreams)
+
+		StreamUniformPtrSet::iterator itFind = m_setStreamUniform.find(pStreamUniform);
+		if (itFind != m_setStreamUniform.end())
+			m_setStreamUniform.erase(itFind);
+		F_DELETE(pStreamUniform)
 	}
 
 	StreamVertex* StreamManager::AllocateStreamVertexCopy(StreamVertex* pStreamVertexSrc, EStreamReleaseType eStreamRelease,
@@ -166,8 +187,8 @@ namespace LostPeterEngine
 	{
 		//ENGINE_LOCK_MUTEX(m_mutexTempStreams)
 
-		uint32 nNumUnused = m_mapFreeTempVertexStream.size();
-		uint32 nNumUsed = m_mapTempVertexStreamInfos.size();
+		uint32 nNumUnused = (uint32)m_mapFreeTempVertexStream.size();
+		uint32 nNumUsed = (uint32)m_mapTempVertexStreamInfos.size();
 
 		TemporaryVertexStreamInfoMap::iterator it,itEnd;
 		itEnd = m_mapTempVertexStreamInfos.end();
