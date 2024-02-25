@@ -55,17 +55,39 @@ namespace LostPeterEngine
         , m_vAngle(FMath::ms_v3Zero)
         , m_vScale(FMath::ms_v3One)
     {
-        
+
     }
     SceneConfigNode::~SceneConfigNode()
     {
-        
+        DeleteSceneConfigNodeChildAll();
+    }
+    void SceneConfigNode::AddSceneConfigNodeChild(SceneConfigNode* pChild)
+    {
+        m_aChild.push_back(pChild);
+    }
+    void SceneConfigNode::DeleteSceneConfigNodeChild(SceneConfigNode* pChild)
+    {
+        SceneConfigNodePtrVector::iterator itFind = std::find(m_aChild.begin(), m_aChild.end(), pChild);
+        if (itFind != m_aChild.end())
+            m_aChild.erase(itFind);
+        F_DELETE(pChild)
+    }
+    void SceneConfigNode::DeleteSceneConfigNodeChildAll()
+    {
+        for (SceneConfigNodePtrVector::iterator it = m_aChild.begin();
+             it != m_aChild.end(); ++it)
+        {
+            F_DELETE((*it))
+        }
+        m_aChild.clear();
     }
 
 
     //////////////////////////////// ObjectConfig ///////////////////////////////////
     ObjectConfig::ObjectConfig(const String& strName)
         : Base(strName)
+        , m_nID(0)
+        , m_strNameSceneNode("")
     {
 
     }
@@ -79,7 +101,7 @@ namespace LostPeterEngine
     ObjectConfigMesh::ObjectConfigMesh(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Mesh;
     }
     ObjectConfigMesh::~ObjectConfigMesh()
     {
@@ -91,7 +113,7 @@ namespace LostPeterEngine
     ObjectConfigSkinMesh::ObjectConfigSkinMesh(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_SkinMesh;
     }
     ObjectConfigSkinMesh::~ObjectConfigSkinMesh()
     {
@@ -103,7 +125,7 @@ namespace LostPeterEngine
     ObjectConfigCamera::ObjectConfigCamera(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Camera;
     }
     ObjectConfigCamera::~ObjectConfigCamera()
     {
@@ -115,11 +137,11 @@ namespace LostPeterEngine
     ObjectConfigLight::ObjectConfigLight(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Light;
     }
     ObjectConfigLight::~ObjectConfigLight()
     {
-        
+        m_eObject = E_Object_Mesh;
     }
 
 
@@ -127,7 +149,7 @@ namespace LostPeterEngine
     ObjectConfigTerrain::ObjectConfigTerrain(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Terrain;
     }
     ObjectConfigTerrain::~ObjectConfigTerrain()
     {
@@ -139,7 +161,7 @@ namespace LostPeterEngine
     ObjectConfigWater::ObjectConfigWater(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Water;
     }
     ObjectConfigWater::~ObjectConfigWater()
     {
@@ -151,7 +173,7 @@ namespace LostPeterEngine
     ObjectConfigSky::ObjectConfigSky(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Sky;
     }
     ObjectConfigSky::~ObjectConfigSky()
     {
@@ -163,7 +185,7 @@ namespace LostPeterEngine
     ObjectConfigCloud::ObjectConfigCloud(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Cloud;
     }
     ObjectConfigCloud::~ObjectConfigCloud()
     {
@@ -175,8 +197,8 @@ namespace LostPeterEngine
     ObjectConfigParticle::ObjectConfigParticle(const String& strName)
         : ObjectConfig(strName)
     {
-
-    }
+        m_eObject = E_Object_Particle;
+    }   
     ObjectConfigParticle::~ObjectConfigParticle()
     {
         
@@ -187,7 +209,7 @@ namespace LostPeterEngine
     ObjectConfigPostProcess::ObjectConfigPostProcess(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_PostProcess;
     }
     ObjectConfigPostProcess::~ObjectConfigPostProcess()
     {
@@ -199,7 +221,7 @@ namespace LostPeterEngine
     ObjectConfigUI::ObjectConfigUI(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_UI;
     }
     ObjectConfigUI::~ObjectConfigUI()
     {
@@ -211,7 +233,7 @@ namespace LostPeterEngine
 	ObjectConfigCustom::ObjectConfigCustom(const String& strName)
         : ObjectConfig(strName)
     {
-
+        m_eObject = E_Object_Custom;
     }
     ObjectConfigCustom::~ObjectConfigCustom()
     {

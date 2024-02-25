@@ -160,6 +160,7 @@ namespace LostPeterEngine
 
     enum EObjectType
     {
+        E_Object_Unknown = -1,                              //-1:   Unknown
         E_Object_Mesh = 0,                                  //0:    Mesh
         E_Object_SkinMesh,                                  //1:    SkinMesh
         E_Object_Camera,                                    //2:    Camera

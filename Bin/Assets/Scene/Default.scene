@@ -16,7 +16,7 @@
                 </obj>
             </object>
             <object type="Camera">
-                <obj name="Test_Camera" id="1">
+                <obj name="Test_Camera" id="1" name_node="Camera">
                     <param_camera />
                 </obj>
             </object>

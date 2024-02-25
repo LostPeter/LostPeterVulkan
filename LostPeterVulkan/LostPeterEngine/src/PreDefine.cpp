@@ -127,8 +127,7 @@ namespace LostPeterEngine
             if (s_nameObjectTypes[i] == strName)
                 return (EObjectType)(i);
         }
-        F_Assert(false && "E_ParseObjectType: Wrong type name !")
-        return E_Object_Mesh;
+        return E_Object_Unknown;
     }
 
 

@@ -29,6 +29,7 @@ namespace LostPeterEngine
     protected:
     ////SceneData
         SceneData* m_pSceneData;
+        bool m_bIsRefreshScene;
 
     ////SceneManager/SceneNode
         SceneManager* m_pSceneManager;
@@ -48,7 +49,9 @@ namespace LostPeterEngine
     public:
         F_FORCEINLINE SceneData* GetSceneData() const { return m_pSceneData; }
 		F_FORCEINLINE void SetSceneData(SceneData* pSceneData) { m_pSceneData = pSceneData; }
-
+        F_FORCEINLINE bool GetIsRefreshScene() const { return m_bIsRefreshScene; }
+		F_FORCEINLINE void SetIsRefreshScenea(bool bIsRefreshScene) { m_bIsRefreshScene = bIsRefreshScene; }
+        
 
     public:
         void Destroy();
@@ -57,6 +60,7 @@ namespace LostPeterEngine
         virtual bool LoadScene(bool bIsFromFile = true);
         virtual void UnloadScene();
 
+        virtual bool RefreshScene();
         virtual void ClearScene();
 
     ////SceneManager/SceneNode

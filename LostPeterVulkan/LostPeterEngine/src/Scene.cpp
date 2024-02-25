@@ -10,6 +10,8 @@
 ****************************************************************************/
 
 #include "../include/Scene.h"
+#include "../include/SceneConfig.h"
+#include "../include/SceneData.h"
 #include "../include/SceneDataManager.h"
 #include "../include/SceneManager.h"
 #include "../include/SceneNode.h"
@@ -30,6 +32,7 @@ namespace LostPeterEngine
         : Base(nGroup, strNameScene)
 	////SceneData
 		, m_pSceneData(nullptr)
+		, m_bIsRefreshScene(true)
     ////SceneManager/SceneNode
         , m_pSceneManager(nullptr)
         , m_pRootSceneNode(nullptr)
@@ -62,17 +65,24 @@ namespace LostPeterEngine
             return false;
         }
 
+		//1> SceneData
 		if (!m_pSceneData)
 		{
 			m_pSceneData = SceneDataManager::GetSingleton().LoadSceneData(nGroup, strName, bIsFromFile);
             if (m_pSceneData == nullptr)
             {
-                F_LogError("*********************** Scene::LoadScene: LoadMaterialData failed, group: [%u], name: [%s] !", nGroup, strName.c_str());
+                F_LogError("*********************** Scene::LoadScene: LoadSceneData failed, group: [%u], name: [%s] !", nGroup, strName.c_str());
                 return false;
             }
+			m_bIsRefreshScene = true;
 		}
 
-
+		//2> Scene
+		if (!RefreshScene())
+		{
+			F_LogError("*********************** Scene::LoadScene: RefreshScene failed, group: [%u], name: [%s] !", nGroup, strName.c_str());
+            return false;
+		}
 
         return true;
     }
@@ -87,11 +97,54 @@ namespace LostPeterEngine
         m_pSceneData = nullptr;
 	}
 
+		void s_CreateSceneNode(Scene* pScene, SceneConfigNode* pConfigNode, SceneNode* pParent)
+		{
+			F_Assert(pScene && pConfigNode && pParent && "s_CreateSceneNode")
+
+			SceneNode* pSceneNode = pScene->CreateSceneNode(pConfigNode->GetName(), pParent);
+			pSceneNode->SetPositionLocalOnly(pConfigNode->GetPos());
+			pSceneNode->SetAngleLocalOnly(pConfigNode->GetAngle());
+			pSceneNode->SetScaleLocalOnly(pConfigNode->GetScale());
+			pSceneNode->NeedUpdate();
+			pSceneNode->NotifyRootNode();
+
+			SceneConfigNodePtrVector& aChild = pConfigNode->GetChildVector();
+			for (SceneConfigNodePtrVector::iterator it = aChild.begin();
+				 it != aChild.end(); ++it)
+			{
+				SceneConfigNode* pChild = (*it);
+				s_CreateSceneNode(pScene, pChild, pSceneNode);
+			}
+		}
+	bool Scene::RefreshScene()
+	{
+		if (!m_pSceneData)
+			return false;
+		if (!m_bIsRefreshScene)
+			return true;
+
+		//1> SceneNode
+		SceneNode* pRoot = GetRootSceneNode();
+		SceneConfigNodePtrVector& aNodes = m_pSceneData->GetSceneConfigNodePtrVector();
+		for (SceneConfigNodePtrVector::iterator it = aNodes.begin();
+			 it != aNodes.end(); ++it)
+		{
+			SceneConfigNode* pConfigNode = (*it);
+			s_CreateSceneNode(this, pConfigNode, pRoot);
+		}
+
+		//2> Object
+		
+
+		m_bIsRefreshScene = false;
+		return true;
+	}
 	void Scene::ClearScene()
     {
 		if (!m_pRootSceneNode)
 			return;
 
+		//1> SceneNode
 		m_pRootSceneNode->RemoveAllChildren();
 		m_pRootSceneNode->DetachAllObjects();
 		for (SceneNodePtrMap::iterator it = m_mapSceneNodes.begin();
@@ -103,6 +156,7 @@ namespace LostPeterEngine
 		m_setAutoTrackingSceneNodes.clear();
 		m_pRootSceneNode = nullptr;
 
+		//2> Object
 		DestroyObjectAll();
     }
 

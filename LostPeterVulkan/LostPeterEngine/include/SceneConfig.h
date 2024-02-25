@@ -66,6 +66,8 @@ namespace LostPeterEngine
         FVector3 m_vAngle;
         FVector3 m_vScale;
 
+        SceneConfigNodePtrVector m_aChild;
+
     public:
         F_FORCEINLINE const String& GetNameParent() const { return m_strNameParent; }
         F_FORCEINLINE void SetNameParent(const String& strNameParent) { m_strNameParent = strNameParent; }
@@ -77,6 +79,13 @@ namespace LostPeterEngine
         F_FORCEINLINE const FVector3& GetScale() const { return m_vScale; }
         F_FORCEINLINE void SetScale(const FVector3& vScale) { m_vScale = vScale; }
 
+        F_FORCEINLINE const SceneConfigNodePtrVector& GetChildVector() const { return m_aChild; }
+        F_FORCEINLINE SceneConfigNodePtrVector& GetChildVector() { return m_aChild; }
+
+    public:
+        void AddSceneConfigNodeChild(SceneConfigNode* pChild);
+        void DeleteSceneConfigNodeChild(SceneConfigNode* pChild);
+        void DeleteSceneConfigNodeChildAll();
     };
 
 
@@ -90,11 +99,15 @@ namespace LostPeterEngine
     public:
     protected:
         EObjectType m_eObject;
+        uint32 m_nID;
+        String m_strNameSceneNode;
 
     public:
         F_FORCEINLINE EObjectType GetObjectType() const { return m_eObject; }
-
-
+        F_FORCEINLINE uint32 GetID() const { return m_nID; }
+        F_FORCEINLINE void SetID(uint32 nID) { m_nID = nID; }
+        F_FORCEINLINE const String& GetNameSceneNode() const { return m_strNameSceneNode; }
+        F_FORCEINLINE void SetNameSceneNode(const String& strNameSceneNode) { m_strNameSceneNode = strNameSceneNode; }
     };
 
 

@@ -36,6 +36,7 @@ namespace LostPeterEngine
 #define	SCENE_DATA_TAG_ATTRIBUTE_TYPE				        "type"
 #define	SCENE_DATA_TAG_ATTRIBUTE_ID				            "id"
 #define	SCENE_DATA_TAG_ATTRIBUTE_ID_MAX				        "id_max"
+#define	SCENE_DATA_TAG_ATTRIBUTE_NAME_NODE				    "name_node"
 #define	SCENE_DATA_TAG_ATTRIBUTE_POS				        "pos"
 #define	SCENE_DATA_TAG_ATTRIBUTE_ANGLE				        "angle"
 #define	SCENE_DATA_TAG_ATTRIBUTE_SCALE				        "scale"
@@ -58,6 +59,12 @@ namespace LostPeterEngine
     #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_CLOUD		        "param_cloud"
     //Object Particle
     #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_PARTICLE		        "param_particle"
+    //Object PostProcess
+    #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_POSTPROCESS		    "param_postprocess"
+    //Object UI
+    #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_UI		            "param_ui"
+    //Object Custom
+    #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_CUSTOM	            "param_custom"
 
 
         static bool s_parserXML_SceneSetting(FXMLElement* pElementSceneSetting, SceneData* pSceneData)
@@ -68,12 +75,205 @@ namespace LostPeterEngine
             return true;
         }
 
+                    static ObjectConfigMesh* s_parserXML_Object_Mesh(FXMLElement* pElementObject, 
+                                                                     SceneData* pSceneData, 
+                                                                     const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Mesh")
 
-                static bool s_parserXML_Object(FXMLElement* pElementObject, SceneData* pSceneData)
+                        ObjectConfigMesh* pObjectConfig = new ObjectConfigMesh(nameObject);
+
+                        //ObjectMesh        
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_MESH);
+                        if (pElementParam)
+                        {
+
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigSkinMesh* s_parserXML_Object_SkinMesh(FXMLElement* pElementObject, 
+                                                                             SceneData* pSceneData, 
+                                                                             const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_SkinMesh")
+
+                        ObjectConfigSkinMesh* pObjectConfig = new ObjectConfigSkinMesh(nameObject);
+
+                        //ObjectSkinMesh
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_SKIN_MESH);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigCamera* s_parserXML_Object_Camera(FXMLElement* pElementObject, 
+                                                                         SceneData* pSceneData, 
+                                                                         const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Camera")
+
+                        ObjectConfigCamera* pObjectConfig = new ObjectConfigCamera(nameObject);
+
+                        //ObjectCamera
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_CAMERA);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigLight* s_parserXML_Object_Light(FXMLElement* pElementObject, 
+                                                                       SceneData* pSceneData, 
+                                                                       const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Light")
+
+                        ObjectConfigLight* pObjectConfig = new ObjectConfigLight(nameObject);
+
+                        //ObjectLight
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_LIGHT);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigTerrain* s_parserXML_Object_Terrain(FXMLElement* pElementObject, 
+                                                                           SceneData* pSceneData, 
+                                                                           const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Terrain")
+
+                        ObjectConfigTerrain* pObjectConfig = new ObjectConfigTerrain(nameObject);
+
+                        //ObjectTerrain
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_TERRAIN);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigWater* s_parserXML_Object_Water(FXMLElement* pElementObject, 
+                                                                       SceneData* pSceneData, 
+                                                                       const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Water")
+
+                        ObjectConfigWater* pObjectConfig = new ObjectConfigWater(nameObject);
+
+                        //ObjectWater
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_WATER);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigSky* s_parserXML_Object_Sky(FXMLElement* pElementObject, 
+                                                                   SceneData* pSceneData, 
+                                                                   const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Sky")
+
+                        ObjectConfigSky* pObjectConfig = new ObjectConfigSky(nameObject);
+
+                        //ObjectSky
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_SKY);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigCloud* s_parserXML_Object_Cloud(FXMLElement* pElementObject, 
+                                                                       SceneData* pSceneData, 
+                                                                       const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Cloud")
+
+                        ObjectConfigCloud* pObjectConfig = new ObjectConfigCloud(nameObject);
+
+                        //ObjectCloud
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_CLOUD);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigParticle* s_parserXML_Object_Particle(FXMLElement* pElementObject, 
+                                                                             SceneData* pSceneData, 
+                                                                             const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Particle")
+
+                        ObjectConfigParticle* pObjectConfig = new ObjectConfigParticle(nameObject);
+
+                        //ObjectParticle
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_PARTICLE);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigPostProcess* s_parserXML_Object_PostProcess(FXMLElement* pElementObject, 
+                                                                                   SceneData* pSceneData, 
+                                                                                   const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_PostProcess")
+
+                        ObjectConfigPostProcess* pObjectConfig = new ObjectConfigPostProcess(nameObject);
+
+                        //ObjectPostProcess
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_POSTPROCESS);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigUI* s_parserXML_Object_UI(FXMLElement* pElementObject, 
+                                                                 SceneData* pSceneData, 
+                                                                 const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_UI")
+
+                        ObjectConfigUI* pObjectConfig = new ObjectConfigUI(nameObject);
+
+                        //ObjectUI
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_UI);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+                    static ObjectConfigCustom* s_parserXML_Object_Custom(FXMLElement* pElementObject, 
+                                                                         SceneData* pSceneData, 
+                                                                         const String& nameObject)
+                    {
+                        F_Assert(pElementObject && pSceneData && "s_parserXML_Object_Custom")
+
+                        ObjectConfigCustom* pObjectConfig = new ObjectConfigCustom(nameObject);
+
+                        //ObjectCustom
+                        FXMLElement* pElementParam = pElementObject->FindElementChild(SCENE_DATA_TAG_ATTRIBUTE_PARAM_CUSTOM);
+                        if (pElementParam)
+                        {
+                            
+                        }
+                        return pObjectConfig;
+                    }
+
+
+                static bool s_parserXML_Object(FXMLElement* pElementObject, SceneData* pSceneData, EObjectType eObject)
                 {
                     F_Assert(pElementObject && pSceneData && "s_parserXML_Object")
 
-                    
+                    //1> ObjectConfig
                     String nameObject;
                     if (!pElementObject->ParserAttribute_String(SCENE_DATA_TAG_ATTRIBUTE_NAME, nameObject))
                     {
@@ -86,13 +286,71 @@ namespace LostPeterEngine
                         F_LogError("*********************** s_parserXML_Object: Can not find attribute: 'id', from obj !"); 
                         return false;
                     }
-
-
-                    F_LogInfo("s_parserXML_Object: Parser object success, name: [%s], id: [%u] !", nameObject.c_str(), id);
+                    String nameNode;
+                    pElementObject->ParserAttribute_String(SCENE_DATA_TAG_ATTRIBUTE_NAME_NODE, nameNode);
+                    
+                    //2> ObjectConfigXXX
+                    ObjectConfig* pObjectConfig = nullptr;
+                    if (eObject == E_Object_Mesh)
+                    {
+                        pObjectConfig = s_parserXML_Object_Mesh(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_SkinMesh)
+                    {
+                        pObjectConfig = s_parserXML_Object_SkinMesh(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Camera)
+                    {
+                        pObjectConfig = s_parserXML_Object_Camera(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Light)
+                    {
+                        pObjectConfig = s_parserXML_Object_Light(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Terrain)
+                    {
+                        pObjectConfig = s_parserXML_Object_Terrain(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Water)
+                    {
+                        pObjectConfig = s_parserXML_Object_Water(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Sky)
+                    {
+                        pObjectConfig = s_parserXML_Object_Sky(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Cloud)
+                    {
+                        pObjectConfig = s_parserXML_Object_Cloud(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Particle)
+                    {
+                        pObjectConfig = s_parserXML_Object_Particle(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_PostProcess)
+                    {
+                        pObjectConfig = s_parserXML_Object_PostProcess(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_UI)
+                    {
+                        pObjectConfig = s_parserXML_Object_UI(pElementObject, pSceneData, nameObject);
+                    }
+                    else if (eObject == E_Object_Custom)
+                    {
+                        pObjectConfig = s_parserXML_Object_Custom(pElementObject, pSceneData, nameObject);
+                    }
+                    else
+                    {
+                        F_LogError("*********************** s_parserXML_Object: Wrong object type !"); 
+                        return false;
+                    }
+                            
+                    pObjectConfig->SetID(id);
+                    pObjectConfig->SetNameSceneNode(nameNode);
+                    pSceneData->AddObjectConfig(eObject, pObjectConfig);
+                    F_LogInfo("s_parserXML_Object: Parser object success, name: [%s], id: [%u], type: [%d] !", nameObject.c_str(), id, (int)eObject);
                     return true;
                 }
-
-
             static bool s_parserXML_Objects(FXMLElement* pElementObjects, SceneData* pSceneData)
             {
                 F_Assert(pElementObjects && pSceneData && "s_parserXML_Objects")
@@ -103,13 +361,19 @@ namespace LostPeterEngine
                     F_LogError("*********************** s_parserXML_Objects: Can not find attribute: 'type', from object !");
                     return false;
                 }
+                EObjectType eObject = E_ParseObjectType(nameObjectType);
+                if (eObject == E_Object_Unknown)
+                {
+                    F_LogError("*********************** s_parserXML_Objects: Wrong object type !");
+                    return false;
+                }
 
                 int count_obj = pElementObjects->GetElementChildrenCount();
                 for (int i = 0; i < count_obj; i++)
                 {
                     FXMLElement* pElementItem = pElementObjects->GetElementChild(i);
 
-                    if (!s_parserXML_Object(pElementItem, pSceneData))
+                    if (!s_parserXML_Object(pElementItem, pSceneData, eObject))
                     {
                         F_LogError("*********************** s_parserXML_Objects: Parser object failed, index: [%d], type: [%s] !", i, nameObjectType.c_str());
                         return false;
@@ -119,7 +383,6 @@ namespace LostPeterEngine
                 F_LogInfo("##### s_parserXML_Objects: Parser objects success, type: [%s] !", nameObjectType.c_str());
                 return true;
             }
-
         static bool s_parserXML_SceneObject(FXMLElement* pElementSceneObject, SceneData* pSceneData)
         {
             F_Assert(pElementSceneObject && pSceneData && "s_parserXML_SceneObject")
@@ -174,12 +437,12 @@ namespace LostPeterEngine
                 pSceneConfigNode->SetPos(vPos);
                 pSceneConfigNode->SetAngle(vAngle);
                 pSceneConfigNode->SetScale(vScale);
-                pSceneData->AddSceneConfigNode(pSceneConfigNode);
+                if (pParent != nullptr)
+                    pParent->AddSceneConfigNodeChild(pSceneConfigNode);
 
                 F_LogInfo("s_parserXML_Node: Parser scene node success, node: [%s], parent: [%s] !", nameSceneNode.c_str(), (pParent == nullptr ? "nullptr" : pParent->GetName().c_str()));
                 return pSceneConfigNode;
             }
-
         static bool s_parserXML_SceneNode(FXMLElement* pElementSceneNode, SceneData* pSceneData, SceneConfigNode* pParent)
         {
             F_Assert(pElementSceneNode && pSceneData && "s_parserXML_SceneNode")
@@ -194,6 +457,10 @@ namespace LostPeterEngine
                 {
                     F_LogError("*********************** s_parserXML_SceneNode: Parse 'node' failed, index: [%d] !", i);
                     return false;
+                }
+                if (pParent == nullptr)
+                {
+                    pSceneData->AddSceneConfigNode(pSceneNode);
                 }
 
                 if (!s_parserXML_SceneNode(pElementItem, pSceneData, pSceneNode))
