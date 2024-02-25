@@ -30,7 +30,7 @@ namespace LostPeterEngine
 
     const String MaterialManager::ms_strMaterialConfigName = "Cfg_Material.xml";
     uint32 MaterialManager::ms_nInstanceID = 0;
-
+    
     static const int s_nCountDefaults = 3;
     static uint32 s_nGroupDefault = FPathManager::PathGroup_Material;
     static String s_aNameDefaults[s_nCountDefaults] = 

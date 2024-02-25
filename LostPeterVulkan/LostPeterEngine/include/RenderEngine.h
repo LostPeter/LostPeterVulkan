@@ -31,6 +31,7 @@ namespace LostPeterEngine
 		Renderer* m_pRendererCurrent;
         RenderWindow* m_pRenderWindowAuto;
 		RenderPipelineManager* m_pRenderPipeLineManager;
+		SceneDataManager* m_pSceneDataManager;
         SceneManagerEnumerator* m_pSceneManagerEnumerator;
         SceneManager* m_pSceneManagerCurrent;
         RenderQueueManager* m_pRenderQueueManager;
@@ -80,7 +81,7 @@ namespace LostPeterEngine
 		void RemoveRenderEngineListenerAll();
 
     public:
-        void Destroy();
+        virtual void Destroy();
         virtual bool Init(bool bAutoCreateWindow);
 
 		RenderWindow* CreateRenderWindow(const String& strName, 

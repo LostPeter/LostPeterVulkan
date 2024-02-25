@@ -19,13 +19,17 @@ namespace LostPeterEngine
     class engineExport Scene : public Base
     {
     public:
-        Scene(uint _group, const String& nameScene);
+        Scene(uint nGroup, const String& strNameScene);
         virtual ~Scene();
 
     public:
         static String ms_nameRootSceneNode;
 
     public:
+    protected:
+    ////SceneData
+        SceneData* m_pSceneData;
+
     ////SceneManager/SceneNode
         SceneManager* m_pSceneManager;
         SceneNodePtrMap m_mapSceneNodes;
@@ -42,11 +46,16 @@ namespace LostPeterEngine
         ObjectLight* m_pMainObjectLight;
 
     public:
+        F_FORCEINLINE SceneData* GetSceneData() const { return m_pSceneData; }
+		F_FORCEINLINE void SetSceneData(SceneData* pSceneData) { m_pSceneData = pSceneData; }
+
+
     public:
         void Destroy();
 
     public:
-        virtual bool LoadScene();
+        virtual bool LoadScene(bool bIsFromFile = true);
+        virtual void UnloadScene();
 
         virtual void ClearScene();
 

@@ -142,7 +142,7 @@ namespace LostPeterEngine
 										  , public FNonCopyable
 	{
 	public:
-		RenderStateTexture(uint32 _group, const String& _nameTexture);
+		RenderStateTexture(uint32 nGroup, const String& strNameTexture);
 		~RenderStateTexture();
 
 	public:

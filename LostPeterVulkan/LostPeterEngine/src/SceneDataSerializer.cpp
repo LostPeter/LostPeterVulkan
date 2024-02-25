@@ -11,9 +11,10 @@
 
 #include "../include/SceneDataSerializer.h"
 #include "../include/SceneDataManager.h"
+#include "../include/SceneData.h"
+#include "../include/SceneConfig.h"
 #include "../include/SceneManager.h"
 #include "../include/Scene.h"
-#include "../include/SceneNode.h"
 
 namespace LostPeterEngine
 {
@@ -59,18 +60,18 @@ namespace LostPeterEngine
     #define	SCENE_DATA_TAG_ATTRIBUTE_PARAM_PARTICLE		        "param_particle"
 
 
-        static bool s_parserXML_SceneSetting(FXMLElement* pElementSceneSetting, Scene* pScene)
+        static bool s_parserXML_SceneSetting(FXMLElement* pElementSceneSetting, SceneData* pSceneData)
         {
-            F_Assert(pElementSceneSetting && pScene && "s_parserXML_SceneSetting")
+            F_Assert(pElementSceneSetting && pSceneData && "s_parserXML_SceneSetting")
 
 
             return true;
         }
 
 
-                static bool s_parserXML_Object(FXMLElement* pElementObject, Scene* pScene)
+                static bool s_parserXML_Object(FXMLElement* pElementObject, SceneData* pSceneData)
                 {
-                    F_Assert(pElementObject && pScene && "s_parserXML_Object")
+                    F_Assert(pElementObject && pSceneData && "s_parserXML_Object")
 
                     
                     String nameObject;
@@ -92,9 +93,9 @@ namespace LostPeterEngine
                 }
 
 
-            static bool s_parserXML_Objects(FXMLElement* pElementObjects, Scene* pScene)
+            static bool s_parserXML_Objects(FXMLElement* pElementObjects, SceneData* pSceneData)
             {
-                F_Assert(pElementObjects && pScene && "s_parserXML_Objects")
+                F_Assert(pElementObjects && pSceneData && "s_parserXML_Objects")
 
                 String nameObjectType;
                 if (!pElementObjects->ParserAttribute_String(SCENE_DATA_TAG_ATTRIBUTE_TYPE, nameObjectType))
@@ -108,7 +109,7 @@ namespace LostPeterEngine
                 {
                     FXMLElement* pElementItem = pElementObjects->GetElementChild(i);
 
-                    if (!s_parserXML_Object(pElementItem, pScene))
+                    if (!s_parserXML_Object(pElementItem, pSceneData))
                     {
                         F_LogError("*********************** s_parserXML_Objects: Parser object failed, index: [%d], type: [%s] !", i, nameObjectType.c_str());
                         return false;
@@ -119,16 +120,16 @@ namespace LostPeterEngine
                 return true;
             }
 
-        static bool s_parserXML_SceneObject(FXMLElement* pElementSceneObject, Scene* pScene)
+        static bool s_parserXML_SceneObject(FXMLElement* pElementSceneObject, SceneData* pSceneData)
         {
-            F_Assert(pElementSceneObject && pScene && "s_parserXML_SceneObject")
+            F_Assert(pElementSceneObject && pSceneData && "s_parserXML_SceneObject")
 
             int count_object = pElementSceneObject->GetElementChildrenCount();
             for (int i = 0; i < count_object; i++)
             {
                 FXMLElement* pElementItem = pElementSceneObject->GetElementChild(i);
 
-                if (!s_parserXML_Objects(pElementItem, pScene))
+                if (!s_parserXML_Objects(pElementItem, pSceneData))
                 {
                     F_LogError("*********************** s_parserXML_SceneObject: Parse 'object' failed, index: [%d] !", i);
                     return false;
@@ -138,9 +139,9 @@ namespace LostPeterEngine
             return true;
         }
 
-            static SceneNode* s_parserXML_Node(FXMLElement* pElementNode, Scene* pScene, SceneNode* pParent)
+            static SceneConfigNode* s_parserXML_Node(FXMLElement* pElementNode, SceneData* pSceneData, SceneConfigNode* pParent)
             {
-                F_Assert(pElementNode && pScene && "s_parserXML_Node")
+                F_Assert(pElementNode && pSceneData && "s_parserXML_Node")
 
                 String nameSceneNode;
                 if (!pElementNode->ParserAttribute_String(SCENE_DATA_TAG_ATTRIBUTE_NAME, nameSceneNode))
@@ -167,38 +168,35 @@ namespace LostPeterEngine
                     return nullptr;
                 }
 
-                SceneNode* pSceneNode = nullptr;
-                if (pParent == nullptr)
-                {
-                    pSceneNode = pScene->CreateRootSceneNode(nameSceneNode, vPos, vAngle, vScale);
-                }
-                else
-                {
-                    pSceneNode = pParent->CreateChildSceneNodeByAngle(nameSceneNode, vPos, vAngle, vScale);
-                }
+                SceneConfigNode* pSceneConfigNode = new SceneConfigNode(nameSceneNode);
+                if (pParent != nullptr)
+                    pSceneConfigNode->SetNameParent(pParent->GetName());
+                pSceneConfigNode->SetPos(vPos);
+                pSceneConfigNode->SetAngle(vAngle);
+                pSceneConfigNode->SetScale(vScale);
+                pSceneData->AddSceneConfigNode(pSceneConfigNode);
 
                 F_LogInfo("s_parserXML_Node: Parser scene node success, node: [%s], parent: [%s] !", nameSceneNode.c_str(), (pParent == nullptr ? "nullptr" : pParent->GetName().c_str()));
-                return pSceneNode;
+                return pSceneConfigNode;
             }
 
-        static bool s_parserXML_SceneNode(FXMLElement* pElementSceneNode, Scene* pScene, SceneNode* pParent)
+        static bool s_parserXML_SceneNode(FXMLElement* pElementSceneNode, SceneData* pSceneData, SceneConfigNode* pParent)
         {
-            F_Assert(pElementSceneNode && pScene && "s_parserXML_SceneNode")
+            F_Assert(pElementSceneNode && pSceneData && "s_parserXML_SceneNode")
 
-            SceneNode* pSceneNode_Parent = nullptr;
             int count_node = pElementSceneNode->GetElementChildrenCount();
             for (int i = 0; i < count_node; i++)
             {
                 FXMLElement* pElementItem = pElementSceneNode->GetElementChild(i);
                 
-                SceneNode* pSceneNode = s_parserXML_Node(pElementItem, pScene, pParent);
+                SceneConfigNode* pSceneNode = s_parserXML_Node(pElementItem, pSceneData, pParent);
                 if (!pSceneNode)
                 {
                     F_LogError("*********************** s_parserXML_SceneNode: Parse 'node' failed, index: [%d] !", i);
                     return false;
                 }
 
-                if (!s_parserXML_SceneNode(pElementItem, pScene, pSceneNode))
+                if (!s_parserXML_SceneNode(pElementItem, pSceneData, pSceneNode))
                 {
                     F_LogError("*********************** s_parserXML_SceneNode: Parse 'node' child failed, index: [%d], name: [%s] !", i, pSceneNode->GetName().c_str());
                     return false;
@@ -208,9 +206,9 @@ namespace LostPeterEngine
             return true;
         }
 
-    static bool	s_parserXML_SceneData(FXMLElement* pElementSceneData, Scene* pScene)
+    static bool	s_parserXML_SceneData(FXMLElement* pElementSceneData, SceneData* pSceneData)
     {
-        F_Assert(pElementSceneData && pScene && "s_parserXML_SceneData")
+        F_Assert(pElementSceneData && pSceneData && "s_parserXML_SceneData")
 
         int count_scene_data = pElementSceneData->GetElementChildrenCount();
 		for (int i = 0; i < count_scene_data; i++)
@@ -221,37 +219,30 @@ namespace LostPeterEngine
             //1> scene_setting
             if (nameTag == SCENE_DATA_TAG_SCENE_SETTING)
             {
-                F_LogInfo("########## 11111 s_parserXML_SceneData: Start to parser 'scene_setting' !");
-                if (!s_parserXML_SceneSetting(pElementItem, pScene))
+                if (!s_parserXML_SceneSetting(pElementItem, pSceneData))
                 {
                     F_LogError("*********************** s_parserXML_SceneData: Parse 'scene_setting' failed, index: [%d] !", i);
                     return false;
                 }
-                F_LogInfo("########## 11111 s_parserXML_SceneData: End to parser 'scene_setting' !");
             }
             //2> scene_object
             else if (nameTag == SCENE_DATA_TAG_SCENE_OBJECT)
             {
-                F_LogInfo("########## 22222 s_parserXML_SceneData: Start to parser 'scene_object' !");
-                if (!s_parserXML_SceneObject(pElementItem, pScene))
+                if (!s_parserXML_SceneObject(pElementItem, pSceneData))
                 {
                     F_LogError("*********************** s_parserXML_SceneData: Parse 'scene_object' failed, index: [%d] !", i);
                     return false;
                 }
-                F_LogInfo("########## 22222 s_parserXML_SceneData: End to parser 'scene_object' !");
             }
             //3> scene_node
             else if (nameTag == SCENE_DATA_TAG_SCENE_NODE)
             {
-                F_LogInfo("########## 33333 s_parserXML_SceneData: Start to parser 'scene_node' !");
-                if (!s_parserXML_SceneNode(pElementItem, pScene, nullptr))
+                if (!s_parserXML_SceneNode(pElementItem, pSceneData, nullptr))
                 {
                     F_LogError("*********************** s_parserXML_SceneData: Parse 'scene_node' failed, index: [%d] !", i);
                     return false;
                 }
-                F_LogInfo("########## 33333 s_parserXML_SceneData: End to parser 'scene_node' !");
-            }
-            
+            }   
         }
 
         return true;
@@ -269,7 +260,7 @@ namespace LostPeterEngine
 
     }
     
-    bool SceneDataSerializer::Parser(uint32 nGroup, const String& strName, Scene* pScene, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataSerializer::Parser(uint32 nGroup, const String& strName, SceneData* pSceneData, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         String strPath = FPathManager::GetSingleton().GetFilePath(nGroup, strName);
 		if (strPath.empty())
@@ -277,31 +268,31 @@ namespace LostPeterEngine
         
 		if (strPath.find(SCENE_DATA_FILE_BINARY_EXT) != String::npos)
 		{
-			if (!ParserBinary(strPath.c_str(), pScene, pRet))
+			if (!ParserBinary(nGroup, strName, strPath, pSceneData, pRet))
 			{
-                F_LogError("*********************** SceneDataSerializer::Parser: Parser scene binary file failed, path: [%s] !", strPath.c_str());
+                F_LogError("*********************** SceneDataSerializer::Parser: Parser scene binary file failed, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 				return false;
 			}
 			return true;
 		}
 		else if(strPath.find(SCENE_DATA_FILE_XML_EXT) != String::npos)
 		{
-			if (!ParserXML(strPath.c_str(), pScene, pRet))
+			if (!ParserXML(nGroup, strName, strPath, pSceneData, pRet))
 			{
-                F_LogError("*********************** SceneDataSerializer::Parser: Parser scene xml file failed, path: [%s] !", strPath.c_str());
+                F_LogError("*********************** SceneDataSerializer::Parser: Parser scene xml file failed, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 				return false;
 			}
 			return true;
 		}
 		else
 		{	
-            F_LogError("*********************** SceneDataSerializer::Parser: Not valid scene file, path: [%s] !", strPath.c_str());
+            F_LogError("*********************** SceneDataSerializer::Parser: Not valid scene file, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 		}
 		
 		return false;
     }
 
-    bool SceneDataSerializer::ParserXML(uint32 nGroup, const String& strName, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataSerializer::ParserXML(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         String strPath = FPathManager::GetSingleton().GetFilePath(nGroup, strName);
         if (strPath.empty())
@@ -310,14 +301,14 @@ namespace LostPeterEngine
 			return false;
 		}
 		
-		return ParserXML(strPath.c_str(), nullptr, pRet);
+		return ParserXML(nGroup, strName, strPath, nullptr, pRet);
     }
-    bool SceneDataSerializer::ParserXML(const char* szFilePath, Scene* pScene /*= nullptr*/, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataSerializer::ParserXML(uint32 nGroup, const String& strName, const String& strPath, SceneData* pSceneData /*= nullptr*/, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         FFileXML xml;
-		if (!xml.LoadXMLIndirect(szFilePath))
+		if (!xml.LoadXMLIndirect(strPath))
         {
-            F_LogError("*********************** SceneDataSerializer::ParserXML: Load scene file: [%s] failed !", szFilePath);
+            F_LogError("*********************** SceneDataSerializer::ParserXML: Load scene file: [%s] failed !", strPath.c_str());
 			return false;
         }
 
@@ -345,65 +336,64 @@ namespace LostPeterEngine
             }
             F_LogInfo("SceneDataSerializer::ParserXML: Start to parser scene data: [%s] !", strNameScene.c_str());
 
-            Scene* pSceneFind = m_pSceneDataManager->GetScene(nGroup, strNameScene);
-            if (pSceneFind != nullptr)
+            SceneData* pSD = m_pSceneDataManager->GetSceneData(strNameScene);
+            if (pSD != nullptr)
             {
                 F_LogWarning("####################### SceneDataSerializer::ParserXML: Scene data [%s] already exist !", strNameScene.c_str());
             }
             else
             {
-                bool bExtern = pScene ? true : false;
+                bool bExtern = pSceneData ? true : false;
 				if (!bExtern)
 				{
-					pScene = new Scene(nGroup, strNameScene);
+					pSceneData = m_pSceneDataManager->NewSceneData(nGroup, strNameScene);
 				}
+                pSceneData->SetPath(strPath);
 
-                if (!s_parserXML_SceneData(pElementSceneData, pScene))
+                if (!s_parserXML_SceneData(pElementSceneData, pSceneData))
 				{
 					if (!bExtern)
-					{
-                        delete pScene;
-                    }
+                        delete pSceneData;
 					F_LogError("*********************** SceneDataSerializer::ParserXML: Parser scene data: [%s] failed !", strNameScene.c_str());
 					return false;
 				}
 
                 if (!bExtern)
 				{
-					if (m_pSceneDataManager->AddScene(nGroup, pScene))
+					if (m_pSceneDataManager->AddSceneData(pSceneData))
 					{
-						pSceneFind = pScene;
+						pSD = pSceneData;
 						F_LogInfo("SceneDataSerializer::ParserXML: Parser Scene data [%s] success !", strNameScene.c_str());
-						pScene = nullptr;
+						pSceneData = nullptr;
 					}
 					else
 					{
-                        F_DELETE(pScene)
+                        F_DELETE(pSceneData)
                         F_LogError("*********************** SceneDataSerializer::ParserXML: AddScene: [%s] failed !", strNameScene.c_str());
 					    return false;
 					}
 				}
 				else
 				{
-					if (pRet && pScene)
+					if (pRet && pSceneData)
 					{
-						pRet->push_back(pScene);
+						pRet->push_back(pSceneData);
 					}
 					F_LogInfo("SceneDataSerializer::ParserXML: Parser Scene data: [%s] success !", strNameScene.c_str());
 					break;
 				}
             }
 
-            if (pRet && pSceneFind)
+            if (pRet && pSD)
 			{
-				pRet->push_back(pSceneFind);
+				pRet->push_back(pSD);
 			}
         }
 
         return true;
     }
 
-    bool SceneDataSerializer::ParserBinary(uint32 nGroup, const String& strName, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataSerializer::ParserBinary(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         String strPath = FPathManager::GetSingleton().GetFilePath(nGroup, strName);
         if (strPath.empty())
@@ -412,9 +402,9 @@ namespace LostPeterEngine
 			return false;
 		}
 		
-		return ParserBinary(strPath.c_str(), nullptr, pRet);
+		return ParserBinary(nGroup, strName, strPath, nullptr, pRet);
     }
-    bool SceneDataSerializer::ParserBinary(const char* szFilePath, Scene* pScene /*= nullptr*/, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataSerializer::ParserBinary(uint32 nGroup, const String& strName, const String& strPath, SceneData* pSceneData /*= nullptr*/, SceneDataPtrVector* pRet /*= nullptr*/)
     {
 
         return true;
@@ -430,7 +420,7 @@ namespace LostPeterEngine
 
         return true;
     }
-    bool SceneDataSerializer::SaveXML(const char* szFilePath, ScenePtrVector& aSA)
+    bool SceneDataSerializer::SaveXML(const String& strPath, ScenePtrVector& aSA)
     {
 
         return true;
@@ -446,7 +436,7 @@ namespace LostPeterEngine
 
         return true;
     }
-    bool SceneDataSerializer::SaveBinary(const char* szFilePath, ScenePtrVector& aSA)
+    bool SceneDataSerializer::SaveBinary(const String& strPath, ScenePtrVector& aSA)
     {
 
         return true;

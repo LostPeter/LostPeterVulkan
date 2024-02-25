@@ -186,6 +186,7 @@ namespace LostPeterEngine
         E_Resource_Texture,                                 //1:    Texture
         E_Resource_Shader,                                  //2:    Shader
         E_Resource_Material,                                //3:    Material
+        E_Resource_Scene,                                   //4:    Scene
 
         E_Resource_Count,
     };
@@ -373,21 +374,22 @@ namespace LostPeterEngine
     enum EEngineConfigType
 	{
     ////Common
-		E_EngineConfig_Common_MultiThread = 0,	            //0:  MultiThread
+		E_EngineConfig_Common_MultiThread = 0,	            //0:   MultiThread
 
     ////Render
-        E_EngineConfig_Render_RendererName,                 //1:  RendererName
-        E_EngineConfig_Render_PipelineName,                 //2:  PipelineName
+        E_EngineConfig_Render_RendererName,                 //1:   RendererName
+        E_EngineConfig_Render_PipelineName,                 //2:   PipelineName
 
-        E_EngineConfig_Render_ShaderGroup,                  //3:  ShaderGroup
-        E_EngineConfig_Render_ShaderConfigName,             //4:  ShaderConfigName
-        E_EngineConfig_Render_MeshGroup,                    //5:  MeshGroup
-        E_EngineConfig_Render_MeshConfigName,               //6:  MeshConfigName
-        E_EngineConfig_Render_TextureGroup,                 //7:  TextureGroup
-        E_EngineConfig_Render_TextureConfigName,            //8:  TextureConfigName
-        E_EngineConfig_Render_MaterialGroup,                //9:  MaterialGroup
-        E_EngineConfig_Render_MaterialConfigName,           //10: MaterialConfigName
-        
+        E_EngineConfig_Render_ShaderGroup,                  //3:   ShaderGroup
+        E_EngineConfig_Render_ShaderConfigName,             //4:   ShaderConfigName
+        E_EngineConfig_Render_MeshGroup,                    //5:   MeshGroup
+        E_EngineConfig_Render_MeshConfigName,               //6:   MeshConfigName
+        E_EngineConfig_Render_TextureGroup,                 //7:   TextureGroup
+        E_EngineConfig_Render_TextureConfigName,            //8:   TextureConfigName
+        E_EngineConfig_Render_MaterialGroup,                //9:   MaterialGroup
+        E_EngineConfig_Render_MaterialConfigName,           //10:  MaterialConfigName
+        E_EngineConfig_Render_SceneGroup,                   //11:  SceneGroup
+        E_EngineConfig_Render_SceneConfigName,              //12:  SceneConfigName
 
     ////Audio
 
@@ -718,6 +720,19 @@ namespace LostPeterEngine
     class Node;
     class NodeListener;
     class ObjectVisibleBoundsInfo;
+    class ObjectConfig;
+    class ObjectConfigMesh;
+    class ObjectConfigSkinMesh;
+    class ObjectConfigCamera;
+    class ObjectConfigLight;
+    class ObjectConfigTerrain;
+    class ObjectConfigWater;
+    class ObjectConfigSky;
+    class ObjectConfigCloud;
+    class ObjectConfigParticle;
+    class ObjectConfigPostProcess;
+    class ObjectConfigUI;
+    class ObjectCustomConfig;
     class Object;
     class ObjectFrustum;
     class ObjectCameraListener;
@@ -797,7 +812,11 @@ namespace LostPeterEngine
     class ResourceLoadingListener;
     class ResourceGroupListener;
     class ResourceGroupManager;
+    class SceneConfig;
+    class SceneConfigSetting;
+    class SceneConfigNode;
     class Scene;
+    class SceneData;
     class SceneDataManager;
     class SceneDataSerializer;
     class SceneManager;
@@ -968,6 +987,9 @@ namespace LostPeterEngine
     typedef std::map<String, SceneNode*> SceneNodePtrMap;
 
     //Object
+    typedef std::vector<ObjectConfig*> ObjectConfigPtrVector;
+    typedef std::map<String, ObjectConfig*> ObjectConfigPtrMap;
+    typedef std::map<int, ObjectConfigPtrMap> ObjectConfigPtrGroupMap;
     typedef std::vector<Object*> ObjectPtrVector; 
     typedef std::map<String, Object*> ObjectPtrMap;
     typedef std::map<int, ObjectPtrMap> ObjectPtrGroupMap;
@@ -1024,6 +1046,14 @@ namespace LostPeterEngine
     typedef std::list<ResourceListener*> ResourceListenerPtrList;
     typedef std::vector<ResourceGroupListener*> ResourceGroupListenerPtrVector;
     typedef std::list<ResourceGroupListener*> ResourceGroupListenerPtrList;
+
+    typedef std::vector<SceneConfig*> SceneConfigPtrVector;
+    typedef std::map<String, SceneConfig*> SceneConfigPtrMap;
+    typedef std::vector<SceneConfigNode*> SceneConfigNodePtrVector;
+    typedef std::map<String, SceneConfigNode*> SceneConfigNodePtrMap;
+
+    typedef std::vector<SceneData*> SceneDataPtrVector;
+    typedef std::map<String, SceneData*> SceneDataPtrMap;
 
     typedef std::vector<Scene*> ScenePtrVector;
     typedef std::map<String, Scene*> ScenePtrMap;

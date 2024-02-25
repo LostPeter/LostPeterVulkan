@@ -26,22 +26,22 @@ namespace LostPeterEngine
         SceneDataManager* m_pSceneDataManager;
 
     public:
-        bool Parser(uint32 nGroup, const String& strName, Scene* pScene, ScenePtrVector* pRet = nullptr);
+        bool Parser(uint32 nGroup, const String& strName, SceneData* pSceneData, SceneDataPtrVector* pRet = nullptr);
 
-		bool ParserXML(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
-		bool ParserXML(const char* szFilePath, Scene* pScene = nullptr, ScenePtrVector* pRet = nullptr);
+		bool ParserXML(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet = nullptr);
+		bool ParserXML(uint32 nGroup, const String& strName, const String& strPath, SceneData* pSceneData = nullptr, SceneDataPtrVector* pRet = nullptr);
 
-		bool ParserBinary(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
-		bool ParserBinary(const char* szFilePath, Scene* pScene = nullptr, ScenePtrVector* pRet = nullptr);
+		bool ParserBinary(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet = nullptr);
+		bool ParserBinary(uint32 nGroup, const String& strName, const String& strPath, SceneData* pSceneData = nullptr, SceneDataPtrVector* pRet = nullptr);
         
     public:
         bool SaveXML(Scene* pScene);
 		bool SaveXML(uint32 nGroup, Scene* pScene);
-		bool SaveXML(const char* szFilePath, ScenePtrVector& aSA);
+		bool SaveXML(const String& strPath, ScenePtrVector& aSA);
 		
 		bool SaveBinary(Scene* pScene);
 		bool SaveBinary(uint32 nGroup, Scene* pScene);
-		bool SaveBinary(const char* szFilePath, ScenePtrVector& aSA);
+		bool SaveBinary(const String& strPath, ScenePtrVector& aSA);
     };
 
 }; //LostPeterEngine

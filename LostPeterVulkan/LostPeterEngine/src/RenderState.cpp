@@ -148,8 +148,8 @@ namespace LostPeterEngine
 
 
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
-	RenderStateTexture::RenderStateTexture(uint32 _group, const String& _nameTexture)
-		: Base(_group, _nameTexture)
+	RenderStateTexture::RenderStateTexture(uint32 nGroup, const String& strNameTexture)
+		: Base(nGroup, strNameTexture)
 		, m_pTexture(nullptr)
 	{
 

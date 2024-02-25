@@ -139,6 +139,7 @@ namespace LostPeterEngine
         "Texture",                  //1:    Texture
         "Shader",                   //2:    Shader
         "Material",                 //3:    Material
+        "Scene",                    //4:    Scene
     };
     const String& E_GetResourceTypeName(EResourceType type)
     {
@@ -354,6 +355,8 @@ namespace LostPeterEngine
         "TextureConfigName",                //8:    TextureConfigName
         "MaterialGroup",                    //9:    MaterialGroup
         "MaterialConfigName",               //10:   MaterialConfigName
+        "SceneGroup",                       //11:   SceneGroup
+        "SceneConfigName",                  //12:   SceneConfigName
 
     ////Audio
 

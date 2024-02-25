@@ -27,6 +27,7 @@ void Vulkan_200_Engine::OnLoad()
     loadMeshes();
     loadTextures();
     loadMaterials();
+    loadScenes();
 }
 
 void Vulkan_200_Engine::loadShaders()
@@ -234,4 +235,30 @@ void Vulkan_200_Engine::loadMaterials()
         F_LogInfo("Vulkan_200_Engine::loadMaterial: Load material success, group: [%u], name: [%s], path: [%s] !", 
                   nGroup, strNameMaterial.c_str(), pMaterial->GetMaterialData()->GetPath().c_str());
         return pMaterial;
+    }
+
+void Vulkan_200_Engine::loadScenes()
+{
+    F_LogInfo("++++++++++ Vulkan_200_Engine::loadScenes: Load scene test start !");
+    {
+        uint nGroup = 14000;
+        String strNameScene;
+
+        //14000 - Default
+        strNameScene = "Default";
+        Scene* pScene1 = loadScene(nGroup, strNameScene);
+    }
+    F_LogInfo("---------- Vulkan_200_Engine::loadScenes: Load scene test end !");
+}
+    Scene* Vulkan_200_Engine::loadScene(uint nGroup, const String& strNameScene)
+    {
+        Scene* pScene = SceneManagerEnumerator::GetSingleton().LoadScene(nGroup, strNameScene);
+        if (pScene == nullptr)
+        {
+            F_LogError("*********************** Vulkan_200_Engine::loadScene: Load scene failed, group: [%u], name: [%s] !", nGroup, strNameScene.c_str());
+            return nullptr;
+        }
+        F_LogInfo("Vulkan_200_Engine::loadScene: Load scene success, group: [%u], name: [%s], path: [%s] !", 
+                  nGroup, strNameScene.c_str(), pScene->GetSceneData()->GetPath().c_str());
+        return pScene;
     }

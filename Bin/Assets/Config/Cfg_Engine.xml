@@ -15,6 +15,8 @@
 		<TextureConfigName val="Cfg_Texture.xml" />
 		<MaterialGroup val="0" />
 		<MaterialConfigName val="Cfg_Material.xml" />
+		<SceneGroup val="0" />
+		<SceneConfigName val="Cfg_Scene.xml" />
 
 	</cfg_render>
 	<cfg_audio>

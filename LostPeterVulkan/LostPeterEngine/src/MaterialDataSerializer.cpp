@@ -611,7 +611,7 @@ namespace LostPeterEngine
 		{
 			if (!ParserBinary(nGroup, strName, strPath, pMaterialData, pRet))
 			{
-                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material binary file failed, path: [%s] !", strPath.c_str());
+                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material binary file failed, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 				return false;
 			}
 			return true;
@@ -620,14 +620,14 @@ namespace LostPeterEngine
 		{
 			if (!ParserXML(nGroup, strName, strPath, pMaterialData, pRet))
 			{
-                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material xml file failed, path: [%s] !", strPath.c_str());
+                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material xml file failed, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 				return false;
 			}
 			return true;
 		}
 		else
 		{	
-            F_LogError("*********************** MaterialDataSerializer::Parser: Not valid material file, path: [%s] !", strPath.c_str());
+            F_LogError("*********************** MaterialDataSerializer::Parser: Not valid material file, group: [%u], path: [%s] !", nGroup, strPath.c_str());
 		}
 		
 		return false;

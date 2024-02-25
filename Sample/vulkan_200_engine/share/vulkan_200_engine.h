@@ -35,6 +35,8 @@ protected:
         Texture* loadTexture(uint nGroup, const String& strNameTexture, bool bIsArray);
     virtual void loadMaterials();
         Material* loadMaterial(uint nGroup, const String& strNameMaterial);
+    virtual void loadScenes();
+        Scene* loadScene(uint nGroup, const String& strNameScene);
 };
 
 

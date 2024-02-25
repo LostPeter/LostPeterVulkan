@@ -12,12 +12,12 @@
 #ifndef _SCENE_DATA_MANAGER_H_
 #define _SCENE_DATA_MANAGER_H_
 
-#include "Base.h"
+#include "ResourceManager.h"
 
 namespace LostPeterEngine
 {
     class engineExport SceneDataManager : public FSingleton<SceneDataManager>
-                                        , public Base
+                                        , public ResourceManager
     {
         friend class SceneDataSerializer;
 
@@ -27,63 +27,78 @@ namespace LostPeterEngine
 
     public:
     protected:
-        SceneSerializer* m_pSceneSerializer;
         SceneDataSerializer* m_pSceneDataSerializer;
 
-        ScenePtrVector m_aScene;
-        SceneGroupPtrMap m_mapSceneGroup;
-
     public:
-        F_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
         F_FORCEINLINE SceneDataSerializer* GetSceneDataSerializer() const { return m_pSceneDataSerializer; }
-
-        F_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScene; }
-        F_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScene; }
-        F_FORCEINLINE const SceneGroupPtrMap& GetSceneGroupPtrMap() const { return this->m_mapSceneGroup; }
-        F_FORCEINLINE SceneGroupPtrMap& GetSceneGroupPtrMap() { return this->m_mapSceneGroup; }
 
     public:
         static SceneDataManager& GetSingleton();
 		static SceneDataManager* GetSingletonPtr();
 
     public:
-        void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        virtual void Destroy();
 
     public:
-        bool LoadSceneAll();
-        Scene* LoadScene(uint nGroup, const String& strName);
-        void UnloadScene(Scene* pScene);
+        SceneData* NewSceneData(uint32 nGroup, const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+		bool AddSceneData(SceneData* pSceneData);
+		
+		SceneData* LoadSceneData(uint32 nGroup, const String& strName, bool bIsFromFile, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
+        void UnloadSceneData(SceneData* pSceneData);
 
-        bool HasScene(uint nGroup, const String& strName);
-        Scene* GetScene(uint nGroup, const String& strName);
-        bool AddScene(uint nGroup, Scene* pScene);
-        void DeleteScene(uint nGroup, const String& strName);
-        void DeleteSceneAll();
-
-    private:
-        Scene* loadScene(uint nGroup, const String& strName, bool bIsFromFile = true);
-        Scene* loadScene(SceneInfo* pSI);
-
+        bool HasSceneData(const String& strName);
+        bool HasSceneData(const String& strName, const String& strGroupName);
+        SceneData* GetSceneData(const String& strName);
+        SceneData* GetSceneData(const String& strName, const String& strGroupName);
 
     public:
-        bool Parser(uint32 nGroup, const String& strName, Scene* pScene);
-        bool Parser(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
+		virtual ResourceCreateOrRetrieveResult CreateOrRetrieveSceneData(const String& strPath,
+                                                                         uint32 nGroup, 
+                                                                         const String& strName, 
+                                                                         const String& strGroupName, 
+                                                                         bool bIsManualLoad = false,
+                                                                         ResourceManualLoader* pManualLoader = nullptr, 
+                                                                         const NameValuePairMap* pLoadParams = nullptr);
 
-		bool ParserXML(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
-		bool ParserXML(const char* szFilePath, ScenePtrVector* pRet = nullptr);
+    public:
+        virtual SceneData* Prepare(const String& strPath,
+								   uint32 nGroup, 
+								   const String& strName, 
+								   const String& strGroupName);
 
-		bool ParserBinary(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
-		bool ParserBinary(const char* szFilePath, ScenePtrVector* pRet = nullptr);
+    public:
+        virtual SceneData* CreateSceneData(const String& strPath,
+                                           uint32 nGroup, 
+                                           const String& strName, 
+                                           const String& strGroupName);
+
+	protected:
+        virtual Resource* createImpl(uint32 nGroup,
+									 const String& strName,
+			                         const String& strGroupName,
+									 ResourceHandle nHandle, 
+                                     bool bIsManualLoad,
+                                     ResourceManualLoader* pManualLoader, 
+			                         const NameValuePairMap* pLoadParams);
+
+    public:
+        bool Parser(uint32 nGroup, const String& strName, SceneData* pSceneData);
+        bool Parser(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet = nullptr);
+
+		bool ParserXML(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet = nullptr);
+		bool ParserXML(uint32 nGroup, const String& strName, const String& strPath, SceneDataPtrVector* pRet = nullptr);
+
+		bool ParserBinary(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet = nullptr);
+		bool ParserBinary(uint32 nGroup, const String& strName, const String& strPath, SceneDataPtrVector* pRet = nullptr);
 
     public:
         bool SaveXML(Scene* pScene);
 		bool SaveXML(uint32 nGroup, Scene* pScene);
-		bool SaveXML(const char* szFilePath, ScenePtrVector& aSA);
+		bool SaveXML(const String& strPath, ScenePtrVector& aSA);
 
 		bool SaveBinary(Scene* pScene);
 		bool SaveBinary(uint32 nGroup, Scene* pScene);
-		bool SaveBinary(const char* szFilePath, ScenePtrVector& aSA);
+		bool SaveBinary(const String& strPath, ScenePtrVector& aSA);
     };
 
 }; //LostPeterEngine

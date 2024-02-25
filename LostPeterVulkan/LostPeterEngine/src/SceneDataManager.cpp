@@ -10,8 +10,9 @@
 ****************************************************************************/
 
 #include "../include/SceneDataManager.h"
-#include "../include/SceneSerializer.h"
 #include "../include/SceneDataSerializer.h"
+#include "../include/SceneData.h"
+#include "../include/SceneManagerEnumerator.h"
 #include "../include/SceneManager.h"
 #include "../include/Scene.h"
 
@@ -30,11 +31,11 @@ namespace LostPeterEngine
 	}
 
     SceneDataManager::SceneDataManager()
-        : Base("SceneDataManager")
-        , m_pSceneSerializer(nullptr)
+        : ResourceManager(E_GetResourceTypeName(E_Resource_Scene), E_Resource_Scene)
     {
         m_pSceneDataSerializer = new SceneDataSerializer(this);
     }
+
     SceneDataManager::~SceneDataManager()
     {
         Destroy();
@@ -42,206 +43,208 @@ namespace LostPeterEngine
 
     void SceneDataManager::Destroy()
     {
-        F_DELETE(m_pSceneSerializer)
         F_DELETE(m_pSceneDataSerializer)
 
+        ResourceManager::Destroy();
     }
 
-    bool SceneDataManager::Init(uint nGroup, const String& strNameCfg)
-	{	
-		//1> Scene Cfg Path 
-        String strPathCfgScene = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
-        if (strPathCfgScene.empty())
-        {
-            F_LogError("*********************** SceneDataManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
-            return false;
-        }
+    SceneData* SceneDataManager::NewSceneData(uint32 nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
+	{
+		SceneData* pSceneData = (SceneData*)createImpl(nGroup,
+                                                       strName,
+                                                       strGroupName,
+                                                       getNextHandle(),
+                                                       false,
+                                                       nullptr,
+                                                       nullptr);
+		return pSceneData;
+	}
+	bool SceneDataManager::AddSceneData(SceneData* pSceneData)
+	{
+		if (GetSceneData(pSceneData->GetName(), pSceneData->GetGroupName()))
+			return false;
 
-        //2> Scene Serializer
-        m_pSceneSerializer = new SceneSerializer();
-        if (!m_pSceneSerializer->LoadFile(strPathCfgScene))
-        {
-            F_LogError("*********************** SceneDataManager::Init: Load file scene cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
-            return false;
-        }
-
+		addImpl(pSceneData);
+		ResourceGroupManager::GetSingleton()._NotifyResourceCreated(pSceneData);
 		return true;
 	}
-
-    bool SceneDataManager::LoadSceneAll()
-    {
-        if (m_pSceneSerializer == nullptr)
-            return false;
-
-        SceneInfoPtrVector& aSceneInfos = m_pSceneSerializer->GetSceneInfoPtrVector();
-        for (SceneInfoPtrVector::iterator it = aSceneInfos.begin();
-             it != aSceneInfos.end(); ++it)
-        {
-            if (!loadScene(*it))
-                continue;
-        }
-
-        return true;
-    }
-    Scene* SceneDataManager::LoadScene(uint nGroup, const String& strName)
-    {
-        if (m_pSceneSerializer == nullptr)
+	SceneData* SceneDataManager::LoadSceneData(uint32 nGroup, const String& strName, bool bIsFromFile, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
+	{
+		if (m_pSceneDataSerializer == nullptr)
             return nullptr;
 
-        Scene* pScene = GetScene(nGroup, strName);
-        if (pScene == nullptr)
+        SceneData* pSceneData = GetSceneData(strName, strGroupName);
+        if (pSceneData != nullptr)
         {
-            SceneInfo* pSceneInfo = m_pSceneSerializer->GetSceneInfo(nGroup, strName);
-            if (pSceneInfo == nullptr)
-            {
-                F_LogError("*********************** SceneDataManager::LoadScene: Can not find scene info, group: [%u], name: [%s] !", nGroup, strName.c_str());
-                return nullptr;
-            }
-            if (!loadScene(pSceneInfo))
-            {
-                return nullptr;
-            }
+            pSceneData->AddRef();
         }
-        pScene->AddRef();
-        return pScene;
-    }
-    Scene* SceneDataManager::loadScene(SceneInfo* pSI)
-    {
-        Scene* pScene = new Scene(pSI->group,
-                                  pSI->nameScene);
-        if (!pScene->LoadScene())
+        else
         {
-            F_LogError("*********************** SceneDataManager::loadScene: Load scene failed, name: [%s], path: [%s] !", pSI->nameScene.c_str(), pSI->pathScene.c_str());
-            F_DELETE(pScene)
-            return nullptr;
+			pSceneData = NewSceneData(nGroup, strName, strGroupName);
+			if (bIsFromFile)
+			{
+				if (!Parser(nGroup, strName, pSceneData))
+				{
+					delete pSceneData;
+					return nullptr;
+				}
+				AddSceneData(pSceneData);
+			}
+			else
+			{
+				Scene* pSceneDefault = SceneManagerEnumerator::GetSingleton().GetScene_Default();
+				pSceneData->SerializerFrom(pSceneDefault->GetSceneData());
+				pSceneData->SetPath(pSceneDefault->GetSceneData()->GetPath());
+			}
         }
-
-        if (AddScene(pSI->group, pScene))
-        {
-            F_LogInfo("SceneDataManager::loadScene: Load scene success, [%u]-[%s]-[%s] !", 
-                      pSI->group, 
-                      pSI->nameScene.c_str(), 
-                      pSI->pathScene.c_str());
-        }
-        return pScene;
-    }
-
-    void SceneDataManager::UnloadScene(Scene* pScene)
-    {
-        if (pScene == nullptr)
+        return pSceneData;
+	}
+	void SceneDataManager::UnloadSceneData(SceneData* pSceneData)
+	{
+		if (!pSceneData)
             return;
-        pScene->DelRef();
-        if (!HasRef())
-        {
-            DeleteScene(pScene->GetGroup(), pScene->GetName());
-        }
-    }
+        Delete(pSceneData);
+	}
 
-    bool SceneDataManager::HasScene(uint nGroup, const String& strName)
-    {
-        return GetScene(nGroup, strName) != nullptr;
-    }
-
-    Scene* SceneDataManager::GetScene(uint nGroup, const String& strName)
-    {
-        SceneGroupPtrMap::iterator itFindGroup = m_mapSceneGroup.find(nGroup);
-        if (itFindGroup == m_mapSceneGroup.end())
-        {
+	bool SceneDataManager::HasSceneData(const String& strName)
+	{
+		return GetResourceByName(strName) != nullptr;
+	}	
+	bool SceneDataManager::HasSceneData(const String& strName, const String& strGroupName)
+	{
+		return GetResourceByName(strName, strGroupName) != nullptr;
+	}
+	SceneData* SceneDataManager::GetSceneData(const String& strName)
+	{
+		Resource* pResource = GetResourceByName(strName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-
-        ScenePtrMap::iterator itFindScene = itFindGroup->second.find(strName);
-        if (itFindScene == itFindGroup->second.end())
-        {
+        return (SceneData*)pResource;
+	}
+	SceneData* SceneDataManager::GetSceneData(const String& strName, const String& strGroupName)
+	{
+		Resource* pResource = GetResourceByName(strName, strGroupName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-        return itFindScene->second;
-    }
+        return (SceneData*)pResource;
+	}
 
-    bool SceneDataManager::AddScene(uint nGroup, Scene* pScene)
+	ResourceCreateOrRetrieveResult SceneDataManager::CreateOrRetrieveSceneData(const String& strPath,
+                                                                               uint32 nGroup, 
+                                                                               const String& strName, 
+                                                                               const String& strGroupName, 
+                                                                               bool bIsManualLoad /*= false*/,
+                                                                               ResourceManualLoader* pManualLoader /*= nullptr*/, 
+                                                                               const NameValuePairMap* pLoadParams /*= nullptr*/)
     {
-        SceneGroupPtrMap::iterator itFind = m_mapSceneGroup.find(nGroup);
-        if (itFind == m_mapSceneGroup.end())
+        NameValuePairMap mapMeshParam;
+        if (bIsManualLoad && pLoadParams)
         {
-            ScenePtrMap mapScene;
-            m_mapSceneGroup[nGroup] = mapScene;
-            itFind = m_mapSceneGroup.find(nGroup);
-        }
-        const String& strName = pScene->GetName();
-        ScenePtrMap::iterator itFindScene = itFind->second.find(strName);
-        if (itFindScene != itFind->second.end())
-        {
-            F_LogError("*********************** SceneDataManager::AddScene: Scene name already exist: [%s] !", strName.c_str());
-            F_DELETE(pScene)
-            return false;
+            FUtil::CopyNameValuePairMapTo(pLoadParams, &mapMeshParam);
         }
 
-        itFind->second.insert(ScenePtrMap::value_type(strName, pScene));
-        m_aScene.push_back(pScene);
-        return true;
+        ResourceCreateOrRetrieveResult result = ResourceManager::CreateOrRetrieve(nGroup,
+                                                                                  strName,
+                                                                                  strGroupName,
+                                                                                  bIsManualLoad,
+                                                                                  pManualLoader,
+                                                                                  &mapMeshParam);
+		if (!result.first || !result.second)
+		{
+            F_LogError("*********************** SceneDataManager::CreateOrRetrieveSceneData: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+			return result;
+		}
+
+        SceneData* pSceneData = (SceneData*)result.first;
+        pSceneData->SetPath(strPath);
+
+		return result;
     }
 
-    void SceneDataManager::DeleteScene(uint nGroup, const String& strName)
+    SceneData* SceneDataManager::Prepare(const String& strPath,
+                                         uint32 nGroup, 
+                                         const String& strName, 
+                                         const String& strGroupName)
     {
-        SceneGroupPtrMap::iterator itFind = m_mapSceneGroup.find(nGroup);
-        if (itFind == m_mapSceneGroup.end())
-        {
-            return;
-        }
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveSceneData(strPath,
+                                                                          nGroup,
+                                                                          strName,
+                                                                          strGroupName,
+                                                                          false,
+                                                                          nullptr,
+                                                                          nullptr);
+		SceneData* pSceneData = (SceneData*)result.first;
+        if (!pSceneData)
+            return nullptr;
+		pSceneData->Prepare();
 
-        ScenePtrMap::iterator itFindScene = itFind->second.find(strName);
-        if (itFindScene != itFind->second.end())
-        {
-            ScenePtrVector::iterator itFindA = std::find(m_aScene.begin(), m_aScene.end(), itFindScene->second);
-            if (itFindA != m_aScene.end())
-                m_aScene.erase(itFindA);
-            F_DELETE(itFindScene->second)
-            itFind->second.erase(itFindScene);
-        }
+		return pSceneData;
     }
 
-    void SceneDataManager::DeleteSceneAll()
+    SceneData* SceneDataManager::CreateSceneData(const String& strPath,
+                                                 uint32 nGroup, 
+                                                 const String& strName, 
+                                                 const String& strGroupName)         
     {
-        for (SceneGroupPtrMap::iterator it = m_mapSceneGroup.begin();
-             it != m_mapSceneGroup.end(); ++it)
-        {
-            ScenePtrMap& mapScene = it->second;
-            for (ScenePtrMap::iterator itScene = mapScene.begin(); 
-                 itScene != mapScene.end(); ++itScene)
-            {
-                F_DELETE(itScene->second)
-            }
-        }
-        m_aScene.clear();
-        m_mapSceneGroup.clear();
-    }
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveSceneData(strPath,
+                                                                          nGroup,
+                                                                          strName,
+                                                                          strGroupName,
+                                                                          false,
+                                                                          nullptr,
+                                                                          nullptr);
+		SceneData* pSceneData = (SceneData*)result.first;
+        if (!pSceneData)
+            return nullptr;
+		pSceneData->Load();
 
+        pSceneData->AddRef();
+		return pSceneData;
+    }       
 
-    bool SceneDataManager::Parser(uint32 nGroup, const String& strName, Scene* pScene)
+	Resource* SceneDataManager::createImpl(uint32 nGroup,
+                                           const String& strName,
+                                           const String& strGroupName,
+                                           ResourceHandle nHandle, 
+                                           bool bIsManualLoad,
+                                           ResourceManualLoader* pManualLoader, 
+                                           const NameValuePairMap* pLoadParams)
     {
-        return m_pSceneDataSerializer->Parser(nGroup, strName, pScene, nullptr);
+        return new SceneData(this,
+                             nGroup, 
+                             strName,
+                             strGroupName,
+                             nHandle,
+                             bIsManualLoad,
+                             pManualLoader);
     }
-    bool SceneDataManager::Parser(uint32 nGroup, const String& strName, ScenePtrVector* pRet /*= nullptr*/)
+
+
+    bool SceneDataManager::Parser(uint32 nGroup, const String& strName, SceneData* pSceneData)
+    {
+        return m_pSceneDataSerializer->Parser(nGroup, strName, pSceneData, nullptr);
+    }
+    bool SceneDataManager::Parser(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         return m_pSceneDataSerializer->Parser(nGroup, strName, nullptr, pRet);
     }
 
-    bool SceneDataManager::ParserXML(uint32 nGroup, const String& strName, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataManager::ParserXML(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         return m_pSceneDataSerializer->ParserXML(nGroup, strName, pRet);
     }
-    bool SceneDataManager::ParserXML(const char* szFilePath, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataManager::ParserXML(uint32 nGroup, const String& strName, const String& strPath, SceneDataPtrVector* pRet /*= nullptr*/)
     {
-        return m_pSceneDataSerializer->ParserXML(szFilePath, nullptr, pRet);
+        return m_pSceneDataSerializer->ParserXML(nGroup, strName, strPath, nullptr, pRet);
     }
 
-    bool SceneDataManager::ParserBinary(uint32 nGroup, const String& strName, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataManager::ParserBinary(uint32 nGroup, const String& strName, SceneDataPtrVector* pRet /*= nullptr*/)
     {
         return m_pSceneDataSerializer->ParserBinary(nGroup, strName, pRet);
     }
-    bool SceneDataManager::ParserBinary(const char* szFilePath, ScenePtrVector* pRet /*= nullptr*/)
+    bool SceneDataManager::ParserBinary(uint32 nGroup, const String& strName, const String& strPath, SceneDataPtrVector* pRet /*= nullptr*/)
     {
-        return m_pSceneDataSerializer->ParserBinary(szFilePath, nullptr, pRet);
+        return m_pSceneDataSerializer->ParserBinary(nGroup, strName, strPath, nullptr, pRet);
     }
 
     bool SceneDataManager::SaveXML(Scene* pScene)
@@ -252,9 +255,9 @@ namespace LostPeterEngine
     {
         return m_pSceneDataSerializer->SaveXML(nGroup, pScene);
     }
-    bool SceneDataManager::SaveXML(const char* szFilePath, ScenePtrVector& aSA)
+    bool SceneDataManager::SaveXML(const String& strPath, ScenePtrVector& aSA)
     {
-        return m_pSceneDataSerializer->SaveXML(szFilePath, aSA);
+        return m_pSceneDataSerializer->SaveXML(strPath, aSA);
     }
 
     bool SceneDataManager::SaveBinary(Scene* pScene)
@@ -265,9 +268,9 @@ namespace LostPeterEngine
     {
         return m_pSceneDataSerializer->SaveBinary(nGroup, pScene);
     }
-    bool SceneDataManager::SaveBinary(const char* szFilePath, ScenePtrVector& aSA)
+    bool SceneDataManager::SaveBinary(const String& strPath, ScenePtrVector& aSA)
     {
-        return m_pSceneDataSerializer->SaveBinary(szFilePath, aSA);
+        return m_pSceneDataSerializer->SaveBinary(strPath, aSA);
     }
 
 

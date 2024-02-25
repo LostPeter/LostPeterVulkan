@@ -15,6 +15,7 @@
 #include "../include/TextureManager.h"
 #include "../include/MaterialDataManager.h"
 #include "../include/MaterialManager.h"
+#include "../include/SceneDataManager.h"
 #include "../include/SceneManagerEnumerator.h"
 #include "../include/SceneManager.h"
 #include "../include/Viewport.h"
@@ -47,6 +48,7 @@ namespace LostPeterEngine
         , m_pRendererCurrent(nullptr)
 		, m_pRenderWindowAuto(nullptr)
 		, m_pRenderPipeLineManager(nullptr)
+		, m_pSceneDataManager(nullptr)
 		, m_pSceneManagerEnumerator(nullptr)
 		, m_pSceneManagerCurrent(nullptr)
 		, m_pRenderQueueManager(nullptr)
@@ -153,13 +155,29 @@ namespace LostPeterEngine
 			cfgItem.strCurValue = MaterialManager::ms_strMaterialConfigName;
 			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
 		}
+
+		//10> SceneGroup
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_SceneGroup);
+			cfgItem.strCurValue = FUtilString::SaveUInt(0);
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+		//11> SceneConfigName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_SceneConfigName);
+			cfgItem.strCurValue = MaterialManager::ms_strMaterialConfigName;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
     }
 
     void RenderEngine::Destroy()
     {
         RemoveRenderEngineListenerAll();
-		//m_pSceneManagerEnumerator->ClearAllSceneManager();
 		F_DELETE(m_pSceneManagerEnumerator)
+		F_DELETE(m_pSceneDataManager)
 		F_DELETE(m_pRenderPipeLineManager)
 		F_DELETE(m_pMaterialManager)
 		F_DELETE(m_pMaterialDataManager)
@@ -167,8 +185,8 @@ namespace LostPeterEngine
 		if (m_pRendererCurrent != nullptr)
 		{
 			m_pRendererCurrent->Destroy();
-			m_pRendererCurrent = nullptr;
 		}
+		m_pRendererCurrent = nullptr;
 		m_pRenderWindowAuto = nullptr;
 		F_DELETE(m_pRenderQueueManager)
 		m_mapRenderer.clear();
@@ -253,7 +271,15 @@ namespace LostPeterEngine
 		}
 		bool RenderEngine::initSceneManager()
 		{
+			m_pSceneDataManager = new SceneDataManager();
 			m_pSceneManagerEnumerator = new SceneManagerEnumerator();
+			uint32 nGroup = GetCfgGroup(E_EngineConfig_Render_SceneGroup);
+        	const String& strNameCfg = GetCfgConfigName(E_EngineConfig_Render_SceneConfigName);
+			if (!m_pSceneManagerEnumerator->Init(nGroup, strNameCfg))
+			{
+				F_LogError("*********************** RenderEngine::initSceneManager: Failed to init scene manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+            	return false;
+			}
 			return true;
 		}
 		bool RenderEngine::initRenderQueueManager()
@@ -290,7 +316,8 @@ namespace LostPeterEngine
 		if (typeEngineConfig != E_EngineConfig_Render_ShaderGroup &&
 			typeEngineConfig != E_EngineConfig_Render_MeshGroup &&
 			typeEngineConfig != E_EngineConfig_Render_TextureGroup &&
-			typeEngineConfig != E_EngineConfig_Render_MaterialGroup)
+			typeEngineConfig != E_EngineConfig_Render_MaterialGroup &&
+			typeEngineConfig != E_EngineConfig_Render_SceneGroup)
 		{
 			return 0;
 		}
@@ -306,7 +333,8 @@ namespace LostPeterEngine
 		if (typeEngineConfig != E_EngineConfig_Render_ShaderConfigName &&
 			typeEngineConfig != E_EngineConfig_Render_MeshConfigName &&
 			typeEngineConfig != E_EngineConfig_Render_TextureConfigName &&
-			typeEngineConfig != E_EngineConfig_Render_MaterialConfigName)
+			typeEngineConfig != E_EngineConfig_Render_MaterialConfigName &&
+			typeEngineConfig != E_EngineConfig_Render_SceneConfigName)
 		{
 			return FUtilString::BLANK;
 		}

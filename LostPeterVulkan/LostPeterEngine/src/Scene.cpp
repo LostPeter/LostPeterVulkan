@@ -26,9 +26,10 @@
 namespace LostPeterEngine
 {
 	String Scene::ms_nameRootSceneNode = "RootSceneNode";
-
-    Scene::Scene(uint _group, const String& nameScene)
-        : Base(_group, nameScene)
+    Scene::Scene(uint nGroup, const String& strNameScene)
+        : Base(nGroup, strNameScene)
+	////SceneData
+		, m_pSceneData(nullptr)
     ////SceneManager/SceneNode
         , m_pSceneManager(nullptr)
         , m_pRootSceneNode(nullptr)
@@ -48,25 +49,43 @@ namespace LostPeterEngine
 
     void Scene::Destroy()
     {
-        ClearScene();
+        UnloadScene();
     }
 
-    bool Scene::LoadScene()
+    bool Scene::LoadScene(bool bIsFromFile /*= true*/)
     {
+		uint32 nGroup = GetGroup();
+        const String& strName = GetName();
         if (!IsGroupNameValid())
 		{
-            F_LogError("*********************** Scene::LoadScene: Group, Name is not valid, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
+            F_LogError("*********************** Scene::LoadScene: Group, Name is not valid: group: [%u], name: [%s] !", nGroup, strName.c_str());
             return false;
         }
 
-        if (!SceneDataManager::GetSingleton().Parser(GetGroup(), GetName(), this))
-        {
-            F_LogError("*********************** Scene::LoadScene: Group, Parse scene file failed, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
-            return false;
-        }
+		if (!m_pSceneData)
+		{
+			m_pSceneData = SceneDataManager::GetSingleton().LoadSceneData(nGroup, strName, bIsFromFile);
+            if (m_pSceneData == nullptr)
+            {
+                F_LogError("*********************** Scene::LoadScene: LoadMaterialData failed, group: [%u], name: [%s] !", nGroup, strName.c_str());
+                return false;
+            }
+		}
+
+
 
         return true;
     }
+	void Scene::UnloadScene()
+	{
+		ClearScene();
+
+		if (m_pSceneData)
+		{
+			SceneDataManager::GetSingleton().UnloadSceneData(m_pSceneData);
+		}
+        m_pSceneData = nullptr;
+	}
 
 	void Scene::ClearScene()
     {
