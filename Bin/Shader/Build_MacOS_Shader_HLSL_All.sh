@@ -33,9 +33,9 @@ function compile_shader() {
     for file in `ls $1`
     do 
         if [ -d $1"/"$file ]; then
-            compile_shader $1"/"$file 
+            compile_shader $1"/"$file
         else
-            ./Build_MacOS_Shader_HLSL.sh $file $debug
+            ./Build_MacOS_Shader_HLSL.sh $file $1 $debug
         fi
     done
 }

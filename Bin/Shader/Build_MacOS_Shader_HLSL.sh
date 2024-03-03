@@ -10,7 +10,8 @@
 #****************************************************************************/
 
 name_shader=${1}
-debug=${2}
+folder_shader=${2}
+debug=${3}
 
 name_vert="\.vert"
 name_tesc="\.tesc"
@@ -44,8 +45,7 @@ else
 fi
 
 
-name_folder="hlsl"
-folderSrc="./$name_folder"
+folderSrc=$folder_shader
 folderVulkan="../Assets/Shader"
 mkdir -p $folderVulkan
 
