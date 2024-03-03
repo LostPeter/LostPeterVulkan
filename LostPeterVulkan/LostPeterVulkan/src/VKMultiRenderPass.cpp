@@ -196,7 +196,7 @@ namespace LostPeterVulkan
     }
     void VKMultiRenderPass::CleanupSwapChain()
     {
-         Destroy();
+        Destroy();
     }
     void VKMultiRenderPass::RecreateSwapChain()
     {
