@@ -12,7 +12,8 @@
 @echo off
 
 set name_shader=%1
-set debug=%2
+set folder_shader=%2
+set debug=%3
 
 set name_vert=\.vert
 set name_tesc=\.tesc
@@ -22,6 +23,7 @@ set name_frag=\.frag
 set name_comp=\.comp
 
 echo file name: %name_shader%
+echo folder name: %folder_shader%
 
 echo %name_shader%| findstr %name_vert% >nul && (
     set name_profile=vs_6_1
@@ -47,8 +49,7 @@ echo %name_shader%| findstr %name_vert% >nul && (
 
 echo profile name: %name_profile%
 
-set name_folder=hlsl
-set folderSrc=.\%name_folder%
+set folderSrc=.\%folder_shader%
 set folderShader=..\Assets\Shader
 if not exist %folderShader% (
     mkdir %folderShader%

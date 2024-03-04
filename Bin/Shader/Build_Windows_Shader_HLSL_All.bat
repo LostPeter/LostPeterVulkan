@@ -22,9 +22,26 @@ if exist %folderShader% (
 mkdir %folderShader%
 
 echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
-for /F %%i in ('Dir %folderSrc%\*.* /B') do call ./Build_Windows_Shader_HLSL.bat %%i %debug%
+@REM for /F %%i in ('Dir %folderSrc%\*.* /B') do call ./Build_Windows_Shader_HLSL.bat %%i %debug%
+call :buildShader %folderSrc% %debug%
 echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
 
 echo "************** Shader Compile .spv ********************************************"
 for %%i in (%folderShader%\*.*) do echo %%i
 echo "************** Shader Compile .spv ********************************************"
+
+exit /b %errorlevel%
+:buildShader
+    echo folder is: %~1
+
+	for /F %%i in ('Dir %~1\*.* /B') do (
+		echo %%i
+
+		if exist %~1\%%i\nul (
+            call :buildShader %~1\%%i %~2
+        ) else (
+            call ./Build_Windows_Shader_HLSL.bat %%i %~1 %~2
+        )
+	) 
+
+exit /b 0 
