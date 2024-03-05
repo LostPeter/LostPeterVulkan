@@ -156,8 +156,6 @@ struct InstanceConstants
 struct VSOutput
 {
 	float4 outPosition                      : SV_POSITION;
-    [[vk::location(0)]] float4 outColor     : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
 };
 
 
@@ -171,8 +169,6 @@ VSOutput main(VSInput input,
     ObjectConstants obj = objectConsts[instanceIndex];
 
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, mul(obj.g_MatWorld, float4(input.inPosition, 1.0))));
-    output.outColor = input.inColor;
-    output.outTexCoord = input.inTexCoord;
 
     return output;
 }
