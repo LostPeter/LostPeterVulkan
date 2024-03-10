@@ -103,6 +103,9 @@ namespace LostPeterVulkan
         VkImage poDepthImage;
         VkDeviceMemory poDepthImageMemory;
         VkImageView poDepthImageView;
+        VkImageVector poColorImageLists;
+        VkDeviceMemoryVector poColorImageMemoryLists;
+        VkImageViewVector poColorImageViewLists;
 
         VkRenderPass poRenderPass;
         VkDescriptorSetLayout poDescriptorSetLayout;
@@ -169,6 +172,7 @@ namespace LostPeterVulkan
         bool isFrameBufferResized;
         //Config
         FVector4 cfg_colorBackground;
+        bool cfg_isRenderPassDefaultCustom;
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
@@ -399,6 +403,7 @@ namespace LostPeterVulkan
 
 
     public:
+        virtual bool HasConfig_RenderPassDefaultCustom();
         virtual bool HasConfig_MASS();
         virtual bool HasConfig_Imgui();
 
@@ -504,6 +509,7 @@ namespace LostPeterVulkan
                         virtual VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
                         virtual VkFormat findDepthFormat();
                         virtual bool hasStencilComponent(VkFormat format);
+                    virtual void createColorResourceLists();
 
                 virtual void destroyVkSurfaceKHR(VkSurfaceKHR vkSurfaceKHR);
                 virtual void destroyVkSwapchainKHR(VkSwapchainKHR vkSwapchainKHR);
@@ -519,6 +525,7 @@ namespace LostPeterVulkan
                 virtual void createRenderPasses();
                     virtual void createRenderPass_Default();
                     virtual void createRenderPass_Custom();
+                        virtual void createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass);
                         virtual void createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass);
                         virtual void createRenderPass_KhrDepthImgui(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkRenderPass& vkRenderPass);
                         virtual void createRenderPass_ColorDepthMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass);
@@ -545,6 +552,7 @@ namespace LostPeterVulkan
                 virtual void createFramebuffers();
                     virtual void createFramebuffer_Default();
                     virtual void createFramebuffer_Custom();
+                        virtual void createFramebuffer_DefaultCustom();
 
                     virtual bool createVkFramebuffer(const String& nameFramebuffer,
                                                      const VkImageViewVector& aImageView, 

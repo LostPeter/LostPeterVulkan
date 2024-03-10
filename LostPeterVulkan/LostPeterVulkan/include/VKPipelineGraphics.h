@@ -31,6 +31,7 @@ namespace LostPeterVulkan
         VkPipeline poPipeline;
         VkDescriptorSetVector poDescriptorSets;
 
+        bool hasNextSubpass;
         bool isMultiView;
         VkPipeline poPipeline_WireFrame2;
         VkPipeline poPipeline2;

@@ -22,7 +22,8 @@ namespace LostPeterVulkan
         , poPipelineLayout(VK_NULL_HANDLE)
         , poPipeline_WireFrame(VK_NULL_HANDLE)
         , poPipeline(VK_NULL_HANDLE)
-
+        
+        , hasNextSubpass(false)
         , isMultiView(false)
         , poPipeline_WireFrame2(VK_NULL_HANDLE)
         , poPipeline2(VK_NULL_HANDLE)

@@ -423,6 +423,7 @@ namespace LostPeterVulkan
         , isFrameBufferResized(false)
 
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
+        , cfg_isRenderPassDefaultCustom(false)
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
@@ -910,6 +911,10 @@ namespace LostPeterVulkan
         }
     }   
 
+    bool VulkanWindow::HasConfig_RenderPassDefaultCustom()
+    {
+        return this->cfg_isRenderPassDefaultCustom;
+    }
     bool VulkanWindow::HasConfig_MASS()
     {
         return this->cfg_isMSAA;
@@ -1759,6 +1764,9 @@ namespace LostPeterVulkan
 
             //4> createDepthResources
             createDepthResources();
+
+            //5> createColorResourceLists
+            createColorResourceLists();
         }
         F_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects finish *****");
     }
@@ -1837,8 +1845,8 @@ namespace LostPeterVulkan
         glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
         this->poWindowContentScale.x = scaleX;
         this->poWindowContentScale.y = scaleY;
-        F_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f] !", 
-                  (int)extent.width, (int)extent.height, (int)width, (int)height, scaleX, scaleY);
+        F_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f], format color: [%u], format depth: [%u] !", 
+                  (int)extent.width, (int)extent.height, (int)width, (int)height, scaleX, scaleY, (uint32_t)this->poSwapChainImageFormat, (uint32_t)this->poDepthImageFormat);
 
         createViewport();
     }
@@ -1848,7 +1856,7 @@ namespace LostPeterVulkan
             for (int i = 0; i < count; i++)
             {
                 const VkSurfaceFormatKHR& availableFormat = availableFormats[i];
-                if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && 
+                if ((availableFormat.format == VK_FORMAT_R8G8B8A8_SRGB || availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB) && 
                     availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) 
                 {
                     return availableFormat;
@@ -2005,6 +2013,10 @@ namespace LostPeterVulkan
                               this->poDepthImageView);
 
             F_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
+        }
+        void VulkanWindow::createColorResourceLists()
+        {
+
         }
         VkFormat VulkanWindow::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
         {
@@ -2171,29 +2183,36 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::createRenderPass_Default()
         {
-            if (HasConfig_Imgui())
+            if (HasConfig_RenderPassDefaultCustom())
             {
-                if (HasConfig_MASS())
-                {
-                    createRenderPass_ColorDepthImguiMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
-                }
-                else
-                {
-                    createRenderPass_KhrDepthImgui(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poRenderPass);
-                }
+                createRenderPass_DefaultCustom(this->poRenderPass);
             }
             else
             {
-                if (HasConfig_MASS())
+                if (HasConfig_Imgui())
                 {
-                    createRenderPass_ColorDepthMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
+                    if (HasConfig_MASS())
+                    {
+                        createRenderPass_ColorDepthImguiMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
+                    }
+                    else
+                    {
+                        createRenderPass_KhrDepthImgui(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poRenderPass);
+                    }
                 }
                 else
                 {
-                    createRenderPass_KhrDepth(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poRenderPass);
+                    if (HasConfig_MASS())
+                    {
+                        createRenderPass_ColorDepthMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
+                    }
+                    else
+                    {
+                        createRenderPass_KhrDepth(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poRenderPass);
+                    }
                 }
             }
-
+            
             F_LogInfo("VulkanWindow::createRenderPass_Default: Success to create RenderPass_Default !");
         }
         void VulkanWindow::createRenderPass_Custom()
@@ -2254,6 +2273,10 @@ namespace LostPeterVulkan
                 {
                     vkDestroyRenderPass(this->poDevice, vkRenderPass, nullptr);   
                 }
+            }
+            void VulkanWindow::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass)
+            {
+
             }
             void VulkanWindow::createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass)
             {
@@ -2694,56 +2717,62 @@ namespace LostPeterVulkan
         }
             void VulkanWindow::createFramebuffer_Default()
             {
-                size_t count = this->poSwapChainImageViews.size();
-                this->poSwapChainFrameBuffers.resize(count);
-
-                for (size_t i = 0; i < count; i++)
+                if (HasConfig_RenderPassDefaultCustom())
                 {
-                    VkImageViewVector aImageViews;
-                    if (!HasConfig_Imgui())
+                    createFramebuffer_DefaultCustom();
+                }
+                else
+                {
+                    size_t count = this->poSwapChainImageViews.size();
+                    this->poSwapChainFrameBuffers.resize(count);
+                    for (size_t i = 0; i < count; i++)
                     {
-                        if (!HasConfig_MASS())
+                        VkImageViewVector aImageViews;
+                        if (!HasConfig_Imgui())
                         {
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
-                            aImageViews.push_back(this->poDepthImageView);
+                            if (!HasConfig_MASS())
+                            {
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                                aImageViews.push_back(this->poDepthImageView);
+                            }
+                            else
+                            {
+                                aImageViews.push_back(this->poColorImageView);
+                                aImageViews.push_back(this->poDepthImageView);
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            }
                         }
                         else
                         {
-                            aImageViews.push_back(this->poColorImageView);
-                            aImageViews.push_back(this->poDepthImageView);
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            if (!HasConfig_MASS())
+                            {
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                                aImageViews.push_back(this->poDepthImageView);
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            }
+                            else
+                            {
+                                aImageViews.push_back(this->poColorImageView);
+                                aImageViews.push_back(this->poDepthImageView);
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                                aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (!HasConfig_MASS())
-                        {
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
-                            aImageViews.push_back(this->poDepthImageView);
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
-                        }
-                        else
-                        {
-                            aImageViews.push_back(this->poColorImageView);
-                            aImageViews.push_back(this->poDepthImageView);
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
-                            aImageViews.push_back(this->poSwapChainImageViews[i]);
-                        }
-                    }
 
-                    String nameFramebuffer = "Framebuffer-" + FUtilString::SaveSizeT(i);
-                    if (!createVkFramebuffer(nameFramebuffer,
-                                             aImageViews,
-                                             this->poRenderPass,
-                                             0,
-                                             this->poSwapChainExtent.width,
-                                             this->poSwapChainExtent.height,
-                                             1,
-                                             this->poSwapChainFrameBuffers[i]))
-                    {
-                        String msg = "*********************** VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
-                        F_LogError(msg.c_str());
-                        throw std::runtime_error(msg);
+                        String nameFramebuffer = "Framebuffer-" + FUtilString::SaveSizeT(i);
+                        if (!createVkFramebuffer(nameFramebuffer,
+                                                aImageViews,
+                                                this->poRenderPass,
+                                                0,
+                                                this->poSwapChainExtent.width,
+                                                this->poSwapChainExtent.height,
+                                                1,
+                                                this->poSwapChainFrameBuffers[i]))
+                        {
+                            String msg = "*********************** VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
+                            F_LogError(msg.c_str());
+                            throw std::runtime_error(msg);
+                        }
                     }
                 }
 
@@ -2753,6 +2782,10 @@ namespace LostPeterVulkan
             {
                 
             }
+                void VulkanWindow::createFramebuffer_DefaultCustom()
+                {
+
+                }
 
                 bool VulkanWindow::createVkFramebuffer(const String& nameFramebuffer,
                                                        const VkImageViewVector& aImageView, 
@@ -8059,9 +8092,17 @@ namespace LostPeterVulkan
                 //1> DepthImage/ColorImage
                 destroyVkImage(this->poDepthImage, this->poDepthImageMemory, this->poDepthImageView);
                 destroyVkImage(this->poColorImage, this->poColorImageMemory, this->poColorImageView);
+                size_t count = this->poColorImageLists.size();
+                for (size_t i = 0; i < count; i++)
+                {
+                    destroyVkImage(this->poColorImageLists[i], this->poColorImageMemoryLists[i], this->poColorImageViewLists[i]);
+                }
+                this->poColorImageLists.clear();
+                this->poColorImageMemoryLists.clear();
+                this->poColorImageViewLists.clear();
                 
                 //2> SwapChainFrameBuffers
-                size_t count = this->poSwapChainFrameBuffers.size();
+                count = this->poSwapChainFrameBuffers.size();
                 for (size_t i = 0; i < count; i++)
                 {
                     VkFramebuffer& frameBuffer = this->poSwapChainFrameBuffers[i];

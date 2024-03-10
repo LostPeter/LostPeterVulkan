@@ -511,6 +511,16 @@ protected:
         //DescriptorSetLayout
         virtual void createDescriptorSetLayout_Custom();
 
+
+        //Color 
+        virtual void createColorResourceLists();
+
+        //RenderPass
+        virtual void createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass);
+
+        //Framebuffer
+        virtual void createFramebuffer_DefaultCustom();
+
     //Load Assets
         //Camera
         virtual void createCamera();
@@ -591,6 +601,7 @@ private:
 
     void drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
+    void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend, MeshSub* pMeshSub, VkPipeline poPipeline, VkPipeline poPipeline_WireFrame);
 };
 
 
