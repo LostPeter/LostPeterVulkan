@@ -33,6 +33,9 @@ namespace LostPeterVulkan
 
         bool hasNextSubpass;
         bool isMultiView;
+        StringVector* poDescriptorSetLayoutNames2;
+        VkDescriptorSetLayout poDescriptorSetLayout2;
+        VkPipelineLayout poPipelineLayout2;
         VkPipeline poPipeline_WireFrame2;
         VkPipeline poPipeline2;
 

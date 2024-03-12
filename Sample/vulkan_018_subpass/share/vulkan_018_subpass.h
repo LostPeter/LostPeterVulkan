@@ -542,8 +542,6 @@ protected:
             void createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                ModelObjectRend* pRend, 
                                                ModelObjectRendIndirect* pRendIndirect);
-            void createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                              ModelObjectRend* pRend);
 
     //Compute/Update
         virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);

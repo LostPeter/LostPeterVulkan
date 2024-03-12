@@ -25,6 +25,9 @@ namespace LostPeterVulkan
         
         , hasNextSubpass(false)
         , isMultiView(false)
+        , poDescriptorSetLayoutNames2(nullptr)
+        , poDescriptorSetLayout2(VK_NULL_HANDLE)
+        , poPipelineLayout2(VK_NULL_HANDLE)
         , poPipeline_WireFrame2(VK_NULL_HANDLE)
         , poPipeline2(VK_NULL_HANDLE)
 
@@ -42,6 +45,7 @@ namespace LostPeterVulkan
     }
     void VKPipelineGraphics::CleanupSwapChain()
     {
+        //1> poPipeline
         this->poDescriptorSetLayoutNames = nullptr;
         this->poDescriptorSetLayout = VK_NULL_HANDLE;
         this->poPipelineLayout = VK_NULL_HANDLE;
@@ -58,6 +62,10 @@ namespace LostPeterVulkan
         this->poPipeline = VK_NULL_HANDLE;
         this->poDescriptorSets.clear();
 
+        //2> poPipeline2
+        this->poDescriptorSetLayoutNames2 = nullptr;
+        this->poDescriptorSetLayout2 = VK_NULL_HANDLE;
+        this->poPipelineLayout2 = VK_NULL_HANDLE;
         if (this->poPipeline_WireFrame2 != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame2);

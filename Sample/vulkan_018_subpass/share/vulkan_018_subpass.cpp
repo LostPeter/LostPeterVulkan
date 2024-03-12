@@ -95,11 +95,11 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 1;
+static const int g_DescriptorSetLayoutCount = 2;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
-
+    "Pass-Object-Material-Instance-TextureFS-InputAttachRed-InputAttachRed-InputAttachRed",
 };
 
 
@@ -1151,6 +1151,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
         //[2] Pipeline Graphics
         {
+            //(1) poPipeline
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
@@ -1233,6 +1234,29 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
             {
                 pRend->pPipelineGraphics->hasNextSubpass = true;
 
+                //(2) poPipeline2
+                pRend->pPipelineGraphics->poDescriptorSetLayoutNames2 = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
+                if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames2 == nullptr)
+                {
+                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames2 by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                pRend->pPipelineGraphics->poDescriptorSetLayout2 = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
+                if (pRend->pPipelineGraphics->poDescriptorSetLayout2 == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                pRend->pPipelineGraphics->poPipelineLayout2 = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
+                if (pRend->pPipelineGraphics->poPipelineLayout2 == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
                 //pPipelineGraphics->poPipeline_WireFrame2
                 pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline(aShaderStageCreateInfos_GraphicsNextSubpass,
                                                                                            pRend->isUsedTessellation, 0, 3,
@@ -1293,69 +1317,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 }
 void Vulkan_018_SubPass::createComputePipeline_Custom()
 {
-    size_t count_rend = this->m_aModelObjectRends_All.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
-        size_t count_pipeline = pRend->aPipelineComputes.size();
-        if (count_pipeline <= 0)
-            continue;
 
-        //[1] Shaders
-        String nameShaderComp = g_ObjectRend_NameShaderModules[6 * i + 5];
-        if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
-                                                  m_mapVkShaderModules,
-                                                  pRend->aShaderStageCreateInfos_Computes,
-                                                  pRend->mapShaderStageCreateInfos_Computes))
-        {
-            String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Can not find shader used !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-
-        //[2] Pipeline Compute
-        if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
-        {
-            String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Pipeline count is not equal shader count !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-        for (size_t j = 0; j < count_pipeline; j ++)
-        {
-            VKPipelineCompute* p = pRend->aPipelineComputes[j];
-            VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
-
-            p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayoutNames == nullptr)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
-            if (p->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-
-            p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
-            if (p->poPipeline == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-        }
-    }   
 }
 
 void Vulkan_018_SubPass::destroyMeshes()
@@ -1641,14 +1603,6 @@ void Vulkan_018_SubPass::createDescriptorSets_Custom()
             createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
-
-        //Pipeline Computes
-        size_t count_comp_rend = pRend->aPipelineComputes.size();
-        for (int j = 0; j < count_comp_rend; j++)
-        {       
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            createDescriptorSets_Compute(pPipelineCompute, pRend);
-        }
     }
 
     //2> Object Rend Indirect
@@ -1667,6 +1621,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                                                        ModelObjectRend* pRend, 
                                                        ModelObjectRendIndirect* pRendIndirect)
 {
+    //1> poPipeline
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_018_SubPass::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
@@ -1806,128 +1761,13 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
 
         updateVkDescriptorSets(descriptorWrites);
     }
-}
-void Vulkan_018_SubPass::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                                           ModelObjectRend* pRend)
-{
-    StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_018_SubPass::createDescriptorSets_Compute")
-    createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
-    VkWriteDescriptorSetVector descriptorWrites;
-    int nIndexTextureCS = 0;
-    size_t count_names = pDescriptorSetLayoutNames->size();
-    for (size_t p = 0; p < count_names; p++)
-    {
-        String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
-        if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
-        {
-            pPipelineCompute->CreateTextureCopy();
-
-            VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
-            bufferInfo_TextureCopy.offset = 0;
-            bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
-            pushVkDescriptorSet_Uniform(descriptorWrites,
-                                        pPipelineCompute->poDescriptorSet,
-                                        p,
-                                        0,
-                                        1,
-                                        bufferInfo_TextureCopy);
-        }   
-        else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
-        {
-            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
-            nIndexTextureCS ++;
-            pPipelineCompute->pTextureSource = pTexture;
-            pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
-                                      p,
-                                      0,
-                                      1,
-                                      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                      pTexture->poTextureImageInfo);
-        }
-        else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
-        {
-            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
-            nIndexTextureCS ++;
-            pPipelineCompute->pTextureTarget = pTexture;
-            pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
-                                      p,
-                                      0,
-                                      1,
-                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                                      pTexture->poTextureImageInfo);
-        }
-        else
-        {
-            String msg = "*********************** Vulkan_018_SubPass::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-    }  
-    updateVkDescriptorSets(descriptorWrites);
+    //2> 
 }
 
 void Vulkan_018_SubPass::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
-    size_t count_object_rend = this->m_aModelObjectRends_All.size();
-    for (size_t i = 0; i < count_object_rend; i++)
-    {
-        ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_comp = pRend->aPipelineComputes.size();
-        for (int j = 0; j < count_comp; j++)
-        {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
-            {
-                bool isRand = false;
-                if (++pPipelineCompute->frameRand > 30)
-                {
-                    isRand = true;
-                    pPipelineCompute->frameRand = 0;
-                }
-
-                pPipelineCompute->pTextureCopy->texInfo.x = pPipelineCompute->pTextureSource->width;
-                pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
-                pPipelineCompute->pTextureCopy->texInfo.z = 0;
-                pPipelineCompute->pTextureCopy->texInfo.w = 0;
-                if (isRand)
-                {
-                    pPipelineCompute->pTextureCopy->texOffset.x = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                    pPipelineCompute->pTextureCopy->texOffset.y = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
-                    pPipelineCompute->pTextureCopy->texOffset.z = 0;
-                    pPipelineCompute->pTextureCopy->texOffset.w = 0;
-
-                    int seed = FMath::Rand(0, 10000);
-                    int start = seed % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.x = start;
-                    pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
-                }
-                pPipelineCompute->pTextureCopy->texClearColor.x = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.y = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.z = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.w = 1;
-
-                VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
-                updateVKBuffer(0, sizeof(TextureCopyConstants), pPipelineCompute->pTextureCopy, memory);
-
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
-                
-                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
-                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
-                dispatch(commandBuffer, groupX, groupY, 1);
-            }
-        }
-    }
 }
 
 void Vulkan_018_SubPass::updateCBs_Custom()
@@ -2026,43 +1866,7 @@ void Vulkan_018_SubPass::updateCBs_Custom()
 
 void Vulkan_018_SubPass::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
-    size_t count_object_rend = this->m_aModelObjectRends_All.size();
-    for (size_t i = 0; i < count_object_rend; i++)
-    {
-        ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
-
-        size_t count_comp = pRend->aPipelineComputes.size();
-        for (int j = 0; j < count_comp; j++)
-        {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
-            {
-                VkImageMemoryBarrier imageMemoryBarrier = {};
-                imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-                imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
-                imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-                imageMemoryBarrier.image = pPipelineCompute->pTextureTarget->poTextureImage;
-                imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-                imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-                imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			    imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-
-                vkCmdPipelineBarrier(commandBuffer,
-                                     VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                     0,
-                                     0,
-                                     nullptr,
-                                     0,
-                                     nullptr,
-                                     1,
-                                     &imageMemoryBarrier);
-            }
-        }
-    }
+    
 }
 
 bool Vulkan_018_SubPass::beginRenderImgui()

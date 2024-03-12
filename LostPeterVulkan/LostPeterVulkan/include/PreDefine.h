@@ -252,6 +252,9 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_TextureFrameColor,             //18: TextureFrameColor
         Vulkan_DescriptorSet_TextureCSR,                    //19: TextureCSR
         Vulkan_DescriptorSet_TextureCSRW,                   //20: TextureCSRW
+        Vulkan_DescriptorSet_InputAttachRed,                //21: InputAttachRed
+        Vulkan_DescriptorSet_InputAttachGreen,              //22: InputAttachGreen
+        Vulkan_DescriptorSet_InputAttachBlue,               //23: InputAttachBlue
 
         Vulkan_DescriptorSet_Count,
     };
