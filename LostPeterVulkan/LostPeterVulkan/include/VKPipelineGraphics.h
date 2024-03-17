@@ -33,11 +33,13 @@ namespace LostPeterVulkan
 
         bool hasNextSubpass;
         bool isMultiView;
+        String nameDescriptorSetLayout2;
         StringVector* poDescriptorSetLayoutNames2;
         VkDescriptorSetLayout poDescriptorSetLayout2;
         VkPipelineLayout poPipelineLayout2;
         VkPipeline poPipeline_WireFrame2;
         VkPipeline poPipeline2;
+        VkDescriptorSetVector poDescriptorSets2;
 
         String nameRenderPass;
         VKMultiRenderPass* pRenderPass;

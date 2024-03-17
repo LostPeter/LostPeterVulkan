@@ -18,9 +18,9 @@ struct VSOutput
 [[vk::binding(4)]] Texture2D texture2D            : register(t1);
 [[vk::binding(4)]] SamplerState texture2DSampler  : register(s1);
 
-[[vk::input_attachment_index(0), vk::binding(0)]] SubpassInput colorAttach_Red;
-[[vk::input_attachment_index(1), vk::binding(1)]] SubpassInput colorAttach_Green;
-[[vk::input_attachment_index(2), vk::binding(2)]] SubpassInput colorAttach_Blue;
+[[vk::input_attachment_index(0), vk::binding(5)]] SubpassInput colorAttach_Red;
+[[vk::input_attachment_index(1), vk::binding(6)]] SubpassInput colorAttach_Green;
+[[vk::input_attachment_index(2), vk::binding(7)]] SubpassInput colorAttach_Blue;
 
 float4 main(VSOutput input) : SV_TARGET
 {

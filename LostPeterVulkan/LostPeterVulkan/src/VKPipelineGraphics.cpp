@@ -25,6 +25,7 @@ namespace LostPeterVulkan
         
         , hasNextSubpass(false)
         , isMultiView(false)
+        , nameDescriptorSetLayout2("")
         , poDescriptorSetLayoutNames2(nullptr)
         , poDescriptorSetLayout2(VK_NULL_HANDLE)
         , poPipelineLayout2(VK_NULL_HANDLE)
@@ -76,6 +77,7 @@ namespace LostPeterVulkan
             Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline2);
         }
         this->poPipeline2 = VK_NULL_HANDLE;
+        this->poDescriptorSets2.clear();
 
         this->pRenderPass = nullptr;
     }  

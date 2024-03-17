@@ -99,7 +99,7 @@ static const int g_DescriptorSetLayoutCount = 2;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-InputAttachRed-InputAttachRed-InputAttachRed",
+    "Pass-Object-Material-Instance-TextureFS-InputAttachRed-InputAttachGreen-InputAttachBlue",
 };
 
 
@@ -169,11 +169,6 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_texture
 
 };
-static bool g_Object_IsIndirectDraw[g_Object_Count] =
-{
-    false, //object_texture
-
-};
 
 
 /////////////////////////// ObjectRend //////////////////////////
@@ -198,8 +193,8 @@ static const char* g_ObjectRend_NameShaderModulesNextSubpass[6 * g_ObjectRend_Co
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
-    //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_texture-1
+    //Pipeline Graphics                                                 //Pipeline2 Graphics
+    "Pass-Object-Material-Instance-TextureFS",                          "Pass-Object-Material-Instance-TextureFS-InputAttachRed-InputAttachGreen-InputAttachBlue", //object_texture-1
 
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
@@ -223,236 +218,12 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 /////////////////////////// ModelObjectRend /////////////////////
 
 
-/////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_018_SubPass::ModelObjectRendIndirect::Destroy()
-{
-    //Vertex
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-    this->poVertexBuffer = VK_NULL_HANDLE;
-    this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-    //Index
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-    this->poIndexBuffer = VK_NULL_HANDLE;
-    this->poIndexBufferMemory = VK_NULL_HANDLE;
-
-    CleanupSwapChain();
-
-    this->aRends.clear();
-    this->aMeshSubs.clear();
-    this->pRend = nullptr;
-}
-
-void Vulkan_018_SubPass::ModelObjectRendIndirect::CleanupSwapChain()
-{
-    size_t count = 0;
-
-    //1> Uniform Buffer
-    count = this->poBuffers_ObjectCB.size();
-    for (size_t i = 0; i < count; i++) 
-    {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
-    }
-    this->objectCBs.clear();
-    this->poBuffers_ObjectCB.clear();
-    this->poBuffersMemory_ObjectCB.clear();
-
-    count = this->poBuffers_materialCB.size();
-    for (size_t i = 0; i < count; i++) 
-    {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
-    }
-    this->materialCBs.clear();
-    this->poBuffers_materialCB.clear();
-    this->poBuffersMemory_materialCB.clear();
-
-    count = this->poBuffers_tessellationCB.size();
-    for (size_t i = 0; i < count; i++) 
-    {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
-    }
-    this->tessellationCBs.clear();
-    this->poBuffers_tessellationCB.clear();
-    this->poBuffersMemory_tessellationCB.clear();
-
-    //2> VkDescriptorSets
-    this->poDescriptorSets.clear();
-
-    //3> IndirectCommand Buffer
-    if (this->poBuffer_indirectCommandCB != VK_NULL_HANDLE)
-    {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
-    }
-    this->indirectCommandCBs.clear();
-    this->poBuffer_indirectCommandCB = VK_NULL_HANDLE;
-    this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
-}
-
-void Vulkan_018_SubPass::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
-{
-    F_Assert(_aRends.size() > 0 && "Vulkan_018_SubPass::ModelObjectRendIndirect::SetupVertexIndexBuffer")
-    this->aRends.clear();
-    this->aRends = _aRends;
-    this->pRend = _aRends[0];
-
-    //1> Vertex/Index
-    this->aMeshSubs.clear();
-    size_t count_rend = this->aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pR = this->aRends[i];
-        MeshSub* pMeshSub = pR->pMeshSub;
-
-        this->aMeshSubs.push_back(pMeshSub);
-    }
-
-    this->vertices_Pos3Color4Normal3Tex2.clear();
-    this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
-    this->indices.clear();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pR = this->aRends[i];
-        MeshSub* pMeshSub = pR->pMeshSub;
-
-        pMeshSub->WriteVertexData(this->vertices_Pos3Color4Normal3Tex2, this->vertices_Pos3Color4Normal3Tangent3Tex2);
-        pMeshSub->WriteIndexData(this->indices);
-    }
-    
-    //Vertex
-    if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
-    {
-        this->poVertexCount = this->vertices_Pos3Color4Normal3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
-        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
-    }
-    else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
-    {
-        this->poVertexCount = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
-        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
-    }
-    else
-    {
-        F_Assert(false && "Vulkan_018_SubPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
-    }
-    this->poIndexCount = this->indices.size();
-    this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
-    this->poIndexBuffer_Data =  &this->indices[0];
-
-    //2> createVertexBuffer
-    this->pRend->pModelObject->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
-
-    //3> createIndexBuffer
-    if (this->poIndexBuffer_Size > 0 &&
-        this->poIndexBuffer_Data != nullptr)
-    {
-        this->pRend->pModelObject->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
-    }
-}
-
-void Vulkan_018_SubPass::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
-{
-    VkDeviceSize bufferSize;
-    size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
-
-    //1> Uniform Buffer
-    {
-        //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-        this->poBuffers_ObjectCB.resize(count_sci);
-        this->poBuffersMemory_ObjectCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
-        }
-
-        //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-        this->poBuffers_materialCB.resize(count_sci);
-        this->poBuffersMemory_materialCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
-        }
-
-        //TessellationConstants
-        if (pRend->isUsedTessellation)
-        {
-            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
-            this->poBuffers_tessellationCB.resize(count_sci);
-            this->poBuffersMemory_tessellationCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
-            }
-        }
-    }
-
-    //2> IndirectCommand Buffer
-    {
-        bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
-        this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
-    }
-}
-
-void Vulkan_018_SubPass::ModelObjectRendIndirect::UpdateUniformBuffer()
-{
-    this->objectCBs.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-
-    size_t count_rend = this->aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pR = this->aRends[i];
-        MeshSub* pMeshSub = pR->pMeshSub;
-
-        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-        if (pRend->isUsedTessellation)
-        {
-            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-        }
-    }
-}
-
-void Vulkan_018_SubPass::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
-{
-    this->indirectCommandCBs.clear();
-
-    int32_t vertexOffset = 0;
-    uint32_t indexOffset = 0;
-    uint32_t instanceOffset = 0;
-    size_t count_rend = this->aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pR = this->aRends[i];
-        MeshSub* pMeshSub = pR->pMeshSub;
-
-        VkDrawIndexedIndirectCommand indirectCommand = {};
-        indirectCommand.indexCount = pMeshSub->poIndexCount;
-        indirectCommand.instanceCount = pRend->pModelObject->countInstance;
-        indirectCommand.firstIndex = indexOffset;
-        indirectCommand.vertexOffset = vertexOffset;
-        indirectCommand.firstInstance = instanceOffset;
-        this->indirectCommandCBs.push_back(indirectCommand);
-
-        indexOffset += pMeshSub->poIndexCount;
-        vertexOffset += pMeshSub->poVertexCount;
-        instanceOffset += pRend->pModelObject->countInstance;
-    }
-    this->countIndirectDraw = (uint32_t)this->indirectCommandCBs.size();
-}
-
-
 /////////////////////////// ModelObject /////////////////////////
 
 
 
 Vulkan_018_SubPass::Vulkan_018_SubPass(int width, int height, String name)
     : VulkanWindow(width, height, name)
-    , m_isDrawIndirect(false)
-    , m_isDrawIndirectMulti(false)
 {
     this->cfg_isRenderPassDefaultCustom = true;
     this->cfg_isImgui = true;
@@ -472,15 +243,6 @@ void Vulkan_018_SubPass::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
-    if (this->poPhysicalEnabledFeatures.multiDrawIndirect)
-    {
-        this->m_isDrawIndirectMulti = true;
-    }
-    else
-    {
-        this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_018_SubPass::setUpEnabledFeatures: multiDrawIndirect is not supported !");
-    }
 }
 
 void Vulkan_018_SubPass::createDescriptorSetLayout_Custom()
@@ -607,7 +369,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     {
         VkAttachmentReference attachRef_Color = {};
         attachRef_Color.attachment = (uint32_t)i;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         aAttachmentReference_Colors.push_back(attachRef_Color);
     }
 
@@ -771,7 +533,6 @@ void Vulkan_018_SubPass::loadModel_Custom()
             }
             pModelObject->isShow = g_Object_IsShows[i];
             pModelObject->isRotate = g_Object_IsRotates[i];
-            pModelObject->isIndirectDraw = g_Object_IsIndirectDraw[i];
             pModelObject->countInstanceExt = g_Object_InstanceExtCount[i];
             pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
         }
@@ -894,20 +655,8 @@ void Vulkan_018_SubPass::loadModel_Custom()
                 //Pipeline Graphics - DescriptorSetLayout
                 pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
 
-                //Pipeline Computes - DescriptorSetLayout
-                String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
-                if (!nameDescriptorSetLayout.empty())
-                {
-                    StringVector aDescriptorSetLayout = FUtilString::Split(nameDescriptorSetLayout, ";");
-                    size_t count_dsl = aDescriptorSetLayout.size();
-                    for (size_t p = 0; p < count_dsl; p++)
-                    {
-                        const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
-                        pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
-                        pRend->AddPipelineCompute(pPipelineCompute);
-                    }
-                }
+                //Pipeline2 Graphics - DescriptorSetLayout2
+                pRend->pPipelineGraphics->nameDescriptorSetLayout2 = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
@@ -926,24 +675,7 @@ void Vulkan_018_SubPass::loadModel_Custom()
             m_mapModelObjects[pModelObject->nameObject] = pModelObject;
         }
         
-        //3> ObjectRendIndirectDraw
-        if (pModelObject->isIndirectDraw)
-        {
-            size_t count_object_rend = pModelObject->aRends.size();
-            if (count_object_rend > 0)
-            {
-                ModelObjectRend* pRend = pModelObject->aRends[i];
-                String nameObjectRendIndirect = pModelObject->nameObject + " - RendIndirect";
-                pModelObject->pRendIndirect = new ModelObjectRendIndirect(nameObjectRendIndirect);
-                pModelObject->pRendIndirect->SetupVertexIndexBuffer(pModelObject->aRends);
-            }
-        }
-
     }
-}
-void Vulkan_018_SubPass::createIndirectCommands()
-{
-
 }
 
 void Vulkan_018_SubPass::createCustomCB()
@@ -1056,25 +788,6 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 {
                     createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
-            }
-        }
-    }
-
-    //2> ObjectRendIndriect
-    size_t count_object = this->m_aModelObjects.size();
-    for (size_t i = 0; i < count_object; i++)
-    {
-        ModelObject* pModelObject = this->m_aModelObjects[i];
-
-        if (pModelObject->isIndirectDraw &&
-            pModelObject->pRendIndirect != nullptr)
-        {
-            pModelObject->pRendIndirect->UpdateUniformBuffer();
-            pModelObject->pRendIndirect->UpdateIndirectCommandBuffer();
-
-            if (isCreateVkBuffer)
-            {
-                pModelObject->pRendIndirect->SetupUniformIndirectCommandBuffer();
             }
         }
     }
@@ -1262,7 +975,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                           this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                           this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
                                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                                            pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1297,7 +1010,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
                                                                                  pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                                  isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                                  pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1557,11 +1270,11 @@ void Vulkan_018_SubPass::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
-        String nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
-        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
+        String nameDSL(g_DescriptorSetLayoutNames[i]);
+        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDSL);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_018_SubPass::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_018_SubPass::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDSL.c_str());
             return;
         }
 
@@ -1575,7 +1288,7 @@ void Vulkan_018_SubPass::createPipelineLayouts()
         }
 
         this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
+        this->m_mapVkPipelineLayouts[nameDSL] = vkPipelineLayout;
     }
 }
 VkPipelineLayout Vulkan_018_SubPass::findPipelineLayout(const String& namePipelineLayout)
@@ -1601,30 +1314,25 @@ void Vulkan_018_SubPass::createDescriptorSets_Custom()
         //Pipeline Graphics
         {
             createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
-            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
+            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames, pRend->pPipelineGraphics->poDescriptorSets, pRend);
         }   
-    }
 
-    //2> Object Rend Indirect
-    size_t count_object = this->m_aModelObjects.size();
-    for (size_t i = 0; i < count_object; i++)
-    {
-        ModelObject* pModelObject = this->m_aModelObjects[i];
-        if (pModelObject->pRendIndirect != nullptr)
+        //poPipeline2 Graphics
+        if (pRend->pPipelineGraphics->hasNextSubpass)
         {
-            createVkDescriptorSets(pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
-            createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
+            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout2, pRend->pPipelineGraphics->poDescriptorSets2);
+            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames2, pRend->pPipelineGraphics->poDescriptorSets2, pRend);
         }
     }
 }
-void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                       ModelObjectRend* pRend, 
-                                                       ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptorSetLayoutNames,
+                                                       VkDescriptorSetVector& listDescriptorSets, 
+                                                       ModelObjectRend* pRend)
 {
-    //1> poPipeline
-    StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_018_SubPass::createDescriptorSets_Graphics")
-    size_t count_ds = poDescriptorSets.size();
+
+    //1> poPipeline
+    size_t count_ds = listDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
         VkWriteDescriptorSetVector descriptorWrites;
@@ -1632,6 +1340,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
+        int nIndexInputAttach = 0;
 
         size_t count_names = pDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
@@ -1645,7 +1354,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            listDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1654,11 +1363,11 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pRend->poBuffers_ObjectCB[j];
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            listDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1667,11 +1376,11 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pRend->poBuffers_materialCB[j];
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            listDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1684,7 +1393,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            listDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1693,11 +1402,11 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.buffer = pRend->poBuffers_tessellationCB[j];
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            listDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1708,7 +1417,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          listDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1720,7 +1429,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          listDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1732,7 +1441,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          listDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1744,12 +1453,28 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          listDescriptorSets[j],
                                           p,
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
+            }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachRed) || //InputAttachRed
+                     nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachGreen) || //InputAttachGreen
+                     nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachBlue))  //InputAttachBlue
+            {
+                VkDescriptorImageInfo imageInfo = {};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = this->poColorImageViewLists[nIndexInputAttach];
+                nIndexInputAttach ++;
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          listDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
+                                          imageInfo);
             }
             else
             {
@@ -1824,44 +1549,6 @@ void Vulkan_018_SubPass::updateCBs_Custom()
             updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
         }
     }
-
-    //2> Object Rend Indirect
-    size_t count_object = this->m_aModelObjects.size();
-    for (size_t i = 0; i < count_object; i++)
-    {
-        ModelObject* pModelObject = this->m_aModelObjects[i];
-        ModelObjectRendIndirect* pRendIndirect = pModelObject->pRendIndirect;
-        if (pRendIndirect != nullptr)
-        {
-            pRendIndirect->UpdateUniformBuffer();
-            size_t count_object = pRendIndirect->objectCBs.size();
-            
-            //ObjectConstants
-            {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
-            }
-
-            //MaterialConstants
-            {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
-            }
-
-            //TessellationConstants
-            if (pRendIndirect->pRend->isUsedTessellation)
-            {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
-            }
-
-            //IndirectCommand
-            {
-                size_t count_indirectcommand = pRendIndirect->indirectCommandCBs.size();
-                updateVKBuffer(0, sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand, pRendIndirect->indirectCommandCBs.data(), pRendIndirect->poBuffersMemory_indirectCommandCB);
-            }
-        }
-    }
 }
 
 void Vulkan_018_SubPass::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
@@ -1901,17 +1588,6 @@ void Vulkan_018_SubPass::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
-        //m_isDrawIndirect
-        if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
-        {
-            
-        }
-        //m_isDrawIndirectMulti
-        if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
-        {
-            
-        }
-
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
         {
@@ -1923,7 +1599,6 @@ void Vulkan_018_SubPass::modelConfig()
         for (size_t i = 0; i < count_object; i++)
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
-            ModelObjectRendIndirect* pRendIndirect = pModelObject->pRendIndirect;
             size_t count_object_rend = pModelObject->aRends.size();
 
             //1> ModelObject
@@ -1986,81 +1661,6 @@ void Vulkan_018_SubPass::modelConfig()
                 }
 
                 //2> ModelObjectRend
-                if (pRendIndirect != nullptr && this->m_isDrawIndirect)
-                {
-                    String& nameObjectRendIndirect = pRendIndirect->nameObjectRendIndirect;
-                    if (ImGui::CollapsingHeader(nameObjectRendIndirect.c_str()))
-                    {
-                        ImGui::Text("Rend Count: [%d], Vertex: [%d], Index: [%d]", 
-                            (int)pRendIndirect->aRends.size(), 
-                            (int)pRendIndirect->poVertexCount,
-                            (int)pRendIndirect->poIndexCount);
-                        //isShow
-                        String nameIsShowRend = "Is Show - " + nameObjectRendIndirect;
-                        if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRendIndirect->isShow))
-                        {
-                            if (pRendIndirect->isShow)
-                            {
-                                pModelObject->isShow = true;
-                            }
-                        }
-                        //isWireFrame
-                        String nameIsWireFrameRend = "Is WireFrame - " + nameObjectRendIndirect;
-                        if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRendIndirect->isWireFrame))
-                        {
-                            if (!pRendIndirect->isWireFrame)
-                            {
-                                pModelObject->isWireFrame = false;
-                            }
-                        }
-                        //isRotate
-                        String nameIsRotateRend = "Is Rotate - " + nameObjectRendIndirect;
-                        if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRendIndirect->isRotate))
-                        {
-                            
-                        }
-                        //isLighting
-                        String nameIsLightingRend = "Is Lighting - " + nameObjectRendIndirect;
-                        if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRendIndirect->isLighting))
-                        {
-                            if (pRendIndirect->isLighting)
-                            {
-                                pModelObject->isLighting = true;
-                            }
-                            for (size_t p = 0; p < pRendIndirect->materialCBs.size(); p++)
-                            {
-                                MaterialConstants& mat = pRendIndirect->materialCBs[p];
-                                mat.lighting = pRendIndirect->isLighting;
-                            }
-                        }
-                        //isTransparent
-                        String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRendIndirect;
-                        bool isTransparent = pRendIndirect->isTransparent;
-                        ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
-
-                        //countIndirectDraw
-                        String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
-                        int countIndirectDraw = (int)pRendIndirect->countIndirectDraw;
-                        if (ImGui::DragInt(nameCountIndirectDraw.c_str(), &countIndirectDraw, 1, 0, (int)pRendIndirect->indirectCommandCBs.size()))
-                        {
-                            pRendIndirect->countIndirectDraw = (uint32_t)countIndirectDraw;
-                        }
-
-                        //ObjectRend
-                        size_t count_rend = pRendIndirect->aRends.size();
-                        for (int j = 0; j < count_rend; j++)
-                        {
-                            ModelObjectRend* pRend = pRendIndirect->aRends[j];
-
-                            ImGui::Text("[%d], Vertex: [%d], Index: [%d], - [%s]", 
-                            j,
-                            (int)pRend->pMeshSub->poVertexCount,
-                            (int)pRend->pMeshSub->poIndexCount,
-                            pRend->nameObjectRend.c_str());
-                        }
-                    }
-                }
-                else
                 {
                     for (int j = 0; j < count_object_rend; j++)
                     {
@@ -2370,98 +1970,13 @@ void Vulkan_018_SubPass::endRenderImgui()
 
 void Vulkan_018_SubPass::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
-    if (this->m_isDrawIndirect)
+    //1> Opaque
     {
-        //1> Opaque
-        {
-            drawModelObjectRendIndirects(commandBuffer, this->m_aModelObjectRends_Opaque);
-        }
-        //2> Transparent
-        {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
-        }
+        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
     }
-    else
+    //2> Transparent
     {
-        //1> Opaque
-        {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
-        }
-        //2> Transparent
-        {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
-        }
-    }
-}
-void Vulkan_018_SubPass::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
-{
-    ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
-    size_t count_rend = aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pRend = aRends[i];
-        ModelObjectRendIndirect* pRendIndirect = pRend->pModelObject->pRendIndirect;
-        if (pRendIndirect != nullptr)
-        {
-            if (pRendIndirect_Last != nullptr && pRendIndirect_Last == pRendIndirect)
-                continue;
-            if (!pRendIndirect->isShow)
-            {
-                pRendIndirect_Last = nullptr;
-                continue;
-            }
-            drawModelObjectRendIndirect(commandBuffer, pRendIndirect);
-            pRendIndirect_Last = pRendIndirect;
-        }
-        else
-        {
-            if (!pRend->isShow)
-                continue;
-            drawModelObjectRend(commandBuffer, pRend);
-        }
-    }
-}   
-void Vulkan_018_SubPass::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
-{
-    ModelObjectRend* pRend = pRendIndirect->pRend;
-    ModelObject* pModelObject = pRend->pModelObject;
-
-    VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pRendIndirect->poIndexBuffer != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-    }
-
-    if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-
-    uint32_t drawCount = pRendIndirect->countIndirectDraw;
-    if (m_isDrawIndirectMulti)
-    {
-        drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
-    }
-    else
-    {
-        for (uint32_t i = 0; i < drawCount; i++)
-        {
-            drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
-        }
+        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
     }
 }
 
@@ -2489,26 +2004,43 @@ void Vulkan_018_SubPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
         bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
-    drawModelObjectRend(commandBuffer, pRend, pMeshSub, pRend->pPipelineGraphics->poPipeline, pRend->pPipelineGraphics->poPipeline_WireFrame);
+    drawModelObjectRendPipeline(commandBuffer, 
+                                pRend, 
+                                pMeshSub, 
+                                pRend->pPipelineGraphics->poPipelineLayout,
+                                pRend->pPipelineGraphics->poDescriptorSets,
+                                pRend->pPipelineGraphics->poPipeline, 
+                                pRend->pPipelineGraphics->poPipeline_WireFrame);
     if (pRend->pPipelineGraphics->hasNextSubpass)
     {
         vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
-        drawModelObjectRend(commandBuffer, pRend, pMeshSub, pRend->pPipelineGraphics->poPipeline2, pRend->pPipelineGraphics->poPipeline_WireFrame2);
+        drawModelObjectRendPipeline(commandBuffer, 
+                                    pRend, 
+                                    pMeshSub, 
+                                    pRend->pPipelineGraphics->poPipelineLayout2,
+                                    pRend->pPipelineGraphics->poDescriptorSets2,
+                                    pRend->pPipelineGraphics->poPipeline2, 
+                                    pRend->pPipelineGraphics->poPipeline_WireFrame2);
     }
 }
-void Vulkan_018_SubPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend, MeshSub* pMeshSub, VkPipeline poPipeline, VkPipeline poPipeline_WireFrame)
+void Vulkan_018_SubPass::drawModelObjectRendPipeline(VkCommandBuffer& commandBuffer, 
+                                                     ModelObjectRend* pRend, 
+                                                     MeshSub* pMeshSub, 
+                                                     VkPipelineLayout pipelineLayout,
+                                                     VkDescriptorSetVector& descriptorSets,
+                                                     VkPipeline pipeline, 
+                                                     VkPipeline pipeline_WireFrame)
 {
     ModelObject* pModelObject = pRend->pModelObject;
-
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
     {
-        if (poPipeline_WireFrame != VK_NULL_HANDLE)
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, poPipeline_WireFrame);
+        if (pipeline_WireFrame != VK_NULL_HANDLE)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_WireFrame);
         else
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, poPipeline);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        if (descriptorSets.size() > 0)
         {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
@@ -2521,10 +2053,10 @@ void Vulkan_018_SubPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
     }
     else
     {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, poPipeline);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        if (descriptorSets.size() > 0)
         {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
