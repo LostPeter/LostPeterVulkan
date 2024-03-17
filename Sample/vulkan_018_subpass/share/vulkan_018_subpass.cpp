@@ -300,11 +300,25 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     VkFormat formatDepth = this->poDepthImageFormat;
     VkFormat formatSwapChain = this->poSwapChainImageFormat;
 
-    //1> Attachment SceneRender Color 
+    //1> Attachment SceneRender Color
+    VkAttachmentDescription attachmentSR_Color = {};
+    createAttachmentDescription(attachmentSR_Color,
+                                0,
+                                formatColor,
+                                VK_SAMPLE_COUNT_1_BIT,
+                                VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                VK_ATTACHMENT_STORE_OP_STORE,
+                                VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                VK_IMAGE_LAYOUT_UNDEFINED,
+                                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    aAttachmentDescription.push_back(attachmentSR_Color);
+
+    //2> Attachment SceneRender Color 
     for (int i = 0; i < 3; i++)
     {
-        VkAttachmentDescription attachmentSR_Color = {};
-        createAttachmentDescription(attachmentSR_Color,
+        VkAttachmentDescription attachmentColor = {};
+        createAttachmentDescription(attachmentColor,
                                     0,
                                     formatColor,
                                     VK_SAMPLE_COUNT_1_BIT,
@@ -314,25 +328,10 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
                                     VK_ATTACHMENT_STORE_OP_DONT_CARE,
                                     VK_IMAGE_LAYOUT_UNDEFINED,
                                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        aAttachmentDescription.push_back(attachmentSR_Color);
-        aAttachmentDescription_Colors.push_back(attachmentSR_Color);
+        aAttachmentDescription.push_back(attachmentColor);
+        aAttachmentDescription_Colors.push_back(attachmentColor);
     }
 
-    //2> Attachment SceneRender Color
-    // VkAttachmentDescription attachmentSR_Color = {};
-    // createAttachmentDescription(attachmentSR_Color,
-    //                             0,
-    //                             formatColor,
-    //                             VK_SAMPLE_COUNT_1_BIT,
-    //                             VK_ATTACHMENT_LOAD_OP_CLEAR,
-    //                             VK_ATTACHMENT_STORE_OP_STORE,
-    //                             VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-    //                             VK_ATTACHMENT_STORE_OP_DONT_CARE,
-    //                             VK_IMAGE_LAYOUT_UNDEFINED,
-    //                             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-    // aAttachmentDescription.push_back(attachmentSR_Color);
-    // uint32_t indexColor = (uint32_t)aAttachmentDescription.size() - 1;
-    
     //3> Attachment SceneRender Depth
     VkAttachmentDescription attachmentSR_Depth = {};
     createAttachmentDescription(attachmentSR_Depth,
@@ -364,13 +363,17 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     uint32_t indexImgui = (uint32_t)aAttachmentDescription.size() - 1;
     
     //5> Subpass 0 - SceneRender
+    VkAttachmentReference attachRef_Color = {};
+    attachRef_Color.attachment = 0;
+    attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
     std::vector<VkAttachmentReference> aAttachmentReference_Colors;
     for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
     {
-        VkAttachmentReference attachRef_Color = {};
-        attachRef_Color.attachment = (uint32_t)i;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        aAttachmentReference_Colors.push_back(attachRef_Color);
+        VkAttachmentReference attachRefColor = {};
+        attachRefColor.attachment = (uint32_t)i;
+        attachRefColor.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        aAttachmentReference_Colors.push_back(attachRefColor);
     }
 
     VkAttachmentReference attachRef_Depth = {};
@@ -387,6 +390,8 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     //6> Subpass 1 - SceneRender 
     VkSubpassDescription subpass1_SceneRender = {};
     subpass1_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass1_SceneRender.colorAttachmentCount = 1;
+    subpass1_SceneRender.pColorAttachments = &attachRef_Color;
     subpass1_SceneRender.inputAttachmentCount = (uint32_t)aAttachmentDescription_Colors.size();
     subpass1_SceneRender.pInputAttachments = aAttachmentReference_Colors.data();
     subpass1_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
@@ -406,8 +411,8 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     
     //8> Subpass Dependency SceneRender 0
     VkSubpassDependency subpassDependency_SceneRender0 = {};
-    subpassDependency_SceneRender0.srcSubpass = 0;
-    subpassDependency_SceneRender0.dstSubpass = 1;
+    subpassDependency_SceneRender0.srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependency_SceneRender0.dstSubpass = 0;
     subpassDependency_SceneRender0.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
     subpassDependency_SceneRender0.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_SceneRender0.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
@@ -417,8 +422,8 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
 
     //9> Subpass Dependency SceneRender 1
     VkSubpassDependency subpassDependency_SceneRender1 = {};
-    subpassDependency_SceneRender1.srcSubpass = 1;
-    subpassDependency_SceneRender1.dstSubpass = 2;
+    subpassDependency_SceneRender1.srcSubpass = 0;
+    subpassDependency_SceneRender1.dstSubpass = 1;
     subpassDependency_SceneRender1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_SceneRender1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -428,8 +433,8 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
 
     //10> Subpass Dependency Imgui
     VkSubpassDependency subpassDependency_Imgui = {};
-    subpassDependency_Imgui.srcSubpass = 2;
-    subpassDependency_Imgui.dstSubpass = 0;
+    subpassDependency_Imgui.srcSubpass = 1;
+    subpassDependency_Imgui.dstSubpass = 2;
     subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -460,10 +465,10 @@ void Vulkan_018_SubPass::createFramebuffer_DefaultCustom()
     {
         VkImageViewVector aImageViews;
 
+        aImageViews.push_back(this->poSwapChainImageViews[i]);
         aImageViews.push_back(this->poColorImageViewLists[0]);
         aImageViews.push_back(this->poColorImageViewLists[1]);
         aImageViews.push_back(this->poColorImageViewLists[2]);
-        aImageViews.push_back(this->poSwapChainImageViews[i]);
         aImageViews.push_back(this->poDepthImageView);
         aImageViews.push_back(this->poSwapChainImageViews[i]);
 
