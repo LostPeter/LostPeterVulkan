@@ -371,7 +371,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
     {
         VkAttachmentReference attachRefColor = {};
-        attachRefColor.attachment = (uint32_t)i;
+        attachRefColor.attachment = (uint32_t)(i + 1);
         attachRefColor.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         aAttachmentReference_Colors.push_back(attachRefColor);
     }
@@ -399,7 +399,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     
     //7> Subpass 2 - Imgui
     VkAttachmentReference attachRef_ImguiColor = {};
-    attachRef_ImguiColor.attachment = indexImgui;
+    attachRef_ImguiColor.attachment = 0;
     attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkSubpassDescription subpass_Imgui = {};
@@ -426,7 +426,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_SceneRender1.dstSubpass = 1;
     subpassDependency_SceneRender1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_SceneRender1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     subpassDependency_SceneRender1.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
     subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_SceneRender1);
