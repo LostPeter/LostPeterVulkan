@@ -252,7 +252,7 @@ void Vulkan_018_SubPass::createDescriptorSetLayout_Custom()
 
 void Vulkan_018_SubPass::createColorResourceLists()
 {
-    int count = 3;
+    int count = 4;
     for (int i = 0; i < count; i++)
     {
         VkImage vkColorImage;
@@ -293,6 +293,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
 {
     std::vector<VkAttachmentDescription> aAttachmentDescription;
     std::vector<VkAttachmentDescription> aAttachmentDescription_Colors;
+    std::vector<VkAttachmentDescription> aAttachmentDescription_Inputs;
     std::vector<VkSubpassDescription> aSubpassDescription;
     std::vector<VkSubpassDependency> aSubpassDependency;
 
@@ -300,22 +301,9 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     VkFormat formatDepth = this->poDepthImageFormat;
     VkFormat formatSwapChain = this->poSwapChainImageFormat;
 
-    //1> Attachment SceneRender Color
-    VkAttachmentDescription attachmentSR_Color = {};
-    createAttachmentDescription(attachmentSR_Color,
-                                0,
-                                formatColor,
-                                VK_SAMPLE_COUNT_1_BIT,
-                                VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                VK_ATTACHMENT_STORE_OP_STORE,
-                                VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                VK_IMAGE_LAYOUT_UNDEFINED,
-                                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-    aAttachmentDescription.push_back(attachmentSR_Color);
-
-    //2> Attachment SceneRender Color 
-    for (int i = 0; i < 3; i++)
+    //1> Attachment SceneRender Color 
+    int count = 4;
+    for (int i = 0; i < count; i++)
     {
         VkAttachmentDescription attachmentColor = {};
         createAttachmentDescription(attachmentColor,
@@ -330,9 +318,13 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
                                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         aAttachmentDescription.push_back(attachmentColor);
         aAttachmentDescription_Colors.push_back(attachmentColor);
+        if (i > 0)
+        {
+            aAttachmentDescription_Inputs.push_back(attachmentColor);
+        }
     }
 
-    //3> Attachment SceneRender Depth
+    //2> Attachment SceneRender Depth
     VkAttachmentDescription attachmentSR_Depth = {};
     createAttachmentDescription(attachmentSR_Depth,
                                 0,
@@ -347,7 +339,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     aAttachmentDescription.push_back(attachmentSR_Depth);
     uint32_t indexDepth = (uint32_t)aAttachmentDescription.size() - 1;
         
-    //4> Attachment Imgui Color
+    //3> Attachment Imgui Color
     VkAttachmentDescription attachmentImgui_Color = {};
     createAttachmentDescription(attachmentImgui_Color,
                                 0,
@@ -362,16 +354,12 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     aAttachmentDescription.push_back(attachmentImgui_Color);
     uint32_t indexImgui = (uint32_t)aAttachmentDescription.size() - 1;
     
-    //5> Subpass 0 - SceneRender
-    VkAttachmentReference attachRef_Color = {};
-    attachRef_Color.attachment = 0;
-    attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
+    //4> Subpass 0 - SceneRender
     std::vector<VkAttachmentReference> aAttachmentReference_Colors;
     for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
     {
         VkAttachmentReference attachRefColor = {};
-        attachRefColor.attachment = (uint32_t)(i + 1);
+        attachRefColor.attachment = (uint32_t)i;
         attachRefColor.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         aAttachmentReference_Colors.push_back(attachRefColor);
     }
@@ -382,22 +370,35 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
 
     VkSubpassDescription subpass0_SceneRender = {};
     subpass0_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass0_SceneRender.colorAttachmentCount = (uint32_t)aAttachmentDescription_Colors.size();
+    subpass0_SceneRender.colorAttachmentCount = (uint32_t)aAttachmentReference_Colors.size();
     subpass0_SceneRender.pColorAttachments = aAttachmentReference_Colors.data();
     subpass0_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
     aSubpassDescription.push_back(subpass0_SceneRender);
 
-    //6> Subpass 1 - SceneRender 
+    //5> Subpass 1 - SceneRender 
+    VkAttachmentReference attachRef_Color = {};
+    attachRef_Color.attachment = 0;
+    attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    std::vector<VkAttachmentReference> aAttachmentReference_Inputs;
+    for (size_t i = 0; i < aAttachmentDescription_Inputs.size(); i++)
+    {
+        VkAttachmentReference attachRefInput = {};
+        attachRefInput.attachment = (uint32_t)(i + 1);
+        attachRefInput.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        aAttachmentReference_Inputs.push_back(attachRefInput);
+    }
+
     VkSubpassDescription subpass1_SceneRender = {};
     subpass1_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass1_SceneRender.colorAttachmentCount = 1;
     subpass1_SceneRender.pColorAttachments = &attachRef_Color;
-    subpass1_SceneRender.inputAttachmentCount = (uint32_t)aAttachmentDescription_Colors.size();
-    subpass1_SceneRender.pInputAttachments = aAttachmentReference_Colors.data();
+    subpass1_SceneRender.inputAttachmentCount = (uint32_t)aAttachmentReference_Inputs.size();
+    subpass1_SceneRender.pInputAttachments = aAttachmentReference_Inputs.data();
     subpass1_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
     aSubpassDescription.push_back(subpass1_SceneRender);
     
-    //7> Subpass 2 - Imgui
+    //6> Subpass 2 - Imgui
     VkAttachmentReference attachRef_ImguiColor = {};
     attachRef_ImguiColor.attachment = 0;
     attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -409,7 +410,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpass_Imgui.pDepthStencilAttachment = &attachRef_Depth;
     aSubpassDescription.push_back(subpass_Imgui);
     
-    //8> Subpass Dependency SceneRender 0
+    //7> Subpass Dependency SceneRender 0
     VkSubpassDependency subpassDependency_SceneRender0 = {};
     subpassDependency_SceneRender0.srcSubpass = VK_SUBPASS_EXTERNAL;
     subpassDependency_SceneRender0.dstSubpass = 0;
@@ -420,7 +421,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_SceneRender0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_SceneRender0);
 
-    //9> Subpass Dependency SceneRender 1
+    //8> Subpass Dependency SceneRender 1
     VkSubpassDependency subpassDependency_SceneRender1 = {};
     subpassDependency_SceneRender1.srcSubpass = 0;
     subpassDependency_SceneRender1.dstSubpass = 1;
@@ -431,7 +432,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_SceneRender1);
 
-    //10> Subpass Dependency Imgui
+    //9> Subpass Dependency Imgui
     VkSubpassDependency subpassDependency_Imgui = {};
     subpassDependency_Imgui.srcSubpass = 1;
     subpassDependency_Imgui.dstSubpass = 2;
@@ -442,7 +443,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_Imgui);
 
-    //11> createVkRenderPass
+    //10> createVkRenderPass
     if (!createVkRenderPass("RenderPass_Default_Custom",
                             aAttachmentDescription,
                             aSubpassDescription,
@@ -1336,7 +1337,6 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
 {
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_018_SubPass::createDescriptorSets_Graphics")
 
-    //1> poPipeline
     size_t count_ds = listDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1345,7 +1345,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
-        int nIndexInputAttach = 0;
+        int nIndexInputAttach = 1;
 
         size_t count_names = pDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
