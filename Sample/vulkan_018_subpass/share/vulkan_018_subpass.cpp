@@ -360,7 +360,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     {
         VkAttachmentReference attachRefColor = {};
         attachRefColor.attachment = (uint32_t)i;
-        attachRefColor.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        attachRefColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         aAttachmentReference_Colors.push_back(attachRefColor);
     }
 
@@ -384,7 +384,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     for (size_t i = 0; i < aAttachmentDescription_Inputs.size(); i++)
     {
         VkAttachmentReference attachRefInput = {};
-        attachRefInput.attachment = (uint32_t)(i + 1);
+        attachRefInput.attachment = (uint32_t)i; //(i + 1);
         attachRefInput.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         aAttachmentReference_Inputs.push_back(attachRefInput);
     }
@@ -467,9 +467,9 @@ void Vulkan_018_SubPass::createFramebuffer_DefaultCustom()
         VkImageViewVector aImageViews;
 
         aImageViews.push_back(this->poSwapChainImageViews[i]);
-        aImageViews.push_back(this->poColorImageViewLists[0]);
         aImageViews.push_back(this->poColorImageViewLists[1]);
         aImageViews.push_back(this->poColorImageViewLists[2]);
+        aImageViews.push_back(this->poColorImageViewLists[3]);
         aImageViews.push_back(this->poDepthImageView);
         aImageViews.push_back(this->poSwapChainImageViews[i]);
 
