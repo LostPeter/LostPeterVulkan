@@ -12,9 +12,12 @@
 @echo off
 
 set name_shader=%1
+set folder_shader=%2
 
-set name_folder="glsl"
-set folderSrc=".\%name_folder%"
+echo file name: %name_shader%
+echo folder name: %folder_shader%
+
+set folderSrc=".\%folder_shader%"
 set folderShader="..\Assets\Shader"
 if not exist %folderShader% (
     mkdir %folderShader%

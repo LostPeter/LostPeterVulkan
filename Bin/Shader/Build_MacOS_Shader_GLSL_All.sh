@@ -10,11 +10,11 @@
 #****************************************************************************/
 
 name_folder="glsl"
-folderSrc="./$name_folder"
-folderShader="../Assets/Shader"
+dirSrc="./$name_folder"
+dirDst="../Assets/Shader"
 
-rm -rf $folderShader
-mkdir -p $folderShader
+rm -rf $dirDst
+mkdir -p $dirDst
 
 function read_dir() {
     for file in `ls $1`
@@ -33,15 +33,19 @@ function compile_shader() {
         if [ -d $1"/"$file ]; then
             compile_shader $1"/"$file 
         else
-            glslangValidator -V $1"/"$file -o $folderShader"/"$file.spv
+            ./Build_MacOS_Shader_GLSL.sh $file $1
         fi
     done
 }
 
-echo "************** Shader Source .vert/.frag **************"
-# read_dir $folderSrc
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
 {
-    compile_shader $folderSrc
+    compile_shader $dirSrc
 }
-echo "************** Shader Compile .spv ********************"
-read_dir $folderShader
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
+
+echo "************** Shader Compile .spv ********************************************"
+{
+    read_dir $dirDst
+}
+echo "************** Shader Compile .spv ********************************************"

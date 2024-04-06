@@ -11,15 +11,34 @@
 
 @echo off
 
-set name_folder="glsl"
-set folderSrc=".\%name_folder%"
-set folderShader="..\Assets\Shader"
+set name_folder=glsl
+set folderSrc=.\%name_folder%
+set folderShader=..\Assets\Shader
 if exist %folderShader% (
     rmdir /S/Q %folderShader%
 )
 mkdir %folderShader%
 
-echo "************** Shader Source .vert/.frag **************"
-for /F %%i in ('Dir %folderSrc%\*.* /B') do glslangValidator -V %folderSrc%\%%i -o %folderShader%\%%i.spv
-echo "************** Shader Compile .spv ********************"
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
+call :buildShader %folderSrc%
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
+
+echo "************** Shader Compile .spv ********************************************"
 for %%i in (%folderShader%\*.*) do echo %%i
+echo "************** Shader Compile .spv ********************************************"
+
+exit /b %errorlevel%
+:buildShader
+    echo folder is: %~1
+
+	for /F %%i in ('Dir %~1\*.* /B') do (
+		echo %%i
+
+		if exist %~1\%%i\nul (
+            call :buildShader %~1\%%i
+        ) else (
+            call ./Build_Windows_Shader_GLSL.bat %%i %~1
+        )
+	) 
+
+exit /b 0 

@@ -22,7 +22,6 @@ if exist %folderShader% (
 mkdir %folderShader%
 
 echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
-@REM for /F %%i in ('Dir %folderSrc%\*.* /B') do call ./Build_Windows_Shader_HLSL.bat %%i %debug%
 call :buildShader %folderSrc% %debug%
 echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
 

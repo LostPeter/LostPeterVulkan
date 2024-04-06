@@ -10,10 +10,10 @@
 #****************************************************************************/
 
 name_shader=${1}
+folder_shader=${2}
 
-name_folder="glsl"
-folderSrc="./$name_folder"
-folderShader="../Assets/Shader"
-mkdir -p $folderShader
+folderSrc=$folder_shader
+folderVulkan="../Assets/Shader"
+mkdir -p $folderVulkan
 
-glslangValidator -V $folderSrc/$name_shader -o $folderShader/$name_shader.spv
+glslangValidator -V $folderSrc/$name_shader -o $folderVulkan/$name_shader.spv
