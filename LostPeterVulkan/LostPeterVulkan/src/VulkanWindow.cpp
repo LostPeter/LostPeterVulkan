@@ -2019,7 +2019,7 @@ namespace LostPeterVulkan
             createVkImageView(this->poDepthImage, 
                               VK_IMAGE_VIEW_TYPE_2D,
                               depthFormat, 
-                              VK_IMAGE_ASPECT_DEPTH_BIT, 
+                              VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 
                               1,
                               1,
                               this->poDepthImageView);
@@ -6032,12 +6032,12 @@ namespace LostPeterVulkan
                                                 this->poTerrainNormalMapImage,
                                                 this->poTerrainNormalMapImageMemory);
                     createVkImageView(this->poTerrainNormalMapImage, 
-                                    VK_IMAGE_VIEW_TYPE_2D, 
-                                    VK_FORMAT_R8G8B8A8_UNORM, 
-                                    VK_IMAGE_ASPECT_COLOR_BIT, 
-                                    1, 
-                                    1, 
-                                    this->poTerrainNormalMapImageView);
+                                      VK_IMAGE_VIEW_TYPE_2D, 
+                                      VK_FORMAT_R8G8B8A8_UNORM, 
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 
+                                      1, 
+                                      1, 
+                                      this->poTerrainNormalMapImageView);
                     F_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
                                 (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
                 }
@@ -7818,6 +7818,33 @@ namespace LostPeterVulkan
                                                        float depth,
                                                        uint32_t stencil)
                     {
+                        FVector4Vector aColors;
+                        aColors.push_back(clBg);
+                        if (!this->cfg_colorValues.empty())
+                        {
+                            for (size_t i = 0; i < this->cfg_colorValues.size(); i++)
+                            {
+                                aColors.push_back(this->cfg_colorValues[i]);
+                            }
+                        }
+                        beginRenderPass(commandBuffer,
+                                        renderPass,
+                                        frameBuffer,
+                                        offset,
+                                        extent,
+                                        aColors,
+                                        depth,
+                                        stencil);
+                    }
+                    void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                       const VkRenderPass& renderPass, 
+                                                       const VkFramebuffer& frameBuffer,
+                                                       const VkOffset2D& offset,
+                                                       const VkExtent2D& extent,
+                                                       const FVector4Vector& aColors,
+                                                       float depth,
+                                                       uint32_t stencil)
+                    {
                         VkRenderPassBeginInfo renderPassInfo = {};
                         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
                         renderPassInfo.renderPass = renderPass;
@@ -7825,13 +7852,19 @@ namespace LostPeterVulkan
                         renderPassInfo.renderArea.offset = offset;
                         renderPassInfo.renderArea.extent = extent;
 
-                        std::array<VkClearValue, 2> clearValues = {};
-                        VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
-                        clearValues[0].color = colorValue;
+                        size_t count = aColors.size();
+                        std::vector<VkClearValue> clearValues;
+                        clearValues.resize(count + 1);
+                        for (size_t i = 0; i < count; i++)
+                        {
+                            const FVector4& vColor = aColors[i];
+                            VkClearColorValue colorValue = { vColor.x, vColor.y, vColor.z, vColor.w };
+                            clearValues[i].color = colorValue;
+                        }
                         VkClearDepthStencilValue depthStencilValue;
                         depthStencilValue.depth = depth;
                         depthStencilValue.stencil = stencil;
-                        clearValues[1].depthStencil = depthStencilValue;
+                        clearValues[count].depthStencil = depthStencilValue;
                         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
                         renderPassInfo.pClearValues = clearValues.data();
 

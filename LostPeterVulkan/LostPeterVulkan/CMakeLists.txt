@@ -176,7 +176,7 @@ elseif (APPLE)
     if (DEBUG)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
+                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
@@ -185,7 +185,7 @@ elseif (APPLE)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
+                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a

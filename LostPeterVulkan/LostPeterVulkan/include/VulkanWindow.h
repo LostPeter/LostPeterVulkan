@@ -172,6 +172,7 @@ namespace LostPeterVulkan
         bool isFrameBufferResized;
         //Config
         FVector4 cfg_colorBackground;
+        FVector4Vector cfg_colorValues;
         bool cfg_isRenderPassDefaultCustom;
         bool cfg_isMSAA;
         bool cfg_isImgui;
@@ -1158,6 +1159,14 @@ namespace LostPeterVulkan
                                                      const VkOffset2D& offset,
                                                      const VkExtent2D& extent,
                                                      const FVector4& clBg,
+                                                     float depth,
+                                                     uint32_t stencil);
+                        virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                     const VkRenderPass& renderPass, 
+                                                     const VkFramebuffer& frameBuffer,
+                                                     const VkOffset2D& offset,
+                                                     const VkExtent2D& extent,
+                                                     const FVector4Vector& aColors,
                                                      float depth,
                                                      uint32_t stencil);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);

@@ -12,10 +12,7 @@
 #include "../include/FArchiveFileSystem.h"
 #include "../include/FStreamDataFileStream.h"
 #include "../include/FUtilString.h"
-
-#if F_PLATFORM != F_PLATFORM_WINDOW
-	#include "../include/FUtilFile.h"
-#endif
+#include "../include/FUtilFile.h"
 
 namespace LostPeterFoundation
 {

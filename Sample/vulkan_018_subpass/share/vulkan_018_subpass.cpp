@@ -269,7 +269,7 @@ void Vulkan_018_SubPass::createColorResourceLists()
                       this->poMSAASamples, 
                       this->poSwapChainImageFormat, 
                       VK_IMAGE_TILING_OPTIMAL, 
-                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, 
+                      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, //VK_IMAGE_USAGE_TRANSFER_SRC_BIT | 
                       VK_SHARING_MODE_EXCLUSIVE,
                       false,
                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -291,6 +291,7 @@ void Vulkan_018_SubPass::createColorResourceLists()
 
 void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass)
 {
+    this->cfg_colorValues.clear();
     std::vector<VkAttachmentDescription> aAttachmentDescription;
     std::vector<VkAttachmentDescription> aAttachmentDescription_Colors;
     std::vector<VkAttachmentDescription> aAttachmentDescription_Inputs;
@@ -321,6 +322,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
         if (i > 0)
         {
             aAttachmentDescription_Inputs.push_back(attachmentColor);
+            this->cfg_colorValues.push_back(FVector4(0.0f, 0.0f, 0.0f, 0.0f));
         }
     }
 

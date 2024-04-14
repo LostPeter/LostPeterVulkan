@@ -9,7 +9,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#if F_PLATFORM != F_PLATFORM_WINDOW
+#if F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID || F_PLATFORM == F_PLATFORM_iOS
 
 #ifndef _F_UTIL_FILE_H_
 #define _F_UTIL_FILE_H_

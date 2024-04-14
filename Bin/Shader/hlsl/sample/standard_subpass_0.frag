@@ -19,10 +19,10 @@ struct VSOutput
 [[vk::binding(4)]] SamplerState texture2DSampler  : register(s1);
 
 struct PSOutput {
-  float4 oColor0 : SV_TARGET0;
-  float4 oColor1 : SV_TARGET1;
-  float4 oColor2 : SV_TARGET2;
-  float4 oColor3 : SV_TARGET3;
+    [[vk::location(0)]] float4 oColor0 : SV_TARGET0;
+    [[vk::location(1)]] float4 oColor1 : SV_TARGET1;
+    [[vk::location(2)]] float4 oColor2 : SV_TARGET2;
+    [[vk::location(3)]] float4 oColor3 : SV_TARGET3;
 };
 
 PSOutput main(VSOutput input)

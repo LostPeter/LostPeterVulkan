@@ -86,6 +86,7 @@
 		#include <sys/param.h>
 		#include <CoreFoundation/CoreFoundation.h>
 	}
+    #include <fnmatch.h>
 	#include <dirent.h>
     #include <dlfcn.h>
     #include <filesystem>
