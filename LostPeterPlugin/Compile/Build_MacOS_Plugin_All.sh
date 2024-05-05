@@ -12,5 +12,9 @@
 debug=${1}
 rebuild=${2}
 
-./Build_MacOS_Plugin.sh LostPeterPluginRendererVulkan $debug $rebuild
 ./Build_MacOS_Plugin.sh LostPeterPluginImageCodecSTB $debug $rebuild
+
+./Build_MacOS_Plugin.sh LostPeterPluginRHIDummy $debug $rebuild
+./Build_MacOS_Plugin.sh LostPeterPluginRHIVulkan $debug $rebuild
+
+./Build_MacOS_Plugin.sh LostPeterPluginRendererVulkan $debug $rebuild

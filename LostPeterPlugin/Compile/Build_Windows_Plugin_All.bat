@@ -12,5 +12,9 @@
 set debug=%1
 set rebuild=%2
 
-call ./Build_Windows_Plugin.bat LostPeterPluginRendererVulkan %debug% %rebuild%
 call ./Build_Windows_Plugin.bat LostPeterPluginImageCodecSTB %debug% %rebuild%
+
+call ./Build_Windows_Plugin.bat LostPeterPluginRHIDummy %debug% %rebuild%
+call ./Build_Windows_Plugin.bat LostPeterPluginRHIVulkan %debug% %rebuild%
+
+call ./Build_Windows_Plugin.bat LostPeterPluginRendererVulkan %debug% %rebuild%
