@@ -24,7 +24,7 @@ namespace LostPeterRHI
 
     public:
     protected:
-
+        
 
     public:
         static RHIInstance&	GetSingleton();
@@ -32,7 +32,9 @@ namespace LostPeterRHI
 
 
     public:
-        
+        virtual RHIType GetRHIType() = 0;
+        virtual uint32_t GetPhysicalDeviceCount() = 0;
+        virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex) = 0;
 
     };
 

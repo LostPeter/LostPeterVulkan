@@ -37,6 +37,7 @@
 #include "RHIShaderModule.h"
 #include "RHIStreamDecoder.h"
 #include "RHIStreamEncoder.h"
+#include "RHISurface.h"
 #include "RHISwapchain.h"
 #include "RHISyncPrimitivesPool.h"
 #include "RHIUtil.h"

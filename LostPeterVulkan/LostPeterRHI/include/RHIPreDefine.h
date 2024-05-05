@@ -40,6 +40,82 @@ namespace LostPeterRHI
 
 
 ////////////////////////////// Enum ////////////////////////////////
+	using RHIEnumType = uint32;
+
+	enum class RHIType : RHIEnumType 
+	{
+		RHI_Dummy = 0,									//0: Dummy
+		RHI_Vulkan,										//1: Vulkan
+		RHI_DirectX12,									//2: DirectX12
+		RHI_Metal,										//3: Metal
+
+        RHI_Count,
+    };
+
+
+	enum class RHIPhysicalDeviceType : RHIEnumType 
+	{
+        RHI_PhysicalDevice_Hardware = 0,				//0: Hardware
+        RHI_PhysicalDevice_Software,					//1: Software
+
+        RHI_PhysicalDevice_Count,
+    };
+
+
+	enum class RHIIndexType : RHIEnumType 
+	{
+		RHI_Index_16Bit = 0,                            //0: 16Bit
+		RHI_Index_32Bit,                                //1: 32Bit
+
+		RHI_Index_Count,
+	};
+
+
+	enum class RHIBufferViewType : RHIEnumType 
+	{
+		RHI_BufferView_Vertex = 0,                    	//0: Vertex
+		RHI_BufferView_Index,                           //1: Index
+		RHI_BufferView_UniformBinding,					//2: UniformBinding
+		RHI_BufferView_StorageBinding,					//3: StorageBinding
+
+		RHI_BufferView_Count,
+	};
+
+
+
+
+////////////////////////////// Struct //////////////////////////////
+	struct RHIPhysicalDeviceProperty
+	{
+        uint32 nVendorID;
+        uint32 nDeviceID;
+        RHIPhysicalDeviceType ePhysicalDevice;
+    };
+
+
+	struct RHIVertexBufferViewInfo 
+	{
+        uint32 nStride;
+    };
+
+
+    struct RHIIndexBufferViewInfo 
+	{
+        RHIIndexType eIndex;
+    };
+
+
+    struct RHIBufferViewCreateInfo 
+	{
+        RHIBufferViewType eBufferView;
+        uint32 nOffset;
+        uint32 nSize;
+        union 
+		{
+            RHIVertexBufferViewInfo eVertexBufferViewInfo;
+            RHIIndexBufferViewInfo eIndexBufferViewInfo;
+        };
+    };
 
     
 ////////////////////////////// Class ///////////////////////////////
@@ -66,6 +142,7 @@ namespace LostPeterRHI
 	class RHIShaderModule;
 	class RHIStreamDecoder;
 	class RHIStreamEncoder;
+	class RHISurface;
 	class RHISwapchain;
 	class RHISyncPrimitivesPool;
 	class RHIUtil;

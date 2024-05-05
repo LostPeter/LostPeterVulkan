@@ -9,28 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_PHYSICAL_DEVICE_H_
-#define _RHI_PHYSICAL_DEVICE_H_
-
-#include "RHIPreDefine.h"
+#include "../include/RHISurface.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIPhysicalDevice
+    RHISurface::RHISurface()
     {
-    public:
-        RHIPhysicalDevice();
-        virtual ~RHIPhysicalDevice();
 
-    public:
-    protected:
+    }
 
-
-    public:
-        virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty() = 0;
+    RHISurface::~RHISurface()
+    {
         
-    };
+    }   
     
-}; //LostPeterRHI
 
-#endif
+}; //LostPeterRHI
