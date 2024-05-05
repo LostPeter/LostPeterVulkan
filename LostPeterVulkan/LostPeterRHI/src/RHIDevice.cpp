@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIDevice::RHIDevice()
+    {
+
+    }
+
+    RHIDevice::~RHIDevice()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIVertexInputFormat::RHIVertexInputFormat()
+    {
+
+    }
+
+    RHIVertexInputFormat::~RHIVertexInputFormat()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

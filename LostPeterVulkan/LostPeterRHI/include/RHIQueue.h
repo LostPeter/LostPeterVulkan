@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIQueue
+    {
+    public:
+        RHIQueue();
+        virtual ~RHIQueue();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

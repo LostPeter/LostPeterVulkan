@@ -16,8 +16,20 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIBuffer
+    {
+    public:
+        RHIBuffer();
+        virtual ~RHIBuffer();
+
+    public:
+    protected:
+
+
+    public:
+
+
+    };
 
 }; //LostPeterRHI
 

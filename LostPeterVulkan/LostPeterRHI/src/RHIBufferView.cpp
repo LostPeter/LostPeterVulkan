@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIBufferView::RHIBufferView()
+    {
+
+    }
+
+    RHIBufferView::~RHIBufferView()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

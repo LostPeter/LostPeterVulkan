@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIDescriptorPool
+    {
+    public:
+        RHIDescriptorPool();
+        virtual ~RHIDescriptorPool();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

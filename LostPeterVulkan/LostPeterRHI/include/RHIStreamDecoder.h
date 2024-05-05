@@ -16,8 +16,20 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIStreamDecoder
+    {
+    public:
+        RHIStreamDecoder();
+        virtual ~RHIStreamDecoder();
+
+    public:
+    protected:
+
+
+    public:
+
+
+    };
 
 }; //LostPeterRHI
 

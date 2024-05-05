@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIGraphicsState::RHIGraphicsState()
+    {
+
+    }
+
+    RHIGraphicsState::~RHIGraphicsState()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

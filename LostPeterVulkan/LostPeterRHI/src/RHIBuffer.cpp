@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    RHIBuffer::RHIBuffer()
+    {
+
+    }
+
+    RHIBuffer::~RHIBuffer()
+    {
+        
+    }
+
 
 }; //LostPeterRHI

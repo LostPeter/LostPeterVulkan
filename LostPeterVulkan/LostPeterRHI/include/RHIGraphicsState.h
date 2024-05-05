@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIGraphicsState
+    {
+    public:
+        RHIGraphicsState();
+        virtual ~RHIGraphicsState();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

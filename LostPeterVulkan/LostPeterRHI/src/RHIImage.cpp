@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIImage::RHIImage()
+    {
+
+    }
+
+    RHIImage::~RHIImage()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

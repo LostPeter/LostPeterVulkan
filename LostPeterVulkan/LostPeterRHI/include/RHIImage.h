@@ -16,8 +16,20 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIImage
+    {
+    public:
+        RHIImage();
+        virtual ~RHIImage();
+
+    public:
+    protected:
+
+
+    public:
+
+
+    };
 
 }; //LostPeterRHI
 

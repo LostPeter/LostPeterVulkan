@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHICommandBuffer::RHICommandBuffer()
+    {
+
+    }
+
+    RHICommandBuffer::~RHICommandBuffer()
+    {
+        
+    }  
     
 
 }; //LostPeterRHI

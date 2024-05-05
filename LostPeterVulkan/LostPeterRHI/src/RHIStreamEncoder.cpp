@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIStreamEncoder::RHIStreamEncoder()
+    {
+
+    }
+
+    RHIStreamEncoder::~RHIStreamEncoder()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIDescriptorSetLayoutCache::RHIDescriptorSetLayoutCache()
+    {
+
+    }
+
+    RHIDescriptorSetLayoutCache::~RHIDescriptorSetLayoutCache()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

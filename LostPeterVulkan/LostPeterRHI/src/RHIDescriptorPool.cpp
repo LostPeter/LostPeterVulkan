@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIDescriptorPool::RHIDescriptorPool()
+    {
+
+    }
+
+    RHIDescriptorPool::~RHIDescriptorPool()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

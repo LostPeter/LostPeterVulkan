@@ -16,8 +16,20 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHISwapchain
+    {
+    public:
+        RHISwapchain();
+        virtual ~RHISwapchain();
+
+    public:
+    protected:
+
+
+    public:
+
+
+    };
 
 }; //LostPeterRHI
 

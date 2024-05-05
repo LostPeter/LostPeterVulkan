@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIShaderModule::RHIShaderModule()
+    {
+
+    }
+
+    RHIShaderModule::~RHIShaderModule()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

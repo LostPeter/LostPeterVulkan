@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIRenderPassCache::RHIRenderPassCache()
+    {
+
+    }
+
+    RHIRenderPassCache::~RHIRenderPassCache()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

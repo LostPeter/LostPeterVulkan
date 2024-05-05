@@ -14,10 +14,36 @@
 
 #include "RHIPreDefine.h"
 
+#include "RHIBuffer.h"
+#include "RHIBufferView.h"
+#include "RHICommandBuffer.h"
+#include "RHICommandPool.h"
+#include "RHIDescriptorSetLayout.h"
+#include "RHIDescriptorSetLayoutCache.h"
+#include "RHIDevice.h"
+#include "RHIFence.h"
+#include "RHIFramebuffer.h"
+#include "RHIGraphicsState.h"
+#include "RHIImage.h"
+#include "RHIImageView.h"
+#include "RHIInstance.h"
+#include "RHIPhysicalDevice.h"
+#include "RHIPipeline.h"
+#include "RHIPipelineBarriers.h"
+#include "RHIPipelineCache.h"
+#include "RHIQueue.h"
+#include "RHIRenderPassCache.h"
+#include "RHIResourceBindings.h"
+#include "RHIShaderModule.h"
+#include "RHIStreamDecoder.h"
+#include "RHIStreamEncoder.h"
+#include "RHISwapchain.h"
+#include "RHISyncPrimitivesPool.h"
+#include "RHIUtil.h"
+#include "RHIVertexInputFormat.h"
+
 namespace LostPeterRHI
 {
-    
-    
 
 }; //LostPeterRHI
 

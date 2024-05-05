@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIFramebuffer::RHIFramebuffer()
+    {
+
+    }
+
+    RHIFramebuffer::~RHIFramebuffer()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

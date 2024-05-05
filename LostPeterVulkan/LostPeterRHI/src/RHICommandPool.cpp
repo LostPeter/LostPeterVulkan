@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHICommandPool::RHICommandPool()
+    {
+
+    }
+
+    RHICommandPool::~RHICommandPool()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

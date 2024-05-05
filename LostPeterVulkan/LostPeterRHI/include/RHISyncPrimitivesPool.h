@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHISyncPrimitivesPool
+    {
+    public:
+        RHISyncPrimitivesPool();
+        virtual ~RHISyncPrimitivesPool();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

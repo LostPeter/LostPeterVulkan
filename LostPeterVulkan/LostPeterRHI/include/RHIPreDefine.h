@@ -33,8 +33,45 @@ using namespace LostPeterFoundation;
 
 namespace LostPeterRHI
 {
+////////////////////////////// Define //////////////////////////////
+
+
+////////////////////////////// Typedef /////////////////////////////
+
+
+////////////////////////////// Enum ////////////////////////////////
+
     
-    
+////////////////////////////// Class ///////////////////////////////
+	class RHIBuffer;
+	class RHIBufferView;
+	class RHICommandBuffer;
+	class RHICommandPool;
+	class RHIDescriptorSetLayout;
+	class RHIDescriptorSetLayoutCache;
+	class RHIDevice;
+	class RHIFence;
+	class RHIFramebuffer;
+	class RHIGraphicsState;
+	class RHIImage;
+	class RHIImageView;
+	class RHIInstance;
+	class RHIPhysicalDevice;
+	class RHIPipeline;
+	class RHIPipelineBarriers;
+	class RHIPipelineCache;
+	class RHIQueue;
+	class RHIRenderPassCache;
+	class RHIResourceBindings;
+	class RHIShaderModule;
+	class RHIStreamDecoder;
+	class RHIStreamEncoder;
+	class RHISwapchain;
+	class RHISyncPrimitivesPool;
+	class RHIUtil;
+	class RHIVertexInputFormat;
+
+	typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
 
 }; //LostPeterRHI
 

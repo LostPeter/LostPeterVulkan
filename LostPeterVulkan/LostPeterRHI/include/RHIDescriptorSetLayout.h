@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIDescriptorSetLayout
+    {
+    public:
+        RHIDescriptorSetLayout();
+        virtual ~RHIDescriptorSetLayout();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

@@ -11,9 +11,30 @@
 
 #include "../include/RHIInstance.h"
 
+template<> LostPeterRHI::RHIInstance* LostPeterFoundation::FSingleton<LostPeterRHI::RHIInstance>::ms_Singleton = nullptr;
+
 namespace LostPeterRHI
 {
-    
+    RHIInstance* RHIInstance::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	RHIInstance& RHIInstance::GetSingleton()
+	{  
+		F_Assert(ms_Singleton && "RHIInstance::GetSingleton")
+		return (*ms_Singleton);     
+	}
+
+
+    RHIInstance::RHIInstance()
+    {
+
+    }
+
+    RHIInstance::~RHIInstance()
+    {
+
+    }
 
 
 }; //LostPeterRHI

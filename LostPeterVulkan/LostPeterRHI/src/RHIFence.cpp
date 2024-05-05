@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIFence::RHIFence()
+    {
+
+    }
+
+    RHIFence::~RHIFence()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

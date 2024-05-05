@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIPipelineBarriers::RHIPipelineBarriers()
+    {
+
+    }
+
+    RHIPipelineBarriers::~RHIPipelineBarriers()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

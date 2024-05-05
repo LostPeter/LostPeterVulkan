@@ -16,7 +16,12 @@
 
 namespace LostPeterRHI
 {
-    
+    class rhiExport RHIUtil
+    {
+    public:
+
+
+    };
     
 
 }; //LostPeterRHI

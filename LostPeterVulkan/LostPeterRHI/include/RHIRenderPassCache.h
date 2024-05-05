@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIRenderPassCache
+    {
+    public:
+        RHIRenderPassCache();
+        virtual ~RHIRenderPassCache();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

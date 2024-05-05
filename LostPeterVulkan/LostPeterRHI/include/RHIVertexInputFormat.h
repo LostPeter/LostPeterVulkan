@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIVertexInputFormat
+    {
+    public:
+        RHIVertexInputFormat();
+        virtual ~RHIVertexInputFormat();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

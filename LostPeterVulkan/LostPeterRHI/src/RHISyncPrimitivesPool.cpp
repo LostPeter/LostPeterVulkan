@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHISyncPrimitivesPool::RHISyncPrimitivesPool()
+    {
+
+    }
+
+    RHISyncPrimitivesPool::~RHISyncPrimitivesPool()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

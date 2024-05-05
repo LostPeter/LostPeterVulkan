@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIPipelineBarriers
+    {
+    public:
+        RHIPipelineBarriers();
+        virtual ~RHIPipelineBarriers();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHISwapchain::RHISwapchain()
+    {
+
+    }
+
+    RHISwapchain::~RHISwapchain()
+    {
+        
+    }   
     
 
 }; //LostPeterRHI

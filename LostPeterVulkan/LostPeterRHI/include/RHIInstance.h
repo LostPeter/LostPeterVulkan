@@ -16,8 +16,25 @@
 
 namespace LostPeterRHI
 {
-    
+    class rhiExport RHIInstance : public FSingleton<RHIInstance>
+    {
+    public:
+        RHIInstance();
+        virtual ~RHIInstance();
 
+    public:
+    protected:
+
+
+    public:
+        static RHIInstance&	GetSingleton();
+		static RHIInstance*	GetSingletonPtr();
+
+
+    public:
+        
+
+    };
 
 }; //LostPeterRHI
 

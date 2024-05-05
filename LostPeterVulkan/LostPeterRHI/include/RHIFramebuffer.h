@@ -16,8 +16,20 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIFramebuffer
+    {
+    public:
+        RHIFramebuffer();
+        virtual ~RHIFramebuffer();
+
+    public:
+    protected:
+
+
+    public:
+
+
+    };
 
 }; //LostPeterRHI
 

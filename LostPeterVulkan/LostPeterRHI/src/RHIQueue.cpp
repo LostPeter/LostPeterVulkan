@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIQueue::RHIQueue()
+    {
+
+    }
+
+    RHIQueue::~RHIQueue()
+    {
+        
+    }
     
 
 }; //LostPeterRHI

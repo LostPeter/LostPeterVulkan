@@ -16,9 +16,21 @@
 
 namespace LostPeterRHI
 {
-    
-    
+    class rhiExport RHIPhysicalDevice
+    {
+    public:
+        RHIPhysicalDevice();
+        virtual ~RHIPhysicalDevice();
 
+    public:
+    protected:
+
+
+    public:
+
+
+    };
+    
 }; //LostPeterRHI
 
 #endif

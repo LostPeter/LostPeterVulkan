@@ -13,7 +13,15 @@
 
 namespace LostPeterRHI
 {
-    
+    RHIResourceBindings::RHIResourceBindings()
+    {
+
+    }
+
+    RHIResourceBindings::~RHIResourceBindings()
+    {
+        
+    }
     
 
 }; //LostPeterRHI
