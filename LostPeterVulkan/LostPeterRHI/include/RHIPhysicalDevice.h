@@ -28,7 +28,7 @@ namespace LostPeterRHI
 
     public:
         virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty() = 0;
-        
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo) = 0;
     };
     
 }; //LostPeterRHI

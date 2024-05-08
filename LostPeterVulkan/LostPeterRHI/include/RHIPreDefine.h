@@ -42,6 +42,7 @@ namespace LostPeterRHI
 ////////////////////////////// Enum ////////////////////////////////
 	using RHIEnumType = uint32;
 
+	//RHIType
 	enum class RHIType : RHIEnumType 
 	{
 		RHI_Dummy = 0,									//0: Dummy
@@ -51,8 +52,11 @@ namespace LostPeterRHI
 
         RHI_Count,
     };
+	rhiExport const String& RHI_GetRHITypeName(RHIType type);
+    rhiExport const String& RHI_GetRHITypeName(int type);
+    rhiExport RHIType RHI_ParseRHIType(const String& strName);
 
-
+	//RHIPhysicalDeviceType
 	enum class RHIPhysicalDeviceType : RHIEnumType 
 	{
         RHI_PhysicalDevice_Hardware = 0,				//0: Hardware
@@ -61,7 +65,26 @@ namespace LostPeterRHI
         RHI_PhysicalDevice_Count,
     };
 
+	//RHIQueueType
+	enum class RHIQueueType : RHIEnumType 
+	{
+        RHI_Queue_Graphics = 0,							//0: Graphics
+        RHI_Queue_Compute,								//1: Compute	
+        RHI_Queue_Transfer,								//2: Transfer
+        
+		RHI_Queue_Count,
+    };
 
+	//RHIPresentType
+	enum class RHIPresentType : RHIEnumType 
+	{
+        RHI_Present_Immediately = 0,					//0: Immediately
+        RHI_Present_VSync,								//1: VSync
+
+        RHI_Present_Count,
+    };
+
+	//RHIIndexType
 	enum class RHIIndexType : RHIEnumType 
 	{
 		RHI_Index_16Bit = 0,                            //0: 16Bit
@@ -70,7 +93,7 @@ namespace LostPeterRHI
 		RHI_Index_Count,
 	};
 
-
+	//RHIBufferViewType
 	enum class RHIBufferViewType : RHIEnumType 
 	{
 		RHI_BufferView_Vertex = 0,                    	//0: Vertex
@@ -83,41 +106,6 @@ namespace LostPeterRHI
 
 
 
-
-////////////////////////////// Struct //////////////////////////////
-	struct RHIPhysicalDeviceProperty
-	{
-        uint32 nVendorID;
-        uint32 nDeviceID;
-        RHIPhysicalDeviceType ePhysicalDevice;
-    };
-
-
-	struct RHIVertexBufferViewInfo 
-	{
-        uint32 nStride;
-    };
-
-
-    struct RHIIndexBufferViewInfo 
-	{
-        RHIIndexType eIndex;
-    };
-
-
-    struct RHIBufferViewCreateInfo 
-	{
-        RHIBufferViewType eBufferView;
-        uint32 nOffset;
-        uint32 nSize;
-        union 
-		{
-            RHIVertexBufferViewInfo eVertexBufferViewInfo;
-            RHIIndexBufferViewInfo eIndexBufferViewInfo;
-        };
-    };
-
-    
 ////////////////////////////// Class ///////////////////////////////
 	class RHIBuffer;
 	class RHIBufferView;
@@ -127,7 +115,7 @@ namespace LostPeterRHI
 	class RHIDescriptorSetLayoutCache;
 	class RHIDevice;
 	class RHIFence;
-	class RHIFramebuffer;
+	class RHIFrameBuffer;
 	class RHIGraphicsState;
 	class RHIImage;
 	class RHIImageView;
@@ -143,12 +131,79 @@ namespace LostPeterRHI
 	class RHIStreamDecoder;
 	class RHIStreamEncoder;
 	class RHISurface;
-	class RHISwapchain;
+	class RHISwapChain;
 	class RHISyncPrimitivesPool;
 	class RHIUtil;
 	class RHIVertexInputFormat;
 
 	typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
+
+
+	
+////////////////////////////// Struct //////////////////////////////
+	//RHIPhysicalDeviceProperty
+	struct RHIPhysicalDeviceProperty
+	{
+        uint32 nVendorID;
+        uint32 nDeviceID;
+        RHIPhysicalDeviceType ePhysicalDevice;
+    };
+
+	//RHIQueueInfo
+	struct RHIQueueInfo 
+	{
+        RHIQueueType eQueue;
+        uint8 nCount;
+    };
+
+	//RHIDeviceCreateInfo
+	struct RHIDeviceCreateInfo 
+	{
+        uint32 nQueueCreateInfoCount;
+        const RHIQueueInfo* pQueueCreateInfos;
+    };
+
+	//RHISurfaceCreateInfo
+	struct RHISurfaceCreateInfo 
+	{
+        void* pWindow;
+    };
+
+	//RHISwapChainCreateInfo
+	struct RHISwapChainCreateInfo 
+	{
+        RHIQueue* pQueuePresent;
+        RHISurface* pSurface;
+        uint8 nTextureCount;
+        FPixelFormatType ePixelFormat;
+		FSizeI sizeWH;
+        RHIPresentType ePresent;
+    };
+
+	//RHIVertexBufferViewInfo
+	struct RHIVertexBufferViewInfo 
+	{
+        uint32 nStride;
+    };
+
+	//RHIIndexBufferViewInfo
+    struct RHIIndexBufferViewInfo 
+	{
+        RHIIndexType eIndex;
+    };
+
+	//RHIBufferViewCreateInfo
+    struct RHIBufferViewCreateInfo 
+	{
+        RHIBufferViewType eBufferView;
+        uint32 nOffset;
+        uint32 nSize;
+        union 
+		{
+            RHIVertexBufferViewInfo eVertexBufferViewInfo;
+            RHIIndexBufferViewInfo eIndexBufferViewInfo;
+        };
+    };
 
 }; //LostPeterRHI
 

@@ -37,7 +37,6 @@ namespace LostPeterFoundation
 	int _findclose(intptr_t id);
 
 #endif
-
 }; //LostPeterFoundation
 
 #endif

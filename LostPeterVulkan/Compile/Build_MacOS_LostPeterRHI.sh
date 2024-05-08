@@ -22,7 +22,7 @@ fi
 
 
 #1> Build LostPeterFoundation
-sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
+#sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
 
 
 #2> Build LostPeterRHI

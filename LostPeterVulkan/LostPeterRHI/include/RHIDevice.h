@@ -27,8 +27,11 @@ namespace LostPeterRHI
 
 
     public:
-
-
+        virtual void Destroy() = 0;
+        virtual uint32 GetQueueCount(RHIQueueType eQueue) = 0;
+        virtual RHIQueue* GetQueue(RHIQueueType eQueue, uint32 nIndex) = 0;
+        virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo) = 0;
+        virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo) = 0;
     };
 
 }; //LostPeterRHI

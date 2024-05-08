@@ -137,5 +137,4 @@ namespace LostPeterFoundation
 	}
 
 #endif
-    
 }; //LostPeterFoundation
