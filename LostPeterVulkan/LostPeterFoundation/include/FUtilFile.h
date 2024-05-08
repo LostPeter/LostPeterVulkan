@@ -9,8 +9,6 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#if F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID || F_PLATFORM == F_PLATFORM_iOS
-
 #ifndef _F_UTIL_FILE_H_
 #define _F_UTIL_FILE_H_
 
@@ -18,6 +16,8 @@
 
 namespace LostPeterFoundation
 {
+#if F_PLATFORM != F_PLATFORM_WINDOW
+
 	struct _finddata_t
 	{
 		char *name;
@@ -36,8 +36,8 @@ namespace LostPeterFoundation
 	int _findnext(intptr_t id, struct _finddata_t *data);
 	int _findclose(intptr_t id);
 
-}; //LostPeterFoundation
-
 #endif
+
+}; //LostPeterFoundation
 
 #endif

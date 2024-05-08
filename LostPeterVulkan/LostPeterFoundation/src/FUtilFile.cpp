@@ -9,12 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#if F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID || F_PLATFORM == F_PLATFORM_iOS
-
 #include "../include/FUtilFile.h"
 
 namespace LostPeterFoundation
 {
+#if F_PLATFORM != F_PLATFORM_WINDOW
+
     struct _find_search_t
 	{
 		char *pattern;
@@ -135,7 +135,7 @@ namespace LostPeterFoundation
 
 		return ret;
 	}
-    
-}; //LostPeterFoundation
 
 #endif
+    
+}; //LostPeterFoundation
