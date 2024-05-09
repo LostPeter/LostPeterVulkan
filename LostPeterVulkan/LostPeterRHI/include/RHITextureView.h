@@ -9,19 +9,28 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIImageView.h"
+#ifndef _RHI_TEXTURE_VIEW_H_
+#define _RHI_TEXTURE_VIEW_H_
+
+#include "RHIPreDefine.h"
 
 namespace LostPeterRHI
 {
-    RHIImageView::RHIImageView()
+    class rhiExport RHITextureView
     {
+    public:
+        RHITextureView();
+        virtual ~RHITextureView();
 
-    }
+    public:
+    protected:
 
-    RHIImageView::~RHIImageView()
-    {
-        
-    }
+
+    public:
+
+
+    };
     
-
 }; //LostPeterRHI
+
+#endif

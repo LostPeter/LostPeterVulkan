@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
+* LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-05
@@ -9,16 +9,11 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_DUMMY_IMAGE_H_
-#define _RHI_DUMMY_IMAGE_H_
+#include "../include/RHIVulkanTextureView.h"
 
-#include "RHIDummyPreDefine.h"
-
-namespace LostPeterPluginRHIDummy
+namespace LostPeterPluginRHIVulkan
 {
     
     
 
-}; //LostPeterPluginRHIDummy
-
-#endif
+}; //LostPeterPluginRHIVulkan

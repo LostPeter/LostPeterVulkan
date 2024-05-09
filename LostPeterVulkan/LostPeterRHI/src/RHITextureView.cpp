@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
+* LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-05
@@ -9,11 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIDummyImageView.h"
+#include "../include/RHITextureView.h"
 
-namespace LostPeterPluginRHIDummy
+namespace LostPeterRHI
 {
-    
+    RHITextureView::RHITextureView()
+    {
+
+    }
+
+    RHITextureView::~RHITextureView()
+    {
+        
+    }
     
 
-}; //LostPeterPluginRHIDummy
+}; //LostPeterRHI

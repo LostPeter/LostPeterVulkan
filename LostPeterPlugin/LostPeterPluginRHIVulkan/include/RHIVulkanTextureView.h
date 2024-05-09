@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterRHI - Copyright (C) 2022 by LostPeter
+* LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-05
@@ -9,19 +9,16 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIImage.h"
+#ifndef _RHI_VULKAN_TEXTURE_VIEW_H_
+#define _RHI_VULKAN_TEXTURE_VIEW_H_
 
-namespace LostPeterRHI
+#include "RHIVulkanPreDefine.h"
+
+namespace LostPeterPluginRHIVulkan
 {
-    RHIImage::RHIImage()
-    {
-
-    }
-
-    RHIImage::~RHIImage()
-    {
-        
-    }
+    
     
 
-}; //LostPeterRHI
+}; //LostPeterPluginRHIVulkan
+
+#endif

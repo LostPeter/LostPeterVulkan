@@ -32,6 +32,9 @@ namespace LostPeterRHI
         virtual RHIQueue* GetQueue(RHIQueueType eQueue, uint32 nIndex) = 0;
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo) = 0;
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo) = 0;
+        virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo) = 0;
+        virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo) = 0;
+        virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo) = 0;
     };
 
 }; //LostPeterRHI

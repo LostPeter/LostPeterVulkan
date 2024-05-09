@@ -9,10 +9,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_DUMMY_IMAGE_VIEW_H_
-#define _RHI_DUMMY_IMAGE_VIEW_H_
-
-#include "RHIDummyPreDefine.h"
+#include "../include/RHIDummyTexture.h"
 
 namespace LostPeterPluginRHIDummy
 {
@@ -20,5 +17,3 @@ namespace LostPeterPluginRHIDummy
     
 
 }; //LostPeterPluginRHIDummy
-
-#endif
