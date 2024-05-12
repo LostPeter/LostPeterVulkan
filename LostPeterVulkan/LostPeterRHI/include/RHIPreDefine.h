@@ -105,15 +105,6 @@ namespace LostPeterRHI
         RHI_BufferState_Count,
     };
 
-	//RHIIndexType
-	enum class RHIIndexType : RHIEnumType 
-	{
-		RHI_Index_16Bit = 0,                            //0: 16Bit
-		RHI_Index_32Bit,                                //1: 32Bit
-
-		RHI_Index_Count,
-	};
-
 	//RHIBufferViewType
 	enum class RHIBufferViewType : RHIEnumType 
 	{
@@ -203,6 +194,304 @@ namespace LostPeterRHI
 
         RHI_StoreOp_Count,
     };
+
+	//RHIAddressType
+	enum class RHIAddressType : RHIEnumType 
+	{
+        RHI_Address_ClampToEdge = 0,					//0: ClampToEdge
+        RHI_Address_Repeat,								//1: Repeat
+        RHI_Address_MirrorRepeat,						//2: MirrorRepeat
+
+        RHI_Address_Count,
+    };
+
+	//RHIFilterType
+    enum class RHIFilterType : RHIEnumType 
+	{
+        RHI_Filter_Nearest = 0,							//0: Nearest
+        RHI_Filter_Linear,								//1: Linear
+
+        RHI_Filter_Count,
+    };
+
+	//RHIComparisonFuncType
+    enum class RHIComparisonFuncType : RHIEnumType 
+	{
+        RHI_ComparisonFunc_Never = 0,					//0: Never
+        RHI_ComparisonFunc_Less,						//1: Less
+        RHI_ComparisonFunc_Equal,						//2: Equal
+        RHI_ComparisonFunc_LessEqual,					//3: LessEqual
+        RHI_ComparisonFunc_Greater,						//4: Greater
+        RHI_ComparisonFunc_NotEqual,					//5: NotEqual
+        RHI_ComparisonFunc_GreaterEqual,				//6: GreaterEqual
+        RHI_ComparisonFunc_Always,						//7: Always
+
+        RHI_ComparisonFunc_Count,
+    };
+
+	//RHIHLSLBindingRangeType
+    enum class RHIHLSLBindingRangeType : RHIEnumType 
+	{
+        RHI_HLSLBindingRange_ConstantBuffer = 0,		//0: ConstantBuffer
+        RHI_HLSLBindingRange_Texture,					//1: Texture
+        RHI_HLSLBindingRange_Sampler,					//2: Sampler
+        RHI_HLSLBindingRange_UnorderedAccess,			//3: UnorderedAccess
+
+        RHI_HLSLBindingRange_Count,
+    };
+
+	//RHIBindingType
+    enum class RHIBindingType : RHIEnumType 
+	{
+        RHI_Binding_UniformBuffer = 0,					//0: UniformBuffer
+        RHI_Binding_StorageBuffer,						//1: StorageBuffer
+        RHI_Binding_Sampler,							//2: Sampler
+        RHI_Binding_Texture,							//3: Texture
+        RHI_Binding_StorageTexture,						//4: StorageTexture
+
+        RHI_Binding_Count,
+    };
+
+	//RHISamplerBindingType
+    enum class RHISamplerBindingType : RHIEnumType 
+	{
+        RHI_SamplerBinding_Filtering = 0,				//0: Filtering
+        RHI_SamplerBinding_NonFiltering,				//1: NonFiltering
+        RHI_SamplerBinding_Comparison,					//2: Comparison
+
+        RHI_SamplerBinding_Count,
+    };
+
+	//RHITextureSampleType
+    enum class RHITextureSampleType : RHIEnumType 
+	{
+        RHI_TextureSample_FilterableFloat = 0,			//0: FilterableFloat
+        RHI_TextureSample_NonFilterableFloat,			//1: NonFilterableFloat
+        RHI_TextureSample_Depth,						//2: Depth
+        RHI_TextureSample_SInt,							//3: SInt
+        RHI_TextureSample_UInt,							//4: UInt
+
+        RHI_TextureSample_Count,
+    };
+
+	//RHIStorageTextureAccessType
+    enum class RHIStorageTextureAccessType : RHIEnumType 
+	{
+        RHI_StorageTextureAccess_WriteOnly = 0,			//0: WriteOnly
+
+        RHI_StorageTextureAccess_Count,
+    };
+
+	//RHIVertexStepType
+	enum class RHIVertexStepType : RHIEnumType 
+	{
+        RHI_VertexStep_PerVertex = 0,					//0: PerVertex
+        RHI_VertexStep_PerInstance,						//1: PerInstance
+
+        RHI_VertexStep_Count,
+    };
+
+	//RHIPrimitiveTopologySortType
+    enum class RHIPrimitiveTopologySortType : RHIEnumType 
+	{
+        RHI_PrimitiveTopologySort_Point = 0,			//0: Point
+        RHI_PrimitiveTopologySort_Line,					//1: Line
+        RHI_PrimitiveTopologySort_Triangle,				//2: Triangle
+
+        RHI_PrimitiveTopologySort_Count,
+    };
+
+	//RHIPrimitiveTopologyType
+    enum class RHIPrimitiveTopologyType : RHIEnumType 
+	{
+        RHI_PrimitiveTopology_PointList = 0,			//0: PointList
+        RHI_PrimitiveTopology_LineList,					//1: LineList
+        RHI_PrimitiveTopology_LineStrip,				//2: LineStrip
+        RHI_PrimitiveTopology_TriangleList,				//3: TriangleList
+        RHI_PrimitiveTopology_TriangleStrip,			//4: TriangleStrip
+        RHI_PrimitiveTopology_LineListAdj,				//5: LineListAdj
+        RHI_PrimitiveTopology_LineStripAdj,				//6: LineStripAdj
+        RHI_PrimitiveTopology_TriangleListAdj,			//7: TriangleListAdj
+        RHI_PrimitiveTopology_TriangleStripAdj,			//8: TriangleStripAdj
+
+        RHI_PrimitiveTopology_Count,
+    };
+
+	//RHIIndexType
+	enum class RHIIndexType : RHIEnumType 
+	{
+		RHI_Index_16Bit = 0,                            //0: 16Bit
+		RHI_Index_32Bit,                                //1: 32Bit
+
+		RHI_Index_Count,
+	};
+
+	//RHIFrontFaceType
+    enum class RHIFrontFaceType : RHIEnumType 
+	{
+        RHI_FrontFace_CCW = 0,							//0: CCW
+        RHI_FrontFace_CW,								//1: CW
+
+        RHI_FrontFace_Count,
+    };
+
+	//RHICullType
+    enum class RHICullType : RHIEnumType 
+	{
+        RHI_Cull_None = 0,								//0: None
+        RHI_Cull_Front,									//1: Front
+        RHI_Cull_Back,									//2: Back
+
+        RHI_Cull_Count,
+    };
+
+	//RHIStencilOpType
+    enum class RHIStencilOpType : RHIEnumType 
+	{
+        RHI_StencilOp_Keep = 0,							//0: Keep
+        RHI_StencilOp_Zero,								//1: Zero
+        RHI_StencilOp_Replace,							//2: Replace
+        RHI_StencilOp_Invert,							//3: Invert
+        RHI_StencilOp_IncrementClamp,					//4: IncrementClamp
+        RHI_StencilOp_DecrementClamp,					//5: DecrementClamp
+        RHI_StencilOp_IncrementWrap,					//6: IncrementWrap
+        RHI_StencilOp_DecrementWrap,					//7: DecrementWrap
+
+        RHI_StencilOp_Count,
+    };
+
+	//RHIBlendFactorType
+    enum class RHIBlendFactorType : RHIEnumType 
+	{
+        RHI_BlendFactor_Zero = 0,						//0: Zero
+        RHI_BlendFactor_One,							//1: One
+        RHI_BlendFactor_Src,							//2: Src
+        RHI_BlendFactor_OneMinusSrc,					//3: OneMinusSrc
+        RHI_BlendFactor_SrcAlpha,						//4: SrcAlpha
+        RHI_BlendFactor_OneMinusSrcAlpha,				//5: OneMinusSrcAlpha
+        RHI_BlendFactor_Dst,							//6: Dst
+        RHI_BlendFactor_OneMinusDst,					//7: OneMinusDst
+        RHI_BlendFactor_DstAlpha,						//8: DstAlpha
+        RHI_BlendFactor_OneMinusDstAlpha,				//9: OneMinusDstAlpha
+
+        RHI_BlendFactor_Count,
+    };
+
+	//RHIBlendOpType
+    enum class RHIBlendOpType : RHIEnumType 
+	{
+        RHI_BlendOp_Add = 0,							//0: Add
+        RHI_BlendOp_Substract,							//1: Substract
+        RHI_BlendOp_ReverseSubstract,					//2: ReverseSubstract
+        RHI_BlendOp_Min,								//3: Min
+        RHI_BlendOp_Max,								//4: Max
+
+        RHI_BlendOp_Count,
+    };
+
+	//RHIPixelFormatType
+	enum class RHIPixelFormatType : RHIEnumType 
+	{
+        //8-Bits
+        RHI_PixelFormat_R8UNorm = 0,					//0:  R8Unorm			
+        RHI_PixelFormat_R8SNorm,						//1:  R8SNorm
+        RHI_PixelFormat_R8UInt,							//2:  R8UInt
+        RHI_PixelFormat_R8SInt,							//3:  R8SInt
+
+        //16-Bits
+        RHI_PixelFormat_R16UInt,						//4:  R16UInt
+        RHI_PixelFormat_R16SInt,						//5:  R16SInt
+        RHI_PixelFormat_R16Float,						//6:  R16Float
+        RHI_PixelFormat_RG8UNorm,						//7:  RG8UNorm
+        RHI_PixelFormat_RG8SNorm,						//8:  RG8SNorm
+        RHI_PixelFormat_RG8UInt,						//9:  RG8UInt
+        RHI_PixelFormat_RG8SInt,						//10: RG8SInt
+
+        //32-Bits
+        RHI_PixelFormat_R32UInt,						//11: R32UInt
+        RHI_PixelFormat_R32SInt,						//12: R32SInt
+        RHI_PixelFormat_R32Float,						//13: R32Float
+        RHI_PixelFormat_RG16UInt,						//14: RG16UInt
+        RHI_PixelFormat_RG16SInt,						//15: RG16SInt
+        RHI_PixelFormat_RG16Float,						//16: RG16Float
+        RHI_PixelFormat_RGBA8UNorm,						//17: RGBA8UNorm
+        RHI_PixelFormat_RGBA8UNormSRGB,					//18: RGBA8UNormSRGB
+        RHI_PixelFormat_RGBA8SNorm,						//19: RGBA8SNorm
+        RHI_PixelFormat_RGBA8UInt,						//20: RGBA8UInt
+        RHI_PixelFormat_RGBA8SInt,						//21: RGBA8SInt
+        RHI_PixelFormat_BGRA8UNorm,						//22: BGRA8UNorm
+        RHI_PixelFormat_BGRA8UNormSRGB,					//23: BGRA8UNormSRGB
+        RHI_PixelFormat_RGB9E5Float,					//24: RGB9E5Float
+        RHI_PixelFormat_RGB10A2UNorm,					//25: RGB10A2UNorm
+        RHI_PixelFormat_RG11B10Float,					//26: RG11B10Float
+
+        //64-Bits
+        RHI_PixelFormat_RG32UInt,						//27: RG32UInt
+        RHI_PixelFormat_RG32SInt,						//28: RG32SInt
+        RHI_PixelFormat_RG32Float,						//29: RG32Float
+        RHI_PixelFormat_RGBA16UInt,						//30: RGBA16UInt
+        RHI_PixelFormat_RGBA16SInt,						//31: RGBA16SInt
+        RHI_PixelFormat_RGBA16Float,					//32: RGBA16Float
+
+        //128-Bits
+        RHI_PixelFormat_RGBA32UInt,						//33: RGBA32UInt
+        RHI_PixelFormat_RGBA32SInt,						//34: RGBA32SInt
+        RHI_PixelFormat_RGBA32Float,					//35: RGBA32Float
+
+        //Depth-Stencil
+        RHI_PixelFormat_D16UNorm,						//36: D16UNorm
+        RHI_PixelFormat_D24UNormS8UInt,					//37: D24UNormS8UInt
+        RHI_PixelFormat_D32Float,						//38: D32Float
+        RHI_PixelFormat_D32FloatS8UInt,					//39: D32FloatS8UInt
+
+        //Features /BC/ETC/ASTC
+
+        RHI_PixelFormat_Count,
+    };
+
+	//RHIVertexFormatType
+    enum class RHIVertexFormatType : RHIEnumType 
+	{
+        //8-Bits Channel
+        RHI_VertexFormat_UInt8X2 = 0,					//0:  UInt8X2
+        RHI_VertexFormat_UInt8X4,						//1:  UInt8X4
+        RHI_VertexFormat_SInt8X2,						//2:  SInt8X2
+        RHI_VertexFormat_SInt8X4,						//3:  SInt8X4
+        RHI_VertexFormat_UNorm8X2,						//4:  UNorm8X2
+        RHI_VertexFormat_UNorm8X4,						//5:  UNorm8X4
+        RHI_VertexFormat_SNorm8X2,						//6:  SNorm8X2
+        RHI_VertexFormat_SNorm8X4,						//7:  SNorm8X4
+
+        //16-Bits Channel
+        RHI_VertexFormat_UInt16X2,						//8:  UInt16X2
+        RHI_VertexFormat_UInt16X4,						//9:  UInt16X4
+        RHI_VertexFormat_SInt16X2,						//10: SInt16X2
+        RHI_VertexFormat_SInt16X4,						//11: SInt16X4
+        RHI_VertexFormat_UNorm16X2,						//12: UNorm16X2
+        RHI_VertexFormat_UNorm16X4,						//13: UNorm16X4
+        RHI_VertexFormat_SNorm16X2,						//14: SNorm16X2
+        RHI_VertexFormat_SNorm16X4,						//15: SNorm16X4
+        RHI_VertexFormat_Float16X2,						//16: Float16X2
+        RHI_VertexFormat_Float16X4,						//17: Float16X4
+
+        //32-Bits Channel
+        RHI_VertexFormat_Float32X1,						//18: Float32X1
+        RHI_VertexFormat_Float32X2,						//19: Float32X2
+        RHI_VertexFormat_Float32X3,						//20: Float32X3
+        RHI_VertexFormat_Float32X4,						//21: Float32X4
+        RHI_VertexFormat_UInt32X1,						//22: UInt32X1
+        RHI_VertexFormat_UInt32X2,						//23: UInt32X2
+        RHI_VertexFormat_UInt32X3,						//24: UInt32X3
+        RHI_VertexFormat_UInt32X4,						//25: UInt32X4
+        RHI_VertexFormat_SInt32X1,						//26: SInt32X1
+        RHI_VertexFormat_SInt32X2,						//27: SInt32X2
+        RHI_VertexFormat_SInt32X3,						//28: SInt32X3
+        RHI_VertexFormat_SInt32X4,						//29: SInt32X4
+
+        RHI_VertexFormat_Count,
+    };
+
+
 
 	//RHIFlags
 	template <typename T = uint32>
@@ -366,9 +655,6 @@ namespace LostPeterRHI
 	class RHIBuffer;
 	class RHIBufferView;
 	class RHICommandBuffer;
-	class RHICommandPool;
-	class RHIDescriptorSetLayout;
-	class RHIDescriptorSetLayoutCache;
 	class RHIDevice;
 	class RHIFence;
 	class RHIFrameBuffer;
@@ -376,22 +662,17 @@ namespace LostPeterRHI
 	class RHIInstance;
 	class RHIPhysicalDevice;
 	class RHIPipeline;
-	class RHIPipelineBarriers;
-	class RHIPipelineCache;
 	class RHIQueue;
-	class RHIRenderPassCache;
-	class RHIResourceBindings;
 	class RHISampler;
 	class RHIShaderModule;
 	class RHIStreamDecoder;
 	class RHIStreamEncoder;
 	class RHISurface;
 	class RHISwapChain;
-	class RHISyncPrimitivesPool;
+	class RHISynchronous;
 	class RHITexture;
 	class RHITextureView;
 	class RHIUtil;
-	class RHIVertexInputFormat;
 
 	typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
 
@@ -432,7 +713,7 @@ namespace LostPeterRHI
         RHIQueue* pQueuePresent;
         RHISurface* pSurface;
         uint8 nTextureCount;
-        FPixelFormatType ePixelFormat;
+        RHIPixelFormatType ePixelFormat;
 		FSizeI sizeWH;
         RHIPresentType ePresent;
     };
@@ -479,7 +760,7 @@ namespace LostPeterRHI
         uint8 nMipLevels;
         uint8 nSamples;
         RHITextureDimensionType eTextureDimension;
-        FPixelFormatType ePixelFormat;
+        RHIPixelFormatType ePixelFormat;
         RHITextureUsageFlags eUsages;
         RHITextureStateType eState;
       	String strDebugName;
@@ -500,15 +781,15 @@ namespace LostPeterRHI
 	//RHISamplerCreateInfo
 	struct RHISamplerCreateInfo 
 	{
-        FTextureAddressingType eAddressModeU;
-        FTextureAddressingType eAddressModeV;
-        FTextureAddressingType eAddressModeW;
-        FTextureFilterPixelType eMagFilter;
-        FTextureFilterPixelType eMinFilter;
-        FTextureFilterPixelType eMipFilter;
+        RHIAddressType eAddressU;
+        RHIAddressType eAddressV;
+        RHIAddressType eAddressW;
+        RHIFilterType eMagFilter;
+        RHIFilterType eMinFilter;
+        RHIFilterType eMipFilter;
         float fLodMinClamp;
         float fLodMaxClamp;
-        FCompareFuncType eComparisonFunc;
+        RHIComparisonFuncType eComparisonFunc;
         uint8 nMaxAnisotropy;
         String strDebugName;
     };
