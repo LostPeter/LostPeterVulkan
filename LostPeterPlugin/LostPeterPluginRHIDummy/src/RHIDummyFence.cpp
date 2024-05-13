@@ -13,7 +13,35 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyFence::RHIDummyFence(RHIDevice& device)
+        : RHIFence(device)
+    {
+
+    }
+
+    RHIDummyFence::~RHIDummyFence()
+    {
+        
+    }
     
-    
+    void RHIDummyFence::Destroy()
+    {
+
+    }
+
+    RHIFenceStatusType RHIDummyFence::GetStatus()
+    {
+        return RHIFenceStatusType::RHI_FenceStatus_Signaled;
+    }
+
+    void RHIDummyFence::Reset()
+    {
+
+    }
+
+    void RHIDummyFence::Wait()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

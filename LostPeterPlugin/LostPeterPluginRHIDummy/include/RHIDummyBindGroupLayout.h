@@ -16,7 +16,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
+    class rhiDummyExport RHIDummyBindGroupLayout : public RHIBindGroupLayout
+    {
+    public:
+        RHIDummyBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo);
+        virtual ~RHIDummyBindGroupLayout();
+
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
     
 
 }; //LostPeterPluginRHIDummy

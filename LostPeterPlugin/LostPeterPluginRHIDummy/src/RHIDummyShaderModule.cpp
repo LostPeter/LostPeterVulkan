@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyShaderModule::RHIDummyShaderModule(const RHIShaderModuleCreateInfo& createInfo)
+        : RHIShaderModule(createInfo)
+    {
+
+    }
+
+    RHIDummyShaderModule::~RHIDummyShaderModule()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyShaderModule::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

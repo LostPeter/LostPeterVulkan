@@ -16,9 +16,23 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyCommandBuffer : public RHICommandBuffer
+    {
+    public:
+        RHIDummyCommandBuffer();
+        virtual ~RHIDummyCommandBuffer();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+        virtual RHICommandEncoder* Begin();
+
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyBindGroupLayout::RHIDummyBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
+        : RHIBindGroupLayout(createInfo)
+    {
+
+    }
+
+    RHIDummyBindGroupLayout::~RHIDummyBindGroupLayout()
+    {
+        
+    }
     
-    
+    void RHIDummyBindGroupLayout::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

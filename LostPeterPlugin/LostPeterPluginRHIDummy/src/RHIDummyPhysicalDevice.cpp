@@ -10,10 +10,28 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyPhysicalDevice.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyPhysicalDevice::RHIDummyPhysicalDevice()
+    {
+
+    }
+
+    RHIDummyPhysicalDevice::~RHIDummyPhysicalDevice()
+    {
+        
+    }
     
-    
+    RHIPhysicalDeviceProperty RHIDummyPhysicalDevice::GetPhysicalDeviceProperty()
+    {
+        return { };
+    }   
+
+    RHIDevice* RHIDummyPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
+    {
+        return new RHIDummyDevice(createInfo);
+    }
 
 }; //LostPeterPluginRHIDummy

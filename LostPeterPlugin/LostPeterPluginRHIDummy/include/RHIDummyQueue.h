@@ -16,9 +16,22 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyQueue : public RHIQueue
+    {
+    public:
+        RHIDummyQueue();
+        virtual ~RHIDummyQueue();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal);
+        virtual void Wait(RHIFence* pFenceToSignal);
+
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

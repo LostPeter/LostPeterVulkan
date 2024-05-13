@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummySampler : public RHISampler
+    {
+    public:
+        RHIDummySampler(const RHISamplerCreateInfo& createInfo);
+        virtual ~RHIDummySampler();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

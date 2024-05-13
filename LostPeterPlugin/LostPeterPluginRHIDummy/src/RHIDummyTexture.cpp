@@ -10,10 +10,29 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyTexture.h"
+#include "../include/RHIDummyTextureView.h"
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyTexture::RHIDummyTexture(const RHITextureCreateInfo& createInfo)
+        : RHITexture(createInfo)
+    {
+
+    }
+
+    RHIDummyTexture::~RHIDummyTexture()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyTexture::Destroy()
+    {
+
+    }
+
+    RHITextureView* RHIDummyTexture::CreateTextureView(const RHITextureViewCreateInfo& createInfo)
+    {
+        return new RHIDummyTextureView(createInfo);
+    }
 
 }; //LostPeterPluginRHIDummy

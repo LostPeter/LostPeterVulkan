@@ -36,8 +36,36 @@ using namespace LostPeterRHI;
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+
+    ////////////////////////////// Class ///////////////////////////////
+    class RHIDummyBindGroup;
+    class RHIDummyBindGroupLayout;
+	class RHIDummyBuffer;
+	class RHIDummyBufferView;
+	class RHIDummyCommandBuffer;
+    class RHIDummyCommandDecoder;
+    class RHIDummyCommandEncoder;
+	class RHIDummyDevice;
+	class RHIDummyFence;
+	class RHIDummyFrameBuffer;
+	class RHIDummyGraphicsState;
+	class RHIDummyInstance;
+	class RHIDummyPhysicalDevice;
+	class RHIDummyPipeline;
+    class RHIDummyPipelineCompute;
+    class RHIDummyPipelineGraphics;
+    class RHIDummyPipelineLayout;
+	class RHIDummyQueue;
+	class RHIDummySampler;
+	class RHIDummyShaderModule;
+	class RHIDummySurface;
+	class RHIDummySwapChain;
+	class RHIDummyBarrier;
+	class RHIDummyTexture;
+	class RHIDummyTextureView;
+	class RHIDummyUtil;
+
+	typedef std::vector<RHIDummyTexture*> RHIDummyTexturePtrVector;
 
 }; //LostPeterPluginRHIDummy
 

@@ -10,10 +10,47 @@
 ****************************************************************************/
 
 #include "../include/RHIDummySwapChain.h"
+#include "../include/RHIDummyTexture.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    RHIDummySwapChain::RHIDummySwapChain(const RHISwapChainCreateInfo& createInfo)
+        : RHISwapChain(createInfo)
+        , m_bIsPingPong(true)
+    {
+
+    }
+
+    RHIDummySwapChain::~RHIDummySwapChain()
+    {
+        Destroy();
+    }   
+
+    void RHIDummySwapChain::Destroy()
+    {
+        size_t count = m_aDummyTextures.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            F_DELETE(m_aDummyTextures[i])
+        }
+        m_aDummyTextures.clear();
+    }
+
+    RHITexture* RHIDummySwapChain::GetTexture(uint8 nIndex)
+    {
+        F_Assert("RHIDummySwapChain::GetTexture" && nIndex < (uint8)m_aDummyTextures.size());
+        return m_aDummyTextures[nIndex];
+    }
+
+    uint8 RHIDummySwapChain::AcquireBackTexture()
+    {
+        m_bIsPingPong = !m_bIsPingPong;
+        return m_bIsPingPong ? 0 : 1;
+    }
+
+    void RHIDummySwapChain::Present()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

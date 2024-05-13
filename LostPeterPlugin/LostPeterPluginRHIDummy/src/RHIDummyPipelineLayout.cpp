@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyPipelineLayout::RHIDummyPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
+        : RHIPipelineLayout(createInfo)
+    {
+
+    }
+
+    RHIDummyPipelineLayout::~RHIDummyPipelineLayout()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyPipelineLayout::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

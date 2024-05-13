@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyTextureView::RHIDummyTextureView(const RHITextureViewCreateInfo& createInfo)
+        : RHITextureView(createInfo)
+    {
+
+    }
+
+    RHIDummyTextureView::~RHIDummyTextureView()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyTextureView::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

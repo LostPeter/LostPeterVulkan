@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyBufferView::RHIDummyBufferView(const RHIBufferViewCreateInfo& createInfo)
+        : RHIBufferView(createInfo)
+    {
+
+    }
+
+    RHIDummyBufferView::~RHIDummyBufferView()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyBufferView::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

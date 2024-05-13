@@ -2,22 +2,34 @@
 * LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-13
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_DUMMY_STREAM_DECODER_H_
-#define _RHI_DUMMY_STREAM_DECODER_H_
+#ifndef _RHI_DUMMY_PIPELINE_GRAPHICS_H_
+#define _RHI_DUMMY_PIPELINE_GRAPHICS_H_
 
 #include "RHIDummyPreDefine.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyPipelineGraphics : public RHIPipelineGraphics
+    {
+    public:
+        RHIDummyPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        virtual ~RHIDummyPipelineGraphics();
+
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
 
 }; //LostPeterPluginRHIDummy
 

@@ -16,7 +16,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
+    class rhiDummyExport RHIDummyPhysicalDevice : public RHIPhysicalDevice
+    {
+    public:
+        RHIDummyPhysicalDevice();
+        virtual ~RHIDummyPhysicalDevice();
+
+    public:
+    protected:
+
+
+    public:
+        virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty();
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo);
+    };
     
 
 }; //LostPeterPluginRHIDummy

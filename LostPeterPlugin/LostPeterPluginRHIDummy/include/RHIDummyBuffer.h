@@ -16,8 +16,23 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyBuffer : public RHIBuffer
+    {
+    public:
+        RHIDummyBuffer(const RHIBufferCreateInfo& createInfo);
+        virtual ~RHIDummyBuffer();
+
+    public:
+    protected:
+        std::vector<uint8> m_aDummyData;
+
+    public:
+        virtual void Destroy();
+
+        virtual void* Map(RHIMapType eMap, uint32 nOffset, uint32 nLength);
+        virtual void UnMap();
+        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo);
+    };
 
 }; //LostPeterPluginRHIDummy
 

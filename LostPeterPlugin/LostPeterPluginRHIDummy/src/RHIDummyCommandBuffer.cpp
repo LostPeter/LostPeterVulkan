@@ -10,10 +10,28 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyCommandBuffer.h"
+#include "../include/RHIDummyCommandEncoder.h"
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyCommandBuffer::RHIDummyCommandBuffer()
+    {
+
+    }
+
+    RHIDummyCommandBuffer::~RHIDummyCommandBuffer()
+    {
+        Destroy();
+    }  
     
-    
+    void RHIDummyCommandBuffer::Destroy()
+    {
+
+    }
+
+    RHICommandEncoder* RHIDummyCommandBuffer::Begin()
+    {
+        return new RHIDummyCommandEncoder(*this);
+    }
 
 }; //LostPeterPluginRHIDummy

@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterRHI - Copyright (C) 2022 by LostPeter
+* LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-05
@@ -9,20 +9,11 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIInstance.h"
+#include "../include/RHIVulkanCommandDecoder.h"
 
-namespace LostPeterRHI
+namespace LostPeterPluginRHIVulkan
 {
-    RHIInstance::RHIInstance()
-    {
+    
+    
 
-    }
-
-    RHIInstance::~RHIInstance()
-    {
-
-    }
-
-
-}; //LostPeterRHI
-
+}; //LostPeterPluginRHIVulkan

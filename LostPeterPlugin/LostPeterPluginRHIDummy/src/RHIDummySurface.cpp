@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    RHIDummySurface::RHIDummySurface(const RHISurfaceCreateInfo& createInfo)
+        : RHISurface(createInfo)
+    {
+
+    }
+
+    RHIDummySurface::~RHIDummySurface()
+    {
+        Destroy();
+    }   
+
+    void RHIDummySurface::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

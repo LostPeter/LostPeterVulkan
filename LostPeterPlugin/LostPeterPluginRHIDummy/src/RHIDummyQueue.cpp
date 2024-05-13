@@ -13,7 +13,24 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyQueue::RHIDummyQueue()
+    {
+
+    }
+
+    RHIDummyQueue::~RHIDummyQueue()
+    {
+        
+    }
     
-    
+    void RHIDummyQueue::Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal)
+    {
+
+    }
+
+    void RHIDummyQueue::Wait(RHIFence* pFenceToSignal)
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

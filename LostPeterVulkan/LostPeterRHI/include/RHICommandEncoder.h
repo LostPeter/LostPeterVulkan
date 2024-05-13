@@ -17,7 +17,7 @@
 namespace LostPeterRHI
 {
     //////////////////////// RHIComputePassCommandEncoder ////////////////////////
-    class RHIComputePassCommandEncoder : public FNonCopyable
+    class rhiExport RHIComputePassCommandEncoder : public FNonCopyable
     {
     public:
         RHIComputePassCommandEncoder();
@@ -38,7 +38,7 @@ namespace LostPeterRHI
     };
 
     //////////////////////// RHIGraphicsPassCommandEncoder ///////////////////////
-    class RHIGraphicsPassCommandEncoder : public FNonCopyable
+    class rhiExport RHIGraphicsPassCommandEncoder : public FNonCopyable
     {
     public:
         RHIGraphicsPassCommandEncoder();

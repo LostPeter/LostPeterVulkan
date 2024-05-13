@@ -14,6 +14,33 @@
 
 #include "RHIDummyPreDefine.h"
 
+#include "RHIDummyBindGroup.h"
+#include "RHIDummyBindGroupLayout.h"
+#include "RHIDummyBuffer.h"
+#include "RHIDummyBufferView.h"
+#include "RHIDummyCommandBuffer.h"
+#include "RHIDummyCommandDecoder.h"
+#include "RHIDummyCommandEncoder.h"
+#include "RHIDummyDevice.h"
+#include "RHIDummyFence.h"
+#include "RHIDummyFrameBuffer.h"
+#include "RHIDummyGraphicsState.h"
+#include "RHIDummyInstance.h"
+#include "RHIDummyPhysicalDevice.h"
+#include "RHIDummyPipeline.h"
+#include "RHIDummyPipelineCompute.h"
+#include "RHIDummyPipelineGraphics.h"
+#include "RHIDummyPipelineLayout.h"
+#include "RHIDummyQueue.h"
+#include "RHIDummySampler.h"
+#include "RHIDummyShaderModule.h"
+#include "RHIDummySurface.h"
+#include "RHIDummySwapChain.h"
+#include "RHIDummySynchronous.h"
+#include "RHIDummyTexture.h"
+#include "RHIDummyTextureView.h"
+#include "RHIDummyUtil.h"
+
 namespace LostPeterPluginRHIDummy
 {
     

@@ -16,9 +16,24 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyFence : public RHIFence
+    {
+    public:
+        RHIDummyFence(RHIDevice& device);
+        virtual ~RHIDummyFence();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+        virtual RHIFenceStatusType GetStatus();
+        virtual void Reset();
+        virtual void Wait();
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

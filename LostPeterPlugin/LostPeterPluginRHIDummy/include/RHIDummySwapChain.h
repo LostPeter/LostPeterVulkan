@@ -16,8 +16,24 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummySwapChain : public RHISwapChain
+    {
+    public:
+        RHIDummySwapChain(const RHISwapChainCreateInfo& createInfo);
+        virtual ~RHIDummySwapChain();
+
+    public:
+    protected:
+        RHIDummyTexturePtrVector m_aDummyTextures;
+        bool m_bIsPingPong;
+
+    public:
+        virtual void Destroy();
+
+        virtual RHITexture* GetTexture(uint8 nIndex);
+        virtual uint8 AcquireBackTexture();
+        virtual void Present();
+    };
 
 }; //LostPeterPluginRHIDummy
 

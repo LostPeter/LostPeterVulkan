@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyPipelineLayout : public RHIPipelineLayout
+    {
+    public:
+        RHIDummyPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
+        virtual ~RHIDummyPipelineLayout();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

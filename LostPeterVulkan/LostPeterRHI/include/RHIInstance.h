@@ -16,7 +16,7 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIInstance : public FSingleton<RHIInstance>
+    class rhiExport RHIInstance : public FNonCopyable
     {
     public:
         RHIInstance();
@@ -24,14 +24,11 @@ namespace LostPeterRHI
 
     public:
     protected:
-        
-
-    public:
-        static RHIInstance&	GetSingleton();
-		static RHIInstance*	GetSingletonPtr();
 
 
     public:
+        virtual void Destroy() = 0;
+
         virtual RHIType GetRHIType() = 0;
         virtual uint32_t GetPhysicalDeviceCount() = 0;
         virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex) = 0;

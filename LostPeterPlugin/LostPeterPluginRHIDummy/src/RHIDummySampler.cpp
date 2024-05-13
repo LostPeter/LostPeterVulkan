@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummySampler::RHIDummySampler(const RHISamplerCreateInfo& createInfo)
+        : RHISampler(createInfo)
+    {
+
+    }
+
+    RHIDummySampler::~RHIDummySampler()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummySampler::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy
