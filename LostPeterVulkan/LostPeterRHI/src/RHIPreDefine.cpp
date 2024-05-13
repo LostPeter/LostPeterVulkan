@@ -41,6 +41,17 @@ namespace LostPeterRHI
         return RHIType::RHI_Vulkan;
     }
 
+    #define RHI_FLAGS_IMPL(FlagsType, BitsType) \
+        FlagsType operator &(BitsType a, BitsType b) { return FlagsType(static_cast<FlagsType::UnderlyingType>(a) & static_cast<FlagsType::UnderlyingType>(b)); } \
+        FlagsType operator &(FlagsType a, BitsType b) { return FlagsType(a.Value() & static_cast<FlagsType::UnderlyingType>(b)); } \
+        FlagsType operator |(BitsType a, BitsType b) { return FlagsType(static_cast<FlagsType::UnderlyingType>(a) | static_cast<FlagsType::UnderlyingType>(b)); } \
+        FlagsType operator |(FlagsType a, BitsType b) { return FlagsType(a.Value() | static_cast<FlagsType::UnderlyingType>(b)); } \
+
+    RHI_FLAGS_IMPL(RHIBufferUsageFlags, RHIBufferUsageBitsType)
+    RHI_FLAGS_IMPL(RHITextureUsageFlags, RHITextureUsageBitsType)
+    RHI_FLAGS_IMPL(RHIShaderStageFlags, RHIShaderStageBitsType)
+    RHI_FLAGS_IMPL(RHIColorWriteFlags, RHIColorWriteBitsType)
+
     
 
 }; //LostPeterRHI

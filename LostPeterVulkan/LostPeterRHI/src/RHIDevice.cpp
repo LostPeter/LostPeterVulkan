@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIDevice::RHIDevice()
+    RHIDevice::RHIDevice(const RHIDeviceCreateInfo& createInfo)
     {
 
     }

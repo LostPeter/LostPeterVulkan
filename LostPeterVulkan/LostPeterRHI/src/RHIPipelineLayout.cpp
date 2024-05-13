@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIPipelineLayout::RHIPipelineLayout()
+    RHIPipelineLayout::RHIPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
     {
 
     }

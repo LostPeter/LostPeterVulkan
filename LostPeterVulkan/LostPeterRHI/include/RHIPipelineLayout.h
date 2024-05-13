@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIPipelineLayout
+    class rhiExport RHIPipelineLayout : public FNonCopyable
     {
     public:
-        RHIPipelineLayout();
+        RHIPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
         virtual ~RHIPipelineLayout();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
     

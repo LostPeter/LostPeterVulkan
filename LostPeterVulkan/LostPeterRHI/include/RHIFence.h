@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIFence
+    class rhiExport RHIFence : public FNonCopyable
     {
     public:
-        RHIFence();
+        RHIFence(RHIDevice& device);
         virtual ~RHIFence();
 
     public:
@@ -27,8 +27,11 @@ namespace LostPeterRHI
 
 
     public:
+        virtual void Destroy() = 0;
 
-
+        virtual RHIFenceStatusType GetStatus() = 0;
+        virtual void Reset() = 0;
+        virtual void Wait() = 0;
     };
 
 }; //LostPeterRHI

@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHITexture::RHITexture()
+    RHITexture::RHITexture(const RHITextureCreateInfo& createInfo)
     {
 
     }

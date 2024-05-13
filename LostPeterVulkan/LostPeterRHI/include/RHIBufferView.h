@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBufferView
+    class rhiExport RHIBufferView : public FNonCopyable
     {
     public:
-        RHIBufferView();
+        RHIBufferView(const RHIBufferViewCreateInfo& createInfo);
         virtual ~RHIBufferView();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
     

@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIBufferView::RHIBufferView()
+    RHIBufferView::RHIBufferView(const RHIBufferViewCreateInfo& createInfo)
     {
 
     }

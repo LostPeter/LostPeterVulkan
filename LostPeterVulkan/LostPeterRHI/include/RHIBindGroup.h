@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBindGroup
+    class rhiExport RHIBindGroup : public FNonCopyable
     {
     public:
-        RHIBindGroup();
+        RHIBindGroup(const RHIBindGroupCreateInfo& createInfo);
         virtual ~RHIBindGroup();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
     

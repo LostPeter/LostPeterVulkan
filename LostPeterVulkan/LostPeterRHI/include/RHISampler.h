@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISampler
+    class rhiExport RHISampler : public FNonCopyable
     {
     public:
-        RHISampler();
+        RHISampler(const RHISamplerCreateInfo& createInfo);
         virtual ~RHISampler();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
 

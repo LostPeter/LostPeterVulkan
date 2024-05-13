@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISwapChain
+    class rhiExport RHISwapChain : public FNonCopyable
     {
     public:
-        RHISwapChain();
+        RHISwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual ~RHISwapChain();
 
     public:
@@ -27,8 +27,11 @@ namespace LostPeterRHI
 
 
     public:
+        virtual void Destroy() = 0;
 
-
+        virtual RHITexture* GetTexture(uint8 nIndex) = 0;
+        virtual uint8 AcquireBackTexture() = 0;
+        virtual void Present() = 0;
     };
 
 }; //LostPeterRHI

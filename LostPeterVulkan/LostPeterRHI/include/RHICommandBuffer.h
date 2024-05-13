@@ -16,7 +16,7 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHICommandBuffer
+    class rhiExport RHICommandBuffer : public FNonCopyable
     {
     public:
         RHICommandBuffer();
@@ -27,7 +27,9 @@ namespace LostPeterRHI
 
 
     public:
+        virtual void Destroy() = 0;
 
+        virtual RHICommandEncoder* Begin() = 0;
 
     };
     

@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBuffer
+    class rhiExport RHIBuffer : public FNonCopyable
     {
     public:
-        RHIBuffer();
+        RHIBuffer(const RHIBufferCreateInfo& createInfo);
         virtual ~RHIBuffer();
 
     public:
@@ -27,8 +27,11 @@ namespace LostPeterRHI
 
 
     public:
+        virtual void Destroy() = 0;
 
-
+        virtual void* Map(RHIMapType eMap, uint32 nOffset, uint32 nLength) = 0;
+        virtual void UnMap() = 0;
+        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo) = 0;
     };
 
 }; //LostPeterRHI

@@ -16,7 +16,7 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIPipeline
+    class rhiExport RHIPipeline : public FNonCopyable
     {
     public:
         RHIPipeline();
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
     

@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISurface
+    class rhiExport RHISurface : public FNonCopyable
     {
     public:
-        RHISurface();
+        RHISurface(const RHISurfaceCreateInfo& createInfo);
         virtual ~RHISurface();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
     

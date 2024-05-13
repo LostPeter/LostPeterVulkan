@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHITextureView::RHITextureView()
+    RHITextureView::RHITextureView(const RHITextureViewCreateInfo& createInfo)
     {
 
     }

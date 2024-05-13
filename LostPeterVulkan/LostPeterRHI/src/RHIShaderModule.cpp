@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIShaderModule::RHIShaderModule()
+    RHIShaderModule::RHIShaderModule(const RHIShaderModuleCreateInfo& createInfo)
     {
 
     }

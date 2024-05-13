@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHISwapChain::RHISwapChain()
+    RHISwapChain::RHISwapChain(const RHISwapChainCreateInfo& createInfo)
     {
 
     }

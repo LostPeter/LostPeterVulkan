@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIBuffer::RHIBuffer()
+    RHIBuffer::RHIBuffer(const RHIBufferCreateInfo& createInfo)
     {
 
     }

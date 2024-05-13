@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHISampler::RHISampler()
+    RHISampler::RHISampler(const RHISamplerCreateInfo& createInfo)
     {
 
     }

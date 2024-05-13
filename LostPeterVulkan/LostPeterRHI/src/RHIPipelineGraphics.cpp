@@ -2,26 +2,26 @@
 * LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-13
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHISurface.h"
+#include "../include/RHIPipelineGraphics.h"
 
 namespace LostPeterRHI
 {
-    RHISurface::RHISurface(const RHISurfaceCreateInfo& createInfo)
+    RHIPipelineGraphics::RHIPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
     {
 
     }
 
-    RHISurface::~RHISurface()
+    RHIPipelineGraphics::~RHIPipelineGraphics()
     {
         
-    }   
+    }
     
 
 }; //LostPeterRHI

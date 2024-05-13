@@ -13,12 +13,31 @@
 
 namespace LostPeterRHI
 {
-    RHISynchronous::RHISynchronous()
+    RHIBarrier RHIBarrier::Transition(RHIBuffer* pBuffer, RHIBufferStateType eStateBefore, RHIBufferStateType eStateAfter)
+    {
+        RHIBarrier barrier {};
+        barrier.eResource = RHIResourceType::RHI_Resource_Buffer;
+        barrier.transBuffer.pBuffer = pBuffer;
+        barrier.transBuffer.eStateBefore = eStateBefore;
+        barrier.transBuffer.eStateAfter = eStateAfter;
+        return barrier;
+    }
+    RHIBarrier RHIBarrier::Transition(RHITexture* pTexture, RHITextureStateType eStateBefore, RHITextureStateType eStateAfter)
+    {
+        RHIBarrier barrier {};
+        barrier.eResource = RHIResourceType::RHI_Resource_Texture;
+        barrier.transTexture.pTexture = pTexture;
+        barrier.transTexture.eStateBefore = eStateBefore;
+        barrier.transTexture.eStateAfter = eStateAfter;
+        return barrier;
+    }
+
+    RHIBarrier::RHIBarrier()
     {
 
     }
 
-    RHISynchronous::~RHISynchronous()
+    RHIBarrier::~RHIBarrier()
     {
         
     }

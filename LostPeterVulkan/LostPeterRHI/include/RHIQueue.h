@@ -16,7 +16,7 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIQueue
+    class rhiExport RHIQueue : public FNonCopyable
     {
     public:
         RHIQueue();
@@ -27,7 +27,8 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal) = 0;
+        virtual void Wait(RHIFence* pFenceToSignal) = 0;
 
     };
     

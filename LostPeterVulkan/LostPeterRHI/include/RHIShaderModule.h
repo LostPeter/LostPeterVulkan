@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIShaderModule
+    class rhiExport RHIShaderModule : public FNonCopyable
     {
     public:
-        RHIShaderModule();
+        RHIShaderModule(const RHIShaderModuleCreateInfo& createInfo);
         virtual ~RHIShaderModule();
 
     public:
@@ -27,7 +27,7 @@ namespace LostPeterRHI
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
 

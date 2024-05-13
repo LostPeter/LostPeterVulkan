@@ -16,18 +16,40 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISynchronous
+    class rhiExport RHIBarrier
     {
     public:
-        RHISynchronous();
-        virtual ~RHISynchronous();
+        RHIBarrier();
+        virtual ~RHIBarrier();
 
     public:
+        struct RHIBufferTransition 
+        {
+            RHIBuffer* pBuffer;
+            RHIBufferStateType eStateBefore;
+            RHIBufferStateType eStateAfter;
+        };
+
+        struct RHITextureTransition 
+        {
+            RHITexture* pTexture;
+            RHITextureStateType eStateBefore;
+            RHITextureStateType eStateAfter;
+        };
+
+        RHIResourceType eResource;
+        union 
+        {
+            RHIBufferTransition transBuffer;
+            RHITextureTransition transTexture;
+        };
+
     protected:
 
 
     public:
-
+        static RHIBarrier Transition(RHIBuffer* pBuffer, RHIBufferStateType eStateBefore, RHIBufferStateType eStateAfter);
+        static RHIBarrier Transition(RHITexture* pTexture, RHITextureStateType eStateBefore, RHITextureStateType eStateAfter);
 
     };
     

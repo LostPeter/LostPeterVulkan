@@ -33,13 +33,13 @@ using namespace LostPeterFoundation;
 
 namespace LostPeterRHI
 {
-////////////////////////////// Define //////////////////////////////
+    ////////////////////////////// Define //////////////////////////////
 
 
-////////////////////////////// Typedef /////////////////////////////
+    ////////////////////////////// Typedef /////////////////////////////
 
 
-////////////////////////////// Enum ////////////////////////////////
+    ////////////////////////////// Enum ////////////////////////////////
 	using RHIEnumType = uint32;
 
 	//RHIType
@@ -73,6 +73,15 @@ namespace LostPeterRHI
         RHI_Queue_Transfer,								//2: Transfer
         
 		RHI_Queue_Count,
+    };
+
+    //RHIMapType
+    enum class RHIMapType : RHIEnumType
+    {
+        RHI_Map_Read = 0,                               //0: Read
+        RHI_Map_Write,                                  //1: Write
+
+        RHI_Map_Count,
     };
 
 	//RHIPresentType
@@ -175,6 +184,15 @@ namespace LostPeterRHI
         RHI_TextureState_Present,						//8: Present
 
         RHI_TextureState_Count,
+    };
+
+    //RHIFenceStatusType
+    enum class RHIFenceStatusType : RHIEnumType 
+    {
+        RHI_FenceStatus_Signaled = 0,                   //0: Signaled
+        RHI_FenceStatus_NotReady,                       //1: NotReady
+
+        RHI_FenceStatus_Count,
     };
 
 	//RHILoadOpType
@@ -317,13 +335,13 @@ namespace LostPeterRHI
         RHI_PrimitiveTopology_Count,
     };
 
-	//RHIIndexType
-	enum class RHIIndexType : RHIEnumType 
+	//RHIIndexFormatType
+	enum class RHIIndexFormatType : RHIEnumType
 	{
-		RHI_Index_16Bit = 0,                            //0: 16Bit
-		RHI_Index_32Bit,                                //1: 32Bit
+		RHI_IndexFormat_16Bit = 0,                      //0: 16Bit
+		RHI_IndexFormat_32Bit,                          //1: 32Bit
 
-		RHI_Index_Count,
+		RHI_IndexFormat_Count,
 	};
 
 	//RHIFrontFaceType
@@ -446,6 +464,7 @@ namespace LostPeterRHI
 
         //Features /BC/ETC/ASTC
 
+        RHI_PixelFormat_Unknown,                        //40: Unknown
         RHI_PixelFormat_Count,
     };
 
@@ -554,13 +573,13 @@ namespace LostPeterRHI
         }
 
         template <typename E>
-        bool operator==(E e) const
+        bool operator ==(E e) const
         {
             return value == static_cast<T>(e);
         }
 
         template <typename E>
-        bool operator!=(E e) const
+        bool operator !=(E e) const
         {
             return value != static_cast<T>(e);
         }
@@ -570,13 +589,13 @@ namespace LostPeterRHI
     };
 
 	template <typename T>
-    RHIFlags<T> operator&(RHIFlags<T> a, RHIFlags<T> b)
+    RHIFlags<T> operator &(RHIFlags<T> a, RHIFlags<T> b)
     {
         return RHIFlags<T>(a.Value() & b.Value());
     }
 
     template <typename T>
-    RHIFlags<T> operator|(RHIFlags<T> a, RHIFlags<T> b)
+    RHIFlags<T> operator |(RHIFlags<T> a, RHIFlags<T> b)
     {
         return RHIFlags<T>(a.Value() | b.Value());
     }
@@ -590,7 +609,7 @@ namespace LostPeterRHI
 	
 	//RHIBufferUsageBitsType
 	using RHIBufferUsageFlags = RHIFlags<>;
-    enum class RHIBufferUsageBitsType : RHIBufferUsageFlags::UnderlyingType 
+    enum class rhiExport RHIBufferUsageBitsType : RHIBufferUsageFlags::UnderlyingType 
 	{
         RHI_BufferUsageBits_MapRead 		= 0x0001,	//0: MapRead
         RHI_BufferUsageBits_MapWrite     	= 0x0002,	//1: MapWrite
@@ -609,7 +628,7 @@ namespace LostPeterRHI
 
 	//RHITextureUsageBitsType
     using RHITextureUsageFlags = RHIFlags<>;
-    enum class RHITextureUsageBitsType : RHITextureUsageFlags::UnderlyingType 
+    enum class rhiExport RHITextureUsageBitsType : RHITextureUsageFlags::UnderlyingType 
 	{
         RHI_TextureUsageBits_CopySrc                 = 0x0001,	//0: CopySrc
         RHI_TextureUsageBits_CopyDst                 = 0x0002,	//1: CopyDst
@@ -624,7 +643,7 @@ namespace LostPeterRHI
 
 	//RHIShaderStageBitsType
     using RHIShaderStageFlags = RHIFlags<>;
-    enum class RHIShaderStageBitsType : RHIShaderStageFlags::UnderlyingType 
+    enum class rhiExport RHIShaderStageBitsType : RHIShaderStageFlags::UnderlyingType 
 	{
         RHI_ShaderStageBits_Vertex   = 0x0001,		//0: Vertex
         RHI_ShaderStageBits_Pixel    = 0x0002,		//1: Pixel 
@@ -639,7 +658,7 @@ namespace LostPeterRHI
 
 	//RHIColorWriteBitsType
     using RHIColorWriteFlags = RHIFlags<>;
-    enum class RHIColorWriteBitsType : RHIColorWriteFlags::UnderlyingType 
+    enum class rhiExport RHIColorWriteBitsType : RHIColorWriteFlags::UnderlyingType 
 	{
         RHI_ColorWriteBits_Red   = 0x1,		//0: Red
         RHI_ColorWriteBits_Green = 0x2,		//1: Green
@@ -651,10 +670,14 @@ namespace LostPeterRHI
     RHI_FLAGS_DECLARE(RHIColorWriteFlags, RHIColorWriteBitsType)
 
 
-////////////////////////////// Class ///////////////////////////////
+    ////////////////////////////// Class ///////////////////////////////
+    class RHIBindGroup;
+    class RHIBindGroupLayout;
 	class RHIBuffer;
 	class RHIBufferView;
 	class RHICommandBuffer;
+    class RHICommandDecoder;
+    class RHICommandEncoder;
 	class RHIDevice;
 	class RHIFence;
 	class RHIFrameBuffer;
@@ -662,14 +685,15 @@ namespace LostPeterRHI
 	class RHIInstance;
 	class RHIPhysicalDevice;
 	class RHIPipeline;
+    class RHIPipelineCompute;
+    class RHIPipelineGraphics;
+    class RHIPipelineLayout;
 	class RHIQueue;
 	class RHISampler;
 	class RHIShaderModule;
-	class RHIStreamDecoder;
-	class RHIStreamEncoder;
 	class RHISurface;
 	class RHISwapChain;
-	class RHISynchronous;
+	class RHIBarrier;
 	class RHITexture;
 	class RHITextureView;
 	class RHIUtil;
@@ -678,9 +702,66 @@ namespace LostPeterRHI
 
 
 
-////////////////////////////// Struct //////////////////////////////
+    ////////////////////////////// Struct //////////////////////////////
+    template <uint8 N>
+    struct RHIExtent;
+
+    template <>
+    struct RHIExtent<1> 
+    {
+        uint32 x;
+    };
+
+    template <>
+    struct RHIExtent<2> 
+    {
+        uint32 x;
+        uint32 y;
+    };
+
+    template <>
+    struct RHIExtent<3> 
+    {
+        uint32 x;
+        uint32 y;
+        uint32 z;
+    };
+
+    template <uint8 N>
+    struct RHIColorNormalized;
+
+    template <>
+    struct RHIColorNormalized<1> 
+    {
+        float r;
+    };
+
+    template <>
+    struct RHIColorNormalized<2> 
+    {
+        float r;
+        float g;
+    };
+
+    template <>
+    struct RHIColorNormalized<3> 
+    {
+        float r;
+        float g;
+        float b;
+    };
+
+    template <>
+    struct RHIColorNormalized<4> 
+    {
+        float r;
+        float g;
+        float b;
+        float a;
+    };
+
 	//RHIPhysicalDeviceProperty
-	struct RHIPhysicalDeviceProperty
+	struct rhiExport RHIPhysicalDeviceProperty
 	{
         uint32 nVendorID;
         uint32 nDeviceID;
@@ -688,27 +769,27 @@ namespace LostPeterRHI
     };
 
 	//RHIQueueInfo
-	struct RHIQueueInfo 
+	struct rhiExport RHIQueueInfo
 	{
         RHIQueueType eQueue;
         uint8 nCount;
     };
 
 	//RHIDeviceCreateInfo
-	struct RHIDeviceCreateInfo 
+	struct rhiExport RHIDeviceCreateInfo
 	{
         uint32 nQueueCreateInfoCount;
         const RHIQueueInfo* pQueueCreateInfos;
     };
 
 	//RHISurfaceCreateInfo
-	struct RHISurfaceCreateInfo 
+	struct rhiExport RHISurfaceCreateInfo
 	{
         void* pWindow;
     };
 
 	//RHISwapChainCreateInfo
-	struct RHISwapChainCreateInfo 
+	struct rhiExport RHISwapChainCreateInfo
 	{
         RHIQueue* pQueuePresent;
         RHISurface* pSurface;
@@ -719,7 +800,7 @@ namespace LostPeterRHI
     };
 
 	//RHIBufferCreateInfo
-	struct RHIBufferCreateInfo 
+	struct rhiExport RHIBufferCreateInfo
 	{
         uint32 nSize;
         RHIBufferUsageFlags eUsages;
@@ -727,19 +808,19 @@ namespace LostPeterRHI
     };
 
 	//RHIVertexBufferViewInfo
-	struct RHIVertexBufferViewInfo 
+	struct rhiExport RHIVertexBufferViewInfo
 	{
         uint32 nStride;
     };
 
 	//RHIIndexBufferViewInfo
-    struct RHIIndexBufferViewInfo 
+    struct rhiExport RHIIndexBufferViewInfo
 	{
-        RHIIndexType eIndex;
+        RHIIndexFormatType eIndexFormat;
     };
 
 	//RHIBufferViewCreateInfo
-    struct RHIBufferViewCreateInfo 
+    struct rhiExport RHIBufferViewCreateInfo
 	{
         RHIBufferViewType eBufferView;
         uint32 nOffset;
@@ -752,11 +833,9 @@ namespace LostPeterRHI
     };
 
 	//RHITextureCreateInfo
-	struct RHITextureCreateInfo 
+	struct rhiExport RHITextureCreateInfo
 	{
-		uint32 nWidth;
-		uint32 nHeight;
-		uint32 nDepth;
+        RHIExtent<3> sExtent;
         uint8 nMipLevels;
         uint8 nSamples;
         RHITextureDimensionType eTextureDimension;
@@ -767,7 +846,7 @@ namespace LostPeterRHI
     };
 
 	//RHITextureViewCreateInfo
-	struct RHITextureViewCreateInfo 
+	struct rhiExport RHITextureViewCreateInfo
 	{
         RHITextureViewType eTextureView;
         RHITextureViewDimensionType eTextureViewDimension;
@@ -779,7 +858,7 @@ namespace LostPeterRHI
     };
 
 	//RHISamplerCreateInfo
-	struct RHISamplerCreateInfo 
+	struct rhiExport RHISamplerCreateInfo
 	{
         RHIAddressType eAddressU;
         RHIAddressType eAddressV;
@@ -792,6 +871,357 @@ namespace LostPeterRHI
         RHIComparisonFuncType eComparisonFunc;
         uint8 nMaxAnisotropy;
         String strDebugName;
+    };
+
+    //RHIHLSLBinding
+    struct rhiExport RHIHLSLBinding
+    {
+        RHIHLSLBindingRangeType eHLSLBindingRange;
+        uint8 nIndex;
+    };
+
+    //RHIGLSLBinding
+    struct rhiExport RHIGLSLBinding
+    {
+        uint8 nIndex;
+    };
+
+    //RHIResourceBinding
+    struct rhiExport RHIResourceBinding
+    {
+        RHIBindingType eBinding;
+        union 
+        {
+            RHIHLSLBinding sBindingHLSL;
+            RHIGLSLBinding sBindingGLSL;
+        } sBinding;
+    };
+
+    //RHIBindGroupLayoutEntry
+    struct rhiExport RHIBindGroupLayoutEntry
+    {
+        RHIResourceBinding sBinding;
+        RHIShaderStageFlags flagsShaderVisibility;
+    };
+
+    //RHIBindGroupLayoutCreateInfo
+    struct rhiExport RHIBindGroupLayoutCreateInfo
+    {
+        uint8 nLayoutIndex;
+        uint32 nEntryCount;
+        const RHIBindGroupLayoutEntry* pEntries;
+        String strDebugName;
+    };
+
+    //RHIBindGroupEntry
+    struct rhiExport RHIBindGroupEntry
+    {
+        RHIResourceBinding sBinding;
+        union 
+        {
+            RHISampler* pSampler;
+            RHITextureView* pTextureView;
+            RHIBufferView* pBufferView;
+        };
+    };
+
+    //RHIBindGroupCreateInfo
+    struct rhiExport RHIBindGroupCreateInfo
+    {
+        RHIBindGroupLayout* pBindGroupLayout;
+        uint32 nEntryCount;
+        const RHIBindGroupEntry* pEntries;
+        String strDebugName;
+    };
+
+    //RHIPipelineConstantLayout
+    struct rhiExport RHIPipelineConstantLayout
+    {
+        RHIShaderStageFlags flagsShaderStage;
+        uint32 nOffset;
+        uint32 nSize;
+    };
+
+    //RHIPipelineLayoutCreateInfo
+    struct rhiExport RHIPipelineLayoutCreateInfo
+    {
+        uint32 nBindGroupLayoutCount;
+        const RHIBindGroupLayout* const* pBindGroupLayouts;
+        uint32 nPipelineConstantLayoutCount;
+        const RHIPipelineConstantLayout* pPipelineConstantLayouts;
+        String strDebugName;
+    };
+
+    //RHIShaderModuleCreateInfo
+    struct rhiExport RHIShaderModuleCreateInfo
+    {
+        const void* pByteCode;
+        uint32 nSize;
+    };
+
+    //RHIVertexAttribute
+    struct rhiExport RHIVertexAttribute
+    {
+        RHIVertexFormatType eVertexFormat;
+        uint32 nOffset;
+
+        const char* pSemanticName;
+        uint8 nSemanticIndex;
+    };
+
+    //RHIVertexBufferLayout
+    struct rhiExport RHIVertexBufferLayout
+    {
+        uint32 nStride;
+        RHIVertexStepType eVertexStep;
+        uint32 nAttributeCount;
+        const RHIVertexAttribute* pAttributes;
+    };
+
+    //RHIVertexState
+    struct rhiExport RHIVertexState
+    {
+        uint32 nBufferLayoutCount;
+        const RHIVertexBufferLayout* pVertexBufferLayouts;
+
+        RHIVertexState()
+            : nBufferLayoutCount(0)
+            , pVertexBufferLayouts(nullptr)
+        {
+
+        }
+    };
+
+    //RHIPrimitiveState
+    struct rhiExport RHIPrimitiveState 
+    {
+        RHIPrimitiveTopologySortType ePrimitiveTopologySort;
+        RHIIndexFormatType eIndexFormat;
+        RHIFrontFaceType eFrontFace;
+        RHICullType eCull;
+        bool bDepthClip;
+
+        RHIPrimitiveState()
+            : ePrimitiveTopologySort(RHIPrimitiveTopologySortType::RHI_PrimitiveTopologySort_Triangle)
+            , eIndexFormat(RHIIndexFormatType::RHI_IndexFormat_16Bit)
+            , eFrontFace(RHIFrontFaceType::RHI_FrontFace_CCW)
+            , eCull(RHICullType::RHI_Cull_Back)
+            , bDepthClip(false)
+        {
+
+        }
+    };
+
+    //RHIStencilFaceState
+    struct rhiExport RHIStencilFaceState 
+    {
+        RHIComparisonFuncType eComparisonFunc;
+        RHIStencilOpType eFailOp;
+        RHIStencilOpType eDepthFailOp;
+        RHIStencilOpType ePassOp;
+
+        RHIStencilFaceState()
+            : eComparisonFunc(RHIComparisonFuncType::RHI_ComparisonFunc_Always)
+            , eFailOp(RHIStencilOpType::RHI_StencilOp_Keep)
+            , eDepthFailOp(RHIStencilOpType::RHI_StencilOp_Keep)
+            , ePassOp(RHIStencilOpType::RHI_StencilOp_Keep)
+        {
+
+        }
+    };
+
+    //RHIDepthStencilState
+    struct rhiExport RHIDepthStencilState 
+    {
+        bool bDepthEnable;
+        bool bStencilEnable;
+        RHIPixelFormatType ePixelFormat;
+        RHIComparisonFuncType eDepthComparisonFunc;
+        RHIStencilFaceState sStencilFront;
+        RHIStencilFaceState sStencilBack;
+        uint8 nStencilReadMask;
+        uint8 nStencilWriteMask;
+        int32 nDepthBias;
+        float fDepthBiasSlopeScale;
+        float fDepthBiasClamp;
+
+        RHIDepthStencilState()
+            : bDepthEnable(false)
+            , bStencilEnable(false)
+            , ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_Unknown)
+            , eDepthComparisonFunc(RHIComparisonFuncType::RHI_ComparisonFunc_Always)
+            , nStencilReadMask(0xFF)
+            , nStencilWriteMask(0xFF)
+            , nDepthBias(0)
+            , fDepthBiasSlopeScale(0.0f)
+            , fDepthBiasClamp(0.0f)
+        {
+
+        }
+    };
+
+    //RHIMultiSampleState
+    struct rhiExport RHIMultiSampleState
+    {
+        uint8 nCount;
+        uint32 nMask;
+        bool bAlphaToCoverage;
+
+        RHIMultiSampleState()
+            : nCount(1)
+            , nMask(0xFFFFFFFF)
+            , bAlphaToCoverage(false)
+        {
+
+        }
+    };
+
+    //RHIBlendComponent
+    struct rhiExport RHIBlendComponent 
+    {
+        RHIBlendOpType eBlendOp;
+        RHIBlendFactorType eBlendFactorSrc;
+        RHIBlendFactorType eBlendFactorDst;
+
+        RHIBlendComponent()
+            : eBlendOp(RHIBlendOpType::RHI_BlendOp_Add)
+            , eBlendFactorSrc(RHIBlendFactorType::RHI_BlendFactor_One)
+            , eBlendFactorDst(RHIBlendFactorType::RHI_BlendFactor_Zero)
+        {
+
+        }
+    };
+
+    //RHIBlendState
+    struct rhiExport RHIBlendState 
+    {
+        RHIBlendComponent sBlendColor;
+        RHIBlendComponent sBlendAlpha;
+    };
+
+    //RHIColorTargetState
+    struct rhiExport RHIColorTargetState 
+    {
+        RHIPixelFormatType ePixelFormat;
+        RHIBlendState sBlendState;
+        RHIColorWriteFlags flagsWrite;
+
+        RHIColorTargetState()
+            : ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_BGRA8UNorm)
+            , flagsWrite(RHIColorWriteBitsType::RHI_ColorWriteBits_Red |
+                         RHIColorWriteBitsType::RHI_ColorWriteBits_Green | 
+                         RHIColorWriteBitsType::RHI_ColorWriteBits_Blue | 
+                         RHIColorWriteBitsType::RHI_ColorWriteBits_Alpha)
+        {
+
+        }
+    };
+
+    //RHIFragmentState
+    struct rhiExport RHIFragmentState 
+    {
+        uint8 nColorTargetCount;
+        const RHIColorTargetState* pColorTargets;
+
+        RHIFragmentState()
+            : nColorTargetCount(0)
+            , pColorTargets(nullptr)
+        {
+
+        }
+    };
+
+    //RHIPipelineComputeCreateInfo
+    struct rhiExport RHIPipelineComputeCreateInfo
+    {
+        RHIPipelineLayout* pPipelineLayout;
+        RHIShaderModule* pComputeShader;
+
+        RHIPipelineComputeCreateInfo()
+            : pPipelineLayout(nullptr)
+            , pComputeShader(nullptr)
+        {
+
+        }
+    };
+
+    //RHIPipelineGraphicsCreateInfo
+    struct rhiExport RHIPipelineGraphicsCreateInfo
+    {
+        RHIPipelineLayout* pPipelineLayout;
+
+        RHIShaderModule* pVertexShader;
+        RHIShaderModule* pPixelShader;
+        RHIShaderModule* pGeometryShader;
+        RHIShaderModule* pDomainShader;
+        RHIShaderModule* pHullShader;
+
+        RHIVertexState sVertexState;
+        RHIPrimitiveState sPrimitiveState;
+        RHIDepthStencilState sDepthStencilState;
+        RHIMultiSampleState sMultiSampleState;
+        RHIFragmentState sFragmentState;
+
+        String strDebugName;
+
+        RHIPipelineGraphicsCreateInfo()
+            : pPipelineLayout(nullptr)
+            , pVertexShader(nullptr)
+            , pPixelShader(nullptr)
+            , pGeometryShader(nullptr)
+            , pDomainShader(nullptr)
+            , pHullShader(nullptr)
+        {
+
+        }
+    };
+
+    //RHITextureSubResourceInfo
+    struct rhiExport RHITextureSubResourceInfo 
+    {
+        uint8 nMipLevel;
+        uint8 nBaseArrayLayer;
+        uint8 nArrayLayerCount;
+        RHIExtent<3> sExtent;
+        RHITextureAspectType eTextureAspect;
+
+        RHITextureSubResourceInfo()
+            : eTextureAspect(RHITextureAspectType::RHI_TextureAspect_Color)
+        {
+
+        }
+    };
+
+    //RHIGraphicsPassColorAttachment
+    struct rhiExport RHIGraphicsPassColorAttachment 
+    {
+        RHITextureView* pView;
+        RHITextureView* pResolve;
+        RHIColorNormalized<4> sClearValue;
+        RHILoadOpType eLoadOp;
+        RHIStoreOpType eStoreOp;
+    };
+
+    //RHIGraphicsPassDepthStencilAttachment
+    struct rhiExport RHIGraphicsPassDepthStencilAttachment 
+    {
+        RHITextureView* pView;
+        float fDepthClearValue;
+        RHILoadOpType eDepthLoadOp;
+        RHIStoreOpType eDepthStoreOp;
+        bool bDepthReadOnly;
+        uint32 nStencilClearValue;
+        RHILoadOpType eStencilLoadOp;
+        RHIStoreOpType eStencilStoreOp;
+        bool bStencilReadOnly;
+    };
+
+    //RHIGraphicsPassBeginInfo
+    struct rhiExport RHIGraphicsPassBeginInfo
+    {
+        uint32 nColorAttachmentCount;
+        const RHIGraphicsPassColorAttachment* pColorAttachments;
+        const RHIGraphicsPassDepthStencilAttachment* pDepthStencilAttachment;
     };
 
 }; //LostPeterRHI

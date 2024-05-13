@@ -16,10 +16,10 @@
 
 namespace LostPeterRHI
 {
-    class rhiExport RHITexture
+    class rhiExport RHITexture : public FNonCopyable
     {
     public:
-        RHITexture();
+        RHITexture(const RHITextureCreateInfo& createInfo);
         virtual ~RHITexture();
 
     public:
@@ -27,8 +27,9 @@ namespace LostPeterRHI
 
 
     public:
+        virtual void Destroy() = 0;
 
-
+        virtual RHITextureView* CreateTextureView(const RHITextureViewCreateInfo& createInfo) = 0;
     };
 
 }; //LostPeterRHI

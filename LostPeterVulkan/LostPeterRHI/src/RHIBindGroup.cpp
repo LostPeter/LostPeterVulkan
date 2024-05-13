@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIBindGroup::RHIBindGroup()
+    RHIBindGroup::RHIBindGroup(const RHIBindGroupCreateInfo& createInfo)
     {
 
     }
