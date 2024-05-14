@@ -16,8 +16,22 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanCommandBuffer : public RHICommandBuffer
+    {
+    public:
+        RHIVulkanCommandBuffer();
+        virtual ~RHIVulkanCommandBuffer();
+
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+        virtual RHICommandEncoder* Begin();
+
+    };
 
 }; //LostPeterPluginRHIVulkan
 

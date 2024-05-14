@@ -14,6 +14,33 @@
 
 #include "RHIVulkanPreDefine.h"
 
+#include "RHIVulkanBindGroup.h"
+#include "RHIVulkanBindGroupLayout.h"
+#include "RHIVulkanBuffer.h"
+#include "RHIVulkanBufferView.h"
+#include "RHIVulkanCommandBuffer.h"
+#include "RHIVulkanCommandDecoder.h"
+#include "RHIVulkanCommandEncoder.h"
+#include "RHIVulkanDevice.h"
+#include "RHIVulkanFence.h"
+#include "RHIVulkanFrameBuffer.h"
+#include "RHIVulkanGraphicsState.h"
+#include "RHIVulkanInstance.h"
+#include "RHIVulkanPhysicalDevice.h"
+#include "RHIVulkanPipeline.h"
+#include "RHIVulkanPipelineCompute.h"
+#include "RHIVulkanPipelineGraphics.h"
+#include "RHIVulkanPipelineLayout.h"
+#include "RHIVulkanQueue.h"
+#include "RHIVulkanSampler.h"
+#include "RHIVulkanShaderModule.h"
+#include "RHIVulkanSurface.h"
+#include "RHIVulkanSwapChain.h"
+#include "RHIVulkanSynchronous.h"
+#include "RHIVulkanTexture.h"
+#include "RHIVulkanTextureView.h"
+#include "RHIVulkanUtil.h"
+
 namespace LostPeterPluginRHIVulkan
 {
     

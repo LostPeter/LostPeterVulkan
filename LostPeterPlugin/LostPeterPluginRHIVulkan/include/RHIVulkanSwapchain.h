@@ -16,9 +16,25 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanSwapChain : public RHISwapChain
+    {
+    public:
+        RHIVulkanSwapChain(const RHISwapChainCreateInfo& createInfo);
+        virtual ~RHIVulkanSwapChain();
 
+    public:
+    protected:
+        RHIVulkanTexturePtrVector m_aVulkanTextures;
+        bool m_bIsPingPong;
+
+    public:
+        virtual void Destroy();
+
+        virtual RHITexture* GetTexture(uint8 nIndex);
+        virtual uint8 AcquireBackTexture();
+        virtual void Present();
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

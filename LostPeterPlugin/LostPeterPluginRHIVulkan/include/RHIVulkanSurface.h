@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanSurface : public RHISurface
+    {
+    public:
+        RHIVulkanSurface(const RHISurfaceCreateInfo& createInfo);
+        virtual ~RHIVulkanSurface();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

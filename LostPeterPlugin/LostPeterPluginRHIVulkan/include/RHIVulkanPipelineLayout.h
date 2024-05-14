@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanPipelineLayout : public RHIPipelineLayout
+    {
+    public:
+        RHIVulkanPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
+        virtual ~RHIVulkanPipelineLayout();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

@@ -10,10 +10,29 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanTexture.h"
+#include "../include/RHIVulkanTextureView.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanTexture::RHIVulkanTexture(const RHITextureCreateInfo& createInfo)
+        : RHITexture(createInfo)
+    {
 
+    }
+
+    RHIVulkanTexture::~RHIVulkanTexture()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanTexture::Destroy()
+    {
+
+    }
+
+    RHITextureView* RHIVulkanTexture::CreateTextureView(const RHITextureViewCreateInfo& createInfo)
+    {
+        return new RHIVulkanTextureView(createInfo);
+    }
+    
 }; //LostPeterPluginRHIVulkan

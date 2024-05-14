@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanTextureView::RHIVulkanTextureView(const RHITextureViewCreateInfo& createInfo)
+        : RHITextureView(createInfo)
+    {
 
+    }
+
+    RHIVulkanTextureView::~RHIVulkanTextureView()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanTextureView::Destroy()
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

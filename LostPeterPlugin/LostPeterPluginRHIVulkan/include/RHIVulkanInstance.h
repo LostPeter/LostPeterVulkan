@@ -16,8 +16,23 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
+    class rhiVulkanExport RHIVulkanInstance : public RHIInstance
+    {
+    public:
+        RHIVulkanInstance();
+        virtual ~RHIVulkanInstance();
 
+    public:
+    protected:
+        RHIVulkanPhysicalDevice* m_pPhysicalDevice;
+
+    public:
+        virtual void Destroy();
+
+        virtual RHIType GetRHIType();
+        virtual uint32_t GetPhysicalDeviceCount();
+        virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex);
+    };
 
 }; //LostPeterPluginRHIVulkan
 

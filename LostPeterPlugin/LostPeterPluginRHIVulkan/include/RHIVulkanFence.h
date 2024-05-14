@@ -16,9 +16,24 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanFence : public RHIFence
+    {
+    public:
+        RHIVulkanFence(RHIDevice& device);
+        virtual ~RHIVulkanFence();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+        virtual RHIFenceStatusType GetStatus();
+        virtual void Reset();
+        virtual void Wait();
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

@@ -16,8 +16,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanQueue : public RHIQueue
+    {
+    public:
+        RHIVulkanQueue();
+        virtual ~RHIVulkanQueue();
+
+    public:
+    protected:
+
+
+    public:
+        virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal);
+        virtual void Wait(RHIFence* pFenceToSignal);
+
+    };
 
 }; //LostPeterPluginRHIVulkan
 

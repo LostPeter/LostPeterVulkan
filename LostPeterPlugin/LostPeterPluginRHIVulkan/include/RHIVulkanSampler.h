@@ -16,8 +16,20 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanSampler : public RHISampler
+    {
+    public:
+        RHIVulkanSampler(const RHISamplerCreateInfo& createInfo);
+        virtual ~RHIVulkanSampler();
+
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
 
 }; //LostPeterPluginRHIVulkan
 

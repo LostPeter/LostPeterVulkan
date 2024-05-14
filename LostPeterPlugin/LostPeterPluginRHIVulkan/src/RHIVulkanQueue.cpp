@@ -13,7 +13,24 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanQueue::RHIVulkanQueue()
+    {
 
+    }
+
+    RHIVulkanQueue::~RHIVulkanQueue()
+    {
+
+    }
+
+    void RHIVulkanQueue::Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal)
+    {
+
+    }
+
+    void RHIVulkanQueue::Wait(RHIFence* pFenceToSignal)
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

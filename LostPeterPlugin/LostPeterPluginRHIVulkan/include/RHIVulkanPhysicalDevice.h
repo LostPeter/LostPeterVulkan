@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanPhysicalDevice : public RHIPhysicalDevice
+    {
+    public:
+        RHIVulkanPhysicalDevice();
+        virtual ~RHIVulkanPhysicalDevice();
 
+    public:
+    protected:
+
+
+    public:
+        virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty();
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo);
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

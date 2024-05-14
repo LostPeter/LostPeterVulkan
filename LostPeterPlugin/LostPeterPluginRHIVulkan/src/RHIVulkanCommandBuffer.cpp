@@ -10,10 +10,28 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanCommandBuffer.h"
+#include "../include/RHIVulkanCommandEncoder.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanCommandBuffer::RHIVulkanCommandBuffer()
+    {
 
+    }
+
+    RHIVulkanCommandBuffer::~RHIVulkanCommandBuffer()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanCommandBuffer::Destroy()
+    {
+
+    }
+
+    RHICommandEncoder* RHIVulkanCommandBuffer::Begin()
+    {
+        return new RHIVulkanCommandEncoder(*this);
+    }
+    
 }; //LostPeterPluginRHIVulkan

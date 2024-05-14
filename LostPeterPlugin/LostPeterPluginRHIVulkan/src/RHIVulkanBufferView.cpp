@@ -13,7 +13,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanBufferView::RHIVulkanBufferView(const RHIBufferViewCreateInfo& createInfo)
+        : RHIBufferView(createInfo)
+    {
+
+    }
+
+    RHIVulkanBufferView::~RHIVulkanBufferView()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanBufferView::Destroy()
+    {
+
+    }
+
 
 }; //LostPeterPluginRHIVulkan

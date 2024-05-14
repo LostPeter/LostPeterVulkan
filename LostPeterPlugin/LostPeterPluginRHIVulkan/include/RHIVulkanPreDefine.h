@@ -36,7 +36,36 @@ using namespace LostPeterRHI;
 
 namespace LostPeterPluginRHIVulkan
 {
-    
+
+	////////////////////////////// Class ///////////////////////////////
+	class RHIVulkanBindGroup;
+	class RHIVulkanBindGroupLayout;
+	class RHIVulkanBuffer;
+	class RHIVulkanBufferView;
+	class RHIVulkanCommandBuffer;
+	class RHIVulkanCommandDecoder;
+	class RHIVulkanCommandEncoder;
+	class RHIVulkanDevice;
+	class RHIVulkanFence;
+	class RHIVulkanFrameBuffer;
+	class RHIVulkanGraphicsState;
+	class RHIVulkanInstance;
+	class RHIVulkanPhysicalDevice;
+	class RHIVulkanPipeline;
+	class RHIVulkanPipelineCompute;
+	class RHIVulkanPipelineGraphics;
+	class RHIVulkanPipelineLayout;
+	class RHIVulkanQueue;
+	class RHIVulkanSampler;
+	class RHIVulkanShaderModule;
+	class RHIVulkanSurface;
+	class RHIVulkanSwapChain;
+	class RHIVulkanBarrier;
+	class RHIVulkanTexture;
+	class RHIVulkanTextureView;
+	class RHIVulkanUtil;
+
+	typedef std::vector<RHIVulkanTexture*> RHIVulkanTexturePtrVector;
     
 
 }; //LostPeterPluginRHIVulkan

@@ -13,7 +13,35 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanFence::RHIVulkanFence(RHIDevice& device)
+        : RHIFence(device)
+    {
 
+    }
+
+    RHIVulkanFence::~RHIVulkanFence()
+    {
+
+    }
+
+    void RHIVulkanFence::Destroy()
+    {
+
+    }
+
+    RHIFenceStatusType RHIVulkanFence::GetStatus()
+    {
+        return RHIFenceStatusType::RHI_FenceStatus_Signaled;
+    }
+
+    void RHIVulkanFence::Reset()
+    {
+
+    }
+
+    void RHIVulkanFence::Wait()
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

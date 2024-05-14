@@ -2,29 +2,29 @@
 * LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-13
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanPipelineCompute.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanShaderModule::RHIVulkanShaderModule(const RHIShaderModuleCreateInfo& createInfo)
-        : RHIShaderModule(createInfo)
+    RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
+        : RHIPipelineCompute(createInfo)
     {
 
     }
 
-    RHIVulkanShaderModule::~RHIVulkanShaderModule()
+    RHIVulkanPipelineCompute::~RHIVulkanPipelineCompute()
     {
         Destroy();
     }
-
-    void RHIVulkanShaderModule::Destroy()
+    
+    void RHIVulkanPipelineCompute::Destroy()
     {
 
     }

@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanSampler::RHIVulkanSampler(const RHISamplerCreateInfo& createInfo)
+        : RHISampler(createInfo)
+    {
 
+    }
+
+    RHIVulkanSampler::~RHIVulkanSampler()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanSampler::Destroy()
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

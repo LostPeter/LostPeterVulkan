@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanSurface::RHIVulkanSurface(const RHISurfaceCreateInfo& createInfo)
+        : RHISurface(createInfo)
+    {
 
+    }
+
+    RHIVulkanSurface::~RHIVulkanSurface()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanSurface::Destroy()
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

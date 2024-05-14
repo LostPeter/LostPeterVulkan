@@ -13,7 +13,20 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanPipelineLayout::RHIVulkanPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
+        : RHIPipelineLayout(createInfo)
+    {
 
+    }
+
+    RHIVulkanPipelineLayout::~RHIVulkanPipelineLayout()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanPipelineLayout::Destroy()
+    {
+
+    }
+    
 }; //LostPeterPluginRHIVulkan

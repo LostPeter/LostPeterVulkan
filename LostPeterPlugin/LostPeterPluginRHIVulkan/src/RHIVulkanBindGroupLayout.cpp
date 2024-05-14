@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
+* LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-12
@@ -11,9 +11,23 @@
 
 #include "../include/RHIVulkanBindGroupLayout.h"
 
-namespace LostPeterPluginRHIDummy
+namespace LostPeterPluginRHIVulkan
 {
-    
+    RHIVulkanBindGroupLayout::RHIVulkanBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
+        : RHIBindGroupLayout(createInfo)
+    {
+
+    }
+
+    RHIVulkanBindGroupLayout::~RHIVulkanBindGroupLayout()
+    {
+
+    }
+
+    void RHIVulkanBindGroupLayout::Destroy()
+    {
+
+    }
     
 
-}; //LostPeterPluginRHIDummy
+}; //LostPeterPluginRHIVulkan

@@ -16,9 +16,21 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanShaderModule : public RHIShaderModule
+    {
+    public:
+        RHIVulkanShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        virtual ~RHIVulkanShaderModule();
 
+    public:
+    protected:
+
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

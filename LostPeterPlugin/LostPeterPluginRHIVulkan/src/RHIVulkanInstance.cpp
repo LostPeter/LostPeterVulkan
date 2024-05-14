@@ -10,11 +10,45 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanInstance.h"
+#include "../include/RHIVulkanPhysicalDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
+    RHIVulkanInstance::RHIVulkanInstance()
+        : m_pPhysicalDevice(nullptr)
+    {
 
+    }
+
+    RHIVulkanInstance::~RHIVulkanInstance()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanInstance::Destroy()
+    {
+        F_DELETE(m_pPhysicalDevice)
+    }
+
+    RHIType RHIVulkanInstance::GetRHIType()
+    {
+        return RHIType::RHI_Vulkan;
+    }
+
+    uint32_t RHIVulkanInstance::GetPhysicalDeviceCount()
+    {
+        return 1;
+    }
+
+    RHIPhysicalDevice* RHIVulkanInstance::GetPhysicalDevice(uint32 nIndex)
+    {
+        F_Assert("RHIVulkanInstance::GetPhysicalDevice" && nIndex == 0);
+        if (m_pPhysicalDevice == nullptr)
+        {
+            m_pPhysicalDevice = new RHIVulkanPhysicalDevice();
+        }
+        return m_pPhysicalDevice;
+    }
 
 }; //LostPeterPluginRHIVulkan
 

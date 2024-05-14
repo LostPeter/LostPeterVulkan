@@ -10,10 +10,28 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPhysicalDevice.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice()
+    {
 
+    }
+
+    RHIVulkanPhysicalDevice::~RHIVulkanPhysicalDevice()
+    {
+
+    }
+
+    RHIPhysicalDeviceProperty RHIVulkanPhysicalDevice::GetPhysicalDeviceProperty()
+    {
+        return { };
+    }
+
+    RHIDevice* RHIVulkanPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
+    {
+        return new RHIVulkanDevice(createInfo);
+    }
+    
 }; //LostPeterPluginRHIVulkan
