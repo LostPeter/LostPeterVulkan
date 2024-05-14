@@ -40,6 +40,7 @@
 #include "RHIVulkanTexture.h"
 #include "RHIVulkanTextureView.h"
 #include "RHIVulkanUtil.h"
+#include "RHIVulkanVolk.h"
 
 namespace LostPeterPluginRHIVulkan
 {

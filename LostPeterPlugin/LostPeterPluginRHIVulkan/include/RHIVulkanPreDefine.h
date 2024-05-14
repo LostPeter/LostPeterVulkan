@@ -12,6 +12,8 @@
 #ifndef _RHI_VULKAN_PRE_DEFINE_H_
 #define _RHI_VULKAN_PRE_DEFINE_H_
 
+#include "volk.h"
+
 #include "FPreDefine.h"
 #include "FPreInclude.h"
 using namespace LostPeterFoundation;
@@ -36,6 +38,31 @@ using namespace LostPeterRHI;
 
 namespace LostPeterPluginRHIVulkan
 {
+	////////////////////////////// Define //////////////////////////////
+	String RHI_VkResult2String(VkResult result);
+
+    #define RHI_VK_CHECK(vkcall) \
+    { \
+        VkResult result = vkcall; \
+        if (result != VK_SUCCESS) \
+        { \
+            String vkfunc = #vkcall; \
+            vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
+            F_LogError("*********************** RHI_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), RHI_VkResult2String(result).c_str()); \
+        } \
+    }
+
+    bool RHI_CheckVkResult(VkResult result, const String& nameFunc);
+
+    template<class T>
+    void RHI_ZeroStruct(T& vkStruct, VkStructureType vkType)
+    {
+        vkStruct.sType = vkType;
+        memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));
+    }
+	
+
+	////////////////////////////// Typedef /////////////////////////////
 
 	////////////////////////////// Class ///////////////////////////////
 	class RHIVulkanBindGroup;
@@ -64,6 +91,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanTexture;
 	class RHIVulkanTextureView;
 	class RHIVulkanUtil;
+	class RHIVulkanVolk;
 
 	typedef std::vector<RHIVulkanTexture*> RHIVulkanTexturePtrVector;
     

@@ -78,7 +78,6 @@ elseif (APPLE)
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
     SET(IOKIT_LIBS ${SYS_FRAMEWORKS_DIR}/IOKit.framework)
-    # SET(SYS_VULKAN_LIBS "$ENV{VULKAN_HOME}/macOS/Frameworks/vulkan.framework")
 
 endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
