@@ -59,8 +59,11 @@ namespace LostPeterRHI
 	//RHIPhysicalDeviceType
 	enum class RHIPhysicalDeviceType : RHIEnumType 
 	{
-        RHI_PhysicalDevice_Hardware = 0,				//0: Hardware
-        RHI_PhysicalDevice_Software,					//1: Software
+        RHI_PhysicalDevice_UnKnown = 0,                 //0: UnKnown
+        RHI_PhysicalDevice_GPUIntegrated,				//1: GPUIntegrated
+        RHI_PhysicalDevice_GPUDiscrete,					//2: GPUDiscrete
+        RHI_PhysicalDevice_GPUVirtual,					//3: GPUVirtual
+        RHI_PhysicalDevice_CPU,                         //4: CPU
 
         RHI_PhysicalDevice_Count,
     };

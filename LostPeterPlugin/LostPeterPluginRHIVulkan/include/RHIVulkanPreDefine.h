@@ -67,6 +67,60 @@ namespace LostPeterPluginRHIVulkan
 	
 
 	////////////////////////////// Typedef /////////////////////////////
+	typedef std::vector<RHIPixelFormatType> PixelFormatTypeVector;
+    typedef std::map<RHIPixelFormatType, VkFormat> PixelFormat2VkFormatMap;
+    typedef std::map<VkFormat, RHIPixelFormatType> VkFormat2PixelFormatMap;
+
+	typedef std::vector<VkFormat> VkFormatVector;
+    typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
+    typedef std::vector<VkClearValue> VkClearValueVector;
+
+	typedef std::vector<VkQueueFamilyProperties> VkQueueFamilyPropertiesVector;
+
+    typedef std::vector<VkBuffer> VkBufferVector;
+    typedef std::vector<VkDeviceMemory> VkDeviceMemoryVector;
+
+	typedef std::vector<VkAttachmentDescription> VkAttachmentDescriptionVector;
+    typedef std::vector<VkSubpassDescription> VkSubpassDescriptionVector;
+    typedef std::vector<VkSubpassDependency> VkSubpassDependencyVector;
+
+    typedef std::vector<VkImage> VkImageVector;
+    typedef std::vector<VkImageView> VkImageViewVector;
+    typedef std::vector<VkFramebuffer> VkFramebufferVector;
+
+    typedef std::vector<VkViewport> VkViewportVector;
+    typedef std::vector<VkRect2D> VkRect2DVector;
+
+    typedef std::vector<VkCommandBuffer> VkCommandBufferVector;
+
+    typedef std::vector<VkSwapchainKHR> VkSwapchainKHRVector;
+
+    typedef std::vector<VkSemaphore> VkSemaphoreVector;
+    typedef std::vector<VkFence> VkFenceVector;
+        
+    typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
+    typedef std::map<String, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
+
+    typedef std::vector<VkDescriptorSetLayoutBinding> VkDescriptorSetLayoutBindingVector;
+
+    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
+    typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
+
+    typedef std::vector<VkShaderModule> VkShaderModuleVector;
+    typedef std::map<String, VkShaderModule> VkShaderModuleMap;
+
+    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
+    typedef std::map<String, VkPipelineLayout> VkPipelineLayoutMap;
+
+    typedef std::vector<VkPipeline> VkPipelineVector;
+    typedef std::map<String, VkPipeline> VkPipelineMap;
+    
+    typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
+    typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
+
+    typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
+    typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
+
 
 	////////////////////////////// Class ///////////////////////////////
 	class RHIVulkanBindGroup;
@@ -76,6 +130,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanCommandBuffer;
 	class RHIVulkanCommandDecoder;
 	class RHIVulkanCommandEncoder;
+	class RHIVulkanConverter;
 	class RHIVulkanDebug;
 	class RHIVulkanDevice;
 	class RHIVulkanFence;
