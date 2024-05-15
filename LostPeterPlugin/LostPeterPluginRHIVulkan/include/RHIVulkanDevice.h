@@ -19,11 +19,12 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanDevice : public RHIDevice
     {
     public:
-        RHIVulkanDevice(const RHIDeviceCreateInfo& createInfo);
+        RHIVulkanDevice(RHIVulkanPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo);
         virtual ~RHIVulkanDevice();
 
     public:
     protected:
+        RHIVulkanPhysicalDevice* m_pPhysicalDevice;
         RHIVulkanQueue* m_pQueue;
 
     public:
@@ -46,6 +47,16 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIFence* CreateFence();
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
+
+    private:
+        void getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
+                                          ConstCharPtrVector& outDeviceLayers, 
+                                          ConstCharPtrVector& outDeviceExtensions);
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    public:
+
+
     };
     
 }; //LostPeterPluginRHIVulkan

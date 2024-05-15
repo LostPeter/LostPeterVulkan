@@ -19,12 +19,17 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanPhysicalDevice : public RHIPhysicalDevice
     {
     public:
-        RHIVulkanPhysicalDevice();
+        RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice);
         virtual ~RHIVulkanPhysicalDevice();
 
     public:
     protected:
+        RHIVulkanInstance* m_pInstance;
+        VkPhysicalDevice m_vkPhysicalDevice;
 
+    public:
+        F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
+        F_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
 
     public:
         virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty();

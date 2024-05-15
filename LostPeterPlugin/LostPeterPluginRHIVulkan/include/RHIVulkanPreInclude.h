@@ -21,6 +21,7 @@
 #include "RHIVulkanCommandBuffer.h"
 #include "RHIVulkanCommandDecoder.h"
 #include "RHIVulkanCommandEncoder.h"
+#include "RHIVulkanDebug.h"
 #include "RHIVulkanDevice.h"
 #include "RHIVulkanFence.h"
 #include "RHIVulkanFrameBuffer.h"

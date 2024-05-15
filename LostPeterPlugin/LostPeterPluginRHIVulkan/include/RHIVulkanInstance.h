@@ -24,14 +24,71 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
-        RHIVulkanPhysicalDevice* m_pPhysicalDevice;
+        VkInstance m_vkInstance;
+        ConstCharPtrVector m_aInstanceLayers;
+        ConstCharPtrVector m_aInstanceExtensions;
+        ConstCharPtrVector m_aAppInstanceExtensions;
+        ConstCharPtrVector m_aAppDeviceExtensions;
+        int32 m_nPreferredVendorID;
+
+        RHIVulkanVolk* m_pVolk;
+        bool m_bIsEnableValidationLayers;
+        RHIVulkanDebug* m_pDebug;
+
+        RHIVulkanPhysicalDevicePtrVector m_aPhysicalDevices;
+
+    public:
+        F_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
+        F_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
+        F_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
+        F_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
+        F_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
+        F_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
+        F_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
+        F_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
+        F_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
+
+        F_FORCEINLINE RHIVulkanVolk* GetVolk() const { return m_pVolk; }
+        F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
+        F_FORCEINLINE RHIVulkanDebug* GetDebug() const { return m_pDebug; }
+
+        F_FORCEINLINE const RHIVulkanPhysicalDevicePtrVector& GetPhysicalDevices() const { return m_aPhysicalDevices; }
 
     public:
         virtual void Destroy();
+        bool Init();
 
         virtual RHIType GetRHIType();
-        virtual uint32_t GetPhysicalDeviceCount();
+        virtual uint32 GetPhysicalDeviceCount();
         virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex);
+
+    public:
+    protected:
+        void destroyDebug();
+        void destroyVolk();
+        void destroyPhysicalDevice();
+
+        bool createInstance();
+        bool createVolk();
+        bool createDebug();
+        bool createPhysicalDevice();
+
+    private:
+        void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
+                                            ConstCharPtrVector& outInstanceLayers, 
+                                            ConstCharPtrVector& outInstanceExtensions);
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    public:
+        //////////////////// VkInstance /////////////////////
+        void DestroyVkInstance(const VkInstance& vkInstance);
+
+        //////////////////// VkSurfaceKHR ///////////////////
+        bool CreateVkSurfaceKHR(GLFWwindow* pWindow,
+                                VkSurfaceKHR& vkSurfaceKHR);
+        void DestroyVkSurfaceKHR(const VkSurfaceKHR& vkSurfaceKHR);
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     };
 
 }; //LostPeterPluginRHIVulkan

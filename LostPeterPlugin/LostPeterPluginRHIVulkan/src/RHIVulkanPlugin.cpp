@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPlugin.h"
+#include "../include/RHIVulkanInstance.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -30,6 +31,7 @@ namespace LostPeterPluginRHIVulkan
 
     static const String s_strPluginName = "LostPeterPluginRHIVulkan";
     RHIVulkanPlugin::RHIVulkanPlugin()
+        : m_pInstance(nullptr)
     {
 
     }
@@ -46,12 +48,19 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanPlugin::Install()
     {
-
+        m_pInstance = new RHIVulkanInstance();
+        if (!m_pInstance->Init())
+        {
+            F_LogError("*********************** RHIVulkanPlugin::Install: Failed to init RHIVulkanInstance !");
+            return;
+        }
+        F_LogInfo("RHIVulkanPlugin::Install: Success to init RHIVulkanInstance !");
     }
 
     void RHIVulkanPlugin::Uninstall()
     {
-        
+        F_DELETE(m_pInstance)
+        F_LogInfo("RHIVulkanPlugin::Uninstall: Success to delete RHIVulkanInstance !");
     }
 
     void RHIVulkanPlugin::Initialize()

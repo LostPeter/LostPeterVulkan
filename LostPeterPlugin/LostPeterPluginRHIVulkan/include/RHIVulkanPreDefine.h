@@ -22,6 +22,10 @@ using namespace LostPeterFoundation;
 #include "RHIPreInclude.h"
 using namespace LostPeterRHI;
 
+//GLFW
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 
 #if F_PLATFORM == F_PLATFORM_WINDOW
 	#if defined (RHI_VULKAN_EXPORTS)
@@ -72,6 +76,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanCommandBuffer;
 	class RHIVulkanCommandDecoder;
 	class RHIVulkanCommandEncoder;
+	class RHIVulkanDebug;
 	class RHIVulkanDevice;
 	class RHIVulkanFence;
 	class RHIVulkanFrameBuffer;
@@ -93,6 +98,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanUtil;
 	class RHIVulkanVolk;
 
+	typedef std::vector<RHIVulkanPhysicalDevice*> RHIVulkanPhysicalDevicePtrVector;	
 	typedef std::vector<RHIVulkanTexture*> RHIVulkanTexturePtrVector;
     
 

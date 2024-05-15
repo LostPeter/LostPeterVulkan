@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanPhysicalDevice.h"
 #include "../include/RHIVulkanQueue.h"
 #include "../include/RHIVulkanSurface.h"
 #include "../include/RHIVulkanSwapChain.h"
@@ -27,11 +28,12 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanDevice::RHIVulkanDevice(const RHIDeviceCreateInfo& createInfo)
+    RHIVulkanDevice::RHIVulkanDevice(RHIVulkanPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
         : RHIDevice(createInfo)
+        , m_pPhysicalDevice(pPhysicalDevice)
         , m_pQueue(nullptr)
     {
-
+        F_Assert(m_pPhysicalDevice && "RHIVulkanDevice::RHIVulkanDevice")
     }
 
     RHIVulkanDevice::~RHIVulkanDevice()
@@ -42,6 +44,7 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanDevice::Destroy()
     {
         F_DELETE(m_pQueue)
+        m_pPhysicalDevice = nullptr;
     }
 
     uint32 RHIVulkanDevice::GetQueueCount(RHIQueueType eQueue)

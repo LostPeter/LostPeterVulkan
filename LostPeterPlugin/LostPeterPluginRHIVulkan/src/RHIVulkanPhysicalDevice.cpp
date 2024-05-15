@@ -10,13 +10,16 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPhysicalDevice.h"
+#include "../include/RHIVulkanInstance.h"
 #include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice()
+    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice)
+        : m_pInstance(pInstance)
+        , m_vkPhysicalDevice(vkPhysicalDevice)
     {
-
+        F_Assert(m_pInstance && m_vkPhysicalDevice && "RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice")
     }
 
     RHIVulkanPhysicalDevice::~RHIVulkanPhysicalDevice()
@@ -26,12 +29,19 @@ namespace LostPeterPluginRHIVulkan
 
     RHIPhysicalDeviceProperty RHIVulkanPhysicalDevice::GetPhysicalDeviceProperty()
     {
-        return { };
+        VkPhysicalDeviceProperties vkPhysicalDeviceProperties;
+        vkGetPhysicalDeviceProperties(m_vkPhysicalDevice, &vkPhysicalDeviceProperties);
+
+        RHIPhysicalDeviceProperty property = {};
+        property.nVendorID = vkPhysicalDeviceProperties.vendorID;
+        property.nDeviceID = vkPhysicalDeviceProperties.deviceID;
+        //property.ePhysicalDevice = ;
+        return property;
     }
 
     RHIDevice* RHIVulkanPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
     {
-        return new RHIVulkanDevice(createInfo);
+        return new RHIVulkanDevice(this, createInfo);
     }
     
 }; //LostPeterPluginRHIVulkan

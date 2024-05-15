@@ -165,20 +165,21 @@ elseif (ANDROID)
 elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
 
-    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
     if (DEBUG)
-        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-                              ${COCOA_LIBS}
-                              ${IOKIT_LIBS}
-                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterRHI_d.dylib)
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
+                       ${LIB_PLUGINS_DIR}/libLostPeterRHI_d.dylib)
     else ()
-        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-                              ${COCOA_LIBS}
-                              ${IOKIT_LIBS}
-                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterRHI.dylib)
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
+                       ${LIB_PLUGINS_DIR}/libLostPeterRHI.dylib)
     endif()
+    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME})
     
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
