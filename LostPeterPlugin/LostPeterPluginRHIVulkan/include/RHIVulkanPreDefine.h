@@ -46,6 +46,8 @@ using namespace LostPeterRHI;
 namespace LostPeterPluginRHIVulkan
 {
 	////////////////////////////// Define //////////////////////////////
+    #define RHI_CPU_ALLOCATOR              nullptr
+
 	String RHI_VkResult2String(VkResult result);
 
     #define RHI_VK_CHECK(vkcall) \

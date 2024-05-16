@@ -22,9 +22,13 @@ namespace LostPeterPluginRHIVulkan
         ////////////////////// TransformFromXXXX //////////////////////
         static RHIPhysicalDeviceType TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType ePhysicalDevice);
 
+        static RHIPixelFormatType TransformFromVkFormat(VkFormat eFormat);
+
     public:
         ////////////////////// TransformToXXXX ////////////////////////
         static VkPhysicalDeviceType TransformToVkPhysicalDeviceType(RHIPhysicalDeviceType ePhysicalDevice);
+
+        static VkFormat TransformToVkFormat(RHIPixelFormatType ePixelFormat);
     };
 
 }; //LostPeterPluginRHIVulkan

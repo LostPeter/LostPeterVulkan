@@ -40,6 +40,7 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanDevice* m_pDevice;
 
     public:
+        F_FORCEINLINE RHIVulkanInstance* GetInstance() const { return m_pInstance; }
         F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
         F_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
         F_FORCEINLINE int32 GetPhysicalDeviceIndex() const { return m_nPhysicalDeviceIndex; }

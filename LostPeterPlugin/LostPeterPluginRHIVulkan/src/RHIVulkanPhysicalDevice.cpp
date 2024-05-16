@@ -42,6 +42,7 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanPhysicalDevice::init()
     {
         vkGetPhysicalDeviceProperties(m_vkPhysicalDevice, &m_vkPhysicalDeviceProperties);
+        vkGetPhysicalDeviceFeatures(m_vkPhysicalDevice, &m_vkPhysicalDeviceFeatures);
         vkGetPhysicalDeviceMemoryProperties(m_vkPhysicalDevice, &m_vkPhysicalDeviceMemProperties);
 
         m_strPhysicalDeviceType = GetPhysicalDeviceType(m_vkPhysicalDeviceProperties, m_bIsDiscrete);

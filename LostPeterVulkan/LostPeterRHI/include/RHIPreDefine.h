@@ -74,6 +74,7 @@ namespace LostPeterRHI
         RHI_Queue_Graphics = 0,							//0: Graphics
         RHI_Queue_Compute,								//1: Compute	
         RHI_Queue_Transfer,								//2: Transfer
+        RHI_Queue_Present,								//3: Present
         
 		RHI_Queue_Count,
     };
@@ -196,6 +197,17 @@ namespace LostPeterRHI
         RHI_FenceStatus_NotReady,                       //1: NotReady
 
         RHI_FenceStatus_Count,
+    };
+
+    //RHISwapStatusType
+    enum class RHISwapStatusType : RHIEnumType 
+    {
+        RHI_SwapStatus_Normal = 0,                      //0: Normal
+        RHI_SwapStatus_OutOfDate,                       //1: OutOfDate
+        RHI_SwapStatus_Lost,                            //2: Lost
+        RHI_SwapStatus_Error,                           //3: Error
+
+        RHI_SwapStatus_Count,  
     };
 
 	//RHILoadOpType

@@ -10,17 +10,36 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanQueue.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanQueue::RHIVulkanQueue()
+    RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pDevice, uint32 nFamilyIndex)
+        : m_pDevice(pDevice)
+        , m_nFamilyIndex(nFamilyIndex)
     {
-
+        F_Assert(m_pDevice && "RHIVulkanQueue::RHIVulkanQueue")
     }
 
     RHIVulkanQueue::~RHIVulkanQueue()
     {
+        
+    }
 
+    void RHIVulkanQueue::Destroy()
+    {
+        m_vkQueue = VK_NULL_HANDLE;
+    }
+
+    bool RHIVulkanQueue::Init()
+    {
+        m_vkQueue = m_pDevice->GetVkQueue(m_nFamilyIndex, 0);
+        if (m_vkQueue == VK_NULL_HANDLE)
+        {
+            F_LogError("*********************** RHIVulkanQueue::Init: GetVkQueue failed !");
+            return false;
+        }
+        return true;
     }
 
     void RHIVulkanQueue::Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal)

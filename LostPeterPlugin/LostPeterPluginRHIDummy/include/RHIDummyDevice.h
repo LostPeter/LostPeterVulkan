@@ -30,7 +30,7 @@ namespace LostPeterPluginRHIDummy
         virtual void Destroy();
 
         virtual uint32 GetQueueCount(RHIQueueType eQueue);
-        virtual RHIQueue* GetQueue(RHIQueueType eQueue, uint32 nIndex);
+        virtual RHIQueue* GetQueue(RHIQueueType eQueue);
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo);
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo);
@@ -46,6 +46,7 @@ namespace LostPeterPluginRHIDummy
         virtual RHIFence* CreateFence();
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
+        virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat);
     };
     
 }; //LostPeterPluginRHIDummy

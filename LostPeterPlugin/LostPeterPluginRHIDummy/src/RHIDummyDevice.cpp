@@ -49,9 +49,9 @@ namespace LostPeterPluginRHIDummy
         return eQueue == RHIQueueType::RHI_Queue_Graphics ? 1 : 0;
     }
 
-    RHIQueue* RHIDummyDevice::GetQueue(RHIQueueType eQueue, uint32 nIndex)
+    RHIQueue* RHIDummyDevice::GetQueue(RHIQueueType eQueue)
     {
-        F_Assert("RHIDummyDevice::GetQueue" && eQueue == RHIQueueType::RHI_Queue_Graphics && nIndex == 0);
+        F_Assert("RHIDummyDevice::GetQueue" && eQueue == RHIQueueType::RHI_Queue_Graphics);
         if (m_pQueue == nullptr)
         {
             m_pQueue = new RHIDummyQueue();
@@ -125,6 +125,10 @@ namespace LostPeterPluginRHIDummy
     }
 
     bool RHIDummyDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)
+    {
+        return true;
+    }
+    bool RHIDummyDevice::IsPixelFormatSupported(RHIPixelFormatType ePixelFormat)
     {
         return true;
     }
