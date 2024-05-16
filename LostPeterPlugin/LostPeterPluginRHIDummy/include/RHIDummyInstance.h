@@ -32,6 +32,8 @@ namespace LostPeterPluginRHIDummy
         virtual RHIType GetRHIType();
         virtual uint32_t GetPhysicalDeviceCount();
         virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex);
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo);
+
     };
 
 }; //LostPeterPluginRHIDummy

@@ -36,6 +36,8 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanDebug* m_pDebug;
 
         RHIVulkanPhysicalDevicePtrVector m_aPhysicalDevices;
+        RHIVulkanPhysicalDevice* m_pPhysicalDevice;
+        RHIVulkanDevice* m_pDevice;
 
     public:
         F_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
@@ -53,6 +55,8 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIVulkanDebug* GetDebug() const { return m_pDebug; }
 
         F_FORCEINLINE const RHIVulkanPhysicalDevicePtrVector& GetPhysicalDevices() const { return m_aPhysicalDevices; }
+        F_FORCEINLINE RHIVulkanPhysicalDevice* GetPhysicalDevice() const { return m_pPhysicalDevice; }
+        F_FORCEINLINE RHIVulkanDevice* GetDevice() const { return m_pDevice; }
 
     public:
         virtual void Destroy();
@@ -61,8 +65,11 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIType GetRHIType();
         virtual uint32 GetPhysicalDeviceCount();
         virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex);
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo);
 
     public:
+
+
     protected:
         void destroyDebug();
         void destroyVolk();

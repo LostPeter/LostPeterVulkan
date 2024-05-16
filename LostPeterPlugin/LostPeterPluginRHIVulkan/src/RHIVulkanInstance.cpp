@@ -13,13 +13,17 @@
 #include "../include/RHIVulkanDebug.h"
 #include "../include/RHIVulkanVolk.h"
 #include "../include/RHIVulkanPhysicalDevice.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanInstance::RHIVulkanInstance()
         : m_vkInstance(VK_NULL_HANDLE)
+        , m_nPreferredVendorID(-1)
         , m_pVolk(nullptr)
         , m_pDebug(nullptr)
+        , m_pPhysicalDevice(nullptr)
+        , m_pDevice(nullptr)
     {
     #if F_DEBUG == 1
         m_bIsEnableValidationLayers = true;
@@ -235,7 +239,7 @@ namespace LostPeterPluginRHIVulkan
 
         for (uint32 i = 0; i < physicalDevicesCount; i++)
         {
-            RHIVulkanPhysicalDevice* pPhysicalDevice = new RHIVulkanPhysicalDevice(this, physicalDevices[i]);
+            RHIVulkanPhysicalDevice* pPhysicalDevice = new RHIVulkanPhysicalDevice(this, physicalDevices[i], i);
             m_aPhysicalDevices.push_back(pPhysicalDevice);
         }
         
@@ -258,7 +262,43 @@ namespace LostPeterPluginRHIVulkan
         return m_aPhysicalDevices[nIndex];
     }
 
+    RHIDevice* RHIVulkanInstance::RequestDevice(const RHIDeviceCreateInfo& createInfo)
+    {
+        SetPreferredVendorID(createInfo.nPreferredVendorID);
 
+        m_pPhysicalDevice = nullptr;
+        uint32 countDevice = (uint32)m_aPhysicalDevices.size();
+        if (countDevice > 0)
+        {
+            if (countDevice > 1 && m_nPreferredVendorID != -1)
+            {
+                for (uint32 i = 0; i < countDevice; i++)
+                {
+                    RHIVulkanPhysicalDevice* pPhysicalDevice = m_aPhysicalDevices[i];
+                    if (pPhysicalDevice->GetVkPhysicalDeviceProperties().vendorID == (uint32_t)m_nPreferredVendorID)
+                    {
+                        m_pPhysicalDevice = pPhysicalDevice;
+                        break;
+                    }
+                }
+            }
+            if (m_pPhysicalDevice == nullptr)
+            {
+                m_pPhysicalDevice = m_aPhysicalDevices[0];
+            }
+        }
+        else
+        {
+            F_LogError("*********************** RHIVulkanInstance::RequestDevice: Can not find PhysicalDevice !");
+        }
+
+        m_pDevice = nullptr;
+        if (m_pPhysicalDevice != nullptr)
+        {
+            m_pDevice = (RHIVulkanDevice*)m_pPhysicalDevice->RequestDevice(createInfo);
+        }
+        return m_pDevice;
+    }
 
 
 

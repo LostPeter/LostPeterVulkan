@@ -781,8 +781,17 @@ namespace LostPeterRHI
 	//RHIDeviceCreateInfo
 	struct rhiExport RHIDeviceCreateInfo
 	{
+        int32 nPreferredVendorID;
         uint32 nQueueCreateInfoCount;
         const RHIQueueInfo* pQueueCreateInfos;
+
+        RHIDeviceCreateInfo()
+            : nPreferredVendorID(-1)
+            , nQueueCreateInfoCount(0)
+            , pQueueCreateInfos(nullptr)
+        {
+            
+        }
     };
 
 	//RHISurfaceCreateInfo

@@ -16,19 +16,47 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice)
+    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice, int32 nPhysicalDeviceIndex)
         : m_pInstance(pInstance)
         , m_vkPhysicalDevice(vkPhysicalDevice)
+        , m_nPhysicalDeviceIndex(nPhysicalDeviceIndex)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
+        , m_strPhysicalDeviceType("")
+        , m_bIsDiscrete(false)
+        , m_vkMaxMSAASamples()
+        , m_pDevice(nullptr)
     {
         F_Assert(m_pInstance && m_vkPhysicalDevice && "RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice")
-
-        vkGetPhysicalDeviceProperties(m_vkPhysicalDevice, &m_vkPhysicalDeviceProperties);
+        init();
     }
 
     RHIVulkanPhysicalDevice::~RHIVulkanPhysicalDevice()
     {
+        destroy();
+    }
 
+    void RHIVulkanPhysicalDevice::destroy()
+    {
+        F_DELETE(m_pDevice)
+    }
+    void RHIVulkanPhysicalDevice::init()
+    {
+        vkGetPhysicalDeviceProperties(m_vkPhysicalDevice, &m_vkPhysicalDeviceProperties);
+        vkGetPhysicalDeviceMemoryProperties(m_vkPhysicalDevice, &m_vkPhysicalDeviceMemProperties);
+
+        m_strPhysicalDeviceType = GetPhysicalDeviceType(m_vkPhysicalDeviceProperties, m_bIsDiscrete);
+        m_vkMaxMSAASamples = GetMaxUsableSampleCount(m_vkPhysicalDeviceProperties);
+
+        F_LogInfo("RHIVulkanPhysicalDevice::init: Device index: [%d], name: [%s]", m_nPhysicalDeviceIndex, m_vkPhysicalDeviceProperties.deviceName);
+        F_LogInfo("RHIVulkanPhysicalDevice::init: API: [%d.%d.%d(0x%x)], Driver: [0x%x VendorId 0x%x]", VK_VERSION_MAJOR(m_vkPhysicalDeviceProperties.apiVersion), VK_VERSION_MINOR(m_vkPhysicalDeviceProperties.apiVersion), VK_VERSION_PATCH(m_vkPhysicalDeviceProperties.apiVersion), m_vkPhysicalDeviceProperties.apiVersion, m_vkPhysicalDeviceProperties.driverVersion, m_vkPhysicalDeviceProperties.vendorID);
+        F_LogInfo("RHIVulkanPhysicalDevice::init: DeviceID: [0x%x], Type: [%s]", m_vkPhysicalDeviceProperties.deviceID, m_strPhysicalDeviceType.c_str());
+        F_LogInfo("RHIVulkanPhysicalDevice::init: Max Descriptor Sets Bound: [%d], Timestamps: [%d]", m_vkPhysicalDeviceProperties.limits.maxBoundDescriptorSets, m_vkPhysicalDeviceProperties.limits.timestampComputeAndGraphics);
+        F_LogInfo("RHIVulkanPhysicalDevice::init: Max MSAA Samples: [%d]", (int32)m_vkMaxMSAASamples);
+
+        uint32 queueCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(m_vkPhysicalDevice, &queueCount, nullptr);
+        m_aVkQueueFamilyProperties.resize(queueCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(m_vkPhysicalDevice, &queueCount, m_aVkQueueFamilyProperties.data());
     }
 
     RHIPhysicalDeviceProperty RHIVulkanPhysicalDevice::GetPhysicalDeviceProperty()
@@ -42,10 +70,24 @@ namespace LostPeterPluginRHIVulkan
 
     RHIDevice* RHIVulkanPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
     {
-        return new RHIVulkanDevice(this, createInfo);
+        m_pDevice = new RHIVulkanDevice(this, createInfo);
+        return m_pDevice;
     }
 
-    String RHIVulkanPhysicalDevice::GetDeviceType(const VkPhysicalDeviceProperties& deviceProperties, bool& isDiscrete)
+    uint32_t RHIVulkanPhysicalDevice::FindMemoryType(uint32_t filter, VkMemoryPropertyFlags propertyFlag) const
+    {
+        for (uint32_t i = 0; i < m_vkPhysicalDeviceMemProperties.memoryTypeCount; i++) 
+        {
+            if ((filter & (1 << i)) && (m_vkPhysicalDeviceMemProperties.memoryTypes[i].propertyFlags & propertyFlag) == propertyFlag) 
+            {
+                return i;
+            }
+        }
+        F_Assert(false && "RHIVulkanPhysicalDevice::FindMemoryType: Failed to found suitable memory type !");
+        return -1;
+    }
+
+    String RHIVulkanPhysicalDevice::GetPhysicalDeviceType(const VkPhysicalDeviceProperties& deviceProperties, bool& isDiscrete)
     {
         isDiscrete = false;
         String info;
@@ -94,5 +136,17 @@ namespace LostPeterPluginRHIVulkan
         }
         return info;
     }
-    
+    VkSampleCountFlagBits RHIVulkanPhysicalDevice::GetMaxUsableSampleCount(const VkPhysicalDeviceProperties& deviceProperties)
+    {
+        VkSampleCountFlags counts = deviceProperties.limits.framebufferColorSampleCounts & deviceProperties.limits.framebufferDepthSampleCounts;
+        if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+        if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+        if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+        if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
+        if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
+        if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+
+        return VK_SAMPLE_COUNT_1_BIT;
+    }
+
 }; //LostPeterPluginRHIVulkan

@@ -26,6 +26,9 @@ using namespace LostPeterRHI;
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+//VMA
+#include "vk_mem_alloc.h"
+
 
 #if F_PLATFORM == F_PLATFORM_WINDOW
 	#if defined (RHI_VULKAN_EXPORTS)

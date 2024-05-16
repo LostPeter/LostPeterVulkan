@@ -32,7 +32,8 @@ namespace LostPeterRHI
         virtual RHIType GetRHIType() = 0;
         virtual uint32_t GetPhysicalDeviceCount() = 0;
         virtual RHIPhysicalDevice* GetPhysicalDevice(uint32 nIndex) = 0;
-
+        virtual RHIDevice* RequestDevice(const RHIDeviceCreateInfo& createInfo) = 0;
+        
     };
 
 }; //LostPeterRHI

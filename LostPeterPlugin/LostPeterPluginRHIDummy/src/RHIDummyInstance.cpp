@@ -50,5 +50,10 @@ namespace LostPeterPluginRHIDummy
         return m_pPhysicalDevice;
     }
 
+    RHIDevice* RHIDummyInstance::RequestDevice(const RHIDeviceCreateInfo& createInfo)
+    {
+        return GetPhysicalDevice(0)->RequestDevice(createInfo);
+    }
+
 }; //LostPeterPluginRHIDummy
 

@@ -25,7 +25,18 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         RHIVulkanPhysicalDevice* m_pPhysicalDevice;
+
+        VkDevice m_vkDevice;
+        VmaAllocator m_vmaAllocator;
+
         RHIVulkanQueue* m_pQueue;
+
+    public:
+        F_FORCEINLINE RHIVulkanPhysicalDevice* GetPhysicalDevice() const { return m_pPhysicalDevice; }
+        F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
+        F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
+
+
 
     public:
         virtual void Destroy();
@@ -47,6 +58,11 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIFence* CreateFence();
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
+
+    public:
+
+    protected:
+        
 
     private:
         void getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
