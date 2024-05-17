@@ -10,38 +10,51 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanFence.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanFence::RHIVulkanFence(RHIDevice& device)
-        : RHIFence(device)
+    RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pDevice, bool bIsSignaled)
+        : m_pDevice(pDevice)
+        , m_vkFence(VK_NULL_HANDLE)
+        , m_bIsSignaled(bIsSignaled)
     {
+        F_Assert(m_pDevice && "RHIVulkanBuffer::RHIVulkanBuffer")
 
-    }
+        m_pDevice->CreateVkFence(bIsSignaled, m_vkFence);
+    }   
 
     RHIVulkanFence::~RHIVulkanFence()
     {
-
+        Destroy();
     }
 
     void RHIVulkanFence::Destroy()
     {
-
+        if (m_vkFence != VK_NULL_HANDLE)
+        {
+            m_pDevice->DestroyVkFence(m_vkFence);
+        }
+        m_vkFence = VK_NULL_HANDLE;
     }
 
     RHIFenceStatusType RHIVulkanFence::GetStatus()
     {
-        return RHIFenceStatusType::RHI_FenceStatus_Signaled;
+        return m_bIsSignaled ? RHIFenceStatusType::RHI_FenceStatus_Signaled : RHIFenceStatusType::RHI_FenceStatus_NotReady;
     }
 
     void RHIVulkanFence::Reset()
     {
-
+        m_pDevice->ResetVkFence(m_vkFence);
+        m_bIsSignaled = false;
     }
 
     void RHIVulkanFence::Wait()
     {
-
+        if (m_bIsSignaled) 
+            return;
+        
+        m_pDevice->WaitVkFence(m_vkFence);
     }
     
 }; //LostPeterPluginRHIVulkan

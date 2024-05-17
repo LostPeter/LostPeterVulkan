@@ -17,6 +17,7 @@ namespace LostPeterPluginRHIVulkan
     RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pDevice, uint32 nFamilyIndex)
         : m_pDevice(pDevice)
         , m_nFamilyIndex(nFamilyIndex)
+        , m_vkQueue(VK_NULL_HANDLE)
     {
         F_Assert(m_pDevice && "RHIVulkanQueue::RHIVulkanQueue")
     }

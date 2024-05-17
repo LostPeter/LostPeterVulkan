@@ -14,9 +14,9 @@
 namespace LostPeterPluginRHIVulkan
 {
     ////////////////////// TransformFromXXXX //////////////////////
-    RHIPhysicalDeviceType RHIVulkanConverter::TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType ePhysicalDevice)
+    RHIPhysicalDeviceType RHIVulkanConverter::TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType vkPhysicalDevice)
     {
-        switch ((int32)ePhysicalDevice)
+        switch ((int32)vkPhysicalDevice)
         {
         case VK_PHYSICAL_DEVICE_TYPE_OTHER:                 return RHIPhysicalDeviceType::RHI_PhysicalDevice_UnKnown;
         case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:        return RHIPhysicalDeviceType::RHI_PhysicalDevice_GPUIntegrated;
@@ -28,10 +28,9 @@ namespace LostPeterPluginRHIVulkan
         return RHIPhysicalDeviceType::RHI_PhysicalDevice_UnKnown; 
     }
 
-
-    RHIPixelFormatType RHIVulkanConverter::TransformFromVkFormat(VkFormat eFormat)
+    RHIPixelFormatType RHIVulkanConverter::TransformFromVkFormat(VkFormat vkFormat)
     {
-        switch ((int32)eFormat)
+        switch ((int32)vkFormat)
         {
         //8-Bits
         case VK_FORMAT_R8_UNORM:                    return RHIPixelFormatType::RHI_PixelFormat_R8UNorm;
@@ -85,6 +84,25 @@ namespace LostPeterPluginRHIVulkan
         F_Assert(false && "RHIVulkanConverter::TransformFromVkFormat: Wrong VkFormat type !")
         return RHIPixelFormatType::RHI_PixelFormat_Unknown;
     }
+
+    RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
+    {   
+        switch ((int32)vkBufferUsageFlags)
+        {
+        case VK_BUFFER_USAGE_TRANSFER_SRC_BIT:       return RHIBufferUsageBitsType::RHI_BufferUsageBits_CopySrc;
+        case VK_BUFFER_USAGE_TRANSFER_DST_BIT:       return RHIBufferUsageBitsType::RHI_BufferUsageBits_CopyDst;
+        case VK_BUFFER_USAGE_INDEX_BUFFER_BIT:       return RHIBufferUsageBitsType::RHI_BufferUsageBits_Index;
+        case VK_BUFFER_USAGE_VERTEX_BUFFER_BIT:      return RHIBufferUsageBitsType::RHI_BufferUsageBits_Vertex;
+        case VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT:     return RHIBufferUsageBitsType::RHI_BufferUsageBits_Uniform;
+        case VK_BUFFER_USAGE_STORAGE_BUFFER_BIT:     return RHIBufferUsageBitsType::RHI_BufferUsageBits_Storage;
+        case VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT:    return RHIBufferUsageBitsType::RHI_BufferUsageBits_Indirect;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkBufferUsageFlags: Wrong VkBufferUsageFlags type !")
+        }
+        return RHIBufferUsageBitsType::RHI_BufferUsageBits_Uniform;
+    }
+
+
 
 
     ////////////////////// TransformToXXXX ////////////////////////
@@ -162,5 +180,107 @@ namespace LostPeterPluginRHIVulkan
         return VK_FORMAT_UNDEFINED;
     }
 
+    static const String s_nameVkFormatTypes[] = 
+    {
+        //8-Bits
+        "VK_FORMAT_R8_UNORM",                      //0:    R8Unorm
+        "VK_FORMAT_R8_SNORM",                      //1:    R8SNorm
+        "VK_FORMAT_R8_UINT",                       //2:    R8UInt
+        "VK_FORMAT_R8_SINT",                       //3:    R8SInt
+
+        //16-Bits
+        "VK_FORMAT_R16_UINT",                      //4:    R16UInt
+        "VK_FORMAT_R16_SINT",                      //5:    R16SInt
+        "VK_FORMAT_R16_SFLOAT",                    //6:    R16Float
+        "VK_FORMAT_R8G8_UNORM",                    //7:    RG8UNorm
+        "VK_FORMAT_R8G8_SNORM",                    //8:    RG8SNorm
+        "VK_FORMAT_R8G8_UINT",                     //9:    RG8UInt
+        "VK_FORMAT_R8G8_SINT",                     //10:   RG8SInt
+
+        //32-Bits
+        "VK_FORMAT_R32_UINT",                      //11:   R32UInt
+        "VK_FORMAT_R32_SINT",                      //12:   R32UInt
+        "VK_FORMAT_R32_SFLOAT",                    //13:   R32Float
+        "VK_FORMAT_R16G16_UINT",                   //14:   RG16UInt
+        "VK_FORMAT_R16G16_SINT",                   //15:   RG16SInt
+        "VK_FORMAT_R16G16_SFLOAT",                 //16:   RG16Float
+        "VK_FORMAT_R8G8B8A8_UNORM",                //17:   RGBA8UNorm
+        "VK_FORMAT_R8G8B8A8_SRGB",                 //18:   RGBA8UNormSRGB
+        "VK_FORMAT_R8G8B8A8_SNORM",                //19:   RGBA8SNorm
+        "VK_FORMAT_R8G8B8A8_UINT",                 //20:   RGBA8UInt
+        "VK_FORMAT_R8G8B8A8_SINT",                 //21:   RGBA8SInt
+        "VK_FORMAT_B8G8R8A8_UNORM",                //22:   BGRA8UNorm
+        "VK_FORMAT_B8G8R8A8_SRGB",                 //23:   BGRA8UNormSRGB
+        "VK_FORMAT_E5B9G9R9_UFLOAT_PACK32",        //24:   RGB9E5Float
+        "VK_FORMAT_A2R10G10B10_UNORM_PACK32",      //25:   RGB10A2UNorm
+        "VK_FORMAT_B10G11R11_UFLOAT_PACK32",       //26:   RG11B10Float
+
+        //64-Bits
+        "VK_FORMAT_R32G32_UINT",                   //27:   RG32UInt
+        "VK_FORMAT_R32G32_SINT",                   //28:   RG32SInt
+        "VK_FORMAT_R32G32_SFLOAT",                 //29:   RG32Float
+        "VK_FORMAT_R16G16B16A16_UINT",             //30:   RGBA16UInt
+        "VK_FORMAT_R16G16B16A16_SINT",             //31:   RGBA16SInt
+        "VK_FORMAT_R16G16B16A16_SFLOAT",           //32:   RGBA16Float
+
+        //128-Bits
+        "VK_FORMAT_R32G32B32A32_UINT",             //33:   RGBA32UInt
+        "VK_FORMAT_R32G32B32A32_SINT",             //34:   RGBA32SInt
+        "VK_FORMAT_R32G32B32A32_SFLOAT",           //35:   RGBA32Float
+
+        //Depth-Stencil
+        "VK_FORMAT_D16_UNORM",                     //36:   D16UNorm
+        "VK_FORMAT_D24_UNORM_S8_UINT",             //37:   D24UNormS8UInt
+        "VK_FORMAT_D32_SFLOAT",                    //38:   D32Float
+        "VK_FORMAT_D32_SFLOAT_S8_UINT",            //39:   D32FloatS8UInt
+
+        //Features /BC/ETC/ASTC
+
+        "VK_FORMAT_UNDEFINED",                     //40:   Unknown
+    };
+    const String& RHIVulkanConverter::TransformToVkFormatName(RHIPixelFormatType ePixelFormat)
+    {
+        return s_nameVkFormatTypes[(uint32)ePixelFormat];
+    }
+
+    VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
+    {
+        switch (eBufferUsageBits)
+        {
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_CopySrc:       return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_CopyDst:       return VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_Index:         return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_Vertex:        return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_Uniform:       return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_Storage:       return VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+        case RHIBufferUsageBitsType::RHI_BufferUsageBits_Indirect:      return VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkBufferUsageFlags: Wrong RHIBufferUsageBitsType type !")
+        }
+        return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    }
+    VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages)
+    {
+        static std::map<RHIBufferUsageBitsType, VkBufferUsageFlags> s_Rules = 
+        {
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_CopySrc,  VK_BUFFER_USAGE_TRANSFER_SRC_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_CopyDst,  VK_BUFFER_USAGE_TRANSFER_DST_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_Index,    VK_BUFFER_USAGE_INDEX_BUFFER_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_Vertex,   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_Uniform,  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_Storage,  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT },
+            { RHIBufferUsageBitsType::RHI_BufferUsageBits_Indirect, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT },
+        };
+        VkBufferUsageFlags vkResult = {};
+        for (std::map<RHIBufferUsageBitsType, VkBufferUsageFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsBufferUsages & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
 
 }; //LostPeterPluginRHIVulkan

@@ -24,6 +24,17 @@ namespace LostPeterRHI
 
     public:
     protected:
+        RHIPixelFormatInfoPtrVector m_aPixelFormatInfos;
+        RHIPixelFormatInfoPtrMap m_mapPixelFormatInfos;
+        RHIPixelFormatInfoPtrMap m_mapPixelFormatInfosOriginal;
+
+    public:
+        F_FORCEINLINE const RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() const { return m_aPixelFormatInfos; }
+        F_FORCEINLINE RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() { return m_aPixelFormatInfos; }
+        F_FORCEINLINE const RHIPixelFormatInfoPtrMap& GetPixelFormatInfoPtrMap() const { return m_mapPixelFormatInfos; }
+        F_FORCEINLINE RHIPixelFormatInfoPtrMap& GetPixelFormatInfoPtrMap() { return m_mapPixelFormatInfos; }
+        F_FORCEINLINE const RHIPixelFormatInfoPtrMap& GetPixelFormatInfoPtrMapOriginal() const { return m_mapPixelFormatInfosOriginal; }
+        F_FORCEINLINE RHIPixelFormatInfoPtrMap& GetPixelFormatInfoPtrMapOriginal() { return m_mapPixelFormatInfosOriginal; }
 
 
     public:
@@ -44,9 +55,13 @@ namespace LostPeterRHI
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo) = 0;
         virtual RHICommandBuffer* CreateCommandBuffer() = 0;
         virtual RHIFence* CreateFence() = 0;
+        virtual RHIFence* CreateFence(bool bIsSignaled) = 0;
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat) = 0;
         virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat) = 0;
+
+    protected:
+        virtual void destroyPixelFormatInfos();
     };
 
 }; //LostPeterRHI

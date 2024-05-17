@@ -56,6 +56,7 @@ namespace LostPeterPluginRHIVulkan
     RHIVulkanDebug::RHIVulkanDebug(RHIVulkanInstance* pInstance)
         : m_pInstance(pInstance)
         , m_vkDebugReport(VK_NULL_HANDLE)
+        , m_vkSetDebugUtilsObjectNameEXT(VK_NULL_HANDLE)
     {
         F_Assert(m_pInstance && "RHIVulkanDebug::RHIVulkanDebug")
         createDebugReport();
@@ -68,6 +69,20 @@ namespace LostPeterPluginRHIVulkan
     RHIVulkanDebug::~RHIVulkanDebug()
     {
         destroyDebugReport();
+    }
+
+    void RHIVulkanDebug::SetDebugObject(VkDevice vkDevice, VkObjectType objectType, uint64_t objectHandle, const char* objectName)
+    {
+        if (m_vkSetDebugUtilsObjectNameEXT == VK_NULL_HANDLE)
+            return;
+
+        VkDebugUtilsObjectNameInfoEXT info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT };
+        info.objectType    = objectType;
+        info.objectHandle  = objectHandle;
+        info.pObjectName   = objectName;
+        m_vkSetDebugUtilsObjectNameEXT(vkDevice, &info);
+
+        F_LogInfo("RHIVulkanDebug::SetDebugObject: Success to call VkDebugUtilsObjectNameInfoEXT, obj: [%s] !", objectName);
     }
 
     void RHIVulkanDebug::createDebugReport()
@@ -94,6 +109,9 @@ namespace LostPeterPluginRHIVulkan
             return;
         }
         F_LogInfo("RHIVulkanDebug::createDebugReport: Success to call vkCreateDebugReportCallbackEXT !");
+
+        //3> vkSetDebugUtilsObjectNameEXT
+        m_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(m_pInstance->GetVkInstance(), "vkSetDebugUtilsObjectNameEXT"));
     }
 
     void RHIVulkanDebug::destroyDebugReport()
@@ -113,6 +131,9 @@ namespace LostPeterPluginRHIVulkan
         pFunc(m_pInstance->GetVkInstance(), m_vkDebugReport, nullptr);
         m_vkDebugReport = VK_NULL_HANDLE;
         F_LogInfo("RHIVulkanDebug::destroyDebugReport: Success to call vkDestroyDebugReportCallbackEXT !");
+
+        //3> vkSetDebugUtilsObjectNameEXT
+        m_vkSetDebugUtilsObjectNameEXT = VK_NULL_HANDLE;
     }
 
 }; //LostPeterPluginRHIVulkan

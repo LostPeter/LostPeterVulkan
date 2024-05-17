@@ -16,19 +16,23 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    class rhiVulkanExport RHIVulkanConverter 
+    class RHIVulkanConverter 
     {
     public:
         ////////////////////// TransformFromXXXX //////////////////////
-        static RHIPhysicalDeviceType TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType ePhysicalDevice);
+        static RHIPhysicalDeviceType TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType vkPhysicalDevice);
+        static RHIPixelFormatType TransformFromVkFormat(VkFormat vkFormat);
 
-        static RHIPixelFormatType TransformFromVkFormat(VkFormat eFormat);
+        static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
 
     public:
         ////////////////////// TransformToXXXX ////////////////////////
         static VkPhysicalDeviceType TransformToVkPhysicalDeviceType(RHIPhysicalDeviceType ePhysicalDevice);
-
         static VkFormat TransformToVkFormat(RHIPixelFormatType ePixelFormat);
+        static const String& TransformToVkFormatName(RHIPixelFormatType ePixelFormat);
+
+        static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
+        static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);
     };
 
 }; //LostPeterPluginRHIVulkan

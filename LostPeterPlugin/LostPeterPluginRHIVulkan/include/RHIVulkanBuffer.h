@@ -19,12 +19,25 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanBuffer : public RHIBuffer
     {
     public:
-        RHIVulkanBuffer(const RHIBufferCreateInfo& createInfo);
+        RHIVulkanBuffer(RHIVulkanDevice* pDevice, const RHIBufferCreateInfo& createInfo);
         virtual ~RHIVulkanBuffer();
 
     public:
     protected:
-        std::vector<uint8> m_aVulkanData;
+        RHIVulkanDevice* m_pDevice;
+        VkBuffer m_vkBuffer;
+        VmaAllocation m_vmaAllocation;
+
+        uint32 m_nSize;
+        RHIBufferUsageFlags m_flagsBufferUsages;
+        String m_strDebugName;
+
+    public:
+        F_FORCEINLINE RHIVulkanDevice* GetDevice() { return m_pDevice; }
+        F_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
+        F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }
+        F_FORCEINLINE uint32 GetSize() { return m_nSize; }
+        F_FORCEINLINE const RHIBufferUsageFlags& GetBufferUsageFlags() { return m_flagsBufferUsages; }
 
     public:
         virtual void Destroy();
@@ -32,6 +45,9 @@ namespace LostPeterPluginRHIVulkan
         virtual void* Map(RHIMapType eMap, uint32 nOffset, uint32 nLength);
         virtual void UnMap();
         virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo);
+
+    protected:
+        void createBuffer();
     };
     
 }; //LostPeterPluginRHIVulkan

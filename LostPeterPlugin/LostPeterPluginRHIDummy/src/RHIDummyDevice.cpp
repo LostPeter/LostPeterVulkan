@@ -121,7 +121,11 @@ namespace LostPeterPluginRHIDummy
 
     RHIFence* RHIDummyDevice::CreateFence()
     {
-        return new RHIDummyFence(*this);
+        return new RHIDummyFence();
+    }
+    RHIFence* RHIDummyDevice::CreateFence(bool bIsSignaled)
+    {
+        return new RHIDummyFence();
     }
 
     bool RHIDummyDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)

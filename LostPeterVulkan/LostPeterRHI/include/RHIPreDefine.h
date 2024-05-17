@@ -17,7 +17,6 @@
 using namespace LostPeterFoundation;
 
 
-
 #if F_PLATFORM == F_PLATFORM_WINDOW
 	#if defined (RHI_EXPORTS)
 		#define rhiExport            	__declspec(dllexport)
@@ -34,13 +33,85 @@ using namespace LostPeterFoundation;
 namespace LostPeterRHI
 {
     ////////////////////////////// Define //////////////////////////////
+    rhiExport bool RHI_IsDebug();
 
 
     ////////////////////////////// Typedef /////////////////////////////
+    typedef uint32 RHIEnumType;
+
+    class rhiExport RHIFlags 
+	{
+	public:
+        RHIFlags() 
+            : m_nValue(0)
+		{
+
+		}
+		RHIFlags(uint32 inValue) 
+			: m_nValue(inValue) 
+		{
+
+		}
+        ~RHIFlags()
+		{
+
+		}
+        
+	public:
+        uint32 Value() const
+        {
+            return m_nValue;
+        }
+
+        explicit operator bool()
+        {
+            return m_nValue != 0;
+        }
+
+        bool operator ==(RHIFlags other) const
+        {
+            return m_nValue == other.m_nValue;
+        }
+
+        bool operator !=(RHIFlags other) const
+        {
+            return m_nValue != other.m_nValue;
+        }
+
+        bool operator ==(uint32 inValue) const
+        {
+            return m_nValue == inValue;
+        }
+
+        bool operator !=(uint32 inValue) const
+        {
+            return m_nValue != inValue;
+        }
+
+        RHIFlags operator &(RHIFlags a)
+        {
+            return RHIFlags(a.Value() & Value());
+        }
+        RHIFlags operator &(uint32 a)
+        {
+            return RHIFlags(a & Value());
+        }
+
+        RHIFlags operator |(RHIFlags a)
+        {
+            return RHIFlags(a.Value() | Value());
+        }
+        RHIFlags operator |(uint32 a)
+        {
+            return RHIFlags(a | Value());
+        }
+
+    private:
+        uint32 m_nValue;
+    };
 
 
     ////////////////////////////// Enum ////////////////////////////////
-	using RHIEnumType = uint32;
 
 	//RHIType
 	enum class RHIType : RHIEnumType 
@@ -480,8 +551,11 @@ namespace LostPeterRHI
         //Features /BC/ETC/ASTC
 
         RHI_PixelFormat_Unknown,                        //40: Unknown
-        RHI_PixelFormat_Count,
+        RHI_PixelFormat_Count, 
     };
+    rhiExport const String& RHI_GetPixelFormatTypeName(RHIPixelFormatType type);
+    rhiExport const String& RHI_GetPixelFormatTypeName(int type);
+    rhiExport RHIPixelFormatType RHI_ParsePixelFormatType(const String& strName);
 
 	//RHIVertexFormatType
     enum class RHIVertexFormatType : RHIEnumType 
@@ -526,105 +600,16 @@ namespace LostPeterRHI
     };
 
 
-
-	//RHIFlags
-	template <typename T = uint32>
-    class RHIFlags 
-	{
-    public:
-        using UnderlyingType = T;
-
-	public:
-        RHIFlags() 
-		{
-
-		}
-		RHIFlags(T inValue) 
-			: value(inValue) 
-		{
-
-		}
-        ~RHIFlags()
-		{
-
-		}
-        
-	public:
-        template <typename E>
-        RHIFlags(E e) 
-			: value(static_cast<T>(e)) 
-		{
-
-		} 
-
-        T Value() const
-        {
-            return value;
-        }
-
-        explicit operator bool()
-        {
-            return value;
-        }
-
-        bool operator ==(RHIFlags other) const
-        {
-            return value == other.value;
-        }
-
-        bool operator !=(RHIFlags other) const
-        {
-            return value != other.value;
-        }
-
-        bool operator ==(T inValue) const
-        {
-            return value == inValue;
-        }
-
-        bool operator !=(T inValue) const
-        {
-            return value != inValue;
-        }
-
-        template <typename E>
-        bool operator ==(E e) const
-        {
-            return value == static_cast<T>(e);
-        }
-
-        template <typename E>
-        bool operator !=(E e) const
-        {
-            return value != static_cast<T>(e);
-        }
-
-    private:
-        T value;
-    };
-
-	template <typename T>
-    RHIFlags<T> operator &(RHIFlags<T> a, RHIFlags<T> b)
-    {
-        return RHIFlags<T>(a.Value() & b.Value());
-    }
-
-    template <typename T>
-    RHIFlags<T> operator |(RHIFlags<T> a, RHIFlags<T> b)
-    {
-        return RHIFlags<T>(a.Value() | b.Value());
-    }
-
 	#define RHI_FLAGS_DECLARE(FlagsType, BitsType) \
-		FlagsType operator &(BitsType a, BitsType b); \
-		FlagsType operator &(FlagsType a, BitsType b); \
-		FlagsType operator |(BitsType a, BitsType b); \
-		FlagsType operator |(FlagsType a, BitsType b); \
+		rhiExport FlagsType operator &(BitsType a, BitsType b); \
+		rhiExport FlagsType operator &(FlagsType a, BitsType b); \
+		rhiExport FlagsType operator |(BitsType a, BitsType b); \
+		rhiExport FlagsType operator |(FlagsType a, BitsType b); \
 
-	
+
 	//RHIBufferUsageBitsType
-	using RHIBufferUsageFlags = RHIFlags<>;
-    enum class rhiExport RHIBufferUsageBitsType : RHIBufferUsageFlags::UnderlyingType 
+    using RHIBufferUsageFlags = RHIFlags;
+    enum class rhiExport RHIBufferUsageBitsType : RHIEnumType
 	{
         RHI_BufferUsageBits_MapRead 		= 0x0001,	//0: MapRead
         RHI_BufferUsageBits_MapWrite     	= 0x0002,	//1: MapWrite
@@ -642,8 +627,8 @@ namespace LostPeterRHI
     RHI_FLAGS_DECLARE(RHIBufferUsageFlags, RHIBufferUsageBitsType)
 
 	//RHITextureUsageBitsType
-    using RHITextureUsageFlags = RHIFlags<>;
-    enum class rhiExport RHITextureUsageBitsType : RHITextureUsageFlags::UnderlyingType 
+    using RHITextureUsageFlags = RHIFlags;
+    enum class rhiExport RHITextureUsageBitsType : RHIEnumType
 	{
         RHI_TextureUsageBits_CopySrc                 = 0x0001,	//0: CopySrc
         RHI_TextureUsageBits_CopyDst                 = 0x0002,	//1: CopyDst
@@ -657,8 +642,8 @@ namespace LostPeterRHI
     RHI_FLAGS_DECLARE(RHITextureUsageFlags, RHITextureUsageBitsType)
 
 	//RHIShaderStageBitsType
-    using RHIShaderStageFlags = RHIFlags<>;
-    enum class rhiExport RHIShaderStageBitsType : RHIShaderStageFlags::UnderlyingType 
+    using RHIShaderStageFlags = RHIFlags;
+    enum class rhiExport RHIShaderStageBitsType : RHIEnumType
 	{
         RHI_ShaderStageBits_Vertex   = 0x0001,		//0: Vertex
         RHI_ShaderStageBits_Pixel    = 0x0002,		//1: Pixel 
@@ -672,8 +657,8 @@ namespace LostPeterRHI
     RHI_FLAGS_DECLARE(RHIShaderStageFlags, RHIShaderStageBitsType)
 
 	//RHIColorWriteBitsType
-    using RHIColorWriteFlags = RHIFlags<>;
-    enum class rhiExport RHIColorWriteBitsType : RHIColorWriteFlags::UnderlyingType 
+    using RHIColorWriteFlags = RHIFlags;
+    enum class rhiExport RHIColorWriteBitsType : RHIEnumType
 	{
         RHI_ColorWriteBits_Red   = 0x1,		//0: Red
         RHI_ColorWriteBits_Green = 0x2,		//1: Green
@@ -713,6 +698,7 @@ namespace LostPeterRHI
 	class RHITextureView;
 	class RHIUtil;
 
+    typedef std::vector<RHIPixelFormatType> RHIPixelFormatTypeVector;
 	typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
 
 
@@ -774,6 +760,28 @@ namespace LostPeterRHI
         float b;
         float a;
     };
+
+    struct rhiExport RHIPixelFormatInfo
+    {
+        String strName;
+        RHIPixelFormatType ePixelFormat;
+        bool bIsSupported;
+
+        String strNameOriginal;
+        uint32 nTypeOriginal;
+
+        RHIPixelFormatInfo()
+            : strName("")
+            , ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_Unknown)
+            , bIsSupported(false)
+            , strNameOriginal("")
+            , nTypeOriginal(-1)
+        {
+
+        }
+    };
+    typedef std::vector<RHIPixelFormatInfo*> RHIPixelFormatInfoPtrVector;
+    typedef std::map<uint32, RHIPixelFormatInfo*> RHIPixelFormatInfoPtrMap;
 
 	//RHIPhysicalDeviceProperty
 	struct rhiExport RHIPhysicalDeviceProperty

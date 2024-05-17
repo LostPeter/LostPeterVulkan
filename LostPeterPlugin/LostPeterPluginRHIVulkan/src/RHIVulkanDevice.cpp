@@ -27,6 +27,8 @@
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanFence.h"
 #include "../include/RHIVulkanVolk.h"
+#include "../include/RHIVulkanDebug.h"
+#include "../include/RHIVulkanConverter.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -34,6 +36,7 @@ namespace LostPeterPluginRHIVulkan
         : RHIDevice(createInfo)
         , m_pPhysicalDevice(pPhysicalDevice)
         , m_vkDevice(VK_NULL_HANDLE)
+        , m_vmaAllocator(VK_NULL_HANDLE)
         , m_vkCommandPoolTransfer(VK_NULL_HANDLE)
         , m_vkCommandPoolGraphics(VK_NULL_HANDLE)
         , m_vkCommandPoolCompute(VK_NULL_HANDLE)
@@ -54,6 +57,13 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanDevice::Destroy()
     {
+        destroyPixelFormatInfos();
+        if (m_vmaAllocator != VK_NULL_HANDLE)
+        {
+            vmaDestroyAllocator(m_vmaAllocator);
+        }
+        m_vmaAllocator = VK_NULL_HANDLE;
+
         m_pQueuePresent = nullptr;
         F_DELETE(m_pQueueTransfer)
         F_DELETE(m_pQueueCompute)
@@ -110,7 +120,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHIBuffer* RHIVulkanDevice::CreateBuffer(const RHIBufferCreateInfo& createInfo)
     {
-        return new RHIVulkanBuffer(createInfo);
+        return new RHIVulkanBuffer(this, createInfo);
     }
 
     RHITexture* RHIVulkanDevice::CreateTexture(const RHITextureCreateInfo& createInfo)
@@ -160,7 +170,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIFence* RHIVulkanDevice::CreateFence()
     {
-        return new RHIVulkanFence(*this);
+        return new RHIVulkanFence(this, false);
+    }
+    RHIFence* RHIVulkanDevice::CreateFence(bool bIsSignaled)
+    {
+        return new RHIVulkanFence(this, bIsSignaled);
     }
 
     bool RHIVulkanDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)
@@ -169,7 +183,8 @@ namespace LostPeterPluginRHIVulkan
     }
     bool RHIVulkanDevice::IsPixelFormatSupported(RHIPixelFormatType ePixelFormat)
     {
-        
+        VkFormat typeFormat = RHIVulkanConverter::TransformToVkFormat(ePixelFormat);
+        return IsPixelFormatSupported(typeFormat);
     }
 
     bool RHIVulkanDevice::IsPixelFormatSupported(VkFormat typeFormat)
@@ -247,6 +262,14 @@ namespace LostPeterPluginRHIVulkan
         return true;
     }
 
+    void RHIVulkanDevice::SetDebugObject(VkObjectType objectType, uint64_t objectHandle, const char* objectName)
+    {
+        RHIVulkanDebug* pDebug = m_pPhysicalDevice->GetInstance()->GetDebug();
+        if (!pDebug)
+            return;
+        pDebug->SetDebugObject(m_vkDevice, objectType, objectHandle, objectName);
+    }
+
 
     bool RHIVulkanDevice::init(bool bIsEnableValidationLayers)
     {   
@@ -265,13 +288,21 @@ namespace LostPeterPluginRHIVulkan
         }
         F_LogInfo("RHIVulkanDevice::init: 1> createDevice success !");
 
-        //2> checkPixelFormats
-        if (!checkPixelFormats())
+        //2> createVmaAllocator
+        if (!createVmaAllocator())
         {
-            F_LogError("*********************** RHIVulkanDevice::init: 2> checkPixelFormats failed !");
+            F_LogError("*********************** RHIVulkanDevice::init: 2> createVmaAllocator failed !");
             return false;
         }
-        F_LogInfo("RHIVulkanDevice::init: 2> checkPixelFormats success !");
+        F_LogInfo("RHIVulkanDevice::init: 2> createVmaAllocator success !");    
+        
+        //3> checkPixelFormats
+        if (!checkPixelFormats())
+        {
+            F_LogError("*********************** RHIVulkanDevice::init: 3> checkPixelFormats failed !");
+            return false;
+        }
+        F_LogInfo("RHIVulkanDevice::init: 3> checkPixelFormats success !");
 
 
 
@@ -438,9 +469,57 @@ namespace LostPeterPluginRHIVulkan
         m_vkCommandPoolCompute = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Compute);
         return true;
     }
+    bool RHIVulkanDevice::createVmaAllocator()
+    {   
+        VmaVulkanFunctions vulkanFunctions = {};
+        vulkanFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+        vulkanFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+
+        VmaAllocatorCreateInfo info = {};
+        info.vulkanApiVersion = VK_API_VERSION_1_2;
+        info.instance = m_pPhysicalDevice->GetInstance()->GetVkInstance();
+        info.physicalDevice = m_pPhysicalDevice->GetVkPhysicalDevice();
+        info.device = m_vkDevice;
+        info.pVulkanFunctions = &vulkanFunctions;
+
+        if (!RHI_CheckVkResult(vmaCreateAllocator(&info, &m_vmaAllocator), "vmaCreateAllocator"))
+        {
+            F_LogError("*********************** RHIVulkanDevice::createVmaAllocator: vmaCreateAllocator failed !");
+            return false;
+        }
+        return true;
+    }
     bool RHIVulkanDevice::checkPixelFormats()
     {   
+        int count = (int)RHIPixelFormatType::RHI_PixelFormat_Count;
+        for (int i = 0; i < count; i++)
+        {
+            RHIPixelFormatType ePixelFormat = (RHIPixelFormatType)i;
 
+            RHIPixelFormatInfo* pInfo = new RHIPixelFormatInfo();
+            pInfo->strName = RHI_GetPixelFormatTypeName(ePixelFormat);
+            pInfo->ePixelFormat = ePixelFormat;
+            VkFormat vkFormat = RHIVulkanConverter::TransformToVkFormat(ePixelFormat);
+            pInfo->nTypeOriginal = (uint32)vkFormat;
+            pInfo->strNameOriginal = RHIVulkanConverter::TransformToVkFormatName(ePixelFormat);
+            if (i != count - 1)
+            {
+                pInfo->bIsSupported = IsPixelFormatSupported(vkFormat);
+            }
+            else
+            {
+                pInfo->bIsSupported = false;
+            }
+            m_aPixelFormatInfos.push_back(pInfo);
+            m_mapPixelFormatInfos[(uint32)pInfo->ePixelFormat] = pInfo;
+            m_mapPixelFormatInfosOriginal[pInfo->nTypeOriginal] = pInfo;
+
+            F_LogInfo("RHIVulkanDevice::checkPixelFormats: [%d]: [%s] - [%s] is supported [%s] !", 
+                      i, 
+                      pInfo->strName.c_str(), 
+                      pInfo->strNameOriginal.c_str(),
+                      pInfo->bIsSupported ? "true" : "false");
+        }
         return true;
     }
 
@@ -660,6 +739,23 @@ namespace LostPeterPluginRHIVulkan
         {
             vkDestroyFence(this->m_vkDevice, vkFence, RHI_CPU_ALLOCATOR);
         }
+    }
+
+    bool RHIVulkanDevice::WaitVkFence(const VkFence& vkFence)
+    {
+        return vkWaitForFences(this->m_vkDevice, 1, &vkFence, VK_TRUE, UINT64_MAX) == VK_SUCCESS;
+    }
+    bool RHIVulkanDevice::WaitVkFences(const VkFenceVector& aFences)
+    {
+        return vkWaitForFences(this->m_vkDevice, (uint32_t)aFences.size(), aFences.data(), VK_TRUE, UINT64_MAX) == VK_SUCCESS;
+    }
+    bool RHIVulkanDevice::ResetVkFence(const VkFence& vkFence)
+    {
+        return vkResetFences(this->m_vkDevice, 1, &vkFence) == VK_SUCCESS;
+    }
+    bool RHIVulkanDevice::ResetVkFences(const VkFenceVector& aFences)
+    {
+        return vkResetFences(this->m_vkDevice, (uint32_t)aFences.size(), aFences.data()) == VK_SUCCESS;
     }
 
     // void RHIVulkanDevice::DestroyVkFence(VulkanFence* pFence)

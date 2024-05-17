@@ -44,6 +44,7 @@ namespace LostPeterPluginRHIDummy
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();
+        virtual RHIFence* CreateFence(bool bIsSignaled);
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
         virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat);

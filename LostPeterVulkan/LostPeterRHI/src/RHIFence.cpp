@@ -13,7 +13,7 @@
 
 namespace LostPeterRHI
 {
-    RHIFence::RHIFence(RHIDevice& device)
+    RHIFence::RHIFence()
     {
 
     }

@@ -73,6 +73,7 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();
+        virtual RHIFence* CreateFence(bool bIsSignaled);
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
         virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat);
@@ -83,12 +84,15 @@ namespace LostPeterPluginRHIVulkan
         void AddAppDeviceExtensions(const char* szNameExtension);
         bool HasExtensionName(const char* szNameExtension);
 
-        bool CreateQueuePresent(VkSurfaceKHR vkSurfaceKHR);
         bool IsSupportPresent(RHIVulkanQueue* pQueue, VkSurfaceKHR vkSurfaceKHR);
+        bool CreateQueuePresent(VkSurfaceKHR vkSurfaceKHR);
+
+        void SetDebugObject(VkObjectType objectType, uint64_t objectHandle, const char* objectName);
 
     protected:
         bool init(bool bIsEnableValidationLayers);
         bool createDevice(bool bIsEnableValidationLayers);
+        bool createVmaAllocator();
         bool checkPixelFormats();
 
     private:
@@ -148,6 +152,12 @@ namespace LostPeterPluginRHIVulkan
         VkFence CreateVkFence(bool isCreateSignaled);
         bool CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
         void DestroyVkFence(const VkFence& vkFence);
+
+        bool WaitVkFence(const VkFence& vkFence);
+        bool WaitVkFences(const VkFenceVector& aFences);
+        bool ResetVkFence(const VkFence& vkFence);
+        bool ResetVkFences(const VkFenceVector& aFences);
+
 
         // void DestroyVkFence(VulkanFence* pFence);
         // void DestroyVkFences(VulkanFencePtrVector& aFence);

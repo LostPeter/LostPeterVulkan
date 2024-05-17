@@ -23,5 +23,16 @@ namespace LostPeterRHI
         
     }
     
+    void RHIDevice::destroyPixelFormatInfos()
+    {
+        size_t count = m_aPixelFormatInfos.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            F_DELETE(m_aPixelFormatInfos[i]);
+        }
+        m_aPixelFormatInfos.clear();
+        m_mapPixelFormatInfos.clear();
+        m_mapPixelFormatInfosOriginal.clear();
+    }
 
 }; //LostPeterRHI

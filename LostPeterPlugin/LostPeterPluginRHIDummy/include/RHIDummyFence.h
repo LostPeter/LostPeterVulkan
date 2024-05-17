@@ -19,7 +19,7 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyFence : public RHIFence
     {
     public:
-        RHIDummyFence(RHIDevice& device);
+        RHIDummyFence();
         virtual ~RHIDummyFence();
 
     public:

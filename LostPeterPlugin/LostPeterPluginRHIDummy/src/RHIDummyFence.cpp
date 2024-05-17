@@ -13,8 +13,7 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyFence::RHIDummyFence(RHIDevice& device)
-        : RHIFence(device)
+    RHIDummyFence::RHIDummyFence()
     {
 
     }

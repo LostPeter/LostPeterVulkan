@@ -103,7 +103,14 @@
     "memory_resource": "cpp",
     "hash_map": "cpp",
     "hash_set": "cpp",
-    "__functional_base_03": "cpp"
+    "__functional_base_03": "cpp",
+    "__bits": "cpp",
+    "concepts": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "*.tcc": "cpp",
+    "shared_mutex": "cpp",
+    "stop_token": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",

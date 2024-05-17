@@ -26,11 +26,14 @@ namespace LostPeterPluginRHIVulkan
     protected:
         RHIVulkanInstance* m_pInstance;
         VkDebugReportCallbackEXT m_vkDebugReport;
+        PFN_vkSetDebugUtilsObjectNameEXT m_vkSetDebugUtilsObjectNameEXT;
     
     public:
         F_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
 
     public:
+        void SetDebugObject(VkDevice vkDevice, VkObjectType objectType, uint64_t objectHandle, const char* objectName);
+
     protected:
         void createDebugReport();
         void destroyDebugReport();
