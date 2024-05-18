@@ -20,11 +20,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyComputePassCommandEncoder : public RHIComputePassCommandEncoder
     {
     public:
-        RHIDummyComputePassCommandEncoder(const RHIDummyCommandBuffer& commandBuffer);
+        RHIDummyComputePassCommandEncoder(RHIDummyCommandEncoder* pDummyCommandEncoder);
         virtual ~RHIDummyComputePassCommandEncoder();
 
     public:
     protected:
+        RHIDummyCommandEncoder* m_pDummyCommandEncoder;
+
+    public:
+        F_FORCEINLINE RHIDummyCommandEncoder* GetDummyCommandEncoder() { return m_pDummyCommandEncoder; }
 
         
     public:
@@ -41,12 +45,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyGraphicsPassCommandEncoder : public RHIGraphicsPassCommandEncoder
     {
     public:
-        RHIDummyGraphicsPassCommandEncoder(const RHIDummyCommandBuffer& commandBuffer);
+        RHIDummyGraphicsPassCommandEncoder(RHIDummyCommandEncoder* pDummyCommandEncoder);
         virtual ~RHIDummyGraphicsPassCommandEncoder();
 
     public:
     protected:
-        
+        RHIDummyCommandEncoder* m_pDummyCommandEncoder;
+
+    public:
+        F_FORCEINLINE RHIDummyCommandEncoder* GetDummyCommandEncoder() { return m_pDummyCommandEncoder; }
+
 
     public:
         virtual void Destroy();
@@ -70,12 +78,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyCommandEncoder : public RHICommandEncoder
     {
     public:
-        RHIDummyCommandEncoder(const RHIDummyCommandBuffer& commandBuffer);
+        RHIDummyCommandEncoder(RHIDummyCommandBuffer* pDummyCommandBuffer);
         virtual ~RHIDummyCommandEncoder();
 
     public:
     protected:
-        const RHIDummyCommandBuffer& m_commandBuffer;
+        RHIDummyCommandBuffer* m_pDummyCommandBuffer;
+
+    public:
+        F_FORCEINLINE RHIDummyCommandBuffer* GetDummyCommandBuffer() { return m_pDummyCommandBuffer; }
 
     public:
         virtual void Destroy();

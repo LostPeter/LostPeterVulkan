@@ -19,11 +19,15 @@ namespace LostPeterRHI
     class rhiExport RHIPhysicalDevice : public FNonCopyable
     {
     public:
-        RHIPhysicalDevice();
+        RHIPhysicalDevice(RHIInstance* pInstance);
         virtual ~RHIPhysicalDevice();
 
     public:
     protected:
+        RHIInstance* m_pInstance;
+
+    public:
+        F_FORCEINLINE RHIInstance* GetInstance() const { return m_pInstance; }
 
 
     public:

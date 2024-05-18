@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIPhysicalDevice.h"
+#include "../include/RHIInstance.h"
 
 namespace LostPeterRHI
 {
-    RHIPhysicalDevice::RHIPhysicalDevice()
+    RHIPhysicalDevice::RHIPhysicalDevice(RHIInstance* pInstance)
+        : m_pInstance(pInstance)
     {
-
+        F_Assert(m_pInstance && "RHIPhysicalDevice::RHIPhysicalDevice")
     }
 
     RHIPhysicalDevice::~RHIPhysicalDevice()

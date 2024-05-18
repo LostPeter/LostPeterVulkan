@@ -10,14 +10,18 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanCommandEncoder.h"
+#include "../include/RHIVulkanCommandBuffer.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     //////////////////////// RHIVulkanComputePassCommandEncoder ////////////////////////
-    RHIVulkanComputePassCommandEncoder::RHIVulkanComputePassCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer)
+    RHIVulkanComputePassCommandEncoder::RHIVulkanComputePassCommandEncoder(RHIVulkanCommandEncoder* pVulkanCommandEncoder)
+        : RHIComputePassCommandEncoder(pVulkanCommandEncoder)
+        , m_pVulkanCommandEncoder(pVulkanCommandEncoder)
     {
-
-    }
+        F_Assert(m_pVulkanCommandEncoder && "RHIVulkanComputePassCommandEncoder::RHIVulkanComputePassCommandEncoder")
+    }   
 
     RHIVulkanComputePassCommandEncoder::~RHIVulkanComputePassCommandEncoder()
     {
@@ -51,10 +55,12 @@ namespace LostPeterPluginRHIVulkan
 
 
     //////////////////////// RHIVulkanGraphicsPassCommandEncoder ///////////////////////
-    RHIVulkanGraphicsPassCommandEncoder::RHIVulkanGraphicsPassCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer)
+    RHIVulkanGraphicsPassCommandEncoder::RHIVulkanGraphicsPassCommandEncoder(RHIVulkanCommandEncoder* pVulkanCommandEncoder)
+        : RHIGraphicsPassCommandEncoder(pVulkanCommandEncoder)
+        , m_pVulkanCommandEncoder(pVulkanCommandEncoder)
     {
-
-    }
+        F_Assert(m_pVulkanCommandEncoder && "RHIVulkanGraphicsPassCommandEncoder::RHIVulkanGraphicsPassCommandEncoder")
+    }   
 
     RHIVulkanGraphicsPassCommandEncoder::~RHIVulkanGraphicsPassCommandEncoder()
     {
@@ -128,10 +134,11 @@ namespace LostPeterPluginRHIVulkan
 
 
     //////////////////////// RHIVulkanCommandEncoder ///////////////////////////////////
-    RHIVulkanCommandEncoder::RHIVulkanCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer)
-        : m_commandBuffer(commandBuffer)
+    RHIVulkanCommandEncoder::RHIVulkanCommandEncoder(RHIVulkanCommandBuffer* pVulkanCommandBuffer)
+        : RHICommandEncoder(pVulkanCommandBuffer)
+        , m_pVulkanCommandBuffer(pVulkanCommandBuffer)
     {
-
+        F_Assert(m_pVulkanCommandBuffer && "RHIVulkanCommandEncoder::RHIVulkanCommandEncoder")
     }
 
     RHIVulkanCommandEncoder::~RHIVulkanCommandEncoder()
@@ -171,12 +178,12 @@ namespace LostPeterPluginRHIVulkan
 
     RHIVulkanComputePassCommandEncoder* RHIVulkanCommandEncoder::BeginComputePass()
     {
-        return new RHIVulkanComputePassCommandEncoder(m_commandBuffer);
+        return new RHIVulkanComputePassCommandEncoder(this);
     }
 
     RHIVulkanGraphicsPassCommandEncoder* RHIVulkanCommandEncoder::BeginGraphicsPass(const RHIGraphicsPassBeginInfo* pBeginInfo)
     {
-        return new RHIVulkanGraphicsPassCommandEncoder(m_commandBuffer);
+        return new RHIVulkanGraphicsPassCommandEncoder(this);
     }
 
     void RHIVulkanCommandEncoder::SwapChainSync(RHISwapChain* pSwapChain)

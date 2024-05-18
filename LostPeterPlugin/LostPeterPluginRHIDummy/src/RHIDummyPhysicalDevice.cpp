@@ -10,13 +10,16 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyPhysicalDevice.h"
+#include "../include/RHIDummyInstance.h"
 #include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyPhysicalDevice::RHIDummyPhysicalDevice()
+    RHIDummyPhysicalDevice::RHIDummyPhysicalDevice(RHIDummyInstance* pDummyInstance)
+        : RHIPhysicalDevice(pDummyInstance)
+        , m_pDummyInstance(pDummyInstance)
     {
-
+        F_Assert(m_pDummyInstance && "RHIDummyPhysicalDevice::RHIDummyPhysicalDevice")
     }
 
     RHIDummyPhysicalDevice::~RHIDummyPhysicalDevice()

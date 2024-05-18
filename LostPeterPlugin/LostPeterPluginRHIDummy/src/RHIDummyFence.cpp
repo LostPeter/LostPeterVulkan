@@ -10,12 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyFence.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyFence::RHIDummyFence()
+    RHIDummyFence::RHIDummyFence(RHIDummyDevice* pDummyDevice, bool bIsSignaled)
+        : RHIFence(pDummyDevice)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyFence::RHIDummyFence")
     }
 
     RHIDummyFence::~RHIDummyFence()

@@ -54,7 +54,7 @@ namespace LostPeterPluginRHIDummy
         F_Assert("RHIDummyDevice::GetQueue" && eQueue == RHIQueueType::RHI_Queue_Graphics);
         if (m_pQueue == nullptr)
         {
-            m_pQueue = new RHIDummyQueue();
+            m_pQueue = new RHIDummyQueue(this);
         }
         return m_pQueue;
     }
@@ -71,7 +71,7 @@ namespace LostPeterPluginRHIDummy
 
     RHIBuffer* RHIDummyDevice::CreateBuffer(const RHIBufferCreateInfo& createInfo)
     {
-        return new RHIDummyBuffer(createInfo);
+        return new RHIDummyBuffer(this, createInfo);
     }
 
     RHITexture* RHIDummyDevice::CreateTexture(const RHITextureCreateInfo& createInfo)
@@ -116,16 +116,16 @@ namespace LostPeterPluginRHIDummy
 
     RHICommandBuffer* RHIDummyDevice::CreateCommandBuffer()
     {
-        return new RHIDummyCommandBuffer();
+        return new RHIDummyCommandBuffer(this);
     }
 
     RHIFence* RHIDummyDevice::CreateFence()
     {
-        return new RHIDummyFence();
+        return new RHIDummyFence(this, false);
     }
     RHIFence* RHIDummyDevice::CreateFence(bool bIsSignaled)
     {
-        return new RHIDummyFence();
+        return new RHIDummyFence(this, bIsSignaled);
     }
 
     bool RHIDummyDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)

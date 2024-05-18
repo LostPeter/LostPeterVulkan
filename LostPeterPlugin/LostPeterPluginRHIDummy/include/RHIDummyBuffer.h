@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyBuffer : public RHIBuffer
     {
     public:
-        RHIDummyBuffer(const RHIBufferCreateInfo& createInfo);
+        RHIDummyBuffer(RHIDummyDevice* pDummyDevice, const RHIBufferCreateInfo& createInfo);
         virtual ~RHIDummyBuffer();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
         std::vector<uint8> m_aDummyData;
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
     public:
         virtual void Destroy();

@@ -351,7 +351,7 @@ namespace LostPeterPluginRHIVulkan
                                                        ConstCharPtrVector& outDeviceLayers, 
                                                        ConstCharPtrVector& outDeviceExtensions)
     {
-        VkPhysicalDevice vkPhysicalDevice = m_pPhysicalDevice->GetVkPhysicalDevice();
+        VkPhysicalDevice vkPhysicalDevice = m_pVulkanPhysicalDevice->GetVkPhysicalDevice();
 
         uint32 count = 0;
         vkEnumerateDeviceLayerProperties(vkPhysicalDevice, &count, nullptr);

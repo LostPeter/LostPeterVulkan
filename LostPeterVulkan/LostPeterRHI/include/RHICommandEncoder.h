@@ -20,11 +20,15 @@ namespace LostPeterRHI
     class rhiExport RHIComputePassCommandEncoder : public FNonCopyable
     {
     public:
-        RHIComputePassCommandEncoder();
+        RHIComputePassCommandEncoder(RHICommandEncoder* pCommandEncoder);
         virtual ~RHIComputePassCommandEncoder();
 
     public:
     protected:
+        RHICommandEncoder* m_pCommandEncoder;
+
+    public:
+        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() { return m_pCommandEncoder; }
 
         
     public:
@@ -41,11 +45,15 @@ namespace LostPeterRHI
     class rhiExport RHIGraphicsPassCommandEncoder : public FNonCopyable
     {
     public:
-        RHIGraphicsPassCommandEncoder();
+        RHIGraphicsPassCommandEncoder(RHICommandEncoder* pCommandEncoder);
         virtual ~RHIGraphicsPassCommandEncoder();
 
     public:
     protected:
+        RHICommandEncoder* m_pCommandEncoder;
+
+    public:
+        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() { return m_pCommandEncoder; }
         
 
     public:
@@ -70,11 +78,15 @@ namespace LostPeterRHI
     class rhiExport RHICommandEncoder : public FNonCopyable
     {
     public:
-        RHICommandEncoder();
+        RHICommandEncoder(RHICommandBuffer* pCommandBuffer);
         virtual ~RHICommandEncoder();
 
     public:
     protected:
+        RHICommandBuffer* m_pCommandBuffer;
+
+    public:
+        F_FORCEINLINE RHICommandBuffer* GetCommandBuffer() { return m_pCommandBuffer; }
 
 
     public:

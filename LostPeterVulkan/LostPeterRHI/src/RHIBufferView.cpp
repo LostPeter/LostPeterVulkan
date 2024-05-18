@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIBufferView.h"
+#include "../include/RHIBuffer.h"
 
 namespace LostPeterRHI
 {
-    RHIBufferView::RHIBufferView(const RHIBufferViewCreateInfo& createInfo)
+    RHIBufferView::RHIBufferView(RHIBuffer* pBuffer, const RHIBufferViewCreateInfo& createInfo)
+        : m_pBuffer(pBuffer)
     {
-
+        F_Assert(m_pBuffer && "RHIBufferView::RHIBufferView")
     }
 
     RHIBufferView::~RHIBufferView()

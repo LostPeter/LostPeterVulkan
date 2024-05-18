@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHICommandBuffer.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHICommandBuffer::RHICommandBuffer()
+    RHICommandBuffer::RHICommandBuffer(RHIDevice* pDevice)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHICommandBuffer::RHICommandBuffer")
     }
 
     RHICommandBuffer::~RHICommandBuffer()

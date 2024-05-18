@@ -24,6 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
+        RHIPhysicalDevice* m_pPhysicalDevice;
+
+    public:
+         F_FORCEINLINE RHIPhysicalDevice* GetPhysicalDevice() const { return m_pPhysicalDevice; }
 
 
     public:

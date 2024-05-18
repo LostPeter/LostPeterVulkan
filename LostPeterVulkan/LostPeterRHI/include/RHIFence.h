@@ -19,11 +19,15 @@ namespace LostPeterRHI
     class rhiExport RHIFence : public FNonCopyable
     {
     public:
-        RHIFence();
+        RHIFence(RHIDevice* pDevice);
         virtual ~RHIFence();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:

@@ -19,16 +19,17 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanQueue : public RHIQueue
     {
     public:
-        RHIVulkanQueue(RHIVulkanDevice* pDevice, uint32 nFamilyIndex);
+        RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex);
         virtual ~RHIVulkanQueue();
 
     public:
     protected:
-        RHIVulkanDevice* m_pDevice;
+        RHIVulkanDevice* m_pVulkanDevice;
         uint32 m_nFamilyIndex;
         VkQueue m_vkQueue;
 
     public:
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkQueue& GetVkQueue() { return m_vkQueue; }
         F_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
 

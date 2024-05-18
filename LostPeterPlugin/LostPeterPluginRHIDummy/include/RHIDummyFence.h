@@ -19,13 +19,17 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyFence : public RHIFence
     {
     public:
-        RHIDummyFence();
+        RHIDummyFence(RHIDummyDevice* pDummyDevice, bool bIsSignaled);
         virtual ~RHIDummyFence();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
 
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
+        
     public:
         virtual void Destroy();
 

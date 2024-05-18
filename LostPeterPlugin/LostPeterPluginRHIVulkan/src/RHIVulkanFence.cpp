@@ -14,14 +14,15 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pDevice, bool bIsSignaled)
-        : m_pDevice(pDevice)
+    RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, bool bIsSignaled)
+        : RHIFence(pVulkanDevice)
+        , m_pVulkanDevice(pVulkanDevice)
         , m_vkFence(VK_NULL_HANDLE)
         , m_bIsSignaled(bIsSignaled)
     {
-        F_Assert(m_pDevice && "RHIVulkanBuffer::RHIVulkanBuffer")
+        F_Assert(m_pVulkanDevice && "RHIVulkanBuffer::RHIVulkanBuffer")
 
-        m_pDevice->CreateVkFence(bIsSignaled, m_vkFence);
+        m_pVulkanDevice->CreateVkFence(bIsSignaled, m_vkFence);
     }   
 
     RHIVulkanFence::~RHIVulkanFence()
@@ -33,7 +34,7 @@ namespace LostPeterPluginRHIVulkan
     {
         if (m_vkFence != VK_NULL_HANDLE)
         {
-            m_pDevice->DestroyVkFence(m_vkFence);
+            m_pVulkanDevice->DestroyVkFence(m_vkFence);
         }
         m_vkFence = VK_NULL_HANDLE;
     }
@@ -45,7 +46,7 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanFence::Reset()
     {
-        m_pDevice->ResetVkFence(m_vkFence);
+        m_pVulkanDevice->ResetVkFence(m_vkFence);
         m_bIsSignaled = false;
     }
 
@@ -54,7 +55,7 @@ namespace LostPeterPluginRHIVulkan
         if (m_bIsSignaled) 
             return;
         
-        m_pDevice->WaitVkFence(m_vkFence);
+        m_pVulkanDevice->WaitVkFence(m_vkFence);
     }
     
 }; //LostPeterPluginRHIVulkan

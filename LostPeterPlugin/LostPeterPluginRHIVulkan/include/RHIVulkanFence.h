@@ -19,17 +19,17 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanFence : public RHIFence
     {
     public:
-        RHIVulkanFence(RHIVulkanDevice* pDevice, bool bIsSignaled);
+        RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, bool bIsSignaled);
         virtual ~RHIVulkanFence();
 
     public:
     protected:
-        RHIVulkanDevice* m_pDevice;
+        RHIVulkanDevice* m_pVulkanDevice;
         VkFence m_vkFence;
         bool m_bIsSignaled;
         
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetDevice() { return m_pDevice; }
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkFence& GetVkFence() { return m_vkFence; }
         F_FORCEINLINE bool IsSignaled() { return m_bIsSignaled; }
 

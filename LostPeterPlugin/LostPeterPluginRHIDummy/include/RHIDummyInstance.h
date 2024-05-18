@@ -24,7 +24,10 @@ namespace LostPeterPluginRHIDummy
 
     public:
     protected:
-        RHIDummyPhysicalDevice* m_pPhysicalDevice;
+        RHIDummyPhysicalDevice* m_pDummyPhysicalDevice;
+
+    public:
+        F_FORCEINLINE RHIDummyPhysicalDevice* GetDummyPhysicalDevice() { return m_pDummyPhysicalDevice; }
 
     public:
         virtual void Destroy();

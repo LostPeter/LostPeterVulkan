@@ -53,12 +53,12 @@ namespace LostPeterPluginRHIVulkan
     }
 
 
-    RHIVulkanDebug::RHIVulkanDebug(RHIVulkanInstance* pInstance)
-        : m_pInstance(pInstance)
+    RHIVulkanDebug::RHIVulkanDebug(RHIVulkanInstance* pVulkanInstance)
+        : m_pVulkanInstance(pVulkanInstance)
         , m_vkDebugReport(VK_NULL_HANDLE)
         , m_vkSetDebugUtilsObjectNameEXT(VK_NULL_HANDLE)
     {
-        F_Assert(m_pInstance && "RHIVulkanDebug::RHIVulkanDebug")
+        F_Assert(m_pVulkanInstance && "RHIVulkanDebug::RHIVulkanDebug")
         createDebugReport();
         if (m_vkDebugReport == VK_NULL_HANDLE)
         {
@@ -88,7 +88,7 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanDebug::createDebugReport()
     {
         //1> get vkCreateDebugReportCallbackEXT func
-        PFN_vkCreateDebugReportCallbackEXT pFunc = (PFN_vkCreateDebugReportCallbackEXT)(vkGetInstanceProcAddr(m_pInstance->GetVkInstance(), "vkCreateDebugReportCallbackEXT"));
+        PFN_vkCreateDebugReportCallbackEXT pFunc = (PFN_vkCreateDebugReportCallbackEXT)(vkGetInstanceProcAddr(m_pVulkanInstance->GetVkInstance(), "vkCreateDebugReportCallbackEXT"));
         if (pFunc == nullptr)
         {
             F_LogError("*********************** RHIVulkanDebug::createDebugReport: Failed to get vkCreateDebugReportCallbackEXT func !");
@@ -103,7 +103,7 @@ namespace LostPeterPluginRHIVulkan
                            VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
         createInfo.pUserData = reinterpret_cast<void*>(this);
         createInfo.pfnCallback = &g_DebugReportCallback;
-        if (!RHI_CheckVkResult(pFunc(m_pInstance->GetVkInstance(), &createInfo, nullptr, &m_vkDebugReport), "g_CreateDebugReportCallback"))
+        if (!RHI_CheckVkResult(pFunc(m_pVulkanInstance->GetVkInstance(), &createInfo, nullptr, &m_vkDebugReport), "g_CreateDebugReportCallback"))
         {
             F_LogError("*********************** RHIVulkanDebug::createDebugReport: Failed call vkCreateDebugReportCallbackEXT !");
             return;
@@ -111,7 +111,7 @@ namespace LostPeterPluginRHIVulkan
         F_LogInfo("RHIVulkanDebug::createDebugReport: Success to call vkCreateDebugReportCallbackEXT !");
 
         //3> vkSetDebugUtilsObjectNameEXT
-        m_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(m_pInstance->GetVkInstance(), "vkSetDebugUtilsObjectNameEXT"));
+        m_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(m_pVulkanInstance->GetVkInstance(), "vkSetDebugUtilsObjectNameEXT"));
     }
 
     void RHIVulkanDebug::destroyDebugReport()
@@ -120,7 +120,7 @@ namespace LostPeterPluginRHIVulkan
             return;
 
         //1> get vkDestroyDebugReportCallbackEXT func
-        PFN_vkDestroyDebugReportCallbackEXT pFunc = (PFN_vkDestroyDebugReportCallbackEXT)(vkGetInstanceProcAddr(m_pInstance->GetVkInstance(), "vkDestroyDebugReportCallbackEXT"));
+        PFN_vkDestroyDebugReportCallbackEXT pFunc = (PFN_vkDestroyDebugReportCallbackEXT)(vkGetInstanceProcAddr(m_pVulkanInstance->GetVkInstance(), "vkDestroyDebugReportCallbackEXT"));
         if (pFunc == nullptr)
         {
             F_LogError("*********************** RHIVulkanDebug::destroyDebugReport: Failed to get vkDestroyDebugReportCallbackEXT func !");
@@ -128,7 +128,7 @@ namespace LostPeterPluginRHIVulkan
         }
 
         //2> vkDestroyDebugReportCallbackEXT
-        pFunc(m_pInstance->GetVkInstance(), m_vkDebugReport, nullptr);
+        pFunc(m_pVulkanInstance->GetVkInstance(), m_vkDebugReport, nullptr);
         m_vkDebugReport = VK_NULL_HANDLE;
         F_LogInfo("RHIVulkanDebug::destroyDebugReport: Success to call vkDestroyDebugReportCallbackEXT !");
 

@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIQueue.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIQueue::RHIQueue()
+    RHIQueue::RHIQueue(RHIDevice* pDevice)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIQueue::RHIQueue")
     }
 
     RHIQueue::~RHIQueue()

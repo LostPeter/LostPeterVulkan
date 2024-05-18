@@ -15,9 +15,9 @@
 namespace LostPeterPluginRHIDummy
 {
     RHIDummyInstance::RHIDummyInstance()
-        : m_pPhysicalDevice(nullptr)
+        : m_pDummyPhysicalDevice(nullptr)
     {
-
+        
     }
 
     RHIDummyInstance::~RHIDummyInstance()
@@ -27,7 +27,7 @@ namespace LostPeterPluginRHIDummy
 
     void RHIDummyInstance::Destroy()
     {
-        F_DELETE(m_pPhysicalDevice)
+        F_DELETE(m_pDummyPhysicalDevice)
     }
 
     RHIType RHIDummyInstance::GetRHIType()
@@ -43,11 +43,12 @@ namespace LostPeterPluginRHIDummy
     RHIPhysicalDevice* RHIDummyInstance::GetPhysicalDevice(uint32 nIndex)
     {
         F_Assert("RHIDummyInstance::GetPhysicalDevice" && nIndex == 0);
-        if (m_pPhysicalDevice == nullptr)
+        if (m_pDummyPhysicalDevice == nullptr)
         {
-            m_pPhysicalDevice = new RHIDummyPhysicalDevice();
+            m_pDummyPhysicalDevice = new RHIDummyPhysicalDevice(this);
+            m_pPhysicalDevice = m_pDummyPhysicalDevice;
         }
-        return m_pPhysicalDevice;
+        return m_pDummyPhysicalDevice;
     }
 
     RHIDevice* RHIDummyInstance::RequestDevice(const RHIDeviceCreateInfo& createInfo)

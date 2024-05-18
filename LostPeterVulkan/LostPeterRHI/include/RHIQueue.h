@@ -19,11 +19,15 @@ namespace LostPeterRHI
     class rhiExport RHIQueue : public FNonCopyable
     {
     public:
-        RHIQueue();
+        RHIQueue(RHIDevice* pDevice);
         virtual ~RHIQueue();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:

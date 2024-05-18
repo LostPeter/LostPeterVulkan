@@ -19,12 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHIBufferView : public FNonCopyable
     {
     public:
-        RHIBufferView(const RHIBufferViewCreateInfo& createInfo);
+        RHIBufferView(RHIBuffer* pBuffer, const RHIBufferViewCreateInfo& createInfo);
         virtual ~RHIBufferView();
 
     public:
     protected:
+        RHIBuffer* m_pBuffer;
 
+    public:
+        F_FORCEINLINE RHIBuffer* GetBuffer() { return m_pBuffer; }
+        
 
     public:
         virtual void Destroy() = 0;

@@ -22,8 +22,8 @@ namespace LostPeterPluginRHIVulkan
         , m_nPreferredVendorID(-1)
         , m_pVolk(nullptr)
         , m_pDebug(nullptr)
-        , m_pPhysicalDevice(nullptr)
-        , m_pDevice(nullptr)
+        , m_pVulkanPhysicalDevice(nullptr)
+        , m_pVulkanDevice(nullptr)
     {
     #if F_DEBUG == 1
         m_bIsEnableValidationLayers = true;
@@ -266,7 +266,7 @@ namespace LostPeterPluginRHIVulkan
     {
         SetPreferredVendorID(createInfo.nPreferredVendorID);
 
-        m_pPhysicalDevice = nullptr;
+        m_pVulkanPhysicalDevice = nullptr;
         uint32 countDevice = (uint32)m_aPhysicalDevices.size();
         if (countDevice > 0)
         {
@@ -277,14 +277,14 @@ namespace LostPeterPluginRHIVulkan
                     RHIVulkanPhysicalDevice* pPhysicalDevice = m_aPhysicalDevices[i];
                     if (pPhysicalDevice->GetVkPhysicalDeviceProperties().vendorID == (uint32_t)m_nPreferredVendorID)
                     {
-                        m_pPhysicalDevice = pPhysicalDevice;
+                        m_pVulkanPhysicalDevice = pPhysicalDevice;
                         break;
                     }
                 }
             }
-            if (m_pPhysicalDevice == nullptr)
+            if (m_pVulkanPhysicalDevice == nullptr)
             {
-                m_pPhysicalDevice = m_aPhysicalDevices[0];
+                m_pVulkanPhysicalDevice = m_aPhysicalDevices[0];
             }
         }
         else
@@ -292,12 +292,12 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanInstance::RequestDevice: Can not find PhysicalDevice !");
         }
 
-        m_pDevice = nullptr;
-        if (m_pPhysicalDevice != nullptr)
+        m_pVulkanDevice = nullptr;
+        if (m_pVulkanPhysicalDevice != nullptr)
         {
-            m_pDevice = (RHIVulkanDevice*)m_pPhysicalDevice->RequestDevice(createInfo);
+            m_pVulkanDevice = (RHIVulkanDevice*)m_pVulkanPhysicalDevice->RequestDevice(createInfo);
         }
-        return m_pDevice;
+        return m_pVulkanDevice;
     }
 
 

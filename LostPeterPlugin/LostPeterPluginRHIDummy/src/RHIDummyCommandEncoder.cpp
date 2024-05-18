@@ -10,13 +10,16 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyCommandEncoder.h"
+#include "../include/RHIDummyCommandBuffer.h"
 
 namespace LostPeterPluginRHIDummy
 {
     //////////////////////// RHIDummyComputePassCommandEncoder ////////////////////////
-    RHIDummyComputePassCommandEncoder::RHIDummyComputePassCommandEncoder(const RHIDummyCommandBuffer& commandBuffer)
+    RHIDummyComputePassCommandEncoder::RHIDummyComputePassCommandEncoder(RHIDummyCommandEncoder* pDummyCommandEncoder)
+        : RHIComputePassCommandEncoder(pDummyCommandEncoder)
+        , m_pDummyCommandEncoder(pDummyCommandEncoder)
     {
-
+        F_Assert(m_pDummyCommandEncoder && "RHIDummyComputePassCommandEncoder::RHIDummyComputePassCommandEncoder")
     }
 
     RHIDummyComputePassCommandEncoder::~RHIDummyComputePassCommandEncoder()
@@ -51,9 +54,11 @@ namespace LostPeterPluginRHIDummy
 
 
     //////////////////////// RHIDummyGraphicsPassCommandEncoder ///////////////////////
-    RHIDummyGraphicsPassCommandEncoder::RHIDummyGraphicsPassCommandEncoder(const RHIDummyCommandBuffer& commandBuffer)
+    RHIDummyGraphicsPassCommandEncoder::RHIDummyGraphicsPassCommandEncoder(RHIDummyCommandEncoder* pDummyCommandEncoder)
+        : RHIGraphicsPassCommandEncoder(pDummyCommandEncoder)
+        , m_pDummyCommandEncoder(pDummyCommandEncoder)
     {
-
+        F_Assert(m_pDummyCommandEncoder && "RHIDummyGraphicsPassCommandEncoder::RHIDummyGraphicsPassCommandEncoder")
     }
 
     RHIDummyGraphicsPassCommandEncoder::~RHIDummyGraphicsPassCommandEncoder()
@@ -128,11 +133,12 @@ namespace LostPeterPluginRHIDummy
 
 
     //////////////////////// RHIDummyCommandEncoder ///////////////////////////////////
-    RHIDummyCommandEncoder::RHIDummyCommandEncoder(const RHIDummyCommandBuffer& commandBuffer)
-        : m_commandBuffer(commandBuffer)
+    RHIDummyCommandEncoder::RHIDummyCommandEncoder(RHIDummyCommandBuffer* pDummyCommandBuffer)
+        : RHICommandEncoder(pDummyCommandBuffer)
+        , m_pDummyCommandBuffer(pDummyCommandBuffer)
     {
-
-    }
+        F_Assert(m_pDummyCommandBuffer && "RHIDummyCommandEncoder::RHIDummyCommandEncoder")
+    }   
 
     RHIDummyCommandEncoder::~RHIDummyCommandEncoder()
     {
@@ -171,12 +177,12 @@ namespace LostPeterPluginRHIDummy
 
     RHIDummyComputePassCommandEncoder* RHIDummyCommandEncoder::BeginComputePass()
     {
-        return new RHIDummyComputePassCommandEncoder(m_commandBuffer);
+        return new RHIDummyComputePassCommandEncoder(this);
     }
 
     RHIDummyGraphicsPassCommandEncoder* RHIDummyCommandEncoder::BeginGraphicsPass(const RHIGraphicsPassBeginInfo* pBeginInfo)
     {
-        return new RHIDummyGraphicsPassCommandEncoder(m_commandBuffer);
+        return new RHIDummyGraphicsPassCommandEncoder(this);
     }
 
     void RHIDummyCommandEncoder::SwapChainSync(RHISwapChain* pSwapChain)

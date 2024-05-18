@@ -24,7 +24,7 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
-        RHIVulkanInstance* m_pInstance;
+        RHIVulkanInstance* m_pVulkanInstance;
 
     public:
         virtual const String& GetName() const;

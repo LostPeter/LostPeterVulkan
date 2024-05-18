@@ -11,15 +11,17 @@
 
 #include "../include/RHIDummyBuffer.h"
 #include "../include/RHIDummyBufferView.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyBuffer::RHIDummyBuffer(const RHIBufferCreateInfo& createInfo)
-        : RHIBuffer(createInfo)
+    RHIDummyBuffer::RHIDummyBuffer(RHIDummyDevice* pDummyDevice, const RHIBufferCreateInfo& createInfo)
+        : RHIBuffer(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
         , m_aDummyData(1)
     {
-
-    }
+        F_Assert(m_pDummyDevice && "RHIDummyBuffer::RHIDummyBuffer")
+    }   
 
     RHIDummyBuffer::~RHIDummyBuffer()
     {
@@ -43,7 +45,7 @@ namespace LostPeterPluginRHIDummy
 
     RHIBufferView* RHIDummyBuffer::CreateBufferView(const RHIBufferViewCreateInfo& createInfo)
     {
-        return new RHIDummyBufferView(createInfo);
+        return new RHIDummyBufferView(this, createInfo);
     }
 
 }; //LostPeterPluginRHIDummy

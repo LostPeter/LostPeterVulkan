@@ -10,12 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyQueue.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyQueue::RHIDummyQueue()
+    RHIDummyQueue::RHIDummyQueue(RHIDummyDevice* pDummyDevice)
+        : RHIQueue(pDummyDevice)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyQueue::RHIDummyQueue")
     }
 
     RHIDummyQueue::~RHIDummyQueue()

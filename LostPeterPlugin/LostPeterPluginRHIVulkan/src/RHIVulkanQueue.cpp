@@ -14,12 +14,13 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pDevice, uint32 nFamilyIndex)
-        : m_pDevice(pDevice)
+    RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex)
+        : RHIQueue(pVulkanDevice)
+        , m_pVulkanDevice(pVulkanDevice)
         , m_nFamilyIndex(nFamilyIndex)
         , m_vkQueue(VK_NULL_HANDLE)
     {
-        F_Assert(m_pDevice && "RHIVulkanQueue::RHIVulkanQueue")
+        F_Assert(m_pVulkanDevice && "RHIVulkanQueue::RHIVulkanQueue")
     }
 
     RHIVulkanQueue::~RHIVulkanQueue()
@@ -34,7 +35,7 @@ namespace LostPeterPluginRHIVulkan
 
     bool RHIVulkanQueue::Init()
     {
-        m_vkQueue = m_pDevice->GetVkQueue(m_nFamilyIndex, 0);
+        m_vkQueue = m_pVulkanDevice->GetVkQueue(m_nFamilyIndex, 0);
         if (m_vkQueue == VK_NULL_HANDLE)
         {
             F_LogError("*********************** RHIVulkanQueue::Init: GetVkQueue failed !");

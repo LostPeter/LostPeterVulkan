@@ -11,12 +11,15 @@
 
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanCommandEncoder.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanCommandBuffer::RHIVulkanCommandBuffer()
+    RHIVulkanCommandBuffer::RHIVulkanCommandBuffer(RHIVulkanDevice* pVulkanDevice)
+        : RHICommandBuffer(pVulkanDevice)
+        , m_pVulkanDevice(pVulkanDevice)
     {
-
+        F_Assert(m_pVulkanDevice && "RHIVulkanCommandBuffer::RHIVulkanCommandBuffer")
     }
 
     RHIVulkanCommandBuffer::~RHIVulkanCommandBuffer()
@@ -31,7 +34,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHICommandEncoder* RHIVulkanCommandBuffer::Begin()
     {
-        return new RHIVulkanCommandEncoder(*this);
+        return new RHIVulkanCommandEncoder(this);
     }
     
 }; //LostPeterPluginRHIVulkan

@@ -14,6 +14,7 @@
 namespace LostPeterRHI
 {
     RHIInstance::RHIInstance()
+        : m_pPhysicalDevice(nullptr)
     {
 
     }

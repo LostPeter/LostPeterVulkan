@@ -19,12 +19,12 @@ namespace LostPeterPluginRHIVulkan
     class RHIVulkanDebug
     {
     public:
-        RHIVulkanDebug(RHIVulkanInstance* pInstance);
+        RHIVulkanDebug(RHIVulkanInstance* pVulkanInstance);
         ~RHIVulkanDebug();
 
     public:
     protected:
-        RHIVulkanInstance* m_pInstance;
+        RHIVulkanInstance* m_pVulkanInstance;
         VkDebugReportCallbackEXT m_vkDebugReport;
         PFN_vkSetDebugUtilsObjectNameEXT m_vkSetDebugUtilsObjectNameEXT;
     

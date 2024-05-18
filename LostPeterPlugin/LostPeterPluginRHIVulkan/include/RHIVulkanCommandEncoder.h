@@ -20,12 +20,15 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanComputePassCommandEncoder : public RHIComputePassCommandEncoder
     {
     public:
-        RHIVulkanComputePassCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer);
+        RHIVulkanComputePassCommandEncoder(RHIVulkanCommandEncoder* pVulkanCommandEncoder);
         virtual ~RHIVulkanComputePassCommandEncoder();
 
     public:
     protected:
+        RHIVulkanCommandEncoder* m_pVulkanCommandEncoder;
 
+     public:
+        F_FORCEINLINE RHIVulkanCommandEncoder* GetVulkanCommandEncoder() { return m_pVulkanCommandEncoder; }
 
     public:
         virtual void Destroy();
@@ -41,11 +44,15 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanGraphicsPassCommandEncoder : public RHIGraphicsPassCommandEncoder
     {
     public:
-        RHIVulkanGraphicsPassCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer);
+        RHIVulkanGraphicsPassCommandEncoder(RHIVulkanCommandEncoder* pVulkanCommandEncoder);
         virtual ~RHIVulkanGraphicsPassCommandEncoder();
 
     public:
     protected:
+        RHIVulkanCommandEncoder* m_pVulkanCommandEncoder;
+
+     public:
+        F_FORCEINLINE RHIVulkanCommandEncoder* GetVulkanCommandEncoder() { return m_pVulkanCommandEncoder; }
 
 
     public:
@@ -70,12 +77,16 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanCommandEncoder : public RHICommandEncoder
     {
     public:
-        RHIVulkanCommandEncoder(const RHIVulkanCommandBuffer& commandBuffer);
+        RHIVulkanCommandEncoder(RHIVulkanCommandBuffer* pVulkanCommandBuffer);
         virtual ~RHIVulkanCommandEncoder();
 
     public:
     protected:
-        const RHIVulkanCommandBuffer& m_commandBuffer;
+        RHIVulkanCommandBuffer* m_pVulkanCommandBuffer;
+
+    public:
+        F_FORCEINLINE RHIVulkanCommandBuffer* GetVulkanCommandBuffer() { return m_pVulkanCommandBuffer; }
+
 
     public:
         virtual void Destroy();

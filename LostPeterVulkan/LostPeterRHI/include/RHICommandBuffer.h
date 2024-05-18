@@ -19,12 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHICommandBuffer : public FNonCopyable
     {
     public:
-        RHICommandBuffer();
+        RHICommandBuffer(RHIDevice* pDevice);
         virtual ~RHICommandBuffer();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
 
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        
 
     public:
         virtual void Destroy() = 0;

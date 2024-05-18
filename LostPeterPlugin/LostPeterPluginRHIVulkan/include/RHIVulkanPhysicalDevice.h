@@ -19,12 +19,12 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanPhysicalDevice : public RHIPhysicalDevice
     {
     public:
-        RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice, int32 nPhysicalDeviceIndex);
+        RHIVulkanPhysicalDevice(RHIVulkanInstance* pVulkanInstance, VkPhysicalDevice vkPhysicalDevice, int32 nPhysicalDeviceIndex);
         virtual ~RHIVulkanPhysicalDevice();
 
     public:
     protected:
-        RHIVulkanInstance* m_pInstance;
+        RHIVulkanInstance* m_pVulkanInstance;
         VkPhysicalDevice m_vkPhysicalDevice;
         int32 m_nPhysicalDeviceIndex;
         VkPhysicalDeviceProperties m_vkPhysicalDeviceProperties;
@@ -37,10 +37,10 @@ namespace LostPeterPluginRHIVulkan
         bool m_bIsDiscrete;
         VkSampleCountFlagBits m_vkMaxMSAASamples;
 
-        RHIVulkanDevice* m_pDevice;
+        RHIVulkanDevice* m_pVulkanDevice;
 
     public:
-        F_FORCEINLINE RHIVulkanInstance* GetInstance() const { return m_pInstance; }
+        F_FORCEINLINE RHIVulkanInstance* GetVulkanInstance() const { return m_pVulkanInstance; }
         F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
         F_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
         F_FORCEINLINE int32 GetPhysicalDeviceIndex() const { return m_nPhysicalDeviceIndex; }
@@ -57,7 +57,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE bool IsDiscrete() const { return m_bIsDiscrete; }
         F_FORCEINLINE VkSampleCountFlagBits GetMaxSampleCountFlagBits() const { return m_vkMaxMSAASamples; }
 
-        F_FORCEINLINE RHIVulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() const { return m_pVulkanDevice; }
 
     public:
         virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty();

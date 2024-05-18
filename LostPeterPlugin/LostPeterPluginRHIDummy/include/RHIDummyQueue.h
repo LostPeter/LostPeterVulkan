@@ -19,11 +19,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyQueue : public RHIQueue
     {
     public:
-        RHIDummyQueue();
+        RHIDummyQueue(RHIDummyDevice* pDummyDevice);
         virtual ~RHIDummyQueue();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

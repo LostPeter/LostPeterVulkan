@@ -34,7 +34,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanDevice::RHIVulkanDevice(RHIVulkanPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
         : RHIDevice(createInfo)
-        , m_pPhysicalDevice(pPhysicalDevice)
+        , m_pVulkanPhysicalDevice(pPhysicalDevice)
         , m_vkDevice(VK_NULL_HANDLE)
         , m_vmaAllocator(VK_NULL_HANDLE)
         , m_vkCommandPoolTransfer(VK_NULL_HANDLE)
@@ -45,9 +45,9 @@ namespace LostPeterPluginRHIVulkan
         , m_pQueueTransfer(nullptr)
         , m_pQueuePresent(nullptr)
     {
-        F_Assert(m_pPhysicalDevice && "RHIVulkanDevice::RHIVulkanDevice")
+        F_Assert(m_pVulkanPhysicalDevice && "RHIVulkanDevice::RHIVulkanDevice")
 
-        init(m_pPhysicalDevice->GetInstance()->IsEnableValidationLayers());
+        init(m_pVulkanPhysicalDevice->GetVulkanInstance()->IsEnableValidationLayers());
     }
 
     RHIVulkanDevice::~RHIVulkanDevice()
@@ -79,7 +79,7 @@ namespace LostPeterPluginRHIVulkan
         DestroyVkDevice(this->m_vkDevice);
         this->m_vkDevice = VK_NULL_HANDLE;
         
-        m_pPhysicalDevice = nullptr;
+        m_pVulkanPhysicalDevice = nullptr;
     }
 
     uint32 RHIVulkanDevice::GetQueueCount(RHIQueueType eQueue)
@@ -165,7 +165,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHICommandBuffer* RHIVulkanDevice::CreateCommandBuffer()
     {
-        return new RHIVulkanCommandBuffer();
+        return new RHIVulkanCommandBuffer(this);
     }
 
     RHIFence* RHIVulkanDevice::CreateFence()
@@ -191,7 +191,7 @@ namespace LostPeterPluginRHIVulkan
     {
         VkFormatProperties prop;
         memset(&prop, 0, sizeof(VkFormatProperties));
-        vkGetPhysicalDeviceFormatProperties(m_pPhysicalDevice->GetVkPhysicalDevice(), typeFormat, &prop);
+        vkGetPhysicalDeviceFormatProperties(m_pVulkanPhysicalDevice->GetVkPhysicalDevice(), typeFormat, &prop);
 
         return (prop.bufferFeatures != 0 ||
                 prop.linearTilingFeatures != 0 ||
@@ -226,7 +226,7 @@ namespace LostPeterPluginRHIVulkan
     {
         const uint32 familyIndex = pQueue->GetFamilyIndex();
         VkBool32 supportsPresent = VK_FALSE;
-        if (!RHI_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_pPhysicalDevice->GetVkPhysicalDevice(), familyIndex, vkSurfaceKHR, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
+        if (!RHI_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_pVulkanPhysicalDevice->GetVkPhysicalDevice(), familyIndex, vkSurfaceKHR, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
         {
             F_LogError("*********************** RHIVulkanDevice::IsSupportPresent: vkGetPhysicalDeviceSurfaceSupportKHR failed !");
             return false;
@@ -264,7 +264,7 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanDevice::SetDebugObject(VkObjectType objectType, uint64_t objectHandle, const char* objectName)
     {
-        RHIVulkanDebug* pDebug = m_pPhysicalDevice->GetInstance()->GetDebug();
+        RHIVulkanDebug* pDebug = m_pVulkanPhysicalDevice->GetVulkanInstance()->GetDebug();
         if (!pDebug)
             return;
         pDebug->SetDebugObject(m_vkDevice, objectType, objectHandle, objectName);
@@ -273,7 +273,7 @@ namespace LostPeterPluginRHIVulkan
 
     bool RHIVulkanDevice::init(bool bIsEnableValidationLayers)
     {   
-        const ConstCharPtrVector& aAppInstanceExtensions = m_pPhysicalDevice->GetInstance()->GetAppInstanceExtensions();
+        const ConstCharPtrVector& aAppInstanceExtensions = m_pVulkanPhysicalDevice->GetVulkanInstance()->GetAppInstanceExtensions();
         size_t count_extension = aAppInstanceExtensions.size(); 
         for (size_t i = 0; i < count_extension; ++i)
         {
@@ -337,8 +337,8 @@ namespace LostPeterPluginRHIVulkan
         deviceCreateInfo.enabledLayerCount = uint32_t(validationLayers.size());
         deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 
-        VkPhysicalDeviceFeatures vkPhysicalDeviceFeatures = m_pPhysicalDevice->GetVkPhysicalDeviceFeatures();
-        VkPhysicalDeviceFeatures2* pVkPhysicalDeviceFeatures2 = m_pPhysicalDevice->GetVkPhysicalDeviceFeatures2();
+        VkPhysicalDeviceFeatures vkPhysicalDeviceFeatures = m_pVulkanPhysicalDevice->GetVkPhysicalDeviceFeatures();
+        VkPhysicalDeviceFeatures2* pVkPhysicalDeviceFeatures2 = m_pVulkanPhysicalDevice->GetVkPhysicalDeviceFeatures2();
         if (pVkPhysicalDeviceFeatures2) 
         {
             deviceCreateInfo.pNext = pVkPhysicalDeviceFeatures2;
@@ -350,7 +350,7 @@ namespace LostPeterPluginRHIVulkan
             deviceCreateInfo.pEnabledFeatures = &vkPhysicalDeviceFeatures;
         }
 
-        const VkQueueFamilyPropertiesVector& aVkQueueFamilyProperties = m_pPhysicalDevice->GetQueueFamilyProperties();
+        const VkQueueFamilyPropertiesVector& aVkQueueFamilyProperties = m_pVulkanPhysicalDevice->GetQueueFamilyProperties();
         int32 countQueueFamilyProperties = (int32)aVkQueueFamilyProperties.size();
         F_LogInfo("RHIVulkanDevice::createDevice: Queue Families count: %d", countQueueFamilyProperties);
 
@@ -424,13 +424,13 @@ namespace LostPeterPluginRHIVulkan
         deviceCreateInfo.queueCreateInfoCount = uint32_t(queueFamilyInfos.size());
         deviceCreateInfo.pQueueCreateInfos = queueFamilyInfos.data();
         
-        VkResult result = vkCreateDevice(m_pPhysicalDevice->GetVkPhysicalDevice(), &deviceCreateInfo, nullptr, &m_vkDevice);
+        VkResult result = vkCreateDevice(m_pVulkanPhysicalDevice->GetVkPhysicalDevice(), &deviceCreateInfo, nullptr, &m_vkDevice);
         if (result == VK_ERROR_INITIALIZATION_FAILED)
         {
             F_LogError("*********************** RHIVulkanDevice::createDevice: vkCreateDevice create a Vulkan device failed !");
             return false;
         }
-        m_pPhysicalDevice->GetInstance()->GetVolk()->VolkLoadDevice(m_vkDevice);
+        m_pVulkanPhysicalDevice->GetVulkanInstance()->GetVolk()->VolkLoadDevice(m_vkDevice);
 
         //RHIVulkanQueue Graphics
         m_pQueueGraphics = new RHIVulkanQueue(this, queueFamilyIndex_Graphics);
@@ -477,8 +477,8 @@ namespace LostPeterPluginRHIVulkan
 
         VmaAllocatorCreateInfo info = {};
         info.vulkanApiVersion = VK_API_VERSION_1_2;
-        info.instance = m_pPhysicalDevice->GetInstance()->GetVkInstance();
-        info.physicalDevice = m_pPhysicalDevice->GetVkPhysicalDevice();
+        info.instance = m_pVulkanPhysicalDevice->GetVulkanInstance()->GetVkInstance();
+        info.physicalDevice = m_pVulkanPhysicalDevice->GetVkPhysicalDevice();
         info.device = m_vkDevice;
         info.pVulkanFunctions = &vulkanFunctions;
 
@@ -1082,7 +1082,7 @@ namespace LostPeterPluginRHIVulkan
         VkMemoryAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = m_pPhysicalDevice->FindMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = m_pVulkanPhysicalDevice->FindMemoryType(memRequirements.memoryTypeBits, properties);
         if (vkAllocateMemory(this->m_vkDevice, &allocInfo, RHI_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
         {
             F_LogError("*********************** RHIVulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !");

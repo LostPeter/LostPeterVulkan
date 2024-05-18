@@ -14,10 +14,11 @@
 namespace LostPeterRHI
 {
     //////////////////////// RHIComputePassCommandEncoder ////////////////////////
-    RHIComputePassCommandEncoder::RHIComputePassCommandEncoder()
+    RHIComputePassCommandEncoder::RHIComputePassCommandEncoder(RHICommandEncoder* pCommandEncoder)
+        : m_pCommandEncoder(pCommandEncoder)
     {
-
-    }
+        F_Assert(m_pCommandEncoder && "RHIComputePassCommandEncoder::RHIComputePassCommandEncoder")
+    }   
 
     RHIComputePassCommandEncoder::~RHIComputePassCommandEncoder()
     {
@@ -25,9 +26,10 @@ namespace LostPeterRHI
     }
 
     //////////////////////// RHIGraphicsPassCommandEncoder ///////////////////////
-    RHIGraphicsPassCommandEncoder::RHIGraphicsPassCommandEncoder()
+    RHIGraphicsPassCommandEncoder::RHIGraphicsPassCommandEncoder(RHICommandEncoder* pCommandEncoder)
+        : m_pCommandEncoder(pCommandEncoder)
     {
-
+        F_Assert(m_pCommandEncoder && "RHIGraphicsPassCommandEncoder::RHIGraphicsPassCommandEncoder")
     }
 
     RHIGraphicsPassCommandEncoder::~RHIGraphicsPassCommandEncoder()
@@ -36,9 +38,10 @@ namespace LostPeterRHI
     }
 
     //////////////////////// RHICommandEncoder ///////////////////////////////////
-    RHICommandEncoder::RHICommandEncoder()
+    RHICommandEncoder::RHICommandEncoder(RHICommandBuffer* pCommandBuffer)
+        : m_pCommandBuffer(pCommandBuffer)
     {
-
+        F_Assert(m_pCommandBuffer && "RHICommandEncoder::RHICommandEncoder")
     }
 
     RHICommandEncoder::~RHICommandEncoder()

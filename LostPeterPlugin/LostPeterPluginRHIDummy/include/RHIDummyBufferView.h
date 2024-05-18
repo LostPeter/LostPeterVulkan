@@ -19,12 +19,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyBufferView : public RHIBufferView
     {
     public:
-        RHIDummyBufferView(const RHIBufferViewCreateInfo& createInfo);
+        RHIDummyBufferView(RHIDummyBuffer* pDummyBuffer, const RHIBufferViewCreateInfo& createInfo);
         virtual ~RHIDummyBufferView();
 
     public:
     protected:
+        RHIDummyBuffer* m_pDummyBuffer;
 
+     public:
+        F_FORCEINLINE RHIDummyBuffer* GetDummyBuffer() { return m_pDummyBuffer; }
 
     public:
         virtual void Destroy();

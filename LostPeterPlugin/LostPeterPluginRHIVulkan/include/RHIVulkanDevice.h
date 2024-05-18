@@ -27,7 +27,7 @@ namespace LostPeterPluginRHIVulkan
         ConstCharPtrVector m_aAppDeviceExtensions; 
 
     protected:
-        RHIVulkanPhysicalDevice* m_pPhysicalDevice;
+        RHIVulkanPhysicalDevice* m_pVulkanPhysicalDevice;
 
         VkDevice m_vkDevice;
         VmaAllocator m_vmaAllocator;
@@ -42,7 +42,7 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanQueue* m_pQueuePresent;
 
     public:
-        F_FORCEINLINE RHIVulkanPhysicalDevice* GetPhysicalDevice() const { return m_pPhysicalDevice; }
+        F_FORCEINLINE RHIVulkanPhysicalDevice* GetVulkanPhysicalDevice() const { return m_pVulkanPhysicalDevice; }
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
 

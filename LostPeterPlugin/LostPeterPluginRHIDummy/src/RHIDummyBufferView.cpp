@@ -10,14 +10,16 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyBufferView.h"
+#include "../include/RHIDummyBuffer.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyBufferView::RHIDummyBufferView(const RHIBufferViewCreateInfo& createInfo)
-        : RHIBufferView(createInfo)
+    RHIDummyBufferView::RHIDummyBufferView(RHIDummyBuffer* pDummyBuffer, const RHIBufferViewCreateInfo& createInfo)
+        : RHIBufferView(pDummyBuffer, createInfo)
+        , m_pDummyBuffer(pDummyBuffer)
     {
-
-    }
+        F_Assert(m_pDummyBuffer && "RHIDummyBufferView::RHIDummyBufferView")
+    }   
 
     RHIDummyBufferView::~RHIDummyBufferView()
     {

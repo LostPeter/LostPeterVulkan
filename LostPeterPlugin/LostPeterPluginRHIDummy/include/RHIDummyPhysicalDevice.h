@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyPhysicalDevice : public RHIPhysicalDevice
     {
     public:
-        RHIDummyPhysicalDevice();
+        RHIDummyPhysicalDevice(RHIDummyInstance* pDummyInstance);
         virtual ~RHIDummyPhysicalDevice();
 
     public:
     protected:
+        RHIDummyInstance* m_pDummyInstance;
 
+    public:
+        F_FORCEINLINE RHIDummyInstance* GetDummyInstance() { return m_pDummyInstance; }
+        
 
     public:
         virtual RHIPhysicalDeviceProperty GetPhysicalDeviceProperty();

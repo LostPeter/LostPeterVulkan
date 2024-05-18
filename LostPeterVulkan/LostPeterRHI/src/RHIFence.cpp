@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIFence.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIFence::RHIFence()
+    RHIFence::RHIFence(RHIDevice* pDevice)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIFence::RHIFence")
     }
 
     RHIFence::~RHIFence()

@@ -16,17 +16,18 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice(RHIVulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice, int32 nPhysicalDeviceIndex)
-        : m_pInstance(pInstance)
+    RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice(RHIVulkanInstance* pVulkanInstance, VkPhysicalDevice vkPhysicalDevice, int32 nPhysicalDeviceIndex)
+        : RHIPhysicalDevice(pVulkanInstance)
+        , m_pVulkanInstance(pVulkanInstance)
         , m_vkPhysicalDevice(vkPhysicalDevice)
         , m_nPhysicalDeviceIndex(nPhysicalDeviceIndex)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_strPhysicalDeviceType("")
         , m_bIsDiscrete(false)
         , m_vkMaxMSAASamples()
-        , m_pDevice(nullptr)
+        , m_pVulkanDevice(nullptr)
     {
-        F_Assert(m_pInstance && m_vkPhysicalDevice && "RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice")
+        F_Assert(m_pVulkanInstance && m_vkPhysicalDevice && "RHIVulkanPhysicalDevice::RHIVulkanPhysicalDevice")
         init();
     }
 
@@ -37,7 +38,7 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanPhysicalDevice::destroy()
     {
-        F_DELETE(m_pDevice)
+        F_DELETE(m_pVulkanDevice)
     }
     void RHIVulkanPhysicalDevice::init()
     {
@@ -71,8 +72,8 @@ namespace LostPeterPluginRHIVulkan
 
     RHIDevice* RHIVulkanPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
     {
-        m_pDevice = new RHIVulkanDevice(this, createInfo);
-        return m_pDevice;
+        m_pVulkanDevice = new RHIVulkanDevice(this, createInfo);
+        return m_pVulkanDevice;
     }
 
     uint32_t RHIVulkanPhysicalDevice::FindMemoryType(uint32_t filter, VkMemoryPropertyFlags propertyFlag) const

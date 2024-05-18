@@ -11,12 +11,15 @@
 
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyCommandEncoder.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyCommandBuffer::RHIDummyCommandBuffer()
+    RHIDummyCommandBuffer::RHIDummyCommandBuffer(RHIDummyDevice* pDummyDevice)
+        : RHICommandBuffer(pDummyDevice)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyCommandBuffer::RHIDummyCommandBuffer")
     }
 
     RHIDummyCommandBuffer::~RHIDummyCommandBuffer()
@@ -31,7 +34,7 @@ namespace LostPeterPluginRHIDummy
 
     RHICommandEncoder* RHIDummyCommandBuffer::Begin()
     {
-        return new RHIDummyCommandEncoder(*this);
+        return new RHIDummyCommandEncoder(this);
     }
 
 }; //LostPeterPluginRHIDummy

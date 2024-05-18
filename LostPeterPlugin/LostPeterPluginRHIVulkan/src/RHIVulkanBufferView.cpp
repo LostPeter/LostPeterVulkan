@@ -14,15 +14,15 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanBufferView::RHIVulkanBufferView(RHIVulkanBuffer* pBuffer, const RHIBufferViewCreateInfo& createInfo)
-        : RHIBufferView(createInfo)
-        , m_pBuffer(pBuffer)
+    RHIVulkanBufferView::RHIVulkanBufferView(RHIVulkanBuffer* pVulkanBuffer, const RHIBufferViewCreateInfo& createInfo)
+        : RHIBufferView(pVulkanBuffer, createInfo)
+        , m_pVulkanBuffer(pVulkanBuffer)
         , m_nStride(createInfo.eVertexBufferViewInfo.nStride)
         , m_nSize(createInfo.nSize)
         , m_nOffset(createInfo.nOffset)
         , m_eIndexFormat(createInfo.eBufferView == RHIBufferViewType::RHI_BufferView_Index ? createInfo.eIndexBufferViewInfo.eIndexFormat : RHIIndexFormatType::RHI_IndexFormat_16Bit)
     {
-        F_Assert(m_pBuffer && "RHIVulkanBufferView::RHIVulkanBufferView")
+        F_Assert(m_pVulkanBuffer && "RHIVulkanBufferView::RHIVulkanBufferView")
     }
 
     RHIVulkanBufferView::~RHIVulkanBufferView()
