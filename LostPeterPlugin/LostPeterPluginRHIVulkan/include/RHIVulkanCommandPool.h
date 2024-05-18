@@ -36,6 +36,10 @@ namespace LostPeterPluginRHIVulkan
         virtual void Destroy();
         bool Init(uint32 nFamilyIndex);
 
+    public:
+        bool AllocateCommandBuffers(VkCommandBufferLevel level, const void* pNext, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
+
+        void FreeCommandBuffers(uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
     };
 
 }; //LostPeterPluginRHIVulkan

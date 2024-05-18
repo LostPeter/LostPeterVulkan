@@ -25,7 +25,8 @@ namespace LostPeterPluginRHIDummy
     public:
     protected:
         RHIDummyPhysicalDevice* m_pDummyPhysicalDevice;
-        RHIDummyQueue* m_pQueue;
+        RHIDummyQueue* m_pDummyQueue;
+        RHIDummyCommandPool* m_pDummyCommandPool;
 
     public:
         F_FORCEINLINE RHIDummyPhysicalDevice* GetDummyPhysicalDevice() { return m_pDummyPhysicalDevice; }
@@ -35,6 +36,7 @@ namespace LostPeterPluginRHIDummy
 
         virtual uint32 GetQueueCount(RHIQueueType eQueue);
         virtual RHIQueue* GetQueue(RHIQueueType eQueue);
+        virtual RHICommandPool* GetCommandPool(RHIQueueType eQueue);
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo);
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo);

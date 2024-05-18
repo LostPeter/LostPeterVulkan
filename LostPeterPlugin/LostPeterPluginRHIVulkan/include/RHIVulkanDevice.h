@@ -34,11 +34,15 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanCommandPool* m_pCommandPoolTransfer;
         RHIVulkanCommandPool* m_pCommandPoolGraphics;
         RHIVulkanCommandPool* m_pCommandPoolCompute;
+        RHIVulkanCommandPoolPtrVector m_aVulkanCommandPools;
+        RHIVulkanCommandPoolPtrMap m_mapVulkanCommandPools;
 
         RHIVulkanQueue* m_pQueueGraphics;
         RHIVulkanQueue* m_pQueueCompute;
         RHIVulkanQueue* m_pQueueTransfer;
         RHIVulkanQueue* m_pQueuePresent;
+        RHIVulkanQueuePtrVector m_aVulkanQueues;
+        RHIVulkanQueuePtrMap m_mapVulkanQueues;
 
     public:
         F_FORCEINLINE RHIVulkanPhysicalDevice* GetVulkanPhysicalDevice() const { return m_pVulkanPhysicalDevice; }
@@ -59,6 +63,7 @@ namespace LostPeterPluginRHIVulkan
 
         virtual uint32 GetQueueCount(RHIQueueType eQueue);
         virtual RHIQueue* GetQueue(RHIQueueType eQueue);
+        virtual RHICommandPool* GetCommandPool(RHIQueueType eQueue);
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo);
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo);
@@ -90,6 +95,10 @@ namespace LostPeterPluginRHIVulkan
         void SetDebugObject(VkObjectType objectType, uint64_t objectHandle, const char* objectName);
 
     protected:
+        void destroyVMA();
+        void destroyVulkanQueue();
+        void destroyVulkanCommandPool();
+
         bool init(bool bIsEnableValidationLayers);
         bool createDevice(bool bIsEnableValidationLayers);
         bool createVmaAllocator();
@@ -120,6 +129,7 @@ namespace LostPeterPluginRHIVulkan
                                                 VkCommandBufferLevel level);
         bool AllocateVkCommandBuffers(VkCommandPool vkCommandPool,
                                       VkCommandBufferLevel level,
+                                      const void* pNext,
                                       uint32_t commandBufferCount,
                                       VkCommandBuffer* pCommandBuffers);
         void FreeVkCommandBuffers(VkCommandPool vkCommandPool, 
@@ -145,8 +155,8 @@ namespace LostPeterPluginRHIVulkan
         bool CreateVkSemaphore(VkSemaphore& vkSemaphore);
         void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
 
-        // void DestroyVkSemaphore(VulkanSemaphore* pSemaphore);
-        // void DestroyVkSemaphores(VulkanSemaphorePtrVector& aSemaphore);
+        void DestroyVulkanSemaphore(RHIVulkanSemaphore* pVulkanSemaphore);
+        void DestroyVulkanSemaphores(RHIVulkanSemaphorePtrVector& aVulkanSemaphore);
         
         //////////////////// VkFence ////////////////////////
         VkFence CreateVkFence(bool isCreateSignaled);
@@ -158,11 +168,12 @@ namespace LostPeterPluginRHIVulkan
         bool ResetVkFence(const VkFence& vkFence);
         bool ResetVkFences(const VkFenceVector& aFences);
 
-
-        // void DestroyVkFence(VulkanFence* pFence);
-        // void DestroyVkFences(VulkanFencePtrVector& aFence);
-        // void RecoveryFence(VulkanFence* pFence);
-        // void RecoveryFences(VulkanFencePtrVector& aFence);
+        void DestroyVulkanFence(RHIVulkanFence* pVulkanFence);
+        void DestroyVulkanFences(RHIVulkanFencePtrVector& aVulkanFence);
+        void WaitFence(RHIVulkanFence* pVulkanFence);
+        void WaitFences(RHIVulkanFencePtrVector& aVulkanFence);
+        void ResetFence(RHIVulkanFence* pVulkanFence);
+        void ResetFences(RHIVulkanFencePtrVector& aVulkanFence);
 
         //////////////////// VkDescriptorPool ///////////////
         bool CreateVkDescriptorPool(uint32_t descriptorCount,    

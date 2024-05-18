@@ -20,7 +20,7 @@ namespace LostPeterPluginRHIVulkan
         , m_vkFence(VK_NULL_HANDLE)
         , m_bIsSignaled(bIsSignaled)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanBuffer::RHIVulkanBuffer")
+        F_Assert(m_pVulkanDevice && "RHIVulkanFence::RHIVulkanFence")
 
         m_pVulkanDevice->CreateVkFence(bIsSignaled, m_vkFence);
     }   

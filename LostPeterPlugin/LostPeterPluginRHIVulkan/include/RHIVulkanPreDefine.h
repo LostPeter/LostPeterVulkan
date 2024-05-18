@@ -149,6 +149,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanPipelineLayout;
 	class RHIVulkanQueue;
 	class RHIVulkanSampler;
+    class RHIVulkanSemaphore;
 	class RHIVulkanShaderModule;
 	class RHIVulkanSurface;
 	class RHIVulkanSwapChain;
@@ -158,7 +159,19 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanUtil;
 	class RHIVulkanVolk;
 
+
 	typedef std::vector<RHIVulkanPhysicalDevice*> RHIVulkanPhysicalDevicePtrVector;	
+
+    typedef std::vector<RHIVulkanFence*> RHIVulkanFencePtrVector;
+    typedef std::vector<RHIVulkanSemaphore*> RHIVulkanSemaphorePtrVector;
+    
+    typedef std::vector<RHIVulkanQueue*> RHIVulkanQueuePtrVector;
+    typedef std::map<RHIQueueType, RHIVulkanQueue*> RHIVulkanQueuePtrMap;
+
+    typedef std::vector<RHIVulkanCommandPool*> RHIVulkanCommandPoolPtrVector;
+     typedef std::map<RHIQueueType, RHIVulkanCommandPool*> RHIVulkanCommandPoolPtrMap;
+    
+
 	typedef std::vector<RHIVulkanTexture*> RHIVulkanTexturePtrVector;
     
 

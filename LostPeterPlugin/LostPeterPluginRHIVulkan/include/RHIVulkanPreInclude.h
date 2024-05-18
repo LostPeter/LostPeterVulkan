@@ -36,6 +36,7 @@
 #include "RHIVulkanPipelineLayout.h"
 #include "RHIVulkanQueue.h"
 #include "RHIVulkanSampler.h"
+#include "RHIVulkanSemaphore.h"
 #include "RHIVulkanShaderModule.h"
 #include "RHIVulkanSurface.h"
 #include "RHIVulkanSwapChain.h"

@@ -46,6 +46,7 @@ namespace LostPeterRHI
         
         virtual uint32 GetQueueCount(RHIQueueType eQueue) = 0;
         virtual RHIQueue* GetQueue(RHIQueueType eQueue) = 0;
+        virtual RHICommandPool* GetCommandPool(RHIQueueType eQueue) = 0;
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo) = 0;
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo) = 0;
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo) = 0;

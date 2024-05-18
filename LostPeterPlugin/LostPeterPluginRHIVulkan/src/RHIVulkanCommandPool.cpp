@@ -49,4 +49,21 @@ namespace LostPeterPluginRHIVulkan
         return true;
     }
 
+    bool RHIVulkanCommandPool::AllocateCommandBuffers(VkCommandBufferLevel level, const void* pNext, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers)
+    {
+        if (m_vkCommandPool != VK_NULL_HANDLE)
+        {
+            return m_pVulkanDevice->AllocateVkCommandBuffers(m_vkCommandPool, level, pNext, commandBufferCount, pCommandBuffers);
+        }
+        return false;
+    }
+
+    void RHIVulkanCommandPool::FreeCommandBuffers(uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers)
+    {
+        if (m_vkCommandPool != VK_NULL_HANDLE)
+        {
+            m_pVulkanDevice->FreeVkCommandBuffers(m_vkCommandPool, commandBufferCount, pCommandBuffers);
+        }
+    }
+
 }; //LostPeterPluginRHIVulkan

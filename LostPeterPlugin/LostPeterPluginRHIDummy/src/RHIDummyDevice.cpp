@@ -32,7 +32,8 @@ namespace LostPeterPluginRHIDummy
     RHIDummyDevice::RHIDummyDevice(RHIDummyPhysicalDevice* pDummyPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
         : RHIDevice(pDummyPhysicalDevice, createInfo)
         , m_pDummyPhysicalDevice(pDummyPhysicalDevice)
-        , m_pQueue(nullptr)
+        , m_pDummyQueue(nullptr)
+        , m_pDummyCommandPool(nullptr)
     {
         F_Assert(m_pDummyPhysicalDevice && "RHIDummyDevice::RHIDummyDevice")
     }
@@ -44,7 +45,8 @@ namespace LostPeterPluginRHIDummy
     
     void RHIDummyDevice::Destroy()
     {
-        F_DELETE(m_pQueue)
+        F_DELETE(m_pDummyQueue)
+        F_DELETE(m_pDummyCommandPool)
     }
 
     uint32 RHIDummyDevice::GetQueueCount(RHIQueueType eQueue)
@@ -55,11 +57,22 @@ namespace LostPeterPluginRHIDummy
     RHIQueue* RHIDummyDevice::GetQueue(RHIQueueType eQueue)
     {
         F_Assert("RHIDummyDevice::GetQueue" && eQueue == RHIQueueType::RHI_Queue_Graphics);
-        if (m_pQueue == nullptr)
+        if (m_pDummyQueue == nullptr)
         {
-            m_pQueue = new RHIDummyQueue(this);
+            m_pDummyQueue = new RHIDummyQueue(this);
         }
-        return m_pQueue;
+        return m_pDummyQueue;
+    }
+
+    RHICommandPool* RHIDummyDevice::GetCommandPool(RHIQueueType eQueue)
+    {
+        F_Assert("RHIDummyDevice::GetCommandPool" && eQueue == RHIQueueType::RHI_Queue_Graphics);
+        if (m_pDummyCommandPool == nullptr)
+        {
+            m_pDummyCommandPool = new RHIDummyCommandPool(this);
+        }
+        return m_pDummyCommandPool;
+        
     }
 
     RHISurface* RHIDummyDevice::CreateSurface(const RHISurfaceCreateInfo& createInfo)

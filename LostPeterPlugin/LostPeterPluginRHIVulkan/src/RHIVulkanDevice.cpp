@@ -27,6 +27,7 @@
 #include "../include/RHIVulkanCommandPool.h"
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanFence.h"
+#include "../include/RHIVulkanSemaphore.h"
 #include "../include/RHIVulkanVolk.h"
 #include "../include/RHIVulkanDebug.h"
 #include "../include/RHIVulkanConverter.h"
@@ -59,26 +60,41 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanDevice::Destroy()
     {
         destroyPixelFormatInfos();
-        if (m_vmaAllocator != VK_NULL_HANDLE)
-        {
-            vmaDestroyAllocator(m_vmaAllocator);
-        }
-        m_vmaAllocator = VK_NULL_HANDLE;
-
-        m_pQueuePresent = nullptr;
-        F_DELETE(m_pQueueTransfer)
-        F_DELETE(m_pQueueCompute)
-        F_DELETE(m_pQueueGraphics)
-
-        F_DELETE(m_pCommandPoolCompute)
-        F_DELETE(m_pCommandPoolGraphics)
-        F_DELETE(m_pCommandPoolTransfer)
-
+        destroyVMA();
+        destroyVulkanQueue();
+        destroyVulkanCommandPool();
+        
         DestroyVkDevice(this->m_vkDevice);
         this->m_vkDevice = VK_NULL_HANDLE;
         
         m_pVulkanPhysicalDevice = nullptr;
     }
+    void RHIVulkanDevice::destroyVMA()
+    {
+        if (m_vmaAllocator != VK_NULL_HANDLE)
+        {
+            vmaDestroyAllocator(m_vmaAllocator);
+        }
+        m_vmaAllocator = VK_NULL_HANDLE;
+    }
+    void RHIVulkanDevice::destroyVulkanQueue()
+    {
+        m_pQueuePresent = nullptr;
+        F_DELETE(m_pQueueTransfer)
+        F_DELETE(m_pQueueCompute)
+        F_DELETE(m_pQueueGraphics)
+        m_aVulkanQueues.clear();
+        m_mapVulkanQueues.clear();
+    }
+    void RHIVulkanDevice::destroyVulkanCommandPool()
+    {
+        F_DELETE(m_pCommandPoolCompute)
+        F_DELETE(m_pCommandPoolGraphics)
+        F_DELETE(m_pCommandPoolTransfer)
+        m_aVulkanCommandPools.clear();
+        m_mapVulkanCommandPools.clear();
+    }
+
 
     uint32 RHIVulkanDevice::GetQueueCount(RHIQueueType eQueue)
     {
@@ -87,23 +103,18 @@ namespace LostPeterPluginRHIVulkan
 
     RHIQueue* RHIVulkanDevice::GetQueue(RHIQueueType eQueue)
     {
-        if (eQueue == RHIQueueType::RHI_Queue_Graphics)
-        {
-            return m_pQueueGraphics;
-        }
-        else if (eQueue == RHIQueueType::RHI_Queue_Compute)
-        {
-            return m_pQueueCompute;
-        }
-        else if (eQueue == RHIQueueType::RHI_Queue_Transfer)
-        {
-            return m_pQueueTransfer;
-        }
-        else if (eQueue == RHIQueueType::RHI_Queue_Present)
-        {
-            return m_pQueuePresent;
-        }
-        return nullptr;
+        RHIVulkanQueuePtrMap::iterator itFind = m_mapVulkanQueues.find(eQueue);
+        if (itFind == m_mapVulkanQueues.end())
+            return nullptr;
+        return itFind->second;
+    }
+
+    RHICommandPool* RHIVulkanDevice::GetCommandPool(RHIQueueType eQueue)
+    {
+        RHIVulkanCommandPoolPtrMap::iterator itFind = m_mapVulkanCommandPools.find(eQueue);
+        if (itFind == m_mapVulkanCommandPools.end())
+            return nullptr;
+        return itFind->second;
     }
 
     RHISurface* RHIVulkanDevice::CreateSurface(const RHISurfaceCreateInfo& createInfo)
@@ -434,6 +445,7 @@ namespace LostPeterPluginRHIVulkan
         }
         m_pVulkanPhysicalDevice->GetVulkanInstance()->GetVolk()->VolkLoadDevice(m_vkDevice);
 
+        ////////////////////// RHIVulkanQueue //////////////////////
         //RHIVulkanQueue Graphics
         m_pQueueGraphics = new RHIVulkanQueue(this, queueFamilyIndex_Graphics);
         if (!m_pQueueGraphics->Init())
@@ -441,6 +453,8 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Graphics init failed !");
             return false;
         }
+        m_aVulkanQueues.push_back(m_pQueueGraphics);
+        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Graphics] = m_pQueueGraphics;
 
         //RHIVulkanQueue Compute
         if (queueFamilyIndex_Compute == -1) 
@@ -453,6 +467,8 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Compute init failed !");
             return false;
         }
+        m_aVulkanQueues.push_back(m_pQueueCompute);
+        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Compute] = m_pQueueGraphics;
 
         //RHIVulkanQueue Transfer
         if (queueFamilyIndex_Transfer == -1) 
@@ -465,25 +481,39 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Transfer init failed !");
             return false;
         }
+        m_aVulkanQueues.push_back(m_pQueueTransfer);
+        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Transfer] = m_pQueueGraphics;
 
+        ////////////////////// RHIVulkanCommandPool ////////////////
+        //RHIVulkanCommandPool Transfer
         m_pCommandPoolTransfer = new RHIVulkanCommandPool(this);
         if (!m_pCommandPoolTransfer->Init(queueFamilyIndex_Transfer))
         {
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Transfer init failed !");
             return false;
         }
+        m_aVulkanCommandPools.push_back(m_pCommandPoolTransfer);
+        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Transfer] = m_pCommandPoolTransfer;
+
+        //RHIVulkanCommandPool Graphics
         m_pCommandPoolGraphics = new RHIVulkanCommandPool(this);
         if (!m_pCommandPoolGraphics->Init(queueFamilyIndex_Graphics))
         {
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Graphics init failed !");
             return false;
         }
+        m_aVulkanCommandPools.push_back(m_pCommandPoolGraphics);
+        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Graphics] = m_pCommandPoolGraphics;
+
+        //RHIVulkanCommandPool Compute
         m_pCommandPoolCompute = new RHIVulkanCommandPool(this);
         if (!m_pCommandPoolCompute->Init(queueFamilyIndex_Compute))
         {
             F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Compute init failed !");
             return false;
         }
+        m_aVulkanCommandPools.push_back(m_pCommandPoolCompute);
+        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Compute] = m_pCommandPoolCompute;
 
         return true;
     }
@@ -598,18 +628,21 @@ namespace LostPeterPluginRHIVulkan
         VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
         AllocateVkCommandBuffers(vkCommandPool,
                                  level,
+                                 nullptr,
                                  1,
                                  &vkCommandBuffer);
         return vkCommandBuffer;
     }
     bool RHIVulkanDevice::AllocateVkCommandBuffers(VkCommandPool vkCommandPool,
                                                    VkCommandBufferLevel level,
+                                                   const void* pNext,
                                                    uint32_t commandBufferCount,
                                                    VkCommandBuffer* pCommandBuffers)
     {
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = level;
+        allocInfo.pNext = pNext;
         allocInfo.commandPool = vkCommandPool;
         allocInfo.commandBufferCount = commandBufferCount;
         if (!RHI_CheckVkResult(vkAllocateCommandBuffers(this->m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
@@ -717,19 +750,20 @@ namespace LostPeterPluginRHIVulkan
         }
     }
 
-    // void RHIVulkanDevice::DestroyVkSemaphore(VulkanSemaphore* pSemaphore)
-    // {
-    //     F_DELETE(pSemaphore)
-    // }
-    // void RHIVulkanDevice::DestroyVkSemaphores(VulkanSemaphorePtrVector& aSemaphore)
-    // {
-    //     size_t count = aSemaphore.size();
-    //     for (size_t i = 0; i < count; i++)
-    //     {
-    //         VulkanSemaphore* pSemaphore = aSemaphore[i];
-    //         F_DELETE(pSemaphore)
-    //     }
-    // }
+    void RHIVulkanDevice::DestroyVulkanSemaphore(RHIVulkanSemaphore* pVulkanSemaphore)
+    {
+        F_DELETE(pVulkanSemaphore)
+    }
+    void RHIVulkanDevice::DestroyVulkanSemaphores(RHIVulkanSemaphorePtrVector& aVulkanSemaphore)
+    {
+        size_t count = aVulkanSemaphore.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanSemaphore* pVulkanSemaphore = aVulkanSemaphore[i];
+            F_DELETE(pVulkanSemaphore)
+        }
+        aVulkanSemaphore.clear();
+    }
 
 
     //////////////////// VkFence ////////////////////////
@@ -776,33 +810,48 @@ namespace LostPeterPluginRHIVulkan
         return vkResetFences(this->m_vkDevice, (uint32_t)aFences.size(), aFences.data()) == VK_SUCCESS;
     }
 
-    // void RHIVulkanDevice::DestroyVkFence(VulkanFence* pFence)
-    // {
-    //     m_pFenceManager->DestoryFence(pFence);
-    // }
-    // void RHIVulkanDevice::DestroyVkFences(VulkanFencePtrVector& aFence)
-    // {
-    //     size_t count = aFence.size();
-    //     for (size_t i = 0; i < count; i++)
-    //     {
-    //         VulkanFence* pFence = aFence[i];
-    //         m_pFenceManager->DestoryFence(pFence);
-    //     }
-    // }
+    void RHIVulkanDevice::DestroyVulkanFence(RHIVulkanFence* pVulkanFence)
+    {
+        F_DELETE(pVulkanFence)
+    }
+    void RHIVulkanDevice::DestroyVulkanFences(RHIVulkanFencePtrVector& aVulkanFence)
+    {
+        size_t count = aVulkanFence.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanFence* pVulkanFence = aVulkanFence[i];
+            F_DELETE(pVulkanFence)
+        }
+        aVulkanFence.clear();
+    }
 
-    // void RHIVulkanDevice::RecoveryFence(VulkanFence* pFence)
-    // {
-    //     m_pFenceManager->RecoveryFence(pFence);
-    // }
-    // void RHIVulkanDevice::RecoveryFences(VulkanFencePtrVector& aFence)
-    // {
-    //     size_t count = aFence.size();
-    //     for (size_t i = 0; i < count; i++)
-    //     {
-    //         VulkanFence* pFence = aFence[i];
-    //         m_pFenceManager->RecoveryFence(pFence);
-    //     }
-    // }
+    void RHIVulkanDevice::WaitFence(RHIVulkanFence* pVulkanFence)
+    {
+        pVulkanFence->Wait();
+    }
+    void RHIVulkanDevice::WaitFences(RHIVulkanFencePtrVector& aVulkanFence)
+    {
+        size_t count = aVulkanFence.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanFence* pVulkanFence = aVulkanFence[i];
+            pVulkanFence->Wait();
+        }
+    }
+
+    void RHIVulkanDevice::ResetFence(RHIVulkanFence* pVulkanFence)
+    {
+        pVulkanFence->Reset();
+    }
+    void RHIVulkanDevice::ResetFences(RHIVulkanFencePtrVector& aVulkanFence)
+    {
+        size_t count = aVulkanFence.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanFence* pVulkanFence = aVulkanFence[i];
+            pVulkanFence->Reset();
+        }
+    }
 
 
     //////////////////// VkDescriptorPool ///////////////
