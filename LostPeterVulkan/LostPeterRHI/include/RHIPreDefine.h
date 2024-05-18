@@ -305,8 +305,19 @@ namespace LostPeterRHI
         RHI_Address_ClampToEdge = 0,					//0: ClampToEdge
         RHI_Address_Repeat,								//1: Repeat
         RHI_Address_MirrorRepeat,						//2: MirrorRepeat
+        RHI_Address_Border,                             //3: Border
 
         RHI_Address_Count,
+    };
+
+    //RHIBorderColorType
+    enum class RHIBorderColorType : RHIEnumType
+    {
+        RHI_BorderColor_OpaqueBlack = 0,                //0: OpaqueBlack
+        RHI_BorderColor_OpaqueWhite,                    //1: OpaqueWhite
+        RHI_BorderColor_TransparentBlack,               //2: TransparentBlack
+    
+        RHI_BorderColor_Count,
     };
 
 	//RHIFilterType

@@ -315,7 +315,50 @@ namespace LostPeterPluginRHIVulkan
                                VkMemoryMapFlags flags,
                                void** ppData);
         void UnmapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory);
-
+        
+        //////////////////// VkImage ////////////////////////
+        bool CreateVkImage(uint32_t nWidth, 
+                           uint32_t nHeight, 
+                           uint32_t nDepth, 
+                           uint32_t nLayerCount,
+                           uint32_t nMipMapCount, 
+                           VkImageType typeImage, 
+                           bool bIsCubeMap,
+                           VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                           VkFormat typeFormat, 
+                           VkImageTiling typeImageTiling, 
+                           VkImageUsageFlags typeImageUsageFlags, 
+                           VkSharingMode typeSharingMode,
+                           bool bIsGraphicsComputeShared,
+                           VkMemoryPropertyFlags properties, 
+                           VkImage& vkImage, 
+                           VkDeviceMemory& vkImageMemory);
+        bool CreateVkImageView(VkImage vkImage, 
+                               VkImageViewType typeImageView, 
+                               VkFormat typeFormat, 
+                               VkComponentMapping typeComponentMapping,
+                               VkImageAspectFlags typeImageAspectFlags, 
+                               uint32_t nMipMapCount,
+                               uint32_t nLayerCount,
+                               VkImageView& vkImageView);
+        bool CreateVkSampler(uint32_t nMipMapCount, 
+                             VkSampler& vkSampler);
+        bool CreateVkSampler(RHIFilterType eFilterMin,
+                             RHIFilterType eFilterMag,
+                             RHIFilterType eFilterMip,
+                             RHIAddressType eAddressingU,
+                             RHIAddressType eAddressingV,
+                             RHIAddressType eAddressingW,
+                             RHIBorderColorType eBorderColor,
+                             bool bIsEnableAnisotropy,
+                             float fMaxAnisotropy,
+                             float fMinLod, 
+                             float fMaxLod, 
+                             float fMipLodBias,
+                             VkSampler& vkSampler);
+        void DestroyVkImage(const VkImage& vkImage, const VkDeviceMemory& vkImageMemory, const VkImageView& vkImageView);
+        void DestroyVkImageView(const VkImageView& vkImageView);
+        void DestroyVkSampler(const VkSampler& vkSampler);
 
     public:
         //////////////////// VkCommandBuffer ////////////////

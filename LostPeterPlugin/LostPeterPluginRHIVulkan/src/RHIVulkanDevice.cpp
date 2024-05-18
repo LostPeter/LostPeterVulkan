@@ -1416,6 +1416,184 @@ namespace LostPeterPluginRHIVulkan
     }
 
 
+     //////////////////// VkImage ////////////////////////
+    bool RHIVulkanDevice::CreateVkImage(uint32_t nWidth, 
+                                        uint32_t nHeight, 
+                                        uint32_t nDepth, 
+                                        uint32_t nLayerCount,
+                                        uint32_t nMipMapCount, 
+                                        VkImageType typeImage, 
+                                        bool bIsCubeMap,
+                                        VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                        VkFormat typeFormat, 
+                                        VkImageTiling typeImageTiling, 
+                                        VkImageUsageFlags typeImageUsageFlags, 
+                                        VkSharingMode typeSharingMode,
+                                        bool bIsGraphicsComputeShared,
+                                        VkMemoryPropertyFlags properties, 
+                                        VkImage& vkImage, 
+                                        VkDeviceMemory& vkImageMemory) 
+    {
+        VkImageCreateInfo imageCreateInfo = {};
+        imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        if (bIsCubeMap)
+            imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+        imageCreateInfo.imageType = typeImage;
+        imageCreateInfo.format = typeFormat;
+        imageCreateInfo.extent.width = nWidth;
+        imageCreateInfo.extent.height = nHeight;
+        imageCreateInfo.extent.depth = nDepth;
+        imageCreateInfo.mipLevels = nMipMapCount <= 0 ? 1 : nMipMapCount;
+        imageCreateInfo.arrayLayers = nLayerCount;
+        imageCreateInfo.samples = typeSamplesCountFlagBits;
+        imageCreateInfo.tiling = typeImageTiling;
+        imageCreateInfo.usage = typeImageUsageFlags;
+        imageCreateInfo.sharingMode = typeSharingMode;
+        if (bIsGraphicsComputeShared)
+        {
+            if (this->m_pQueueGraphics->GetFamilyIndex() != this->m_pQueueCompute->GetFamilyIndex()) 
+            {
+                std::vector<uint32_t> queueFamilyIndices;
+                queueFamilyIndices.push_back(this->m_pQueueGraphics->GetFamilyIndex());
+                queueFamilyIndices.push_back(this->m_pQueueCompute->GetFamilyIndex());
+                imageCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+                imageCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
+                imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+            }
+        }
+        imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+        if (vkCreateImage(this->m_vkDevice, &imageCreateInfo, nullptr, &vkImage) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkImage: Failed to create image !");
+            return false;
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(this->m_vkDevice, vkImage, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = m_pVulkanPhysicalDevice->FindMemoryType(memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(this->m_vkDevice, &allocInfo, nullptr, &vkImageMemory) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkImage: Failed to allocate image memory !");
+            return false;
+        }
+        vkBindImageMemory(this->m_vkDevice, vkImage, vkImageMemory, 0);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateVkImageView(VkImage vkImage, 
+                                            VkImageViewType typeImageView, 
+                                            VkFormat typeFormat, 
+                                            VkComponentMapping typeComponentMapping,
+                                            VkImageAspectFlags typeImageAspectFlags, 
+                                            uint32_t nMipMapCount,
+                                            uint32_t nLayerCount,
+                                            VkImageView& vkImageView) 
+    {
+        VkImageViewCreateInfo viewInfo = {};
+        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image = vkImage;
+        viewInfo.viewType = typeImageView;
+        viewInfo.format = typeFormat;
+        viewInfo.components = typeComponentMapping;
+        viewInfo.subresourceRange.aspectMask = typeImageAspectFlags;
+        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.levelCount = nMipMapCount <= 0 ? 1 : nMipMapCount;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount = nLayerCount;
+
+        if (vkCreateImageView(this->m_vkDevice, &viewInfo, nullptr, &vkImageView) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkImageView: Failed to create texture image view !");
+            return false;
+        }
+        return true;
+    }
+    bool RHIVulkanDevice::CreateVkSampler(uint32_t nMipMapCount, 
+                                          VkSampler& vkSampler)
+    {
+        return CreateVkSampler(RHIFilterType::RHI_Filter_Linear,
+                               RHIFilterType::RHI_Filter_Linear,
+                               RHIFilterType::RHI_Filter_Linear,
+                               RHIAddressType::RHI_Address_ClampToEdge,
+                               RHIAddressType::RHI_Address_ClampToEdge,
+                               RHIAddressType::RHI_Address_ClampToEdge,
+                               RHIBorderColorType::RHI_BorderColor_OpaqueBlack,
+                               true,
+                               m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy,
+                               0.0f,
+                               static_cast<float>(nMipMapCount),
+                               0.0f,
+                               vkSampler);
+    }
+    bool RHIVulkanDevice::CreateVkSampler(RHIFilterType eFilterMin,
+                                          RHIFilterType eFilterMag,
+                                          RHIFilterType eFilterMip,
+                                          RHIAddressType eAddressingU,
+                                          RHIAddressType eAddressingV,
+                                          RHIAddressType eAddressingW,
+                                          RHIBorderColorType eBorderColor,
+                                          bool bIsEnableAnisotropy,
+                                          float fMaxAnisotropy,
+                                          float fMinLod, 
+                                          float fMaxLod, 
+                                          float fMipLodBias,
+                                          VkSampler& vkSampler)
+    {
+        VkSamplerCreateInfo samplerInfo = {};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.minFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMin);
+        samplerInfo.magFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMag);
+        samplerInfo.addressModeU = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingU);
+        samplerInfo.addressModeV = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingV);
+        samplerInfo.addressModeW = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingW);
+        samplerInfo.anisotropyEnable = bIsEnableAnisotropy ? VK_TRUE : VK_FALSE;
+        samplerInfo.maxAnisotropy = fMaxAnisotropy > m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy ? m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy : fMaxAnisotropy;
+        samplerInfo.borderColor = RHIVulkanConverter::TransformToVkBorderColor(eBorderColor);
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = RHIVulkanConverter::TransformToVkSamplerMipmapMode(eFilterMip);
+        samplerInfo.minLod = fMinLod;
+        samplerInfo.maxLod = fMaxLod;
+        samplerInfo.mipLodBias = fMipLodBias;
+
+        if (vkCreateSampler(this->m_vkDevice, &samplerInfo, nullptr, &vkSampler) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkSampler: Failed to create texture sampler !");
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkImage(const VkImage& vkImage, const VkDeviceMemory& vkImageMemory, const VkImageView& vkImageView)
+    {
+        if (vkImage != VK_NULL_HANDLE)
+        {
+            vkDestroyImage(this->m_vkDevice, vkImage, nullptr);
+            vkFreeMemory(this->m_vkDevice, vkImageMemory, nullptr);
+        }
+        DestroyVkImageView(vkImageView);
+    }
+    void RHIVulkanDevice::DestroyVkImageView(const VkImageView& vkImageView)
+    {   
+        if (vkImageView != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(this->m_vkDevice, vkImageView, nullptr);
+        }
+    }
+    void RHIVulkanDevice::DestroyVkSampler(const VkSampler& vkSampler)
+    {
+        if (vkSampler != VK_NULL_HANDLE)
+        {
+            vkDestroySampler(this->m_vkDevice, vkSampler, nullptr);
+        }
+    }
+
+
     //////////////////// VkCommandBuffer ////////////////
     VkCommandBuffer RHIVulkanDevice::BeginSingleTimeCommands()
     {

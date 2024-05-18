@@ -23,8 +23,9 @@ namespace LostPeterPluginRHIVulkan
         case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:          return RHIPhysicalDeviceType::RHI_PhysicalDevice_GPUDiscrete;
         case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:           return RHIPhysicalDeviceType::RHI_PhysicalDevice_GPUVirtual;
         case VK_PHYSICAL_DEVICE_TYPE_CPU:                   return RHIPhysicalDeviceType::RHI_PhysicalDevice_CPU;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPhysicalDeviceType: Wrong VkPhysicalDeviceType type !")
         }
-        F_Assert(false && "RHIVulkanConverter::TransformFromVkPhysicalDeviceType: Wrong VkPhysicalDeviceType type !")
         return RHIPhysicalDeviceType::RHI_PhysicalDevice_UnKnown; 
     }
 
@@ -80,9 +81,61 @@ namespace LostPeterPluginRHIVulkan
         case VK_FORMAT_D32_SFLOAT_S8_UINT:          return RHIPixelFormatType::RHI_PixelFormat_D32FloatS8UInt;
         //Features /BC/ETC/ASTC
 
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkFormat: Wrong VkFormat type !")
         }
-        F_Assert(false && "RHIVulkanConverter::TransformFromVkFormat: Wrong VkFormat type !")
         return RHIPixelFormatType::RHI_PixelFormat_Unknown;
+    }
+
+    RHIFilterType RHIVulkanConverter::TransformFromVkFilter(VkFilter vkFilter)
+    {
+        switch ((int32)vkFilter)
+        {
+        case VK_FILTER_NEAREST:         return RHIFilterType::RHI_Filter_Nearest;
+        case VK_FILTER_LINEAR:          return RHIFilterType::RHI_Filter_Linear;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkFilter: Wrong VkFilter type !")
+        }
+        return RHIFilterType::RHI_Filter_Linear;
+    }
+
+    RHIFilterType RHIVulkanConverter::TransformFromVkSamplerMipmapMode(VkSamplerMipmapMode vkSamplerMipmapMode)
+    {
+        switch ((int32)vkSamplerMipmapMode)
+        {
+        case VK_SAMPLER_MIPMAP_MODE_NEAREST:         return RHIFilterType::RHI_Filter_Nearest;
+        case VK_SAMPLER_MIPMAP_MODE_LINEAR:          return RHIFilterType::RHI_Filter_Linear;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkSamplerMipmapMode: Wrong VkSamplerMipmapMode type !")
+        }
+        return RHIFilterType::RHI_Filter_Linear;
+    }
+
+    RHIAddressType RHIVulkanConverter::TransformFromVkSamplerAddressMode(VkSamplerAddressMode vkSamplerAddressMode)
+    {
+        switch ((int32)vkSamplerAddressMode)
+        {
+        case VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE:         return RHIAddressType::RHI_Address_ClampToEdge;
+        case VK_SAMPLER_ADDRESS_MODE_REPEAT:                return RHIAddressType::RHI_Address_Repeat;
+        case VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT:       return RHIAddressType::RHI_Address_MirrorRepeat;
+        case VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER:       return RHIAddressType::RHI_Address_Border;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkSamplerAddressMode: Wrong VkSamplerAddressMode type !")
+        }
+        return RHIAddressType::RHI_Address_ClampToEdge;
+    }
+
+    RHIBorderColorType RHIVulkanConverter::TransformFromVkBorderColor(VkBorderColor vkBorderColor)
+    {
+        switch ((int32)vkBorderColor)
+        {
+        case VK_BORDER_COLOR_INT_OPAQUE_BLACK:           return RHIBorderColorType::RHI_BorderColor_OpaqueBlack;
+        case VK_BORDER_COLOR_INT_OPAQUE_WHITE:           return RHIBorderColorType::RHI_BorderColor_OpaqueWhite;
+        case VK_BORDER_COLOR_INT_TRANSPARENT_BLACK:      return RHIBorderColorType::RHI_BorderColor_TransparentBlack;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkBorderColor: Wrong VkBorderColor type !")
+        }
+        return RHIBorderColorType::RHI_BorderColor_OpaqueBlack;
     }
 
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
@@ -115,9 +168,9 @@ namespace LostPeterPluginRHIVulkan
         case RHIPhysicalDeviceType::RHI_PhysicalDevice_GPUDiscrete:     return VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
         case RHIPhysicalDeviceType::RHI_PhysicalDevice_GPUVirtual:      return VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU;
         case RHIPhysicalDeviceType::RHI_PhysicalDevice_CPU:             return VK_PHYSICAL_DEVICE_TYPE_CPU;
-        case RHIPhysicalDeviceType::RHI_PhysicalDevice_Count:           return VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPhysicalDeviceType: Wrong RHIPhysicalDeviceType type !")
         }
-        F_Assert(false && "RHIVulkanConverter::TransformToVkPhysicalDeviceType: Wrong RHIPhysicalDeviceType type !")
         return VK_PHYSICAL_DEVICE_TYPE_OTHER; 
     }
 
@@ -173,10 +226,9 @@ namespace LostPeterPluginRHIVulkan
         case RHIPixelFormatType::RHI_PixelFormat_D32FloatS8UInt:             return VK_FORMAT_D32_SFLOAT_S8_UINT;
         //Features /BC/ETC/ASTC
 
-        case RHIPixelFormatType::RHI_PixelFormat_Unknown:                    return VK_FORMAT_UNDEFINED;
-        case RHIPixelFormatType::RHI_PixelFormat_Count:                      return VK_FORMAT_MAX_ENUM;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkFormat: Wrong RHIPixelFormatType type !")
         }
-        F_Assert(false && "RHIVulkanConverter::TransformToVkFormat: Wrong RHIPixelFormatType type !")
         return VK_FORMAT_UNDEFINED;
     }
 
@@ -243,7 +295,58 @@ namespace LostPeterPluginRHIVulkan
         return s_nameVkFormatTypes[(uint32)ePixelFormat];
     }
 
-    VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
+    VkFilter RHIVulkanConverter::TransformToVkFilter(RHIFilterType eFilter)
+    {
+        switch (eFilter)
+        {
+        case RHIFilterType::RHI_Filter_Nearest:         return VK_FILTER_NEAREST;
+        case RHIFilterType::RHI_Filter_Linear:          return VK_FILTER_LINEAR;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkFilter: Wrong RHIFilterType type !")
+        }
+        return VK_FILTER_LINEAR;
+    }
+
+    VkSamplerMipmapMode RHIVulkanConverter::TransformToVkSamplerMipmapMode(RHIFilterType eFilter)
+    {
+        switch (eFilter)
+        {
+        case RHIFilterType::RHI_Filter_Nearest:         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case RHIFilterType::RHI_Filter_Linear:          return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkSamplerMipmapMode: Wrong RHIFilterType type !")
+        }
+        return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    }
+
+    VkSamplerAddressMode RHIVulkanConverter::TransformToVkSamplerAddressMode(RHIAddressType eAddress)
+    {
+        switch (eAddress)
+        {
+        case RHIAddressType::RHI_Address_ClampToEdge:       return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        case RHIAddressType::RHI_Address_Repeat:            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        case RHIAddressType::RHI_Address_MirrorRepeat:      return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+        case RHIAddressType::RHI_Address_Border:            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkSamplerAddressMode: Wrong RHIAddressType type !")
+        }
+        return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    }
+
+    VkBorderColor RHIVulkanConverter::TransformToVkBorderColor(RHIBorderColorType eBorderColor)
+    {
+        switch (eBorderColor)
+        {
+        case RHIBorderColorType::RHI_BorderColor_OpaqueBlack:           return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        case RHIBorderColorType::RHI_BorderColor_OpaqueWhite:           return VK_BORDER_COLOR_INT_OPAQUE_WHITE;
+        case RHIBorderColorType::RHI_BorderColor_TransparentBlack:      return VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkBorderColor: Wrong RHIBorderColorType type !")
+        }
+        return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    }
+
+    VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
     {
         switch (eBufferUsageBits)
         {
@@ -259,7 +362,7 @@ namespace LostPeterPluginRHIVulkan
         }
         return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     }
-    VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages)
+    VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages)
     {
         static std::map<RHIBufferUsageBitsType, VkBufferUsageFlags> s_Rules = 
         {
