@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIDevice.h"
+#include "../include/RHIPhysicalDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIDevice::RHIDevice(const RHIDeviceCreateInfo& createInfo)
+    RHIDevice::RHIDevice(RHIPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
+        : m_pPhysicalDevice(pPhysicalDevice)
     {
-
+        F_Assert(m_pPhysicalDevice && "RHIDevice::RHIDevice")
     }
 
     RHIDevice::~RHIDevice()

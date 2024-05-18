@@ -71,12 +71,12 @@ namespace LostPeterPluginRHIVulkan
     }
     void RHIVulkanInstance::destroyPhysicalDevice()
     {
-        size_t count = m_aPhysicalDevices.size();
+        size_t count = m_aVulkanPhysicalDevices.size();
         for (size_t i = 0; i < count; i++)
         {
-            F_DELETE(m_aPhysicalDevices[i])
+            F_DELETE(m_aVulkanPhysicalDevices[i])
         }
-        m_aPhysicalDevices.clear();
+        m_aVulkanPhysicalDevices.clear();
     }
 
     bool RHIVulkanInstance::Init()
@@ -239,11 +239,11 @@ namespace LostPeterPluginRHIVulkan
 
         for (uint32 i = 0; i < physicalDevicesCount; i++)
         {
-            RHIVulkanPhysicalDevice* pPhysicalDevice = new RHIVulkanPhysicalDevice(this, physicalDevices[i], i);
-            m_aPhysicalDevices.push_back(pPhysicalDevice);
+            RHIVulkanPhysicalDevice* pVulkanPhysicalDevice = new RHIVulkanPhysicalDevice(this, physicalDevices[i], i);
+            m_aVulkanPhysicalDevices.push_back(pVulkanPhysicalDevice);
         }
         
-        return m_aPhysicalDevices.size() > 0;
+        return m_aVulkanPhysicalDevices.size() > 0;
     }
 
     RHIType RHIVulkanInstance::GetRHIType()
@@ -253,13 +253,13 @@ namespace LostPeterPluginRHIVulkan
 
     uint32 RHIVulkanInstance::GetPhysicalDeviceCount()
     {
-        return (uint32)m_aPhysicalDevices.size();
+        return (uint32)m_aVulkanPhysicalDevices.size();
     }
 
     RHIPhysicalDevice* RHIVulkanInstance::GetPhysicalDevice(uint32 nIndex)
     {
-        F_Assert("RHIVulkanInstance::GetPhysicalDevice" && nIndex >= 0 && nIndex < (uint32)(m_aPhysicalDevices.size()));
-        return m_aPhysicalDevices[nIndex];
+        F_Assert("RHIVulkanInstance::GetPhysicalDevice" && nIndex >= 0 && nIndex < (uint32)(m_aVulkanPhysicalDevices.size()));
+        return m_aVulkanPhysicalDevices[nIndex];
     }
 
     RHIDevice* RHIVulkanInstance::RequestDevice(const RHIDeviceCreateInfo& createInfo)
@@ -267,24 +267,24 @@ namespace LostPeterPluginRHIVulkan
         SetPreferredVendorID(createInfo.nPreferredVendorID);
 
         m_pVulkanPhysicalDevice = nullptr;
-        uint32 countDevice = (uint32)m_aPhysicalDevices.size();
+        uint32 countDevice = (uint32)m_aVulkanPhysicalDevices.size();
         if (countDevice > 0)
         {
             if (countDevice > 1 && m_nPreferredVendorID != -1)
             {
                 for (uint32 i = 0; i < countDevice; i++)
                 {
-                    RHIVulkanPhysicalDevice* pPhysicalDevice = m_aPhysicalDevices[i];
-                    if (pPhysicalDevice->GetVkPhysicalDeviceProperties().vendorID == (uint32_t)m_nPreferredVendorID)
+                    RHIVulkanPhysicalDevice* pVulkanPhysicalDevice = m_aVulkanPhysicalDevices[i];
+                    if (pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().vendorID == (uint32_t)m_nPreferredVendorID)
                     {
-                        m_pVulkanPhysicalDevice = pPhysicalDevice;
+                        m_pVulkanPhysicalDevice = pVulkanPhysicalDevice;
                         break;
                     }
                 }
             }
             if (m_pVulkanPhysicalDevice == nullptr)
             {
-                m_pVulkanPhysicalDevice = m_aPhysicalDevices[0];
+                m_pVulkanPhysicalDevice = m_aVulkanPhysicalDevices[0];
             }
         }
         else
@@ -292,6 +292,7 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanInstance::RequestDevice: Can not find PhysicalDevice !");
         }
 
+        m_pPhysicalDevice = m_pVulkanPhysicalDevice;
         m_pVulkanDevice = nullptr;
         if (m_pVulkanPhysicalDevice != nullptr)
         {

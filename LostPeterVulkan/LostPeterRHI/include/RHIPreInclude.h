@@ -21,6 +21,7 @@
 #include "RHICommandBuffer.h"
 #include "RHICommandDecoder.h"
 #include "RHICommandEncoder.h"
+#include "RHICommandPool.h"
 #include "RHIDevice.h"
 #include "RHIFence.h"
 #include "RHIFrameBuffer.h"

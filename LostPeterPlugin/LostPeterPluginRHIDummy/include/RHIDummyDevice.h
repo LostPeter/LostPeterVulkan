@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyDevice : public RHIDevice
     {
     public:
-        RHIDummyDevice(const RHIDeviceCreateInfo& createInfo);
+        RHIDummyDevice(RHIDummyPhysicalDevice* pDummyPhysicalDevice, const RHIDeviceCreateInfo& createInfo);
         virtual ~RHIDummyDevice();
 
     public:
     protected:
+        RHIDummyPhysicalDevice* m_pDummyPhysicalDevice;
         RHIDummyQueue* m_pQueue;
+
+    public:
+        F_FORCEINLINE RHIDummyPhysicalDevice* GetDummyPhysicalDevice() { return m_pDummyPhysicalDevice; }
 
     public:
         virtual void Destroy();
@@ -42,6 +46,7 @@ namespace LostPeterPluginRHIDummy
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo);
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        virtual RHICommandPool* CreateCommandPool();
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();
         virtual RHIFence* CreateFence(bool bIsSignaled);

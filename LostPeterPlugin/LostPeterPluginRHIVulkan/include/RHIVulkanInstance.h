@@ -35,7 +35,7 @@ namespace LostPeterPluginRHIVulkan
         bool m_bIsEnableValidationLayers;
         RHIVulkanDebug* m_pDebug;
 
-        RHIVulkanPhysicalDevicePtrVector m_aPhysicalDevices;
+        RHIVulkanPhysicalDevicePtrVector m_aVulkanPhysicalDevices;
         RHIVulkanPhysicalDevice* m_pVulkanPhysicalDevice;
         RHIVulkanDevice* m_pVulkanDevice;
 
@@ -54,7 +54,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
         F_FORCEINLINE RHIVulkanDebug* GetDebug() const { return m_pDebug; }
 
-        F_FORCEINLINE const RHIVulkanPhysicalDevicePtrVector& GetPhysicalDevices() const { return m_aPhysicalDevices; }
+        F_FORCEINLINE const RHIVulkanPhysicalDevicePtrVector& GetVulkanPhysicalDevices() const { return m_aVulkanPhysicalDevices; }
         F_FORCEINLINE RHIVulkanPhysicalDevice* GetVulkanPhysicalDevice() const { return m_pVulkanPhysicalDevice; }
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() const { return m_pVulkanDevice; }
 

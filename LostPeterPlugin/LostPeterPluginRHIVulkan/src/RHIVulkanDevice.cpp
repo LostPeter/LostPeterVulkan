@@ -24,6 +24,7 @@
 #include "../include/RHIVulkanShaderModule.h"
 #include "../include/RHIVulkanPipelineCompute.h"
 #include "../include/RHIVulkanPipelineGraphics.h"
+#include "../include/RHIVulkanCommandPool.h"
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanFence.h"
 #include "../include/RHIVulkanVolk.h"
@@ -32,14 +33,14 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanDevice::RHIVulkanDevice(RHIVulkanPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
-        : RHIDevice(createInfo)
-        , m_pVulkanPhysicalDevice(pPhysicalDevice)
+    RHIVulkanDevice::RHIVulkanDevice(RHIVulkanPhysicalDevice* pVulkanPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
+        : RHIDevice(pVulkanPhysicalDevice, createInfo)
+        , m_pVulkanPhysicalDevice(pVulkanPhysicalDevice)
         , m_vkDevice(VK_NULL_HANDLE)
         , m_vmaAllocator(VK_NULL_HANDLE)
-        , m_vkCommandPoolTransfer(VK_NULL_HANDLE)
-        , m_vkCommandPoolGraphics(VK_NULL_HANDLE)
-        , m_vkCommandPoolCompute(VK_NULL_HANDLE)
+        , m_pCommandPoolTransfer(nullptr)
+        , m_pCommandPoolGraphics(nullptr)
+        , m_pCommandPoolCompute(nullptr)
         , m_pQueueGraphics(nullptr)
         , m_pQueueCompute(nullptr)
         , m_pQueueTransfer(nullptr)
@@ -69,12 +70,9 @@ namespace LostPeterPluginRHIVulkan
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
-        DestroyVkCommandPool(this->m_vkCommandPoolCompute);
-        this->m_vkCommandPoolCompute = VK_NULL_HANDLE;
-        DestroyVkCommandPool(this->m_vkCommandPoolGraphics);
-        this->m_vkCommandPoolGraphics = VK_NULL_HANDLE;
-        DestroyVkCommandPool(this->m_vkCommandPoolTransfer);
-        this->m_vkCommandPoolTransfer = VK_NULL_HANDLE;
+        F_DELETE(m_pCommandPoolCompute)
+        F_DELETE(m_pCommandPoolGraphics)
+        F_DELETE(m_pCommandPoolTransfer)
 
         DestroyVkDevice(this->m_vkDevice);
         this->m_vkDevice = VK_NULL_HANDLE;
@@ -163,6 +161,10 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanPipelineGraphics(createInfo);
     }
 
+    RHICommandPool* RHIVulkanDevice::CreateCommandPool()
+    {
+        return new RHIVulkanCommandPool(this);
+    }
     RHICommandBuffer* RHIVulkanDevice::CreateCommandBuffer()
     {
         return new RHIVulkanCommandBuffer(this);
@@ -464,9 +466,25 @@ namespace LostPeterPluginRHIVulkan
             return false;
         }
 
-        m_vkCommandPoolTransfer = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Transfer);
-        m_vkCommandPoolGraphics = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Graphics);
-        m_vkCommandPoolCompute = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Compute);
+        m_pCommandPoolTransfer = new RHIVulkanCommandPool(this);
+        if (!m_pCommandPoolTransfer->Init(queueFamilyIndex_Transfer))
+        {
+            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Transfer init failed !");
+            return false;
+        }
+        m_pCommandPoolGraphics = new RHIVulkanCommandPool(this);
+        if (!m_pCommandPoolGraphics->Init(queueFamilyIndex_Graphics))
+        {
+            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Graphics init failed !");
+            return false;
+        }
+        m_pCommandPoolCompute = new RHIVulkanCommandPool(this);
+        if (!m_pCommandPoolCompute->Init(queueFamilyIndex_Compute))
+        {
+            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Compute init failed !");
+            return false;
+        }
+
         return true;
     }
     bool RHIVulkanDevice::createVmaAllocator()
@@ -1352,7 +1370,7 @@ namespace LostPeterPluginRHIVulkan
     //////////////////// VkCommandBuffer ////////////////
     VkCommandBuffer RHIVulkanDevice::BeginSingleTimeCommands()
     {
-        VkCommandBuffer vkCommandBuffer = AllocateVkCommandBuffer(m_vkCommandPoolTransfer, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+        VkCommandBuffer vkCommandBuffer = AllocateVkCommandBuffer(m_pCommandPoolTransfer->GetVkCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY);
         BeginVkCommandBuffer(vkCommandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
         return vkCommandBuffer;
     }
@@ -1366,7 +1384,7 @@ namespace LostPeterPluginRHIVulkan
                                     nullptr,
                                     nullptr);
         QueueWaitIdle(m_pQueueTransfer->GetVkQueue());
-        FreeVkCommandBuffers(m_vkCommandPoolTransfer, 1, &vkCommandBuffer);
+        FreeVkCommandBuffers(m_pCommandPoolTransfer->GetVkCommandPool(), 1, &vkCommandBuffer);
     }
 
 

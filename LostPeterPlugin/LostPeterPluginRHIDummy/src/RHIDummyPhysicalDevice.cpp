@@ -34,7 +34,7 @@ namespace LostPeterPluginRHIDummy
 
     RHIDevice* RHIDummyPhysicalDevice::RequestDevice(const RHIDeviceCreateInfo& createInfo)
     {
-        return new RHIDummyDevice(createInfo);
+        return new RHIDummyDevice(this, createInfo);
     }
 
 }; //LostPeterPluginRHIDummy

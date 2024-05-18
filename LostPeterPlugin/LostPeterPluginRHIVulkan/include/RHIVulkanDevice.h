@@ -19,7 +19,7 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanDevice : public RHIDevice
     {
     public:
-        RHIVulkanDevice(RHIVulkanPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo);
+        RHIVulkanDevice(RHIVulkanPhysicalDevice* pVulkanPhysicalDevice, const RHIDeviceCreateInfo& createInfo);
         virtual ~RHIVulkanDevice();
 
     public:
@@ -28,13 +28,12 @@ namespace LostPeterPluginRHIVulkan
 
     protected:
         RHIVulkanPhysicalDevice* m_pVulkanPhysicalDevice;
-
         VkDevice m_vkDevice;
         VmaAllocator m_vmaAllocator;
 
-        VkCommandPool m_vkCommandPoolTransfer;
-        VkCommandPool m_vkCommandPoolGraphics;
-        VkCommandPool m_vkCommandPoolCompute;
+        RHIVulkanCommandPool* m_pCommandPoolTransfer;
+        RHIVulkanCommandPool* m_pCommandPoolGraphics;
+        RHIVulkanCommandPool* m_pCommandPoolCompute;
 
         RHIVulkanQueue* m_pQueueGraphics;
         RHIVulkanQueue* m_pQueueCompute;
@@ -46,14 +45,14 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
 
-        F_FORCEINLINE VkCommandPool GetVkCommandPoolTransfer() const { return m_vkCommandPoolTransfer; }
-        F_FORCEINLINE VkCommandPool GetVkCommandPoolGraphics() const { return m_vkCommandPoolGraphics; }
-        F_FORCEINLINE VkCommandPool GetVkCommandPoolCompute() const { return m_vkCommandPoolCompute; }
+        F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPoolTransfer() const { return m_pCommandPoolTransfer; }
+        F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPoolGraphics() const { return m_pCommandPoolGraphics; }
+        F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPoolCompute() const { return m_pCommandPoolCompute; }
 
-        F_FORCEINLINE RHIVulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
-        F_FORCEINLINE RHIVulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
-        F_FORCEINLINE RHIVulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
-        F_FORCEINLINE RHIVulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
+        F_FORCEINLINE RHIVulkanQueue* GetVulkanQueueGraphics() const { return m_pQueueGraphics; }
+        F_FORCEINLINE RHIVulkanQueue* GetVulkanQueueCompute() const { return m_pQueueCompute; }
+        F_FORCEINLINE RHIVulkanQueue* GetVulkanQueueTransfer() const { return m_pQueueTransfer; }
+        F_FORCEINLINE RHIVulkanQueue* GetVulkanQueuePresent() const { return m_pQueuePresent; }
 
     public:
         virtual void Destroy();
@@ -71,6 +70,7 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo);
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        virtual RHICommandPool* CreateCommandPool();
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();
         virtual RHIFence* CreateFence(bool bIsSignaled);

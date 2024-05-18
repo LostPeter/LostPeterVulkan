@@ -45,6 +45,7 @@ namespace LostPeterPluginRHIDummy
 	class RHIDummyCommandBuffer;
     class RHIDummyCommandDecoder;
     class RHIDummyCommandEncoder;
+	class RHIDummyCommandPool;
 	class RHIDummyDevice;
 	class RHIDummyFence;
 	class RHIDummyFrameBuffer;

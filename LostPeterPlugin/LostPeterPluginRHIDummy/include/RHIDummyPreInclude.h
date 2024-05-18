@@ -21,6 +21,7 @@
 #include "RHIDummyCommandBuffer.h"
 #include "RHIDummyCommandDecoder.h"
 #include "RHIDummyCommandEncoder.h"
+#include "RHIDummyCommandPool.h"
 #include "RHIDummyDevice.h"
 #include "RHIDummyFence.h"
 #include "RHIDummyFrameBuffer.h"

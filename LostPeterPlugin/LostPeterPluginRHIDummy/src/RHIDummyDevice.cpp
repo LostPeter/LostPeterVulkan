@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyDevice.h"
+#include "../include/RHIDummyPhysicalDevice.h"
 #include "../include/RHIDummyQueue.h"
 #include "../include/RHIDummySurface.h"
 #include "../include/RHIDummySwapChain.h"
@@ -22,16 +23,18 @@
 #include "../include/RHIDummyShaderModule.h"
 #include "../include/RHIDummyPipelineCompute.h"
 #include "../include/RHIDummyPipelineGraphics.h"
+#include "../include/RHIDummyCommandPool.h"
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyFence.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyDevice::RHIDummyDevice(const RHIDeviceCreateInfo& createInfo)
-        : RHIDevice(createInfo)
+    RHIDummyDevice::RHIDummyDevice(RHIDummyPhysicalDevice* pDummyPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
+        : RHIDevice(pDummyPhysicalDevice, createInfo)
+        , m_pDummyPhysicalDevice(pDummyPhysicalDevice)
         , m_pQueue(nullptr)
     {
-
+        F_Assert(m_pDummyPhysicalDevice && "RHIDummyDevice::RHIDummyDevice")
     }
 
     RHIDummyDevice::~RHIDummyDevice()
@@ -112,6 +115,11 @@ namespace LostPeterPluginRHIDummy
     RHIPipelineGraphics* RHIDummyDevice::CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
     {
         return new RHIDummyPipelineGraphics(createInfo);
+    }
+
+    RHICommandPool* RHIDummyDevice::CreateCommandPool()
+    {
+        return new RHIDummyCommandPool(this);
     }
 
     RHICommandBuffer* RHIDummyDevice::CreateCommandBuffer()

@@ -678,6 +678,7 @@ namespace LostPeterRHI
 	class RHICommandBuffer;
     class RHICommandDecoder;
     class RHICommandEncoder;
+    class RHICommandPool;
 	class RHIDevice;
 	class RHIFence;
 	class RHIFrameBuffer;

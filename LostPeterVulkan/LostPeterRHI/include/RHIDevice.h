@@ -19,16 +19,20 @@ namespace LostPeterRHI
     class rhiExport RHIDevice : public FNonCopyable
     {
     public:
-        RHIDevice(const RHIDeviceCreateInfo& createInfo);
+        RHIDevice(RHIPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo);
         virtual ~RHIDevice();
 
     public:
     protected:
+        RHIPhysicalDevice* m_pPhysicalDevice;
+
         RHIPixelFormatInfoPtrVector m_aPixelFormatInfos;
         RHIPixelFormatInfoPtrMap m_mapPixelFormatInfos;
         RHIPixelFormatInfoPtrMap m_mapPixelFormatInfosOriginal;
 
     public:
+        F_FORCEINLINE RHIPhysicalDevice* GetPhysicalDevice() { return m_pPhysicalDevice; }
+
         F_FORCEINLINE const RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() const { return m_aPixelFormatInfos; }
         F_FORCEINLINE RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() { return m_aPixelFormatInfos; }
         F_FORCEINLINE const RHIPixelFormatInfoPtrMap& GetPixelFormatInfoPtrMap() const { return m_mapPixelFormatInfos; }
@@ -53,6 +57,7 @@ namespace LostPeterRHI
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo) = 0;
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo) = 0;
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo) = 0;
+        virtual RHICommandPool* CreateCommandPool() = 0;
         virtual RHICommandBuffer* CreateCommandBuffer() = 0;
         virtual RHIFence* CreateFence() = 0;
         virtual RHIFence* CreateFence(bool bIsSignaled) = 0;

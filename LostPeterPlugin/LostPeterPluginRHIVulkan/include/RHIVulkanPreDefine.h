@@ -134,6 +134,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanCommandBuffer;
 	class RHIVulkanCommandDecoder;
 	class RHIVulkanCommandEncoder;
+    class RHIVulkanCommandPool;
 	class RHIVulkanConverter;
 	class RHIVulkanDebug;
 	class RHIVulkanDevice;
