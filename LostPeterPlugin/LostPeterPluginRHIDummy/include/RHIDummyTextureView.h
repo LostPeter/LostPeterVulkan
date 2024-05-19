@@ -19,11 +19,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyTextureView : public RHITextureView
     {
     public:
-        RHIDummyTextureView(const RHITextureViewCreateInfo& createInfo);
+        RHIDummyTextureView(RHIDummyTexture* pDummyTexture, const RHITextureViewCreateInfo& createInfo);
         virtual ~RHIDummyTextureView();
 
     public:
     protected:
+        RHIDummyTexture* m_pDummyTexture;
+
+    public:
+        F_FORCEINLINE RHIDummyTexture* GetDummyTexture() { return m_pDummyTexture; }
 
 
     public:

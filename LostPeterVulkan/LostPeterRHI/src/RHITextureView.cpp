@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHITextureView.h"
+#include "../include/RHITexture.h"
 
 namespace LostPeterRHI
 {
-    RHITextureView::RHITextureView(const RHITextureViewCreateInfo& createInfo)
+    RHITextureView::RHITextureView(RHITexture* pTexture, const RHITextureViewCreateInfo& createInfo)
+        : m_pTexture(pTexture)
     {
-
+        F_Assert(m_pTexture && "RHITextureView::RHITextureView")
     }
 
     RHITextureView::~RHITextureView()

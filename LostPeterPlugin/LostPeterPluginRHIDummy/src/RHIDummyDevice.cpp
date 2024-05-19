@@ -92,7 +92,7 @@ namespace LostPeterPluginRHIDummy
 
     RHITexture* RHIDummyDevice::CreateTexture(const RHITextureCreateInfo& createInfo)
     {
-        return new RHIDummyTexture(createInfo);
+        return new RHIDummyTexture(this, createInfo);
     }
 
     RHISampler* RHIDummyDevice::CreateSampler(const RHISamplerCreateInfo& createInfo)

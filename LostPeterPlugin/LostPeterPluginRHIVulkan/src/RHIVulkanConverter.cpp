@@ -14,6 +14,14 @@
 namespace LostPeterPluginRHIVulkan
 {
     ////////////////////// TransformFromXXXX //////////////////////
+    RHIExtent<3> TransformFromVkExtent3D(const VkExtent3D& vkExtent3D)
+    {
+        RHIExtent<3> sExtent;
+        sExtent.x = (uint32)vkExtent3D.width;
+        sExtent.y = (uint32)vkExtent3D.height;
+        sExtent.z = (uint32)vkExtent3D.depth;
+        return sExtent;
+    }
     RHIPhysicalDeviceType RHIVulkanConverter::TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType vkPhysicalDevice)
     {
         switch ((int32)vkPhysicalDevice)
@@ -156,6 +164,53 @@ namespace LostPeterPluginRHIVulkan
         return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;;
     }
 
+    RHITextureDimensionType RHIVulkanConverter::TransformFromVkImageType(VkImageType vkImageType)
+    {
+        switch ((int32)vkImageType)
+        {
+        case VK_IMAGE_TYPE_1D:          return RHITextureDimensionType::RHI_TextureDimension_1D;
+        case VK_IMAGE_TYPE_2D:          return RHITextureDimensionType::RHI_TextureDimension_2D;
+        case VK_IMAGE_TYPE_3D:          return RHITextureDimensionType::RHI_TextureDimension_3D;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkImageType: Wrong VkImageType type !")
+        }
+        return RHITextureDimensionType::RHI_TextureDimension_2D;
+    }
+
+    RHITextureViewDimensionType RHIVulkanConverter::TransformFromVkImageViewType(VkImageViewType vkImageViewType)
+    {
+        switch ((int32)vkImageViewType)
+        {
+        case VK_IMAGE_VIEW_TYPE_1D:             return RHITextureViewDimensionType::RHI_TextureViewDimension_1D;
+        case VK_IMAGE_VIEW_TYPE_2D:             return RHITextureViewDimensionType::RHI_TextureViewDimension_2D;
+        case VK_IMAGE_VIEW_TYPE_2D_ARRAY:       return RHITextureViewDimensionType::RHI_TextureViewDimension_2DArray;
+        case VK_IMAGE_VIEW_TYPE_CUBE:           return RHITextureViewDimensionType::RHI_TextureViewDimension_Cube;
+        case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:     return RHITextureViewDimensionType::RHI_TextureViewDimension_CubeArray;
+        case VK_IMAGE_VIEW_TYPE_3D:             return RHITextureViewDimensionType::RHI_TextureViewDimension_3D;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkImageViewType: Wrong VkImageViewType type !")
+        }
+        return RHITextureViewDimensionType::RHI_TextureViewDimension_2D;
+    }
+
+    RHISampleCountType RHIVulkanConverter::TransformFromVkSampleCountFlagBits(VkSampleCountFlagBits vkSampleCountFlagBits)
+    {
+        switch ((int32)vkSampleCountFlagBits)
+        {
+        case VK_SAMPLE_COUNT_1_BIT:          return RHISampleCountType::RHI_SampleCount_1_Bit;
+        case VK_SAMPLE_COUNT_2_BIT:          return RHISampleCountType::RHI_SampleCount_2_Bit;
+        case VK_SAMPLE_COUNT_4_BIT:          return RHISampleCountType::RHI_SampleCount_4_Bit;
+        case VK_SAMPLE_COUNT_8_BIT:          return RHISampleCountType::RHI_SampleCount_8_Bit;
+        case VK_SAMPLE_COUNT_16_BIT:         return RHISampleCountType::RHI_SampleCount_16_Bit;
+        case VK_SAMPLE_COUNT_32_BIT:         return RHISampleCountType::RHI_SampleCount_32_Bit;
+        case VK_SAMPLE_COUNT_64_BIT:         return RHISampleCountType::RHI_SampleCount_64_Bit;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkSampleCountFlagBits: Wrong VkSampleCountFlagBits type !")
+        }
+        return RHISampleCountType::RHI_SampleCount_1_Bit;
+    }
+
+
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
         switch ((int32)vkBufferUsageFlags)
@@ -173,10 +228,30 @@ namespace LostPeterPluginRHIVulkan
         return RHIBufferUsageBitsType::RHI_BufferUsageBits_Uniform;
     }
 
+    RHITextureUsageBitsType RHIVulkanConverter::TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags)
+    {
+        switch ((int32)vkImageUsageFlags)
+        {
+        case VK_IMAGE_USAGE_TRANSFER_SRC_BIT:               return RHITextureUsageBitsType::RHI_TextureUsageBits_CopySrc;
+        case VK_IMAGE_USAGE_TRANSFER_DST_BIT:               return RHITextureUsageBitsType::RHI_TextureUsageBits_CopyDst;
+        case VK_IMAGE_USAGE_SAMPLED_BIT:                    return RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding;
+        case VK_IMAGE_USAGE_STORAGE_BIT:                    return RHITextureUsageBitsType::RHI_TextureUsageBits_StorageBinding;
+        case VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT:           return RHITextureUsageBitsType::RHI_TextureUsageBits_RenderAttachment;
+        case VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT:   return RHITextureUsageBitsType::RHI_TextureUsageBits_DepthStencilAttachment;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkImageUsageFlags: Wrong VkImageUsageFlags type !")
+        }
+        return RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding;
+    }
 
 
 
     ////////////////////// TransformToXXXX ////////////////////////
+    VkExtent3D RHIVulkanConverter::TransformToVkExtent3D(const RHIExtent<3>& sExtent)
+    {
+        return { static_cast<uint32_t>(sExtent.x), static_cast<uint32_t>(sExtent.y), static_cast<uint32_t>(sExtent.z) };
+    }
+
     VkPhysicalDeviceType RHIVulkanConverter::TransformToVkPhysicalDeviceType(RHIPhysicalDeviceType ePhysicalDevice)
     {
         switch (ePhysicalDevice)
@@ -382,6 +457,53 @@ namespace LostPeterPluginRHIVulkan
         return VK_COMPARE_OP_LESS_OR_EQUAL;
     }
 
+    VkImageType RHIVulkanConverter::TransformToVkImageType(RHITextureDimensionType eTextureDimension)
+    {
+        switch (eTextureDimension)
+        {
+        case RHITextureDimensionType::RHI_TextureDimension_1D:          return VK_IMAGE_TYPE_1D;
+        case RHITextureDimensionType::RHI_TextureDimension_2D:          return VK_IMAGE_TYPE_2D;
+        case RHITextureDimensionType::RHI_TextureDimension_3D:          return VK_IMAGE_TYPE_3D;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkImageType: Wrong RHITextureDimensionType type !")
+        }
+        return VK_IMAGE_TYPE_2D;
+    }
+
+    VkImageViewType RHIVulkanConverter::TransformToVkImageViewType(RHITextureViewDimensionType eTextureViewDimension)
+    {
+        switch (eTextureViewDimension)
+        {
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_1D:          return VK_IMAGE_VIEW_TYPE_1D;
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_2D:          return VK_IMAGE_VIEW_TYPE_2D;
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_2DArray:     return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_Cube:        return VK_IMAGE_VIEW_TYPE_CUBE;
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_CubeArray:   return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+        case RHITextureViewDimensionType::RHI_TextureViewDimension_3D:          return VK_IMAGE_VIEW_TYPE_3D;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkImageViewType: Wrong RHITextureViewDimensionType type !")
+        }
+        return VK_IMAGE_VIEW_TYPE_2D;
+    }
+
+    VkSampleCountFlagBits RHIVulkanConverter::TransformToVkSampleCountFlagBits(RHISampleCountType eSampleCount)
+    {
+        switch (eSampleCount)
+        {
+        case RHISampleCountType::RHI_SampleCount_1_Bit:          return VK_SAMPLE_COUNT_1_BIT;
+        case RHISampleCountType::RHI_SampleCount_2_Bit:          return VK_SAMPLE_COUNT_2_BIT;
+        case RHISampleCountType::RHI_SampleCount_4_Bit:          return VK_SAMPLE_COUNT_4_BIT;
+        case RHISampleCountType::RHI_SampleCount_8_Bit:          return VK_SAMPLE_COUNT_8_BIT;
+        case RHISampleCountType::RHI_SampleCount_16_Bit:         return VK_SAMPLE_COUNT_16_BIT;
+        case RHISampleCountType::RHI_SampleCount_32_Bit:         return VK_SAMPLE_COUNT_32_BIT;
+        case RHISampleCountType::RHI_SampleCount_64_Bit:         return VK_SAMPLE_COUNT_64_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkSampleCountFlagBits: Wrong RHISampleCountType type !")
+        }
+        return VK_SAMPLE_COUNT_1_BIT;
+    }
+
+
     VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
     {
         switch (eBufferUsageBits)
@@ -415,6 +537,46 @@ namespace LostPeterPluginRHIVulkan
              it != s_Rules.end(); ++it)
         {
             if (flagsBufferUsages & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+
+    VkImageUsageFlags RHIVulkanConverter::TransformToVkImageUsageFlags(RHITextureUsageBitsType eTextureUsageBits)
+    {
+        switch (eTextureUsageBits)
+        {
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_CopySrc:                 return VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_CopyDst:                 return VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding:          return VK_IMAGE_USAGE_SAMPLED_BIT;
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_StorageBinding:          return VK_IMAGE_USAGE_STORAGE_BIT;
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_RenderAttachment:        return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        case RHITextureUsageBitsType::RHI_TextureUsageBits_DepthStencilAttachment:  return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkImageUsageFlags: Wrong RHITextureUsageBitsType type !")
+        }
+        return VK_IMAGE_USAGE_SAMPLED_BIT;
+    }
+    VkImageUsageFlags RHIVulkanConverter::TransformToVkImageUsageFlagsFromTextureUsageFlags(RHITextureUsageFlags flagsTextureUsages)
+    {
+         static std::map<RHITextureUsageBitsType, VkImageUsageFlags> s_Rules = 
+         {
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_CopySrc,                VK_IMAGE_USAGE_TRANSFER_SRC_BIT },
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_CopyDst,                VK_IMAGE_USAGE_TRANSFER_DST_BIT },
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding,         VK_IMAGE_USAGE_SAMPLED_BIT },
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_StorageBinding,         VK_IMAGE_USAGE_STORAGE_BIT },
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_RenderAttachment,       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT },
+            { RHITextureUsageBitsType::RHI_TextureUsageBits_DepthStencilAttachment, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT },
+        };
+
+        VkImageUsageFlags vkResult = {};
+        for (std::map<RHITextureUsageBitsType, VkImageUsageFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsTextureUsages & it->first) 
             {
                 vkResult |= it->second;
             }

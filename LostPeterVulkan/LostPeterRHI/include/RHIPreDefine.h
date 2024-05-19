@@ -261,6 +261,20 @@ namespace LostPeterRHI
         RHI_TextureState_Count,
     };
 
+    //RHISampleCountType
+    enum RHISampleCountType : RHIEnumType 
+    {
+        RHI_SampleCount_1_Bit = 0,                      //0: 1_Bit
+        RHI_SampleCount_2_Bit,                          //1: 2_Bit
+        RHI_SampleCount_4_Bit,                          //2: 4_Bit
+        RHI_SampleCount_8_Bit,                          //3: 8_Bit
+        RHI_SampleCount_16_Bit,                         //4: 16_Bit
+        RHI_SampleCount_32_Bit,                         //5: 32_Bit
+        RHI_SampleCount_64_Bit,                         //6: 64_Bit
+
+        RHI_SampleCount_Count,
+    };
+
     //RHIFenceStatusType
     enum class RHIFenceStatusType : RHIEnumType 
     {
@@ -881,9 +895,9 @@ namespace LostPeterRHI
 	{
         RHIExtent<3> sExtent;
         uint8 nMipLevels;
-        uint8 nSamples;
         RHITextureDimensionType eTextureDimension;
         RHIPixelFormatType ePixelFormat;
+        RHISampleCountType eSampleCount;
         RHITextureUsageFlags eUsages;
         RHITextureStateType eState;
       	String strDebugName;

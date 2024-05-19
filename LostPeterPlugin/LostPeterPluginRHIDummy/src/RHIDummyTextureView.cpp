@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyTextureView.h"
+#include "../include/RHIDummyTexture.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyTextureView::RHIDummyTextureView(const RHITextureViewCreateInfo& createInfo)
-        : RHITextureView(createInfo)
+    RHIDummyTextureView::RHIDummyTextureView(RHIDummyTexture* pDummyTexture, const RHITextureViewCreateInfo& createInfo)
+        : RHITextureView(pDummyTexture, createInfo)
+        , m_pDummyTexture(pDummyTexture)
     {
-
+        F_Assert(m_pDummyTexture && "RHIDummyTextureView::RHIDummyTextureView")
     }
 
     RHIDummyTextureView::~RHIDummyTextureView()

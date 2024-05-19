@@ -338,7 +338,9 @@ namespace LostPeterPluginRHIVulkan
                                VkFormat typeFormat, 
                                VkComponentMapping typeComponentMapping,
                                VkImageAspectFlags typeImageAspectFlags, 
+                               uint32_t nBaseMipLevel,
                                uint32_t nMipMapCount,
+                               uint32_t nBaseArrayLayer,
                                uint32_t nLayerCount,
                                VkImageView& vkImageView);
         bool CreateVkSampler(uint32_t nMipMapCount, 

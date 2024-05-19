@@ -19,16 +19,43 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanTextureView : public RHITextureView
     {
     public:
-        RHIVulkanTextureView(const RHITextureViewCreateInfo& createInfo);
+        RHIVulkanTextureView(RHIVulkanTexture* pVulkanTexture, const RHITextureViewCreateInfo& createInfo);
         virtual ~RHIVulkanTextureView();
 
     public:
     protected:
+        RHIVulkanTexture* m_pVulkanTexture;
+        VkImageView m_vkImageView;
+
+        RHITextureViewType m_eTextureView;
+        RHITextureViewDimensionType m_eTextureViewDimension;
+        RHITextureAspectType m_eTextureAspect;
+        uint8 m_nBaseMipLevel;
+        uint8 m_nMipLevelCount;
+        uint8 m_nBaseArrayLayer;
+        uint8 m_nArrayLayerCount;
+
+    public:
+        F_FORCEINLINE RHIVulkanTexture* GetVulkanTexture() { return m_pVulkanTexture; }
+        F_FORCEINLINE VkImageView& GetVkImageView() { return m_vkImageView; }
+        
+        F_FORCEINLINE RHITextureViewType GetTextureViewType() const { return m_eTextureView; }
+        F_FORCEINLINE RHITextureViewDimensionType GetTextureViewDimensionType() const { return m_eTextureViewDimension; }
+        F_FORCEINLINE RHITextureAspectType GetTextureAspectType() const { return m_eTextureAspect; }
+        F_FORCEINLINE uint8 GetBaseMipLevel() const { return m_nBaseMipLevel; }
+        F_FORCEINLINE uint8 GetMipLevelCount() const { return m_nMipLevelCount; }
+        F_FORCEINLINE uint8 GetBaseArrayLayer() const { return m_nBaseArrayLayer; }
+        F_FORCEINLINE uint8 GetArrayLayerCount() const { return m_nArrayLayerCount; }
 
 
     public:
         virtual void Destroy();
 
+    public:
+        
+
+    protected:
+        void createVkImageView();
     };
 
 }; //LostPeterPluginRHIVulkan

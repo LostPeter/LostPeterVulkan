@@ -25,17 +25,20 @@ namespace LostPeterRHI
     public:
     protected:
         RHIDevice* m_pDevice;
+        RHIBufferView* m_pBufferView;
 
     public:
         F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        F_FORCEINLINE RHIBufferView* GetBufferView() { return m_pBufferView; }
         
 
     public:
         virtual void Destroy() = 0;
+        virtual void DestroyBufferView() = 0;
+        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo) = 0;
 
         virtual void* Map(RHIMapType eMap, uint32 nOffset, uint32 nLength) = 0;
         virtual void UnMap() = 0;
-        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo) = 0;
     };
 
 }; //LostPeterRHI

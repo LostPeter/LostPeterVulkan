@@ -25,17 +25,22 @@ namespace LostPeterPluginRHIDummy
     public:
     protected:
         RHIDummyDevice* m_pDummyDevice;
+        RHIDummyBufferView* m_pDummyBufferView;
+
         std::vector<uint8> m_aDummyData;
 
     public:
         F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+        F_FORCEINLINE RHIDummyBufferView* GetDummyBufferView() { return m_pDummyBufferView; }
+
 
     public:
         virtual void Destroy();
+        virtual void DestroyBufferView();
+        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo);
 
         virtual void* Map(RHIMapType eMap, uint32 nOffset, uint32 nLength);
         virtual void UnMap();
-        virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo);
     };
 
 }; //LostPeterPluginRHIDummy

@@ -134,7 +134,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHITexture* RHIVulkanDevice::CreateTexture(const RHITextureCreateInfo& createInfo)
     {
-        return new RHIVulkanTexture(createInfo);
+        return new RHIVulkanTexture(this, createInfo);
     }
 
     RHISampler* RHIVulkanDevice::CreateSampler(const RHISamplerCreateInfo& createInfo)
@@ -1490,7 +1490,9 @@ namespace LostPeterPluginRHIVulkan
                                             VkFormat typeFormat, 
                                             VkComponentMapping typeComponentMapping,
                                             VkImageAspectFlags typeImageAspectFlags, 
+                                            uint32_t nBaseMipLevel,
                                             uint32_t nMipMapCount,
+                                            uint32_t nBaseArrayLayer,
                                             uint32_t nLayerCount,
                                             VkImageView& vkImageView) 
     {
@@ -1501,9 +1503,9 @@ namespace LostPeterPluginRHIVulkan
         viewInfo.format = typeFormat;
         viewInfo.components = typeComponentMapping;
         viewInfo.subresourceRange.aspectMask = typeImageAspectFlags;
-        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.baseMipLevel = nBaseMipLevel;
         viewInfo.subresourceRange.levelCount = nMipMapCount <= 0 ? 1 : nMipMapCount;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.baseArrayLayer = nBaseArrayLayer;
         viewInfo.subresourceRange.layerCount = nLayerCount;
 
         if (vkCreateImageView(this->m_vkDevice, &viewInfo, nullptr, &vkImageView) != VK_SUCCESS) 

@@ -19,11 +19,15 @@ namespace LostPeterRHI
     class rhiExport RHITextureView : public FNonCopyable
     {
     public:
-        RHITextureView(const RHITextureViewCreateInfo& createInfo);
+        RHITextureView(RHITexture* pTexture, const RHITextureViewCreateInfo& createInfo);
         virtual ~RHITextureView();
 
     public:
     protected:
+        RHITexture* m_pTexture;
+
+    public:
+        F_FORCEINLINE RHITexture* GetTexture() { return m_pTexture; }
 
 
     public:

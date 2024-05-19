@@ -21,6 +21,7 @@ namespace LostPeterPluginRHIVulkan
         , m_pVulkanDevice(pVulkanDevice)
         , m_vkBuffer(VK_NULL_HANDLE)
         , m_vmaAllocation(VK_NULL_HANDLE)
+        , m_pVulkanBufferView(nullptr)
         , m_nSize(createInfo.nSize)
         , m_flagsBufferUsages(createInfo.eUsages)
         , m_strDebugName(createInfo.strDebugName)
@@ -37,12 +38,30 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanBuffer::Destroy()
     {
+        DestroyBufferView();
         if (m_vkBuffer != VK_NULL_HANDLE) 
         {
             vmaDestroyBuffer(m_pVulkanDevice->GetVmaAllocator(), m_vkBuffer, m_vmaAllocation);
         }
         m_vkBuffer = VK_NULL_HANDLE;
         m_vmaAllocation = VK_NULL_HANDLE;
+    }
+
+    void RHIVulkanBuffer::DestroyBufferView()
+    {
+        F_DELETE(m_pVulkanBufferView)
+        m_pBufferView = nullptr;
+    }
+
+    RHIBufferView* RHIVulkanBuffer::CreateBufferView(const RHIBufferViewCreateInfo& createInfo)
+    {
+        if (m_pVulkanBufferView != nullptr)
+        {
+            return m_pVulkanBufferView;
+        }
+        m_pVulkanBufferView = new RHIVulkanBufferView(this, createInfo);
+        m_pBufferView = m_pVulkanBufferView;
+        return m_pVulkanBufferView;
     }
 
     void* RHIVulkanBuffer::Map(RHIMapType eMap, uint32 nOffset, uint32 nLength)
@@ -61,11 +80,6 @@ namespace LostPeterPluginRHIVulkan
         {
             vmaUnmapMemory(m_pVulkanDevice->GetVmaAllocator(), m_vmaAllocation);
         }
-    }
-
-    RHIBufferView* RHIVulkanBuffer::CreateBufferView(const RHIBufferViewCreateInfo& createInfo)
-    {
-        return new RHIVulkanBufferView(this, createInfo);
     }
 
     void RHIVulkanBuffer::createVkBuffer()

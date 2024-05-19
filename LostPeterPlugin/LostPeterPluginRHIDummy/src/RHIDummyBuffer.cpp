@@ -18,6 +18,7 @@ namespace LostPeterPluginRHIDummy
     RHIDummyBuffer::RHIDummyBuffer(RHIDummyDevice* pDummyDevice, const RHIBufferCreateInfo& createInfo)
         : RHIBuffer(pDummyDevice, createInfo)
         , m_pDummyDevice(pDummyDevice)
+        , m_pDummyBufferView(nullptr)
         , m_aDummyData(1)
     {
         F_Assert(m_pDummyDevice && "RHIDummyBuffer::RHIDummyBuffer")
@@ -30,8 +31,26 @@ namespace LostPeterPluginRHIDummy
     
     void RHIDummyBuffer::Destroy()
     {
-
+        DestroyBufferView();
     }
+
+    void RHIDummyBuffer::DestroyBufferView()
+    {
+        F_DELETE(m_pDummyBufferView)
+        m_pBufferView = nullptr;
+    }
+
+    RHIBufferView* RHIDummyBuffer::CreateBufferView(const RHIBufferViewCreateInfo& createInfo)
+    {
+        if (m_pDummyBufferView != nullptr)
+        {
+            return m_pDummyBufferView;
+        }
+        m_pDummyBufferView = new RHIDummyBufferView(this, createInfo);
+        m_pBufferView = m_pDummyBufferView;
+        return m_pDummyBufferView;
+    }
+
 
     void* RHIDummyBuffer::Map(RHIMapType eMap, uint32 nOffset, uint32 nLength)
     {
@@ -41,11 +60,6 @@ namespace LostPeterPluginRHIDummy
     void RHIDummyBuffer::UnMap()
     {
 
-    }
-
-    RHIBufferView* RHIDummyBuffer::CreateBufferView(const RHIBufferViewCreateInfo& createInfo)
-    {
-        return new RHIDummyBufferView(this, createInfo);
     }
 
 }; //LostPeterPluginRHIDummy

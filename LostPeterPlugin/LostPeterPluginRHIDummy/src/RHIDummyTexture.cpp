@@ -11,13 +11,16 @@
 
 #include "../include/RHIDummyTexture.h"
 #include "../include/RHIDummyTextureView.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyTexture::RHIDummyTexture(const RHITextureCreateInfo& createInfo)
-        : RHITexture(createInfo)
+    RHIDummyTexture::RHIDummyTexture(RHIDummyDevice* pDummyDevice, const RHITextureCreateInfo& createInfo)
+        : RHITexture(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
+        , m_pDummyTextureView(nullptr)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyTexture::RHIDummyTexture")
     }
 
     RHIDummyTexture::~RHIDummyTexture()
@@ -27,12 +30,24 @@ namespace LostPeterPluginRHIDummy
     
     void RHIDummyTexture::Destroy()
     {
+        DestroyTextureView();
+    }
 
+    void RHIDummyTexture::DestroyTextureView()
+    {
+        F_DELETE(m_pDummyTextureView)
+        m_pTextureView = nullptr;
     }
 
     RHITextureView* RHIDummyTexture::CreateTextureView(const RHITextureViewCreateInfo& createInfo)
     {
-        return new RHIDummyTextureView(createInfo);
+        if (m_pDummyTextureView != nullptr)
+        {
+            return m_pDummyTextureView;
+        }
+        m_pDummyTextureView = new RHIDummyTextureView(this, createInfo);
+        m_pTextureView = m_pDummyTextureView;
+        return m_pDummyTextureView;
     }
 
 }; //LostPeterPluginRHIDummy

@@ -10,12 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHITexture.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHITexture::RHITexture(const RHITextureCreateInfo& createInfo)
+    RHITexture::RHITexture(RHIDevice* pDevice, const RHITextureCreateInfo& createInfo)
+        : m_pDevice(pDevice)
+        , m_pTextureView(nullptr)
     {
-
+        F_Assert(m_pDevice && "RHITexture::RHITexture")
     }
 
     RHITexture::~RHITexture()
