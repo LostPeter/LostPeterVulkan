@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummySampler.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummySampler::RHIDummySampler(const RHISamplerCreateInfo& createInfo)
-        : RHISampler(createInfo)
+    RHIDummySampler::RHIDummySampler(RHIDummyDevice* pDummyDevice, const RHISamplerCreateInfo& createInfo)
+        : RHISampler(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummySampler::RHIDummySampler")
     }
 
     RHIDummySampler::~RHIDummySampler()

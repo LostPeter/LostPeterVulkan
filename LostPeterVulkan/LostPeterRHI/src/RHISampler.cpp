@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHISampler.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHISampler::RHISampler(const RHISamplerCreateInfo& createInfo)
+    RHISampler::RHISampler(RHIDevice* pDevice, const RHISamplerCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHISampler::RHISampler")
     }
 
     RHISampler::~RHISampler()

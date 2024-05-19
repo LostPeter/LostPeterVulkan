@@ -36,8 +36,10 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
         F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }
+        
         F_FORCEINLINE uint32 GetSize() { return m_nSize; }
         F_FORCEINLINE const RHIBufferUsageFlags& GetBufferUsageFlags() { return m_flagsBufferUsages; }
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
@@ -47,7 +49,7 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo);
 
     protected:
-        void createBuffer();
+        void createVkBuffer();
     };
     
 }; //LostPeterPluginRHIVulkan

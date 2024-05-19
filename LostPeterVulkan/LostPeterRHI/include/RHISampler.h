@@ -19,12 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHISampler : public FNonCopyable
     {
     public:
-        RHISampler(const RHISamplerCreateInfo& createInfo);
+        RHISampler(RHIDevice* pDevice, const RHISamplerCreateInfo& createInfo);
         virtual ~RHISampler();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
 
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        
 
     public:
         virtual void Destroy() = 0;

@@ -26,6 +26,7 @@ namespace LostPeterPluginRHIVulkan
         static RHIFilterType TransformFromVkSamplerMipmapMode(VkSamplerMipmapMode vkSamplerMipmapMode);
         static RHIAddressType TransformFromVkSamplerAddressMode(VkSamplerAddressMode vkSamplerAddressMode);
         static RHIBorderColorType TransformFromVkBorderColor(VkBorderColor vkBorderColor);
+        static RHIComparisonFuncType TransformFromVkCompareOp(VkCompareOp vkCompareOp);
 
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
 
@@ -38,6 +39,7 @@ namespace LostPeterPluginRHIVulkan
         static VkSamplerMipmapMode TransformToVkSamplerMipmapMode(RHIFilterType eFilter);
         static VkSamplerAddressMode TransformToVkSamplerAddressMode(RHIAddressType eAddress);
         static VkBorderColor TransformToVkBorderColor(RHIBorderColorType eBorderColor);
+        static VkCompareOp TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc);
 
         static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
         static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);

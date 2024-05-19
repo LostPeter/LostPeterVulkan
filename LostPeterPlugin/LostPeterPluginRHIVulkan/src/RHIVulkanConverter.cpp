@@ -138,6 +138,24 @@ namespace LostPeterPluginRHIVulkan
         return RHIBorderColorType::RHI_BorderColor_OpaqueBlack;
     }
 
+    RHIComparisonFuncType RHIVulkanConverter::TransformFromVkCompareOp(VkCompareOp vkCompareOp)
+    {
+        switch ((int32)vkCompareOp)
+        {
+        case VK_COMPARE_OP_NEVER:               return RHIComparisonFuncType::RHI_ComparisonFunc_Never;
+        case VK_COMPARE_OP_LESS:                return RHIComparisonFuncType::RHI_ComparisonFunc_Less;
+        case VK_COMPARE_OP_EQUAL:               return RHIComparisonFuncType::RHI_ComparisonFunc_Equal;
+        case VK_COMPARE_OP_LESS_OR_EQUAL:       return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;
+        case VK_COMPARE_OP_GREATER:             return RHIComparisonFuncType::RHI_ComparisonFunc_Greater;
+        case VK_COMPARE_OP_NOT_EQUAL:           return RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual;
+        case VK_COMPARE_OP_GREATER_OR_EQUAL:    return RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual;
+        case VK_COMPARE_OP_ALWAYS:              return RHIComparisonFuncType::RHI_ComparisonFunc_Always;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkCompareOp: Wrong VkCompareOp type !")
+        }
+        return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;;
+    }
+
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
         switch ((int32)vkBufferUsageFlags)
@@ -344,6 +362,24 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformToVkBorderColor: Wrong RHIBorderColorType type !")
         }
         return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    }
+
+    VkCompareOp RHIVulkanConverter::TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc)
+    {
+        switch (eComparisonFunc)
+        {
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Never:           return VK_COMPARE_OP_NEVER;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Less:            return VK_COMPARE_OP_LESS;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Equal:           return VK_COMPARE_OP_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual:       return VK_COMPARE_OP_LESS_OR_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Greater:         return VK_COMPARE_OP_GREATER;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual:        return VK_COMPARE_OP_NOT_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual:    return VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Always:          return VK_COMPARE_OP_ALWAYS;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkCompareOp: Wrong RHIComparisonFuncType type !")
+        }
+        return VK_COMPARE_OP_LESS_OR_EQUAL;
     }
 
     VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)

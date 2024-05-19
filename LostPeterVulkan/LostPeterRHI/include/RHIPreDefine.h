@@ -316,7 +316,7 @@ namespace LostPeterRHI
         RHI_BorderColor_OpaqueBlack = 0,                //0: OpaqueBlack
         RHI_BorderColor_OpaqueWhite,                    //1: OpaqueWhite
         RHI_BorderColor_TransparentBlack,               //2: TransparentBlack
-    
+
         RHI_BorderColor_Count,
     };
 
@@ -907,14 +907,34 @@ namespace LostPeterRHI
         RHIAddressType eAddressU;
         RHIAddressType eAddressV;
         RHIAddressType eAddressW;
-        RHIFilterType eMagFilter;
-        RHIFilterType eMinFilter;
-        RHIFilterType eMipFilter;
+        RHIBorderColorType eBorderColor;
+        RHIFilterType eFilterMin;
+        RHIFilterType eFilterMag;
+        RHIFilterType eFilterMip;
         float fLodMinClamp;
         float fLodMaxClamp;
+        float fLodMipBias;
         RHIComparisonFuncType eComparisonFunc;
         uint8 nMaxAnisotropy;
         String strDebugName;
+
+        RHISamplerCreateInfo()
+            : eAddressU(RHIAddressType::RHI_Address_ClampToEdge)
+            , eAddressV(RHIAddressType::RHI_Address_ClampToEdge)
+            , eAddressW(RHIAddressType::RHI_Address_ClampToEdge)
+            , eBorderColor(RHIBorderColorType::RHI_BorderColor_OpaqueBlack)
+            , eFilterMin(RHIFilterType::RHI_Filter_Linear)
+            , eFilterMag(RHIFilterType::RHI_Filter_Linear)
+            , eFilterMip(RHIFilterType::RHI_Filter_Linear)
+            , fLodMinClamp(0.0f)
+            , fLodMaxClamp(0.0f)
+            , fLodMipBias(0.0f)
+            , eComparisonFunc(RHIComparisonFuncType::RHI_ComparisonFunc_Never)
+            , nMaxAnisotropy(1)
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIHLSLBinding

@@ -97,7 +97,7 @@ namespace LostPeterPluginRHIDummy
 
     RHISampler* RHIDummyDevice::CreateSampler(const RHISamplerCreateInfo& createInfo)
     {
-        return new RHIDummySampler(createInfo);
+        return new RHIDummySampler(this, createInfo);
     }
 
     RHIBindGroupLayout* RHIDummyDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)

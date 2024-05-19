@@ -139,7 +139,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHISampler* RHIVulkanDevice::CreateSampler(const RHISamplerCreateInfo& createInfo)
     {
-        return new RHIVulkanSampler(createInfo);
+        return new RHIVulkanSampler(this, createInfo);
     }
 
     RHIBindGroupLayout* RHIVulkanDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
@@ -1516,13 +1516,14 @@ namespace LostPeterPluginRHIVulkan
     bool RHIVulkanDevice::CreateVkSampler(uint32_t nMipMapCount, 
                                           VkSampler& vkSampler)
     {
-        return CreateVkSampler(RHIFilterType::RHI_Filter_Linear,
-                               RHIFilterType::RHI_Filter_Linear,
-                               RHIFilterType::RHI_Filter_Linear,
-                               RHIAddressType::RHI_Address_ClampToEdge,
+        return CreateVkSampler(RHIAddressType::RHI_Address_ClampToEdge,
                                RHIAddressType::RHI_Address_ClampToEdge,
                                RHIAddressType::RHI_Address_ClampToEdge,
                                RHIBorderColorType::RHI_BorderColor_OpaqueBlack,
+                               RHIFilterType::RHI_Filter_Linear,
+                               RHIFilterType::RHI_Filter_Linear,
+                               RHIFilterType::RHI_Filter_Linear,
+                               RHIComparisonFuncType::RHI_ComparisonFunc_Never,
                                true,
                                m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy,
                                0.0f,
@@ -1530,13 +1531,14 @@ namespace LostPeterPluginRHIVulkan
                                0.0f,
                                vkSampler);
     }
-    bool RHIVulkanDevice::CreateVkSampler(RHIFilterType eFilterMin,
-                                          RHIFilterType eFilterMag,
-                                          RHIFilterType eFilterMip,
-                                          RHIAddressType eAddressingU,
+    bool RHIVulkanDevice::CreateVkSampler(RHIAddressType eAddressingU,
                                           RHIAddressType eAddressingV,
                                           RHIAddressType eAddressingW,
                                           RHIBorderColorType eBorderColor,
+                                          RHIFilterType eFilterMin,
+                                          RHIFilterType eFilterMag,
+                                          RHIFilterType eFilterMip,
+                                          RHIComparisonFuncType eComparisonFunc,
                                           bool bIsEnableAnisotropy,
                                           float fMaxAnisotropy,
                                           float fMinLod, 
@@ -1546,21 +1548,21 @@ namespace LostPeterPluginRHIVulkan
     {
         VkSamplerCreateInfo samplerInfo = {};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.minFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMin);
-        samplerInfo.magFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMag);
         samplerInfo.addressModeU = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingU);
         samplerInfo.addressModeV = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingV);
         samplerInfo.addressModeW = RHIVulkanConverter::TransformToVkSamplerAddressMode(eAddressingW);
-        samplerInfo.anisotropyEnable = bIsEnableAnisotropy ? VK_TRUE : VK_FALSE;
-        samplerInfo.maxAnisotropy = fMaxAnisotropy > m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy ? m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy : fMaxAnisotropy;
-        samplerInfo.borderColor = RHIVulkanConverter::TransformToVkBorderColor(eBorderColor);
-        samplerInfo.unnormalizedCoordinates = VK_FALSE;
-        samplerInfo.compareEnable = VK_FALSE;
-        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.minFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMin);
+        samplerInfo.magFilter = RHIVulkanConverter::TransformToVkFilter(eFilterMag);
         samplerInfo.mipmapMode = RHIVulkanConverter::TransformToVkSamplerMipmapMode(eFilterMip);
+         samplerInfo.borderColor = RHIVulkanConverter::TransformToVkBorderColor(eBorderColor);
         samplerInfo.minLod = fMinLod;
         samplerInfo.maxLod = fMaxLod;
         samplerInfo.mipLodBias = fMipLodBias;
+        samplerInfo.anisotropyEnable = bIsEnableAnisotropy ? VK_TRUE : VK_FALSE;
+        samplerInfo.maxAnisotropy = fMaxAnisotropy > m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy ? m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxSamplerAnisotropy : fMaxAnisotropy;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = eComparisonFunc != RHIComparisonFuncType::RHI_ComparisonFunc_Never;
+        samplerInfo.compareOp = RHIVulkanConverter::TransformToVkCompareOp(eComparisonFunc);
 
         if (vkCreateSampler(this->m_vkDevice, &samplerInfo, nullptr, &vkSampler) != VK_SUCCESS) 
         {

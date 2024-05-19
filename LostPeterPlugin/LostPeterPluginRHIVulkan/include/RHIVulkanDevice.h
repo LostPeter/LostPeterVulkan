@@ -343,13 +343,14 @@ namespace LostPeterPluginRHIVulkan
                                VkImageView& vkImageView);
         bool CreateVkSampler(uint32_t nMipMapCount, 
                              VkSampler& vkSampler);
-        bool CreateVkSampler(RHIFilterType eFilterMin,
-                             RHIFilterType eFilterMag,
-                             RHIFilterType eFilterMip,
-                             RHIAddressType eAddressingU,
+        bool CreateVkSampler(RHIAddressType eAddressingU,
                              RHIAddressType eAddressingV,
                              RHIAddressType eAddressingW,
                              RHIBorderColorType eBorderColor,
+                             RHIFilterType eFilterMin,
+                             RHIFilterType eFilterMag,
+                             RHIFilterType eFilterMip,
+                             RHIComparisonFuncType eComparisonFunc,
                              bool bIsEnableAnisotropy,
                              float fMaxAnisotropy,
                              float fMinLod, 

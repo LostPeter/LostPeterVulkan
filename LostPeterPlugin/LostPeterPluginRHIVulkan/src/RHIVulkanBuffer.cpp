@@ -27,7 +27,7 @@ namespace LostPeterPluginRHIVulkan
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanBuffer::RHIVulkanBuffer")
 
-        createBuffer();
+        createVkBuffer();
     }
 
     RHIVulkanBuffer::~RHIVulkanBuffer()
@@ -68,7 +68,7 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanBufferView(this, createInfo);
     }
 
-    void RHIVulkanBuffer::createBuffer()
+    void RHIVulkanBuffer::createVkBuffer()
     {
         VkBufferCreateInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -85,7 +85,7 @@ namespace LostPeterPluginRHIVulkan
 
         if (vmaCreateBuffer(m_pVulkanDevice->GetVmaAllocator(), &bufferInfo, &allocInfo, &m_vkBuffer, &m_vmaAllocation, nullptr) != VK_SUCCESS)
         {
-            F_LogError("*********************** RHIVulkanBuffer::createBuffer: vmaCreateBuffer failed, name: [%s] !", m_strDebugName.c_str());
+            F_LogError("*********************** RHIVulkanBuffer::createVkBuffer: vmaCreateBuffer failed, name: [%s] !", m_strDebugName.c_str());
         }
 
         if (RHI_IsDebug())
