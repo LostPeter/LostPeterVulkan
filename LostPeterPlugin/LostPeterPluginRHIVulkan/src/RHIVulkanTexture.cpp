@@ -120,6 +120,7 @@ namespace LostPeterPluginRHIVulkan
         if (vmaCreateImage(m_pVulkanDevice->GetVmaAllocator(), &imageInfo, &allocInfo, &m_vkImage, &m_vmaAllocation, nullptr) == VK_SUCCESS)
         {
             F_LogError("*********************** RHIVulkanTexture::createVkImage: vmaCreateImage failed, name: [%s] !", m_strDebugName.c_str());
+            return;
         }
 
         if (RHI_IsDebug())

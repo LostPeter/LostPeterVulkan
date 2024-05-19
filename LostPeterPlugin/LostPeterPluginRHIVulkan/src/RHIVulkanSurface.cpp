@@ -46,7 +46,10 @@ namespace LostPeterPluginRHIVulkan
         if (!m_pVulkanDevice->GetVulkanPhysicalDevice()->GetVulkanInstance()->CreateVkSurfaceKHR(m_pWindow, m_vkSurface))
         {
             F_LogError("*********************** RHIVulkanSurface::createVkSurfaceKHR: CreateVkSurfaceKHR failed !");
+            return;
         }
+
+        F_LogInfo("*********************** RHIVulkanSurface::createVkSurfaceKHR: Create Surface success !");
     }
     
 }; //LostPeterPluginRHIVulkan

@@ -30,7 +30,7 @@ namespace LostPeterPluginRHIVulkan
 
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
-        F_FORCEINLINE VkSurfaceKHR& GetDummySurface() { return m_vkSurface; }
+        F_FORCEINLINE VkSurfaceKHR& GetVulkanSurface() { return m_vkSurface; }
         F_FORCEINLINE GLFWwindow* GetWindow() const { return m_pWindow; }
 
             

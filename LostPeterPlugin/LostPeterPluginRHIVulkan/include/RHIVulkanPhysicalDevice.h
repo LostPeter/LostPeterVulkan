@@ -65,6 +65,7 @@ namespace LostPeterPluginRHIVulkan
 
     public:
         uint32_t FindMemoryType(uint32_t filter, VkMemoryPropertyFlags propertyFlag) const;
+        bool GetVkSurfaceCapabilitiesKHR(VkSurfaceKHR vkSurfaceKHR, VkSurfaceCapabilitiesKHR& surfProperties);
 
     protected:
         void destroy();

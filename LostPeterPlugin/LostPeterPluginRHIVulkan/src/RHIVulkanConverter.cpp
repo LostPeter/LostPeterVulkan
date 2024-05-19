@@ -14,7 +14,14 @@
 namespace LostPeterPluginRHIVulkan
 {
     ////////////////////// TransformFromXXXX //////////////////////
-    RHIExtent<3> TransformFromVkExtent3D(const VkExtent3D& vkExtent3D)
+    RHIExtent<2> RHIVulkanConverter::TransformFromVkExtent2D(const VkExtent2D& vkExtent2D)
+    {
+        RHIExtent<2> sExtent;
+        sExtent.x = (uint32)vkExtent2D.width;
+        sExtent.y = (uint32)vkExtent2D.height;
+        return sExtent;
+    }
+    RHIExtent<3> RHIVulkanConverter::TransformFromVkExtent3D(const VkExtent3D& vkExtent3D)
     {
         RHIExtent<3> sExtent;
         sExtent.x = (uint32)vkExtent3D.width;
@@ -93,6 +100,18 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformFromVkFormat: Wrong VkFormat type !")
         }
         return RHIPixelFormatType::RHI_PixelFormat_Unknown;
+    }
+
+    RHIColorSpaceType RHIVulkanConverter::TransformFromVkColorSpaceKHR(VkColorSpaceKHR vkColorSpaceKHR)
+    {
+        switch ((int32)vkColorSpaceKHR)
+        {
+        case VK_COLOR_SPACE_SRGB_NONLINEAR_KHR:             return RHIColorSpaceType::RHI_ColorSpace_Gamma;
+        case VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT:        return RHIColorSpaceType::RHI_ColorSpace_Linear;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkColorSpaceKHR: Wrong VkColorSpaceKHR type !")
+        }
+        return RHIColorSpaceType::RHI_ColorSpace_Linear;
     }
 
     RHIFilterType RHIVulkanConverter::TransformFromVkFilter(VkFilter vkFilter)
@@ -210,6 +229,18 @@ namespace LostPeterPluginRHIVulkan
         return RHISampleCountType::RHI_SampleCount_1_Bit;
     }
 
+    RHIPresentType RHIVulkanConverter::TransformFromVkPresentModeKHR(VkPresentModeKHR vkPresentModeKHR)
+    {
+        switch ((int32)vkPresentModeKHR)
+        {
+        case VK_PRESENT_MODE_IMMEDIATE_KHR:         return RHIPresentType::RHI_Present_Immediately;
+        case VK_PRESENT_MODE_FIFO_KHR:              return RHIPresentType::RHI_Present_VSync;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPresentModeKHR: Wrong VkPresentModeKHR type !")
+        }
+        return RHIPresentType::RHI_Present_Immediately;
+    }
+
 
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
@@ -247,6 +278,10 @@ namespace LostPeterPluginRHIVulkan
 
 
     ////////////////////// TransformToXXXX ////////////////////////
+    VkExtent2D RHIVulkanConverter::TransformToVkExtent2D(const RHIExtent<2>& sExtent)
+    {
+        return { static_cast<uint32_t>(sExtent.x), static_cast<uint32_t>(sExtent.y) };
+    }   
     VkExtent3D RHIVulkanConverter::TransformToVkExtent3D(const RHIExtent<3>& sExtent)
     {
         return { static_cast<uint32_t>(sExtent.x), static_cast<uint32_t>(sExtent.y), static_cast<uint32_t>(sExtent.z) };
@@ -388,6 +423,18 @@ namespace LostPeterPluginRHIVulkan
         return s_nameVkFormatTypes[(uint32)ePixelFormat];
     }
 
+    VkColorSpaceKHR RHIVulkanConverter::TransformToVkColorSpaceKHR(RHIColorSpaceType eColorSpace)
+    {
+        switch (eColorSpace)
+        {
+        case RHIColorSpaceType::RHI_ColorSpace_Gamma:         return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+        case RHIColorSpaceType::RHI_ColorSpace_Linear:        return VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkColorSpaceKHR: Wrong RHIColorSpaceType type !")
+        }
+        return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+    }
+
     VkFilter RHIVulkanConverter::TransformToVkFilter(RHIFilterType eFilter)
     {
         switch (eFilter)
@@ -501,6 +548,18 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformToVkSampleCountFlagBits: Wrong RHISampleCountType type !")
         }
         return VK_SAMPLE_COUNT_1_BIT;
+    }
+
+    VkPresentModeKHR RHIVulkanConverter::TransformToVkPresentModeKHR(RHIPresentType ePresent)
+    {
+        switch (ePresent)
+        {
+        case RHIPresentType::RHI_Present_Immediately:       return VK_PRESENT_MODE_IMMEDIATE_KHR;
+        case RHIPresentType::RHI_Present_VSync:             return VK_PRESENT_MODE_FIFO_KHR;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPresentModeKHR: Wrong RHIPresentType type !")
+        }
+        return VK_PRESENT_MODE_IMMEDIATE_KHR;
     }
 
 

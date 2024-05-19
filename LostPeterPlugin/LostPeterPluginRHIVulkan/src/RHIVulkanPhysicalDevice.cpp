@@ -89,6 +89,16 @@ namespace LostPeterPluginRHIVulkan
         return -1;
     }
 
+    bool RHIVulkanPhysicalDevice::GetVkSurfaceCapabilitiesKHR(VkSurfaceKHR vkSurfaceKHR, VkSurfaceCapabilitiesKHR& surfProperties)
+    {
+        if (!RHI_CheckVkResult(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_vkPhysicalDevice, vkSurfaceKHR, &surfProperties), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"))
+        {
+            F_LogError("*********************** RHIVulkanPhysicalDevice::GetVkSurfaceCapabilitiesKHR: vkGetPhysicalDeviceSurfaceCapabilitiesKHR failed !");
+            return false;
+        }
+        return true;
+    }
+
     String RHIVulkanPhysicalDevice::GetPhysicalDeviceType(const VkPhysicalDeviceProperties& deviceProperties, bool& isDiscrete)
     {
         isDiscrete = false;

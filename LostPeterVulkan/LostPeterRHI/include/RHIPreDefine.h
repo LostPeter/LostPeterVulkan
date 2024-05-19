@@ -518,6 +518,15 @@ namespace LostPeterRHI
         RHI_BlendOp_Count,
     };
 
+    //RHIColorSpaceType
+    enum class RHIColorSpaceType : RHIEnumType 
+	{
+        RHI_ColorSpace_Gamma = 0,					    //0: Gamma
+        RHI_ColorSpace_Linear,							//1: Linear
+
+        RHI_ColorSpace_Count,
+    };
+
 	//RHIPixelFormatType
 	enum class RHIPixelFormatType : RHIEnumType 
 	{
@@ -853,8 +862,9 @@ namespace LostPeterRHI
         RHISurface* pSurface;
         uint8 nTextureCount;
         RHIPixelFormatType ePixelFormat;
-		FSizeI sizeWH;
+        RHIColorSpaceType eColorSpace;
         RHIPresentType ePresent;
+        RHIExtent<2> sExtent;
     };
 
 	//RHIBufferCreateInfo

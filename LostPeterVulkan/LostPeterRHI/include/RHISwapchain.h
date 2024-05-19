@@ -19,12 +19,15 @@ namespace LostPeterRHI
     class rhiExport RHISwapChain : public FNonCopyable
     {
     public:
-        RHISwapChain(const RHISwapChainCreateInfo& createInfo);
+        RHISwapChain(RHIDevice* pDevice, const RHISwapChainCreateInfo& createInfo);
         virtual ~RHISwapChain();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
 
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
     public:
         virtual void Destroy() = 0;

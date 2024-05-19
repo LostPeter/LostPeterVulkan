@@ -11,14 +11,16 @@
 
 #include "../include/RHIDummySwapChain.h"
 #include "../include/RHIDummyTexture.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummySwapChain::RHIDummySwapChain(const RHISwapChainCreateInfo& createInfo)
-        : RHISwapChain(createInfo)
+    RHIDummySwapChain::RHIDummySwapChain(RHIDummyDevice* pDummyDevice, const RHISwapChainCreateInfo& createInfo)
+        : RHISwapChain(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
         , m_bIsPingPong(true)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummySwapChain::RHIDummySwapChain")
     }
 
     RHIDummySwapChain::~RHIDummySwapChain()

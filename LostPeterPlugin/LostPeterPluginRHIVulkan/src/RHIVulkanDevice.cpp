@@ -124,7 +124,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHISwapChain* RHIVulkanDevice::CreateSwapChain(const RHISwapChainCreateInfo& createInfo)
     {
-        return new RHIVulkanSwapChain(createInfo);
+        return new RHIVulkanSwapChain(this, createInfo);
     }
 
     RHIBuffer* RHIVulkanDevice::CreateBuffer(const RHIBufferCreateInfo& createInfo)

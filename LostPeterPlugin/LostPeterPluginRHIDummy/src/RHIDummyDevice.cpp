@@ -82,7 +82,7 @@ namespace LostPeterPluginRHIDummy
 
     RHISwapChain* RHIDummyDevice::CreateSwapChain(const RHISwapChainCreateInfo& createInfo)
     {
-        return new RHIDummySwapChain(createInfo);
+        return new RHIDummySwapChain(this, createInfo);
     }
 
     RHIBuffer* RHIDummyDevice::CreateBuffer(const RHIBufferCreateInfo& createInfo)

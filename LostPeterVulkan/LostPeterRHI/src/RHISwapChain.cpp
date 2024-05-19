@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHISwapChain.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHISwapChain::RHISwapChain(const RHISwapChainCreateInfo& createInfo)
+    RHISwapChain::RHISwapChain(RHIDevice* pDevice, const RHISwapChainCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHISwapChain::RHISwapChain")
     }
 
     RHISwapChain::~RHISwapChain()

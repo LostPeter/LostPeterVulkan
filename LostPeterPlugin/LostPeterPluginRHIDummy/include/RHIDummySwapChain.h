@@ -19,13 +19,20 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummySwapChain : public RHISwapChain
     {
     public:
-        RHIDummySwapChain(const RHISwapChainCreateInfo& createInfo);
+        RHIDummySwapChain(RHIDummyDevice* pDummyDevice, const RHISwapChainCreateInfo& createInfo);
         virtual ~RHIDummySwapChain();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
+
         RHIDummyTexturePtrVector m_aDummyTextures;
         bool m_bIsPingPong;
+
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+
 
     public:
         virtual void Destroy();
