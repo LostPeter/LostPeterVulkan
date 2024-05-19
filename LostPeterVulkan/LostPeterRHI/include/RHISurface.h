@@ -19,11 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHISurface : public FNonCopyable
     {
     public:
-        RHISurface(const RHISurfaceCreateInfo& createInfo);
+        RHISurface(RHIDevice* pDevice, const RHISurfaceCreateInfo& createInfo);
         virtual ~RHISurface();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
+
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:

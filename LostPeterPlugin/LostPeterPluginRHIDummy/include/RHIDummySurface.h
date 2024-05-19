@@ -19,15 +19,19 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummySurface : public RHISurface
     {
     public:
-        RHIDummySurface(const RHISurfaceCreateInfo& createInfo);
+        RHIDummySurface(RHIDummyDevice* pDummyDevice, const RHISurfaceCreateInfo& createInfo);
         virtual ~RHIDummySurface();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:
-        virtual void Destroy();
+        virtual void Destroy(); 
 
     };
 

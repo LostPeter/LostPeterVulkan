@@ -77,7 +77,7 @@ namespace LostPeterPluginRHIDummy
 
     RHISurface* RHIDummyDevice::CreateSurface(const RHISurfaceCreateInfo& createInfo)
     {
-        return new RHIDummySurface(createInfo);
+        return new RHIDummySurface(this, createInfo);
     }
 
     RHISwapChain* RHIDummyDevice::CreateSwapChain(const RHISwapChainCreateInfo& createInfo)

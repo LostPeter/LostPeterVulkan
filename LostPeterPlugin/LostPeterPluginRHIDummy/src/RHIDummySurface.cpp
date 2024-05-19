@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummySurface.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummySurface::RHIDummySurface(const RHISurfaceCreateInfo& createInfo)
-        : RHISurface(createInfo)
+    RHIDummySurface::RHIDummySurface(RHIDummyDevice* pDummyDevice, const RHISurfaceCreateInfo& createInfo)
+        : RHISurface(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummySurface::RHIDummySurface")
     }
 
     RHIDummySurface::~RHIDummySurface()

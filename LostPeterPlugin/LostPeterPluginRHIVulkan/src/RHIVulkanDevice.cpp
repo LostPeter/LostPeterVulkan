@@ -119,7 +119,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHISurface* RHIVulkanDevice::CreateSurface(const RHISurfaceCreateInfo& createInfo)
     {
-        return new RHIVulkanSurface(createInfo);
+        return new RHIVulkanSurface(this, createInfo);
     }
 
     RHISwapChain* RHIVulkanDevice::CreateSwapChain(const RHISwapChainCreateInfo& createInfo)

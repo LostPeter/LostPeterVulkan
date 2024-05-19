@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHISurface.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHISurface::RHISurface(const RHISurfaceCreateInfo& createInfo)
+    RHISurface::RHISurface(RHIDevice* pDevice, const RHISurfaceCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHISurface::RHISurface")
     }
 
     RHISurface::~RHISurface()
