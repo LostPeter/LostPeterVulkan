@@ -19,11 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHIShaderModule : public FNonCopyable
     {
     public:
-        RHIShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        RHIShaderModule(RHIDevice* pDevice, const RHIShaderModuleCreateInfo& createInfo);
         virtual ~RHIShaderModule();
 
     public:
     protected:
+         RHIDevice* m_pDevice;
+         
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:

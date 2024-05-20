@@ -21,6 +21,7 @@ namespace LostPeterPluginRHIVulkan
         , m_pVulkanDevice(pVulkanDevice)
         , m_vkSurface(VK_NULL_HANDLE)
         , m_pWindow((GLFWwindow*)createInfo.pWindow)
+        , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanSurface::RHIVulkanSurface")
 
@@ -49,7 +50,14 @@ namespace LostPeterPluginRHIVulkan
             return;
         }
 
-        F_LogInfo("*********************** RHIVulkanSurface::createVkSurfaceKHR: Create Surface success !");
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SURFACE_KHR, reinterpret_cast<uint64_t>(m_vkSurface), m_strDebugName.c_str());
+            }
+        }
+        F_LogInfo("RHIVulkanSurface::createVkSurfaceKHR: Create Surface success !");
     }
     
 }; //LostPeterPluginRHIVulkan

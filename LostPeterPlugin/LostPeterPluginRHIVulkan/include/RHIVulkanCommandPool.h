@@ -23,14 +23,22 @@ namespace LostPeterPluginRHIVulkan
         virtual ~RHIVulkanCommandPool();
 
     public:
+        static uint32 ms_nID;
+
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
         uint32 m_nFamilyIndex;
         VkCommandPool m_vkCommandPool;
+
+        uint32 m_nID;
+        String m_strDebugName;
         
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkCommandPool& GetVkCommandPool() { return m_vkCommandPool; }
+
+        F_FORCEINLINE uint32 GetID() { return m_nID; }
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();

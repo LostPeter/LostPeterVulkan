@@ -117,7 +117,7 @@ namespace LostPeterPluginRHIDummy
 
     RHIShaderModule* RHIDummyDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
     {
-        return new RHIDummyShaderModule(createInfo);
+        return new RHIDummyShaderModule(this, createInfo);
     }
 
     RHIPipelineCompute* RHIDummyDevice::CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)

@@ -19,6 +19,8 @@ namespace LostPeterPluginRHIVulkan
         , m_pVulkanDevice(pVulkanDevice)
         , m_nFamilyIndex(nFamilyIndex)
         , m_vkQueue(VK_NULL_HANDLE)
+        , m_nID(++ms_nID)
+        , m_strDebugName("")
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanQueue::RHIVulkanQueue")
     }
@@ -41,6 +43,13 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanQueue::Init: GetVkQueue failed !");
             return false;
         }
+
+        if (RHI_IsDebug())
+        {
+            m_strDebugName = "VulkanQueue-" + FUtilString::SaveUInt(m_nFamilyIndex) + "-" + FUtilString::SaveUInt(m_nID);
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(m_vkQueue), m_strDebugName.c_str());
+        }
+        F_LogInfo("RHIVulkanQueue::Init: Create Queue success, nFamilyIndex: [%u], ID: [%u] !", m_nFamilyIndex, m_nID);
         return true;
     }
 

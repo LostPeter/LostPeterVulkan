@@ -14,11 +14,14 @@
 
 namespace LostPeterPluginRHIVulkan
 {
+    uint32 RHIVulkanCommandPool::ms_nID = 0;
     RHIVulkanCommandPool::RHIVulkanCommandPool(RHIVulkanDevice* pVulkanDevice)
         : RHICommandPool(pVulkanDevice)
         , m_pVulkanDevice(pVulkanDevice)
         , m_nFamilyIndex(-1)
         , m_vkCommandPool(VK_NULL_HANDLE)
+        , m_nID(++ms_nID)
+        , m_strDebugName("")
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanCommandPool::RHIVulkanCommandPool")
     }
@@ -46,6 +49,13 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanCommandPool::Init: CreateVkCommandPool failed !");
             return false;
         }
+
+        if (RHI_IsDebug())
+        {
+            m_strDebugName = "VulkanCommandPool-" + FUtilString::SaveUInt(m_nFamilyIndex) + "-" + FUtilString::SaveUInt(m_nID);
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_COMMAND_POOL, reinterpret_cast<uint64_t>(m_vkCommandPool), m_strDebugName.c_str());
+        }
+        F_LogInfo("RHIVulkanCommandPool::Init: Create CommandPool success, nFamilyIndex: [%u], ID: [%u] !", m_nFamilyIndex, m_nID);
         return true;
     }
 

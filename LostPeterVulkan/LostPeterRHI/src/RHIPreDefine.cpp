@@ -132,6 +132,66 @@ namespace LostPeterRHI
     }
 
 
+    //RHIShaderStageBitsType
+    static String s_nameShaderStageBitsTypes[] = 
+    {
+        "Vertex",                   //0: Vertex
+        "Pixel",                    //1: Pixel
+        "Compute",                  //2: Compute
+        "Geometry",                 //3: Geometry
+        "Domain",                   //4: Domain
+        "Hull",                     //5: Hull
+    };
+    const String& RHI_GetShaderStageBitsTypeName(RHIShaderStageBitsType type)
+    {
+        switch (type)
+        {
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex:    return s_nameShaderStageBitsTypes[0];
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel:     return s_nameShaderStageBitsTypes[1];
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Compute:   return s_nameShaderStageBitsTypes[2];
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry:  return s_nameShaderStageBitsTypes[3];
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Domain:    return s_nameShaderStageBitsTypes[4];
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Hull:      return s_nameShaderStageBitsTypes[5];
+        default:
+            F_Assert(false && "RHI_GetShaderStageBitsTypeName: Wrong type !")
+        }
+        return s_nameShaderStageBitsTypes[0];
+    }
+    const String& RHI_GetShaderStageBitsTypeName(uint32 type)
+    {
+        return RHI_GetShaderStageBitsTypeName((RHIShaderStageBitsType)type);
+    }
+    RHIShaderStageBitsType RHI_ParseShaderStageBitsType(const String& strName)
+    {
+        if (s_nameShaderStageBitsTypes[0] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex;
+        }
+        else if (s_nameShaderStageBitsTypes[1] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel;
+        }
+        else if (s_nameShaderStageBitsTypes[2] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Compute;
+        }
+        else if (s_nameShaderStageBitsTypes[3] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry;
+        }
+        else if (s_nameShaderStageBitsTypes[4] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Domain;
+        }
+        else if (s_nameShaderStageBitsTypes[5] == strName)
+        {
+            return RHIShaderStageBitsType::RHI_ShaderStageBits_Hull;
+        }
+        F_Assert(false && "RHI_ParseShaderStageBitsType: Wrong type name !")
+        return RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex;
+    }
+
+
     #define RHI_FLAGS_IMPL(FlagsType, BitsType) \
         FlagsType operator &(BitsType a, BitsType b) { return FlagsType(static_cast<uint32>(a) & static_cast<uint32>(b)); } \
         FlagsType operator &(FlagsType a, BitsType b) { return FlagsType(a.Value() & static_cast<uint32>(b)); } \

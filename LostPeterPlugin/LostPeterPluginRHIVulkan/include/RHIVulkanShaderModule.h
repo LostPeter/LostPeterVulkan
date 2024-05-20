@@ -19,16 +19,33 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanShaderModule : public RHIShaderModule
     {
     public:
-        RHIVulkanShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        RHIVulkanShaderModule(RHIVulkanDevice* pVulkanDevice, const RHIShaderModuleCreateInfo& createInfo);
         virtual ~RHIVulkanShaderModule();
 
     public:
     protected:
+        RHIVulkanDevice* m_pVulkanDevice;
+        VkShaderModule m_vkShaderModule;
 
+        RHIShaderStageBitsType m_eShaderStageBits;
+        String m_strPath;
+        String m_strContent;
+        String m_strDebugName;
+
+    public:
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        F_FORCEINLINE VkShaderModule& GetVkShaderModule() { return m_vkShaderModule; }
+
+        F_FORCEINLINE RHIShaderStageBitsType GetShaderStageBitsType() const { return m_eShaderStageBits; }
+        F_FORCEINLINE const String& GetPath() const { return m_strPath; }
+        F_FORCEINLINE const String& GetContent() const { return m_strContent; }
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
+    protected:
+        void createVkShaderModule();
     };
     
 }; //LostPeterPluginRHIVulkan

@@ -31,6 +31,8 @@ namespace LostPeterPluginRHIVulkan
         VkDevice m_vkDevice;
         VmaAllocator m_vmaAllocator;
 
+        String m_strDebugName;
+
         RHIVulkanCommandPool* m_pCommandPoolTransfer;
         RHIVulkanCommandPool* m_pCommandPoolGraphics;
         RHIVulkanCommandPool* m_pCommandPoolCompute;
@@ -48,6 +50,8 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIVulkanPhysicalDevice* GetVulkanPhysicalDevice() const { return m_pVulkanPhysicalDevice; }
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
+
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
         F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPoolTransfer() const { return m_pCommandPoolTransfer; }
         F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPoolGraphics() const { return m_pCommandPoolGraphics; }
@@ -362,6 +366,430 @@ namespace LostPeterPluginRHIVulkan
         void DestroyVkImage(const VkImage& vkImage, const VkDeviceMemory& vkImageMemory, const VkImageView& vkImageView);
         void DestroyVkImageView(const VkImageView& vkImageView);
         void DestroyVkSampler(const VkSampler& vkSampler);
+
+        void TransitionVkImageLayout(VkCommandBuffer cmdBuffer,
+                                     VkImage vkImage, 
+                                     VkImageLayout oldLayout, 
+                                     VkImageLayout newLayout,
+                                     uint32_t nMipBase,
+                                     uint32_t nMipCount,
+                                     uint32_t nLayerBase,
+                                     uint32_t nLayerCount,
+                                     VkImageAspectFlags typeImageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT);
+        void CopyVkBufferToVkImage(VkCommandBuffer cmdBuffer,
+                                   VkBuffer vkBuffer, 
+                                   VkImage vkImage, 
+                                   uint32_t nWidth, 
+                                   uint32_t nHeight,
+                                   uint32_t nDepth,
+                                   uint32_t nPixelSize,
+                                   uint32_t nLayerCount);
+        void GenerateVkImageMipMaps(VkCommandBuffer cmdBuffer,
+                                    VkImage vkImage, 
+                                    VkFormat imageFormat, 
+                                    int32_t nWidth, 
+                                    int32_t nHeight, 
+                                    uint32_t nMipMapCount,
+                                    uint32_t nLayerCount,
+                                    bool bIsAutoMipMap);
+
+        bool CreateTexture1D(const String& pathAsset, 
+                             RHIPixelFormatType& ePixelFormatRet,
+                             uint32_t& nMipMapCount,
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory);
+
+        bool CreateTexture2D(const String& pathAsset, 
+                             VkImageType typeImage,
+                             VkSampleCountFlagBits typeSamplesCountFlagBits,
+                             VkFormat& typeFormat,
+                             RHIPixelFormatType& ePixelFormatRet,
+                             bool bIsAutoMipMap, 
+                             uint32_t& nMipMapCount, 
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory,
+                             VkBuffer& vkBuffer, 
+                             VkDeviceMemory& vkBufferMemory);
+        bool CreateTexture2D(const String& pathAsset, 
+                             VkImageType typeImage,
+                             VkSampleCountFlagBits typeSamplesCountFlagBits,
+                             VkFormat& typeFormat,
+                             RHIPixelFormatType& ePixelFormatRet,
+                             bool bIsAutoMipMap, 
+                             uint32_t& nMipMapCount, 
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory);
+        bool CreateTexture2D(const String& pathAsset, 
+                             RHIPixelFormatType& ePixelFormatRet,
+                             uint32_t& nMipMapCount,
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory);
+        
+        bool CreateTexture2DArray(const StringVector& aPathAsset, 
+                                  VkImageType typeImage,
+                                  VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                  VkFormat& typeFormat,
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  bool bIsAutoMipMap, 
+                                  uint32_t& nMipMapCount, 
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory,
+                                  VkBuffer& vkBuffer, 
+                                  VkDeviceMemory& vkBufferMemory);
+        bool CreateTexture2DArray(const StringVector& aPathAsset, 
+                                  VkImageType typeImage,
+                                  VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                  VkFormat& typeFormat,
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  bool bIsAutoMipMap, 
+                                  uint32_t& nMipMapCount, 
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory);
+        bool CreateTexture2DArray(const StringVector& aPathAsset, 
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  uint32_t& nMipMapCount,
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory);
+
+        bool CreateTexture3D(VkFormat typeFormat,
+                             const uint8* pDataRGBA,
+                             uint32_t nWidth,
+                             uint32_t nHeight,
+                             uint32_t nDepth,
+                             uint32_t nPixelSize,
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory,
+                             VkBuffer& vkBuffer, 
+                             VkDeviceMemory& vkBufferMemory);
+        bool CreateTexture3D(VkFormat typeFormat,
+                             const uint8* pDataRGBA,
+                             uint32_t nWidth,
+                             uint32_t nHeight,
+                             uint32_t nDepth,
+                             uint32_t nPixelSize,
+                             VkImage& vkImage, 
+                             VkDeviceMemory& vkImageMemory);
+        
+        bool CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                  VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                  VkFormat& typeFormat,
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  bool bIsAutoMipMap, 
+                                  uint32_t& nMipMapCount, 
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory,
+                                  VkBuffer& vkBuffer, 
+                                  VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                  VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                  VkFormat& typeFormat,
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  bool bIsAutoMipMap, 
+                                  uint32_t& nMipMapCount, 
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory);
+        bool CreateTextureCubeMap(const StringVector& aPathAsset,
+                                  RHIPixelFormatType& ePixelFormatRet,
+                                  uint32_t& nMipMapCount, 
+                                  VkImage& vkImage, 
+                                  VkDeviceMemory& vkImageMemory);
+
+        
+        bool CreateTextureRenderTarget1D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory,
+                                         VkBuffer& vkBuffer, 
+                                         VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureRenderTarget1D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory);
+        
+        bool CreateTextureRenderTarget2D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nMipMapCount,
+                                         VkImageType typeImage,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory,
+                                         VkBuffer& vkBuffer, 
+                                         VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureRenderTarget2D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory);
+
+        bool CreateTextureRenderTarget2D(uint8* pData,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nMipMapCount,
+                                         VkImageType typeImage,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory,
+                                         VkBuffer& vkBuffer, 
+                                         VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureRenderTarget2D(uint8* pData,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory);
+        
+        bool CreateTextureRenderTarget2DArray(const FColor& clDefault,
+                                              bool isSetColor,
+                                              uint32_t nWidth, 
+                                              uint32_t nHeight,
+                                              uint32_t nLayerCount,
+                                              uint32_t nMipMapCount,
+                                              VkImageType typeImage,
+                                              VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                              VkFormat typeFormat,
+                                              VkImageUsageFlags typeImageUsageFlags, 
+                                              bool bIsGraphicsComputeShared,
+                                              VkImage& vkImage, 
+                                              VkDeviceMemory& vkImageMemory,
+                                              VkBuffer& vkBuffer, 
+                                              VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureRenderTarget2DArray(const FColor& clDefault,
+                                              bool isSetColor,
+                                              uint32_t nWidth, 
+                                              uint32_t nHeight,
+                                              uint32_t nLayerCount,
+                                              uint32_t nMipMapCount,
+                                              VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                              VkFormat typeFormat,
+                                              VkImageUsageFlags typeImageUsageFlags, 
+                                              bool bIsGraphicsComputeShared,
+                                              VkImage& vkImage, 
+                                              VkDeviceMemory& vkImageMemory);
+
+        bool CreateTextureRenderTarget3D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nDepth,
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory,
+                                         VkBuffer& vkBuffer, 
+                                         VkDeviceMemory& vkBufferMemory);                                           
+        bool CreateTextureRenderTarget3D(const FColor& clDefault,
+                                         bool isSetColor,
+                                         uint32_t nWidth, 
+                                         uint32_t nHeight,
+                                         uint32_t nDepth,
+                                         uint32_t nMipMapCount,
+                                         VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                         VkFormat typeFormat,
+                                         VkImageUsageFlags typeImageUsageFlags, 
+                                         bool bIsGraphicsComputeShared,
+                                         VkImage& vkImage, 
+                                         VkDeviceMemory& vkImageMemory);
+        
+        bool CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                              uint32_t nHeight,
+                                              uint32_t nMipMapCount,
+                                              VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                              VkFormat typeFormat,
+                                              VkImageUsageFlags typeImageUsageFlags, 
+                                              bool bIsGraphicsComputeShared,
+                                              VkImage& vkImage, 
+                                              VkDeviceMemory& vkImageMemory,
+                                              VkBuffer& vkBuffer, 
+                                              VkDeviceMemory& vkBufferMemory);
+        bool CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                              uint32_t nHeight,
+                                              uint32_t nMipMapCount,
+                                              VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                              VkFormat typeFormat,
+                                              VkImageUsageFlags typeImageUsageFlags, 
+                                              bool bIsGraphicsComputeShared,
+                                              VkImage& vkImage, 
+                                              VkDeviceMemory& vkImageMemory);
+
+        bool CreateTextureFrameBufferColor(uint32_t nWidth, 
+                                           uint32_t nHeight,
+                                           uint32_t nDepth,
+                                           VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                           VkFormat typeFormat, 
+                                           VkImage& vkImage, 
+                                           VkDeviceMemory& vkImageMemory);
+
+        bool CreateTextureFrameBufferDepth(uint32_t nWidth, 
+                                           uint32_t nHeight,
+                                           uint32_t nDepth,
+                                           VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                           VkFormat typeFormat, 
+                                           VkImage& vkImage, 
+                                           VkDeviceMemory& vkImageMemory);
+
+        //////////////////// VkShaderModule /////////////////
+        bool CreateVkShaderModule(RHIShaderStageBitsType eShaderStageBits, 
+                                  const String& pathFile,
+                                  VkShaderModule& vkShaderModule);
+        bool CreateVkShaderModule(const String& strTypeShader, 
+                                  const String& pathFile,
+                                  VkShaderModule& vkShaderModule);
+        bool CreateVkShaderModule(size_t nSizeByteCode,
+                                  const void* pByteCode,
+                                  VkShaderModule& vkShaderModule);
+        void DestroyVkShaderModule(const VkShaderModule& vkShaderModule);
+
+        //////////////////// VkDescriptorSetLayout //////////
+        bool CreateVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, 
+                                         VkDescriptorSetLayout& vkDescriptorSetLayout);
+        void DestroyVkDescriptorSetLayout(const VkDescriptorSetLayout& vkDescriptorSetLayout);
+
+        //////////////////// VkPipelineLayout ///////////////
+        bool CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                    VkPipelineLayout& vkPipelineLayout);
+        void DestroyVkPipelineLayout(const VkPipelineLayout& vkPipelineLayout);
+
+        //////////////////// VkPipelineCache ////////////////
+        bool CreateVkPipelineCache(VkPipelineCache& vkPipelineCache);
+        void DestroyVkPipelineCache(const VkPipelineCache& vkPipelineCache);
+
+        //////////////////// VkPipeline /////////////////////
+        bool CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                       VkShaderModule fragShaderModule, const String& fragMain,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                       VkShaderModule tescShaderModule, const String& tescMain,
+                                       VkShaderModule teseShaderModule, const String& teseMain,
+                                       VkShaderModule fragShaderModule, const String& fragMain,
+                                       VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                       bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Compute(VkShaderModule compShaderModule,
+                                      const String& compMain,
+                                      VkPipelineLayout pipelineLayout, 
+                                      VkPipelineCreateFlags flags,
+                                      VkPipelineCache vkPipelineCache,
+                                      VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Compute(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                                      VkPipelineLayout pipelineLayout, 
+                                      VkPipelineCreateFlags flags,
+                                      VkPipelineCache vkPipelineCache,
+                                      VkPipeline& vkPipeline);
+        void DestroyVkPipeline(const VkPipeline& vkPipeline);
+
+        //////////////////// VkDescriptorSet ////////////////
+        bool CreateVkDescriptorSet(uint32_t descriptorSetCount,
+                                   VkDescriptorSetLayout vkDescriptorSetLayout, 
+                                   VkDescriptorPool vkDescriptorPool,
+                                   VkDescriptorSet& vkDescriptorSet);
+        bool CreateVkDescriptorSets(uint32_t countSwapChain, 
+                                    VkDescriptorSetLayout vkDescriptorSetLayout,
+                                    VkDescriptorPool vkDescriptorPool,
+                                    VkDescriptorSetVector& aDescriptorSets);
+
+        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                VkDescriptorType descriptorType,
+                                                                                uint32_t descriptorCount,
+                                                                                VkShaderStageFlags stageFlags);
+        void CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                        VkDescriptorType descriptorType,
+                                                        uint32_t descriptorCount,
+                                                        VkShaderStageFlags stageFlags,
+                                                        VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
+        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                              VkDescriptorType descriptorType,
+                                                                              uint32_t descriptorCount,
+                                                                              VkShaderStageFlags stageFlags,
+                                                                              VkSampler* pImmutableSamplers);
+        void CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                      VkDescriptorType descriptorType,
+                                                      uint32_t descriptorCount,
+                                                      VkShaderStageFlags stageFlags,
+                                                      VkSampler* pImmutableSamplers,
+                                                      VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
+        
+        void PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                         VkDescriptorSet dstSet,
+                                         uint32_t dstBinding,
+                                         uint32_t dstArrayElement,
+                                         uint32_t descriptorCount,
+                                         VkDescriptorBufferInfo& bufferInfo);
+        void PushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                       VkDescriptorSet dstSet,
+                                       uint32_t dstBinding,
+                                       uint32_t dstArrayElement,
+                                       uint32_t descriptorCount,
+                                       VkDescriptorType descriptorType,
+                                       VkDescriptorImageInfo& imageInfo);
+        void UpdateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
 
     public:
         //////////////////// VkCommandBuffer ////////////////

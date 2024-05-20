@@ -26,13 +26,16 @@ namespace LostPeterPluginRHIVulkan
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
         VkSurfaceKHR m_vkSurface;
+
         GLFWwindow* m_pWindow;
+        String m_strDebugName;
 
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkSurfaceKHR& GetVulkanSurface() { return m_vkSurface; }
-        F_FORCEINLINE GLFWwindow* GetWindow() const { return m_pWindow; }
 
+        F_FORCEINLINE GLFWwindow* GetWindow() const { return m_pWindow; }
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
             
     public:
         virtual void Destroy();

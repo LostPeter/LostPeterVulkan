@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyShaderModule.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyShaderModule::RHIDummyShaderModule(const RHIShaderModuleCreateInfo& createInfo)
-        : RHIShaderModule(createInfo)
+    RHIDummyShaderModule::RHIDummyShaderModule(RHIDummyDevice* pDummyDevice, const RHIShaderModuleCreateInfo& createInfo)
+        : RHIShaderModule(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyShaderModule::RHIDummyShaderModule")
     }
 
     RHIDummyShaderModule::~RHIDummyShaderModule()

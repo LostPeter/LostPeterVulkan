@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyShaderModule : public RHIShaderModule
     {
     public:
-        RHIDummyShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        RHIDummyShaderModule(RHIDummyDevice* pDummyDevice, const RHIShaderModuleCreateInfo& createInfo);
         virtual ~RHIDummyShaderModule();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
 
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+        
 
     public:
         virtual void Destroy();

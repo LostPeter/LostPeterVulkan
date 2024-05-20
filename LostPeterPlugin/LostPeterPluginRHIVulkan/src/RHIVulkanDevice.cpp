@@ -32,6 +32,10 @@
 #include "../include/RHIVulkanDebug.h"
 #include "../include/RHIVulkanConverter.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include <stb_image.h>
+
 namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanDevice::RHIVulkanDevice(RHIVulkanPhysicalDevice* pVulkanPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
@@ -39,6 +43,7 @@ namespace LostPeterPluginRHIVulkan
         , m_pVulkanPhysicalDevice(pVulkanPhysicalDevice)
         , m_vkDevice(VK_NULL_HANDLE)
         , m_vmaAllocator(VK_NULL_HANDLE)
+        , m_strDebugName(createInfo.strDebugName)
         , m_pCommandPoolTransfer(nullptr)
         , m_pCommandPoolGraphics(nullptr)
         , m_pCommandPoolCompute(nullptr)
@@ -159,7 +164,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHIShaderModule* RHIVulkanDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
     {
-        return new RHIVulkanShaderModule(createInfo);
+        return new RHIVulkanShaderModule(this, createInfo);
     }
 
     RHIPipelineCompute* RHIVulkanDevice::CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
@@ -317,8 +322,13 @@ namespace LostPeterPluginRHIVulkan
         }
         F_LogInfo("RHIVulkanDevice::init: 3> checkPixelFormats success !");
 
-
-
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                SetDebugObject(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(m_vkDevice), m_strDebugName.c_str());
+            }
+        }
         F_LogInfo("RHIVulkanDevice::init: Init vulkan device success !");
         return true;
     }
@@ -1594,6 +1604,2223 @@ namespace LostPeterPluginRHIVulkan
         if (vkSampler != VK_NULL_HANDLE)
         {
             vkDestroySampler(this->m_vkDevice, vkSampler, nullptr);
+        }
+    }
+
+    void RHIVulkanDevice::TransitionVkImageLayout(VkCommandBuffer cmdBuffer,
+                                                  VkImage vkImage, 
+                                                  VkImageLayout oldLayout, 
+                                                  VkImageLayout newLayout,
+                                                  uint32_t nMipBase,
+                                                  uint32_t nMipCount,
+                                                  uint32_t nLayerBase,
+                                                  uint32_t nLayerCount,
+                                                  VkImageAspectFlags typeImageAspectFlags /*= VK_IMAGE_ASPECT_COLOR_BIT*/) 
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            VkImageMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.oldLayout = oldLayout;
+            barrier.newLayout = newLayout;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.image = vkImage;
+
+            barrier.subresourceRange.aspectMask = typeImageAspectFlags;
+            barrier.subresourceRange.baseMipLevel = nMipBase;
+            barrier.subresourceRange.levelCount = nMipCount <= 0 ? 1 : nMipCount;
+            barrier.subresourceRange.baseArrayLayer = nLayerBase;
+            barrier.subresourceRange.layerCount = nLayerCount;
+
+            VkPipelineStageFlags sourceStage;
+            VkPipelineStageFlags destinationStage;
+
+            if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) 
+            {
+                // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            } 
+            else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL)
+            {
+                // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_GENERAL
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = 0;
+
+                sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+            }
+            else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+            {
+                // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL -> VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            }
+            else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+            {
+                // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            } 
+            else 
+            {
+                F_LogError("*********************** RHIVulkanDevice::TransitionVkImageLayout: Unsupported layout transition !");
+                throw std::invalid_argument("*********************** RHIVulkanDevice::TransitionVkImageLayout: Unsupported layout transition !");
+            }
+
+            vkCmdPipelineBarrier(cmdBuffer,
+                                 sourceStage, 
+                                 destinationStage,
+                                 0,
+                                 0, 
+                                 nullptr,
+                                 0, 
+                                 nullptr,
+                                 1, 
+                                 &barrier);
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+    void RHIVulkanDevice::CopyVkBufferToVkImage(VkCommandBuffer cmdBuffer,
+                                                VkBuffer vkBuffer, 
+                                                VkImage vkImage, 
+                                                uint32_t nWidth, 
+                                                uint32_t nHeight,
+                                                uint32_t nDepth,
+                                                uint32_t nPixelSize,
+                                                uint32_t nLayerCount) 
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            std::vector<VkBufferImageCopy> bufferCopyRegions;
+            for (uint32_t i = 0; i < nLayerCount; i++)
+            {
+                VkBufferImageCopy region = {};
+                region.bufferOffset = nWidth * nHeight * nPixelSize * i;
+                region.imageExtent.width = nWidth;
+                region.imageExtent.height = nHeight;
+                region.imageExtent.depth = nDepth;
+                region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                region.imageSubresource.mipLevel = 0;
+                region.imageSubresource.baseArrayLayer = i;
+                region.imageSubresource.layerCount = 1;
+                bufferCopyRegions.push_back(region);
+            }
+            vkCmdCopyBufferToImage(cmdBuffer, 
+                                   vkBuffer, 
+                                   vkImage, 
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                   (uint32_t)bufferCopyRegions.size(), 
+                                   bufferCopyRegions.data());
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+    void RHIVulkanDevice::GenerateVkImageMipMaps(VkCommandBuffer cmdBuffer,
+                                                 VkImage vkImage, 
+                                                 VkFormat imageFormat, 
+                                                 int32_t nWidth, 
+                                                 int32_t nHeight, 
+                                                 uint32_t nMipMapCount,
+                                                 uint32_t nLayerCount,
+                                                 bool bIsAutoMipMap)
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            if (bIsAutoMipMap)
+            {
+                int32_t mipWidth = nWidth;
+                int32_t mipHeight = nHeight;
+                for (uint32_t i = 1; i < nMipMapCount; i++) 
+                {
+                    TransitionVkImageLayout(cmdBuffer,
+                                            vkImage, 
+                                            VK_IMAGE_LAYOUT_UNDEFINED, 
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                            i,
+                                            1,
+                                            0,
+                                            nLayerCount);
+                    {
+                        VkImageBlit blit = {};
+                        blit.srcOffsets[0] = {0, 0, 0};
+                        blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+                        blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                        blit.srcSubresource.mipLevel = i - 1;
+                        blit.srcSubresource.baseArrayLayer = 0;
+                        blit.srcSubresource.layerCount = nLayerCount;
+
+                        blit.dstOffsets[0] = {0, 0, 0};
+                        blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+                        blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                        blit.dstSubresource.mipLevel = i;
+                        blit.dstSubresource.baseArrayLayer = 0;
+                        blit.dstSubresource.layerCount = nLayerCount;
+
+                        vkCmdBlitImage(cmdBuffer,
+                                       vkImage, 
+                                       VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                       vkImage, 
+                                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                       1, 
+                                       &blit,
+                                       VK_FILTER_LINEAR);
+
+                        if (mipWidth > 1) 
+                            mipWidth /= 2;
+                        if (mipHeight > 1) 
+                            mipHeight /= 2;
+                    }   
+                    TransitionVkImageLayout(cmdBuffer,
+                                            vkImage,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                            i,
+                                            1,
+                                            0,
+                                            nLayerCount);
+                }
+            }
+
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage,
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                    0,
+                                    nMipMapCount,
+                                    0,
+                                    nLayerCount);
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+
+    bool RHIVulkanDevice::CreateTexture1D(const String& pathAsset, 
+                                          RHIPixelFormatType& ePixelFormatRet,
+                                          uint32_t& nMipMapCount,
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory)
+    {
+        VkFormat typeFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        return CreateTexture2D(pathAsset,
+                               VK_IMAGE_TYPE_1D,
+                               VK_SAMPLE_COUNT_1_BIT,
+                               typeFormat,
+                               ePixelFormatRet,
+                               true,
+                               nMipMapCount,
+                               vkImage,
+                               vkImageMemory);
+    }
+    
+    bool RHIVulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                          VkImageType typeImage,
+                                          VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                          VkFormat& typeFormat,
+                                          RHIPixelFormatType& ePixelFormatRet,
+                                          bool bIsAutoMipMap, 
+                                          uint32_t& nMipMapCount, 
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory,
+                                          VkBuffer& vkBuffer, 
+                                          VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+        int nWidth, nHeight, texChannels;
+        int nPixelSize = 4;
+        stbi_uc* pixels = stbi_load(pathTexture.c_str(), &nWidth, &nHeight, &texChannels, STBI_rgb_alpha);
+        VkDeviceSize imageSize = nWidth * nHeight * nPixelSize;
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
+        if (!pixels) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2D: Failed to load texture image: [%s] !", pathAsset.c_str());
+            return false;
+        }
+        uint8* pData = pixels;
+        ePixelFormatRet = RHIPixelFormatType::RHI_PixelFormat_RGBA8UNormSRGB;
+        typeFormat = RHIVulkanConverter::TransformToVkFormat(ePixelFormatRet);
+
+        //2> Create Buffer and copy Texture data to buffer
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2D: Failed to create vk buffer: [%s] !", pathTexture.c_str());
+            return false;
+        }
+
+        WriteVkBuffer(vkBufferMemory, 
+                      (void*)pData,
+                      (uint32_t)imageSize, 
+                      0);
+
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+
+        //3> CreateImage
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2D: Failed to create vk image: [%s] !", pathTexture.c_str());
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+            {
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      static_cast<uint32_t>(nPixelSize), 
+                                      nLayerCount);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight, 
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                          VkImageType typeImage,
+                                          VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                          VkFormat& typeFormat,
+                                          RHIPixelFormatType& ePixelFormatRet,
+                                          bool bIsAutoMipMap, 
+                                          uint32_t& nMipMapCount, 
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture2D(pathAsset, 
+                                    typeImage, 
+                                    typeSamplesCountFlagBits,
+                                    typeFormat,
+                                    ePixelFormatRet,
+                                    bIsAutoMipMap,
+                                    nMipMapCount,
+                                    vkImage, 
+                                    vkImageMemory, 
+                                    vkStagingBuffer, 
+                                    vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool RHIVulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                          RHIPixelFormatType& ePixelFormatRet,
+                                          uint32_t& nMipMapCount,
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory)
+    {
+        VkFormat typeFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        return CreateTexture2D(pathAsset,
+                               VK_IMAGE_TYPE_2D,
+                               VK_SAMPLE_COUNT_1_BIT,
+                               typeFormat,
+                               ePixelFormatRet,
+                               true,
+                               nMipMapCount,
+                               vkImage,
+                               vkImageMemory);
+    }
+    
+    static void s_DeletePixels(const std::vector<stbi_uc*>& aPixels)
+    {
+        size_t count_tex = aPixels.size();
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            stbi_uc* pixels = aPixels[i];
+            stbi_image_free(pixels);
+        }
+    }
+    bool RHIVulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                               VkImageType typeImage,
+                                               VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                               VkFormat& typeFormat,
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               bool bIsAutoMipMap, 
+                                               uint32_t& nMipMapCount, 
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory,
+                                               VkBuffer& vkBuffer, 
+                                               VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        std::vector<int> aWidth;
+        std::vector<int> aHeight;
+        std::vector<int> aPixelSize;
+        std::vector<RHIPixelFormatType> aPixelFormatType;
+        std::vector<stbi_uc*> aPixels;
+
+        size_t count_tex = aPathAsset.size();
+        if (count_tex <= 0)
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture path count <= 0 !");
+            return false;
+        }
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            const String& pathAsset = aPathAsset[i];
+            String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+            int width, height, texChannels;
+            stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
+            if (!pixels) 
+            {
+                s_DeletePixels(aPixels);
+                String msg = "*********************** RHIVulkanDevice::CreateTexture2DArray: Failed to load texture image: " + pathTexture;
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            RHIPixelFormatType typePixelFormat = RHIPixelFormatType::RHI_PixelFormat_RGBA8UNormSRGB;
+            aWidth.push_back(width);
+            aHeight.push_back(height);
+            aPixels.push_back(pixels);
+             aPixelSize.push_back(4);
+            aPixelFormatType.push_back(typePixelFormat);
+        }
+
+        int nWidth = aWidth[0];
+        int nHeight = aHeight[0];
+        int nPixelSize = aPixelSize[0];
+        RHIPixelFormatType typePixelFormat = aPixelFormatType[0];
+        for (size_t i = 1; i < count_tex; i++)
+        {
+            if (aWidth[i] != nWidth)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture image's all width must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aHeight[i] != nHeight)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture image's all height must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aPixelSize[i] != nPixelSize)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture image's all pixel size must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aPixelFormatType[i] != typePixelFormat)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture image's all pixel format must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+        }
+        ePixelFormatRet = typePixelFormat;
+        typeFormat = RHIVulkanConverter::TransformToVkFormat(typePixelFormat);
+
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = (uint32_t)count_tex;
+        if (typeImage == VK_IMAGE_TYPE_1D)
+        {
+            nDepth = 0;
+        }
+
+        //2> Create Buffer and copy Texture data to buffer
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
+        VkDeviceSize imageSize = nWidth * nHeight * nPixelSize;
+        VkDeviceSize imageSizeAll = imageSize * count_tex;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Failed to create vk buffer !");
+            s_DeletePixels(aPixels);
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+           stbi_uc* pixels = aPixels[i];
+            WriteVkBuffer(vkBufferMemory,
+                          pixels,
+                          (uint32_t)imageSize,
+                          (uint32_t)(nWidth * nHeight * nPixelSize * i));
+        }
+        s_DeletePixels(aPixels);
+
+        //3> CreateImage, TransitionImageLayout and CopyBufferToImage
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Failed to create vk image 2d array !");
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      static_cast<uint32_t>(nPixelSize), 
+                                      nLayerCount);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                               VkImageType typeImage,
+                                               VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                               VkFormat& typeFormat,
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               bool bIsAutoMipMap, 
+                                               uint32_t& nMipMapCount, 
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture2DArray(aPathAsset, 
+                                         typeImage, 
+                                         typeSamplesCountFlagBits,
+                                         typeFormat,
+                                         ePixelFormatRet,
+                                         bIsAutoMipMap,
+                                         nMipMapCount,
+                                         vkImage, 
+                                         vkImageMemory, 
+                                         vkStagingBuffer, 
+                                         vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool RHIVulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               uint32_t& nMipMapCount,
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory)
+    {
+        VkFormat typeFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        return CreateTexture2DArray(aPathAsset,
+                                    VK_IMAGE_TYPE_2D,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    typeFormat,
+                                    ePixelFormatRet,
+                                    true,
+                                    nMipMapCount,
+                                    vkImage,
+                                    vkImageMemory);
+    }
+    
+    bool RHIVulkanDevice::CreateTexture3D(VkFormat typeFormat,
+                                          const uint8* pDataRGBA,
+                                          uint32_t nWidth,
+                                          uint32_t nHeight,
+                                          uint32_t nDepth,
+                                          uint32_t nPixelSize,
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory,
+                                          VkBuffer& vkBuffer, 
+                                          VkDeviceMemory& vkBufferMemory)
+    {
+        VkFormatProperties formatProperties;
+		vkGetPhysicalDeviceFormatProperties(m_pVulkanPhysicalDevice->GetVkPhysicalDevice(), typeFormat, &formatProperties);
+		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT))
+		{
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
+            return false;
+		}
+		uint32_t maxImageDimension3D(m_pVulkanPhysicalDevice->GetVkPhysicalDeviceProperties().limits.maxImageDimension3D);
+		if (nWidth > maxImageDimension3D || nHeight > maxImageDimension3D || nDepth > maxImageDimension3D)
+		{
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
+			return false;
+		}
+
+        //1> Create Buffer and copy Texture data to buffer
+        VkDeviceSize imageSize = nWidth * nHeight * nDepth * nPixelSize;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture3D: Failed to create vk buffer !");
+            return false;
+        }
+
+        WriteVkBuffer(vkBufferMemory, 
+                      (void*)pDataRGBA, 
+                      (uint32_t)imageSize, 
+                      0);
+
+        //2> CreateImage
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           1,
+                           1, 
+                           VK_IMAGE_TYPE_3D,
+                           false,
+                           VK_SAMPLE_COUNT_1_BIT, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTexture3D: Failed to create vk image 3d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    1);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      static_cast<uint32_t>(nPixelSize), 
+                                      1);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    1);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
+                                   1,
+                                   1,
+                                   false);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTexture3D(VkFormat typeFormat,
+                                          const uint8* pDataRGBA,
+                                          uint32_t nWidth,
+                                          uint32_t nHeight,
+                                          uint32_t nDepth,
+                                          uint32_t nPixelSize,
+                                          VkImage& vkImage, 
+                                          VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture3D(typeFormat, 
+                                    pDataRGBA, 
+                                    nWidth,
+                                    nHeight,
+                                    nDepth,
+                                    nPixelSize,
+                                    vkImage, 
+                                    vkImageMemory, 
+                                    vkStagingBuffer, 
+                                    vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                               VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                               VkFormat& typeFormat,
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               bool bIsAutoMipMap, 
+                                               uint32_t& nMipMapCount, 
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory,
+                                               VkBuffer& vkBuffer, 
+                                               VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        std::vector<int> aWidth;
+        std::vector<int> aHeight;
+        std::vector<int> aPixelSize;
+        std::vector<RHIPixelFormatType> aPixelFormatType;
+        std::vector<stbi_uc*> aPixels;
+
+        size_t count_tex = aPathAsset.size();
+        if (count_tex <= 0)
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Texture path count <= 0 !");
+            return false;
+        }
+        if (count_tex != 6)
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Texture path count != 6 !");
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            const String& pathAsset = aPathAsset[i];
+            String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+            int width, height, texChannels;
+            stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
+            if (!pixels) 
+            {
+                s_DeletePixels(aPixels);
+                String msg = "*********************** RHIVulkanDevice::CreateTextureCubeMap: Failed to load texture image: " + pathTexture;
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            RHIPixelFormatType typePixelFormat = RHIPixelFormatType::RHI_PixelFormat_RGBA8UNormSRGB;
+            aWidth.push_back(width);
+            aHeight.push_back(height);
+            aPixels.push_back(pixels);
+            aPixelSize.push_back(4);
+            aPixelFormatType.push_back(typePixelFormat);
+        }
+
+        int nWidth = aWidth[0];
+        int nHeight = aHeight[0];
+        int nPixelSize = aPixelSize[0];
+        RHIPixelFormatType typePixelFormat = aPixelFormatType[0];
+        for (size_t i = 1; i < count_tex; i++)
+        {
+            if (aWidth[i] != nWidth)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Texture image's all width must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aHeight[i] != nHeight)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Texture image's all height must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aPixelSize[i] != nPixelSize)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Texture image's all pixel size must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+            if (aPixelFormatType[i] != typePixelFormat)
+            {
+                F_LogError("*********************** RHIVulkanDevice::CreateTexture2DArray: Texture image's all pixel format must the same !");
+                s_DeletePixels(aPixels);
+                return false;
+            }
+        }
+        ePixelFormatRet = typePixelFormat;
+        typeFormat = RHIVulkanConverter::TransformToVkFormat(typePixelFormat);
+
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = (uint32_t)count_tex;
+
+        //2> Create Buffer and copy Texture data to buffer
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
+        VkDeviceSize imageSize = nWidth * nHeight * nPixelSize;
+        VkDeviceSize imageSizeAll = imageSize * count_tex;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Failed to create vk buffer !");
+            s_DeletePixels(aPixels);
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            stbi_uc* pixels = aPixels[i];
+            WriteVkBuffer(vkBufferMemory,
+                          pixels,
+                          (uint32_t)imageSize,
+                          (uint32_t)(nWidth * nHeight * nPixelSize * i));
+        }
+        s_DeletePixels(aPixels);
+
+        //3> CreateImage, TransitionImageLayout and CopyBufferToImage
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           VK_IMAGE_TYPE_2D,
+                           true,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureCubeMap: Failed to create vk image cubemap !");
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      static_cast<uint32_t>(nPixelSize), 
+                                      nLayerCount);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    nLayerCount);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                               VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                               VkFormat& typeFormat,
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               bool bIsAutoMipMap, 
+                                               uint32_t& nMipMapCount, 
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureCubeMap(aPathAsset, 
+                                         typeSamplesCountFlagBits, 
+                                         typeFormat,
+                                         ePixelFormatRet,
+                                         bIsAutoMipMap,
+                                         nMipMapCount,
+                                         vkImage, 
+                                         vkImageMemory, 
+                                         vkStagingBuffer, 
+                                         vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool RHIVulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset,
+                                               RHIPixelFormatType& ePixelFormatRet,
+                                               uint32_t& nMipMapCount, 
+                                               VkImage& vkImage, 
+                                               VkDeviceMemory& vkImageMemory)
+    {
+        VkFormat typeFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        return CreateTextureCubeMap(aPathAsset, 
+                                    VK_SAMPLE_COUNT_1_BIT, 
+                                    typeFormat,
+                                    ePixelFormatRet,
+                                    true,
+                                    nMipMapCount,
+                                    vkImage, 
+                                    vkImageMemory);
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTarget1D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory,
+                                                      VkBuffer& vkBuffer, 
+                                                      VkDeviceMemory& vkBufferMemory)
+    {
+        return CreateTextureRenderTarget2D(clDefault,
+                                           isSetColor,
+                                           nWidth,
+                                           1,
+                                           nMipMapCount,
+                                           VK_IMAGE_TYPE_1D,
+                                           typeSamplesCountFlagBits,
+                                           typeFormat,
+                                           typeImageUsageFlags,
+                                           bIsGraphicsComputeShared,
+                                           vkImage,
+                                           vkImageMemory,
+                                           vkBuffer,
+                                           vkBufferMemory);
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTarget1D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget1D(clDefault, 
+                                                isSetColor,
+                                                nWidth, 
+                                                nMipMapCount,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTarget2D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nMipMapCount,
+                                                      VkImageType typeImage,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory,
+                                                      VkBuffer& vkBuffer, 
+                                                      VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2D: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (uint32_t i = 0; i < nWidth * nHeight; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+        
+        //2> CreateImage
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           typeImageUsageFlags, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           bIsGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2D: Failed to create vk image 2d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                nMipMapCount,
+                                0,
+                                nLayerCount);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTarget2D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2D(clDefault, 
+                                                isSetColor,
+                                                nWidth, 
+                                                nHeight,
+                                                nMipMapCount,
+                                                VK_IMAGE_TYPE_2D,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nMipMapCount,
+                                                      VkImageType typeImage,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory,
+                                                      VkBuffer& vkBuffer, 
+                                                      VkDeviceMemory& vkBufferMemory)
+    {
+        uint32_t sizeFormat = 4;
+        if (typeFormat == VK_FORMAT_R8_UNORM)
+        {
+            sizeFormat = 1;
+        }
+        else if (typeFormat == VK_FORMAT_R16_UNORM)
+        {
+            sizeFormat = 2;
+        }
+        //1> CreateBuffer
+        VkDeviceSize imageSize = nWidth * nHeight * sizeFormat;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2D: Failed to create vk buffer !");
+            return false;
+        }
+        if (pData != nullptr)
+        {
+            WriteVkBuffer(vkBufferMemory,   
+                          (void*)pData,
+                          (uint32_t)imageSize, 
+                          0);
+        }
+        
+        //2> CreateImage
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           typeImageUsageFlags, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           bIsGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2D: Failed to create vk image 2d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                nMipMapCount,
+                                0,
+                                nLayerCount);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2D(pData,
+                                                nWidth, 
+                                                nHeight,
+                                                nMipMapCount,
+                                                VK_IMAGE_TYPE_2D,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTarget2DArray(const FColor& clDefault,
+                                                           bool isSetColor,
+                                                           uint32_t nWidth, 
+                                                           uint32_t nHeight,
+                                                           uint32_t nLayerCount,
+                                                           uint32_t nMipMapCount,
+                                                           VkImageType typeImage,
+                                                           VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                           VkFormat typeFormat,
+                                                           VkImageUsageFlags typeImageUsageFlags, 
+                                                           bool bIsGraphicsComputeShared,
+                                                           VkImage& vkImage, 
+                                                           VkDeviceMemory& vkImageMemory,
+                                                           VkBuffer& vkBuffer, 
+                                                           VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
+        VkDeviceSize imageSizeAll = imageSize * nLayerCount;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2DArray: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSizeAll, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (uint32_t i = 0; i < nWidth * nHeight * nLayerCount; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+
+        //2> CreateImage
+        uint32_t nDepth = 1;
+        if (typeImage == VK_IMAGE_TYPE_1D)
+        {
+            nDepth = 0;
+        }
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           typeImageUsageFlags, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           bIsGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget2DArray: Failed to create vk image 2d array !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                nMipMapCount,
+                                0,
+                                nLayerCount);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTarget2DArray(const FColor& clDefault,
+                                                           bool isSetColor,
+                                                           uint32_t nWidth, 
+                                                           uint32_t nHeight,
+                                                           uint32_t nLayerCount,
+                                                           uint32_t nMipMapCount,
+                                                           VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                           VkFormat typeFormat,
+                                                           VkImageUsageFlags typeImageUsageFlags, 
+                                                           bool bIsGraphicsComputeShared,
+                                                           VkImage& vkImage, 
+                                                           VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2DArray(clDefault, 
+                                                     isSetColor,
+                                                     nWidth, 
+                                                     nHeight,
+                                                     nLayerCount,
+                                                     nMipMapCount,
+                                                     VK_IMAGE_TYPE_2D,
+                                                     typeSamplesCountFlagBits,
+                                                     typeFormat,
+                                                     typeImageUsageFlags,
+                                                     bIsGraphicsComputeShared,
+                                                     vkImage, 
+                                                     vkImageMemory, 
+                                                     vkStagingBuffer, 
+                                                     vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTarget3D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nDepth,
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory,
+                                                      VkBuffer& vkBuffer, 
+                                                      VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = nWidth * nHeight * nDepth * 4;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget3D: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (uint32_t i = 0; i < nWidth * nHeight * nDepth; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+
+        //2> CreateImage
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           1,
+                           nMipMapCount, 
+                           VK_IMAGE_TYPE_3D,
+                           false,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           typeImageUsageFlags, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           bIsGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTarget3D: Failed to create vk image 3d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                nMipMapCount,
+                                0,
+                                1);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTarget3D(const FColor& clDefault,
+                                                      bool isSetColor,
+                                                      uint32_t nWidth, 
+                                                      uint32_t nHeight,
+                                                      uint32_t nDepth,
+                                                      uint32_t nMipMapCount,
+                                                      VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                      VkFormat typeFormat,
+                                                      VkImageUsageFlags typeImageUsageFlags, 
+                                                      bool bIsGraphicsComputeShared,
+                                                      VkImage& vkImage, 
+                                                      VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget3D(clDefault, 
+                                                isSetColor,
+                                                nWidth, 
+                                                nHeight,
+                                                nDepth,
+                                                nMipMapCount,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool RHIVulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                                           uint32_t nHeight,
+                                                           uint32_t nMipMapCount,
+                                                           VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                           VkFormat typeFormat,
+                                                           VkImageUsageFlags typeImageUsageFlags, 
+                                                           bool bIsGraphicsComputeShared,
+                                                           VkImage& vkImage, 
+                                                           VkDeviceMemory& vkImageMemory,
+                                                           VkBuffer& vkBuffer, 
+                                                           VkDeviceMemory& vkBufferMemory)
+    {
+        uint32_t nLayerCount = 6;
+        //1> CreateBuffer
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
+        VkDeviceSize imageSizeAll = imageSize * nLayerCount;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTargetCubeMap: Failed to create vk buffer !");
+            return false;
+        }
+
+        //2> CreateImage
+        uint32_t nDepth = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           VK_IMAGE_TYPE_2D,
+                           true,
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           typeImageUsageFlags, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           bIsGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateTextureRenderTargetCubeMap: Failed to create vk image cubemap !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                nMipMapCount,
+                                0,
+                                nLayerCount);
+        return true;
+    }
+    bool RHIVulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                                           uint32_t nHeight,
+                                                           uint32_t nMipMapCount,
+                                                           VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                           VkFormat typeFormat,
+                                                           VkImageUsageFlags typeImageUsageFlags, 
+                                                           bool bIsGraphicsComputeShared,
+                                                           VkImage& vkImage, 
+                                                           VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTargetCubeMap(nWidth, 
+                                                     nHeight,
+                                                     nMipMapCount,
+                                                     typeSamplesCountFlagBits,
+                                                     typeFormat,
+                                                     typeImageUsageFlags,
+                                                     bIsGraphicsComputeShared,
+                                                     vkImage, 
+                                                     vkImageMemory, 
+                                                     vkStagingBuffer, 
+                                                     vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }     
+
+
+    bool RHIVulkanDevice::CreateTextureFrameBufferColor(uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nDepth,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                                        VkFormat typeFormat, 
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory)
+    {
+        return CreateVkImage(nWidth, 
+                             nHeight, 
+                             nDepth,
+                             1,
+                             1,
+                             VK_IMAGE_TYPE_2D, 
+                             false,
+                             typeSamplesCountFlagBits, 
+                             typeFormat, 
+                             VK_IMAGE_TILING_OPTIMAL, 
+                             VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
+                             VK_SHARING_MODE_EXCLUSIVE,
+                             false,
+                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                             vkImage, 
+                             vkImageMemory);
+    }
+    bool RHIVulkanDevice::CreateTextureFrameBufferDepth(uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nDepth,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                                        VkFormat typeFormat, 
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory)
+    {
+        return CreateVkImage(nWidth, 
+                             nHeight, 
+                             nDepth,
+                             1,
+                             1,
+                             VK_IMAGE_TYPE_2D, 
+                             false,
+                             typeSamplesCountFlagBits, 
+                             typeFormat, 
+                             VK_IMAGE_TILING_OPTIMAL, 
+                             VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                             VK_SHARING_MODE_EXCLUSIVE,
+                             false,
+                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                             vkImage, 
+                             vkImageMemory);
+    }
+
+
+    //////////////////// VkShaderModule /////////////////
+    bool RHIVulkanDevice::CreateVkShaderModule(RHIShaderStageBitsType eShaderStageBits, 
+                                               const String& pathFile,
+                                               VkShaderModule& vkShaderModule)
+    {
+        const String& strTypeShader = RHI_GetShaderStageBitsTypeName(eShaderStageBits);
+        return CreateVkShaderModule(strTypeShader, 
+                                    pathFile,
+                                    vkShaderModule);
+    }
+    bool RHIVulkanDevice::CreateVkShaderModule(const String& strTypeShader, 
+                                               const String& pathFile,
+                                               VkShaderModule& vkShaderModule)
+    {
+        if (pathFile.empty())
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, path file is empty !");
+            return false;
+        }
+
+        CharVector code;
+        if (!FUtil::LoadAssetFileContent(pathFile.c_str(), code))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, path file: [%s] !", pathFile.c_str());
+            return false;
+        }
+        if (code.size() <= 0)
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, code size <= 0, path file: [%s] !", pathFile.c_str());
+            return false;
+        }
+
+        if (!CreateVkShaderModule(code.size(),
+                                  code.data(),
+                                  vkShaderModule))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule: shader type: [%s], path file: [%s] !", strTypeShader.c_str(), pathFile.c_str());
+            return false;
+        }
+        return true;
+    }
+    bool RHIVulkanDevice::CreateVkShaderModule(size_t nSizeByteCode,
+                                               const void* pByteCode,
+                                               VkShaderModule& vkShaderModule)
+    {
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = nSizeByteCode;
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(pByteCode);
+        if (vkCreateShaderModule(this->m_vkDevice, &createInfo, nullptr, &vkShaderModule) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule: nSizeByteCode: [%u] !", (uint32)nSizeByteCode);
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkShaderModule(const VkShaderModule& vkShaderModule)
+    {
+        if (vkShaderModule != VK_NULL_HANDLE)
+        {
+            vkDestroyShaderModule(this->m_vkDevice, vkShaderModule, nullptr);
+        }
+    }
+
+
+    //////////////////// VkDescriptorSetLayout //////////
+    bool RHIVulkanDevice::CreateVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, 
+                                                      VkDescriptorSetLayout& vkDescriptorSetLayout)
+    {
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(aDescriptorSetLayoutBinding.size());
+        layoutInfo.pBindings = aDescriptorSetLayoutBinding.data();
+        if (vkCreateDescriptorSetLayout(this->m_vkDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkDescriptorSetLayout: Failed to create VkDescriptorSetLayout !");
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkDescriptorSetLayout(const VkDescriptorSetLayout& vkDescriptorSetLayout)
+    {
+        if (vkDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyDescriptorSetLayout(this->m_vkDevice, vkDescriptorSetLayout, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipelineLayout ///////////////
+    bool RHIVulkanDevice::CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                                 VkPipelineLayout& vkPipelineLayout)
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(aDescriptorSetLayout.size());
+        pipelineLayoutInfo.pSetLayouts = aDescriptorSetLayout.data();
+
+        if (vkCreatePipelineLayout(this->m_vkDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkPipelineLayout: Failed to create VkPipelineLayout !");
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkPipelineLayout(const VkPipelineLayout& vkPipelineLayout)
+    {
+        if (vkPipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(this->m_vkDevice, vkPipelineLayout, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipelineCache ////////////////
+    bool RHIVulkanDevice::CreateVkPipelineCache(VkPipelineCache& vkPipelineCache)
+    {
+        VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+        pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+        if (vkCreatePipelineCache(this->m_vkDevice, &pipelineCacheCreateInfo, nullptr, &vkPipelineCache) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkPipelineCache: Failed to create VkPipelineCache !");
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkPipelineCache(const VkPipelineCache& vkPipelineCache)
+    {
+        if (vkPipelineCache != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineCache(this->m_vkDevice, vkPipelineCache, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipeline /////////////////////
+    bool RHIVulkanDevice::CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                                    VkShaderModule fragShaderModule, const String& fragMain,
+                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                    VkColorComponentFlags colorWriteMask,
+                                                    VkSampleCountFlagBits msaaSamples,
+                                                    VkPipelineCache vkPipelineCache,
+                                                    VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        //1> Pipeline Shader Stage
+        //vert
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = vertMain.c_str();
+        aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+
+        //frag
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = fragMain.c_str();
+        aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+
+        return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
+                                         false, 0, 0,
+                                         pBindingDescriptions,
+                                         pAttributeDescriptions,
+                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                         bDepthTest, bDepthWrite, depthCompareOp,
+                                         bStencilTest, stencilOpFront, stencilOpBack,
+                                         bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                         blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                         colorWriteMask,
+                                         msaaSamples,
+                                         vkPipelineCache,
+                                         vkPipeline);
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                                    VkShaderModule tescShaderModule, const String& tescMain,
+                                                    VkShaderModule teseShaderModule, const String& teseMain,
+                                                    VkShaderModule fragShaderModule, const String& fragMain,
+                                                    VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                    VkColorComponentFlags colorWriteMask,
+                                                    VkSampleCountFlagBits msaaSamples,
+                                                    VkPipelineCache vkPipelineCache,
+                                                    VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        //1> Pipeline Shader Stage
+        //vert
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = vertMain.c_str();
+        aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+
+        //tesc
+        VkPipelineShaderStageCreateInfo tescShaderStageInfo = {};
+        tescShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        tescShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        tescShaderStageInfo.module = tescShaderModule;
+        tescShaderStageInfo.pName = tescMain.c_str();
+        aShaderStageCreateInfos.push_back(tescShaderStageInfo);
+
+        //tese
+        VkPipelineShaderStageCreateInfo teseShaderStageInfo = {};
+        teseShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        teseShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        teseShaderStageInfo.module = teseShaderModule;
+        teseShaderStageInfo.pName = teseMain.c_str();
+        aShaderStageCreateInfos.push_back(teseShaderStageInfo);
+
+        //frag
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = fragMain.c_str();
+        aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+
+        return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
+                                         true, tessellationFlags, tessellationPatchControlPoints,
+                                         pBindingDescriptions,
+                                         pAttributeDescriptions,
+                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                         bDepthTest, bDepthWrite, depthCompareOp,
+                                         bStencilTest, stencilOpFront, stencilOpBack,
+                                         bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                         blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                         colorWriteMask,
+                                         msaaSamples,
+                                         vkPipelineCache,
+                                         vkPipeline);
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Graphics(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                    bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                    VkColorComponentFlags colorWriteMask,
+                                                    VkSampleCountFlagBits msaaSamples,
+                                                    VkPipelineCache vkPipelineCache,
+                                                    VkPipeline& vkPipeline)
+    {
+        //1> Pipeline VertexInput State
+        VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
+        vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        if (pBindingDescriptions != nullptr)
+        {   
+            vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
+            vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
+        }
+        if (pAttributeDescriptions != nullptr)
+        {
+            vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
+            vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
+        }
+
+        //2> Pipeline InputAssembly
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
+        inputAssemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyStateInfo.topology = primitiveTopology;
+        inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
+
+        //3> Pipeline Viewport State
+        VkPipelineViewportStateCreateInfo viewportStateInfo = {};
+        viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportStateInfo.viewportCount = static_cast<uint32_t>(aViewports.size());
+        viewportStateInfo.pViewports = aViewports.data();
+        viewportStateInfo.scissorCount = static_cast<uint32_t>(aScissors.size());
+        viewportStateInfo.pScissors = aScissors.data();
+
+        //4> Pipeline Rasterization State
+        VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
+        rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizationStateInfo.depthClampEnable = VK_FALSE;
+        rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
+        rasterizationStateInfo.polygonMode = polygonMode;
+        rasterizationStateInfo.cullMode = cullMode;
+        rasterizationStateInfo.frontFace = frontFace;
+        rasterizationStateInfo.depthBiasEnable = VK_FALSE;
+        rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
+        rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
+        rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+        rasterizationStateInfo.lineWidth = lineWidth;
+
+        //5> Pipeline Multisample State
+        VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
+        multisamplingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisamplingStateInfo.sampleShadingEnable = VK_FALSE;
+        multisamplingStateInfo.rasterizationSamples = msaaSamples;
+        multisamplingStateInfo.minSampleShading = 1.0f; // Optional
+        multisamplingStateInfo.pSampleMask = nullptr; // Optional
+        multisamplingStateInfo.alphaToCoverageEnable = VK_FALSE; // Optional
+        multisamplingStateInfo.alphaToOneEnable = VK_FALSE; // Optional
+
+        //6> Pipeline DepthStencil State
+        VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+        depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencilStateInfo.depthTestEnable = bDepthTest;
+        depthStencilStateInfo.depthWriteEnable = bDepthWrite;
+        depthStencilStateInfo.depthCompareOp = depthCompareOp;
+        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilStateInfo.stencilTestEnable = bStencilTest;
+        if (bStencilTest)
+        {
+            depthStencilStateInfo.front = stencilOpFront;
+            depthStencilStateInfo.back = stencilOpBack;
+        }
+
+        //7> Pipeline ColorBlend State 
+        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+        colorBlendAttachment.blendEnable = bBlend;
+        colorBlendAttachment.colorWriteMask = colorWriteMask;
+        if (bBlend)
+        {
+            colorBlendAttachment.srcColorBlendFactor = blendColorFactorSrc;
+            colorBlendAttachment.dstColorBlendFactor = blendColorFactorDst;
+            colorBlendAttachment.colorBlendOp = blendColorOp;
+            colorBlendAttachment.srcAlphaBlendFactor = blendAlphaFactorSrc;
+            colorBlendAttachment.dstAlphaBlendFactor = blendAlphaFactorDst;
+            colorBlendAttachment.alphaBlendOp = blendAlphaOp;
+        }
+        
+        VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = {};
+        colorBlendingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlendingStateInfo.logicOpEnable = VK_FALSE;
+        colorBlendingStateInfo.logicOp = VK_LOGIC_OP_COPY;
+        colorBlendingStateInfo.attachmentCount = 1;
+        colorBlendingStateInfo.pAttachments = &colorBlendAttachment;
+        colorBlendingStateInfo.blendConstants[0] = 0.0f;
+        colorBlendingStateInfo.blendConstants[1] = 0.0f;
+        colorBlendingStateInfo.blendConstants[2] = 0.0f;
+        colorBlendingStateInfo.blendConstants[3] = 0.0f;
+
+        //8> Pipeline Dynamic State
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        const std::vector<VkDynamicState> dynamicStateEnables = 
+        { 
+            VK_DYNAMIC_STATE_VIEWPORT, 
+            VK_DYNAMIC_STATE_SCISSOR 
+        };
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+        dynamicStateInfo.flags = 0;
+
+        //9> Tessellation State
+        VkPipelineTessellationStateCreateInfo tessellationState = {};
+        tessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+        tessellationState.flags = tessellationFlags;
+        tessellationState.patchControlPoints = tessellationPatchControlPoints;
+
+        //10> Graphics Pipeline
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.pNext = nullptr;
+        pipelineInfo.stageCount = static_cast<uint32_t>(aShaderStageCreateInfos.size());
+        pipelineInfo.pStages = aShaderStageCreateInfos.data();
+        pipelineInfo.pVertexInputState = &vertexInputStateInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
+        pipelineInfo.pTessellationState = tessellationIsUsed ? &tessellationState : nullptr;
+        pipelineInfo.pViewportState = &viewportStateInfo;
+        pipelineInfo.pRasterizationState = &rasterizationStateInfo;
+        pipelineInfo.pMultisampleState = &multisamplingStateInfo;
+        pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
+        pipelineInfo.pColorBlendState = &colorBlendingStateInfo;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
+        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.renderPass = renderPass;
+        pipelineInfo.subpass = 0;
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex = 0;
+
+        if (!RHI_CheckVkResult(vkCreateGraphicsPipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateGraphicsPipelines"))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkPipeline_Graphics: Failed to create VkPipeline !");
+            return false;
+        }
+        return true;
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Compute(VkShaderModule compShaderModule,
+                                                   const String& compMain,
+                                                   VkPipelineLayout pipelineLayout, 
+                                                   VkPipelineCreateFlags flags,
+                                                   VkPipelineCache vkPipelineCache,
+                                                   VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfo compShaderStageInfo = {};
+        compShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        compShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        compShaderStageInfo.module = compShaderModule;
+        compShaderStageInfo.pName = compMain.c_str();
+
+        return CreateVkPipeline_Compute(compShaderStageInfo,
+                                        pipelineLayout,
+                                        flags,
+                                        vkPipelineCache,
+                                        vkPipeline);
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Compute(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                                                   VkPipelineLayout pipelineLayout, 
+                                                   VkPipelineCreateFlags flags,
+                                                   VkPipelineCache vkPipelineCache,
+                                                   VkPipeline& vkPipeline)
+    {
+        VkComputePipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.pNext = nullptr;
+        pipelineInfo.flags = flags; 
+        pipelineInfo.stage = shaderStageCreateInfo;
+        pipelineInfo.layout = pipelineLayout;
+        
+        if (!RHI_CheckVkResult(vkCreateComputePipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateComputePipelines"))
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkPipeline_Compute: Failed to create VkPipeline !");
+            return false;
+        }
+        return true;
+    }
+    void RHIVulkanDevice::DestroyVkPipeline(const VkPipeline& vkPipeline)
+    {
+        if (vkPipeline != VK_NULL_HANDLE)
+        {
+            vkDestroyPipeline(this->m_vkDevice, vkPipeline, nullptr);   
+        }
+    }
+
+
+    //////////////////// VkDescriptorSet ////////////////
+    bool RHIVulkanDevice::CreateVkDescriptorSet(uint32_t descriptorSetCount,
+                                                VkDescriptorSetLayout vkDescriptorSetLayout, 
+                                                VkDescriptorPool vkDescriptorPool,
+                                                VkDescriptorSet& vkDescriptorSet)
+    {
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = vkDescriptorPool;
+        allocInfo.descriptorSetCount = descriptorSetCount;
+        allocInfo.pSetLayouts = &vkDescriptorSetLayout;
+
+        if (vkAllocateDescriptorSets(this->m_vkDevice, &allocInfo, &vkDescriptorSet) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkDescriptorSet: Failed to allocate VkDescriptorSet !");
+            return false;
+        }
+        return true;
+    }
+    bool RHIVulkanDevice::CreateVkDescriptorSets(uint32_t countSwapChain, 
+                                                 VkDescriptorSetLayout vkDescriptorSetLayout,
+                                                 VkDescriptorPool vkDescriptorPool,
+                                                 VkDescriptorSetVector& aDescriptorSets)
+    {
+        VkDescriptorSetLayoutVector layouts(countSwapChain, vkDescriptorSetLayout);
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = vkDescriptorPool;
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(countSwapChain);
+        allocInfo.pSetLayouts = layouts.data();
+
+        aDescriptorSets.resize(countSwapChain);
+        if (vkAllocateDescriptorSets(this->m_vkDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** RHIVulkanDevice::CreateVkDescriptorSets: Failed to allocate VkDescriptorSets !");
+            return false;
+        }
+        return true;
+    }
+
+    VkDescriptorSetLayoutBinding RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                             VkDescriptorType descriptorType,
+                                                                                             uint32_t descriptorCount,
+                                                                                             VkShaderStageFlags stageFlags)
+    {
+        VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+        CreateVkDescriptorSetLayoutBinding_Uniform(binding,
+                                                   descriptorType,
+                                                   descriptorCount,
+                                                   stageFlags,
+                                                   descriptorSetLayoutBinding);
+        return descriptorSetLayoutBinding;
+    }
+    void RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                     VkDescriptorType descriptorType,
+                                                                     uint32_t descriptorCount,
+                                                                     VkShaderStageFlags stageFlags,
+                                                                     VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
+    {
+        descriptorSetLayoutBinding.binding = binding;
+        descriptorSetLayoutBinding.descriptorType = descriptorType;
+        descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+        descriptorSetLayoutBinding.stageFlags = stageFlags;
+        descriptorSetLayoutBinding.pImmutableSamplers = nullptr;
+    }
+    VkDescriptorSetLayoutBinding RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                                           VkDescriptorType descriptorType,
+                                                                                           uint32_t descriptorCount,
+                                                                                           VkShaderStageFlags stageFlags,
+                                                                                           VkSampler* pImmutableSamplers)
+    {
+        VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+        CreateVkDescriptorSetLayoutBinding_Image(binding,
+                                                 descriptorType,
+                                                 descriptorCount,
+                                                 stageFlags,
+                                                 pImmutableSamplers,
+                                                 descriptorSetLayoutBinding);
+        return descriptorSetLayoutBinding;
+    }
+    void RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                   VkDescriptorType descriptorType,
+                                                                   uint32_t descriptorCount,
+                                                                   VkShaderStageFlags stageFlags,
+                                                                   VkSampler* pImmutableSamplers,
+                                                                   VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
+    {
+        descriptorSetLayoutBinding.binding = binding;
+        descriptorSetLayoutBinding.descriptorType = descriptorType;
+        descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+        descriptorSetLayoutBinding.stageFlags = stageFlags;
+        descriptorSetLayoutBinding.pImmutableSamplers = pImmutableSamplers;
+    }
+
+    void RHIVulkanDevice::PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                      VkDescriptorSet dstSet,
+                                                      uint32_t dstBinding,
+                                                      uint32_t dstArrayElement,
+                                                      uint32_t descriptorCount,
+                                                      VkDescriptorBufferInfo& bufferInfo)
+    {
+        VkWriteDescriptorSet ds = {};
+        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        ds.dstSet = dstSet;
+        ds.dstBinding = dstBinding;
+        ds.dstArrayElement = dstArrayElement;
+        ds.descriptorCount = descriptorCount;
+        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        ds.pBufferInfo = &bufferInfo;
+
+        aWriteDescriptorSets.push_back(ds);
+    }
+    void RHIVulkanDevice::PushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                    VkDescriptorSet dstSet,
+                                                    uint32_t dstBinding,
+                                                    uint32_t dstArrayElement,
+                                                    uint32_t descriptorCount,
+                                                    VkDescriptorType descriptorType,
+                                                    VkDescriptorImageInfo& imageInfo)
+    {
+        VkWriteDescriptorSet ds = {};
+        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        ds.dstSet = dstSet;
+        ds.dstBinding = dstBinding;
+        ds.dstArrayElement = dstArrayElement;
+        ds.descriptorCount = descriptorCount;
+        ds.descriptorType = descriptorType;
+        ds.pImageInfo = &imageInfo;
+
+        aWriteDescriptorSets.push_back(ds);
+    }
+    void RHIVulkanDevice::UpdateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets)
+    {
+        if (aWriteDescriptorSets.size() > 0)
+        {
+            vkUpdateDescriptorSets(this->m_vkDevice, static_cast<uint32_t>(aWriteDescriptorSets.size()), aWriteDescriptorSets.data(), 0, nullptr);
         }
     }
 

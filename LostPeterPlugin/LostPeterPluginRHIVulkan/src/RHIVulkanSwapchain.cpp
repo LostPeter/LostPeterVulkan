@@ -31,6 +31,7 @@ namespace LostPeterPluginRHIVulkan
         , m_sExtent(createInfo.sExtent)
         , m_nSwapChainImageCount(createInfo.nTextureCount)
         , m_nCurrentImageIndex(0)
+        , m_strDebugName(createInfo.strDebugName)
         , m_vkImageAvailableSemaphore(VK_NULL_HANDLE)
     {
         F_Assert(m_pVulkanDevice && m_pVulkanQueuePresent && m_pVulkanSurface && "RHIVulkanSwapChain::RHIVulkanSwapChain")
@@ -284,7 +285,14 @@ namespace LostPeterPluginRHIVulkan
             return;
         }
 
-        F_LogInfo("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: Create Swapchain success !");
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SWAPCHAIN_KHR, reinterpret_cast<uint64_t>(m_vkSwapChainKHR), m_strDebugName.c_str());
+            }
+        }
+        F_LogInfo("RHIVulkanSwapChain::createVkSwapchainKHR: Create Swapchain success !");
     }
     
 }; //LostPeterPluginRHIVulkan

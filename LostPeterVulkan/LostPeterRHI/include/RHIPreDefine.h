@@ -683,12 +683,15 @@ namespace LostPeterRHI
         RHI_ShaderStageBits_Pixel    = 0x0002,		//1: Pixel 
         RHI_ShaderStageBits_Compute  = 0x0004,		//2: Compute
         RHI_ShaderStageBits_Geometry = 0x0008,		//3: Geometry
-        RHI_ShaderStageBits_Domain   = 0x0010,		//4: Domain
-        RHI_ShaderStageBits_Hull     = 0x0020,		//5: Hull
+        RHI_ShaderStageBits_Domain   = 0x0010,		//4: Domain/TessellationControl)
+        RHI_ShaderStageBits_Hull     = 0x0020,		//5: Hull/TessellationEvaluation)
 
         RHI_ShaderStageBits_Count,
     };
     RHI_FLAGS_DECLARE(RHIShaderStageFlags, RHIShaderStageBitsType)
+    rhiExport const String& RHI_GetShaderStageBitsTypeName(RHIShaderStageBitsType type);
+    rhiExport const String& RHI_GetShaderStageBitsTypeName(uint32 type);
+    rhiExport RHIShaderStageBitsType RHI_ParseShaderStageBitsType(const String& strName);
 
 	//RHIColorWriteBitsType
     using RHIColorWriteFlags = RHIFlags;
@@ -831,6 +834,7 @@ namespace LostPeterRHI
 	{
         RHIQueueType eQueue;
         uint8 nCount;
+        String strDebugName;
     };
 
 	//RHIDeviceCreateInfo
@@ -839,11 +843,13 @@ namespace LostPeterRHI
         int32 nPreferredVendorID;
         uint32 nQueueCreateInfoCount;
         const RHIQueueInfo* pQueueCreateInfos;
+        String strDebugName;
 
         RHIDeviceCreateInfo()
             : nPreferredVendorID(-1)
             , nQueueCreateInfoCount(0)
             , pQueueCreateInfos(nullptr)
+            , strDebugName("")
         {
             
         }
@@ -853,6 +859,7 @@ namespace LostPeterRHI
 	struct rhiExport RHISurfaceCreateInfo
 	{
         void* pWindow;
+        String strDebugName;
     };
 
 	//RHISwapChainCreateInfo
@@ -865,6 +872,7 @@ namespace LostPeterRHI
         RHIColorSpaceType eColorSpace;
         RHIPresentType ePresent;
         RHIExtent<2> sExtent;
+        String strDebugName;
     };
 
 	//RHIBufferCreateInfo
@@ -1043,8 +1051,19 @@ namespace LostPeterRHI
     //RHIShaderModuleCreateInfo
     struct rhiExport RHIShaderModuleCreateInfo
     {
-        const void* pByteCode;
-        uint32 nSize;
+        RHIShaderStageBitsType eShaderStageBits;
+        String strPath;
+        String strByteCode;
+        String strDebugName;
+
+        RHIShaderModuleCreateInfo()
+            : eShaderStageBits(RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex)
+            , strPath("")
+            , strByteCode("")
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIVertexAttribute

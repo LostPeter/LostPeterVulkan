@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIShaderModule.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIShaderModule::RHIShaderModule(const RHIShaderModuleCreateInfo& createInfo)
+    RHIShaderModule::RHIShaderModule(RHIDevice* pDevice, const RHIShaderModuleCreateInfo& createInfo)   
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIShaderModule::RHIShaderModule")
     }
 
     RHIShaderModule::~RHIShaderModule()
