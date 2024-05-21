@@ -53,6 +53,7 @@ namespace LostPeterRHI
         virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo) = 0;
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo) = 0;
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo) = 0;
+        virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo) = 0;
         virtual RHIBindGroup* CreateBindGroup(const RHIBindGroupCreateInfo& createInfo) = 0;
         virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo) = 0;
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo) = 0;

@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyBindGroup.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyBindGroup::RHIDummyBindGroup(const RHIBindGroupCreateInfo& createInfo)
-        : RHIBindGroup(createInfo)
+    RHIDummyBindGroup::RHIDummyBindGroup(RHIDummyDevice* pDummyDevice, const RHIBindGroupCreateInfo& createInfo)
+        : RHIBindGroup(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyBindGroup::RHIDummyBindGroup")
     }
 
     RHIDummyBindGroup::~RHIDummyBindGroup()

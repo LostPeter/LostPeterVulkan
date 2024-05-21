@@ -129,6 +129,7 @@ namespace LostPeterPluginRHIVulkan
 	////////////////////////////// Class ///////////////////////////////
 	class RHIVulkanBindGroup;
 	class RHIVulkanBindGroupLayout;
+    class RHIVulkanBindGroupPool;
 	class RHIVulkanBuffer;
 	class RHIVulkanBufferView;
 	class RHIVulkanCommandBuffer;

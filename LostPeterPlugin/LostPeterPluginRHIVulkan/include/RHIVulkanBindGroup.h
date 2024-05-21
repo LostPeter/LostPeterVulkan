@@ -19,16 +19,29 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanBindGroup : public RHIBindGroup
     {
     public:
-        RHIVulkanBindGroup(const RHIBindGroupCreateInfo& createInfo);
+        RHIVulkanBindGroup(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCreateInfo& createInfo);
         virtual ~RHIVulkanBindGroup();
 
     public:
     protected:
+        RHIVulkanDevice* m_pVulkanDevice;
+        VkDescriptorSet m_vkDescriptorSet;
 
+
+        String m_strDebugName;
+
+    public:
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        F_FORCEINLINE VkDescriptorSet& GetVkDescriptorSet() { return m_vkDescriptorSet; }
+
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
+
+    protected:
+        void createVkDescriptorSet();
     };
     
 }; //LostPeterPluginRHIVulkan

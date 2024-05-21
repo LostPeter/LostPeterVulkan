@@ -10,18 +10,20 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyBindGroupLayout.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyBindGroupLayout::RHIDummyBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
-        : RHIBindGroupLayout(createInfo)
+    RHIDummyBindGroupLayout::RHIDummyBindGroupLayout(RHIDummyDevice* pDummyDevice, const RHIBindGroupLayoutCreateInfo& createInfo)
+        : RHIBindGroupLayout(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyBindGroupLayout::RHIDummyBindGroupLayout")
     }
 
     RHIDummyBindGroupLayout::~RHIDummyBindGroupLayout()
     {
-        
+        Destroy();
     }
     
     void RHIDummyBindGroupLayout::Destroy()

@@ -16,6 +16,7 @@
 
 #include "RHIVulkanBindGroup.h"
 #include "RHIVulkanBindGroupLayout.h"
+#include "RHIVulkanBindGroupPool.h"
 #include "RHIVulkanBuffer.h"
 #include "RHIVulkanBufferView.h"
 #include "RHIVulkanCommandBuffer.h"

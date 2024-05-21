@@ -2,31 +2,31 @@
 * LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-12
+* Time:     2024-05-21
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIDummyPipelineLayout.h"
+#include "../include/RHIDummyBindGroupPool.h"
 #include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyPipelineLayout::RHIDummyPipelineLayout(RHIDummyDevice* pDummyDevice, const RHIPipelineLayoutCreateInfo& createInfo)
-        : RHIPipelineLayout(pDummyDevice, createInfo)
+    RHIDummyBindGroupPool::RHIDummyBindGroupPool(RHIDummyDevice* pDummyDevice, const RHIBindGroupPoolCreateInfo& createInfo)
+        : RHIBindGroupPool(pDummyDevice, createInfo)
         , m_pDummyDevice(pDummyDevice)
     {
-        F_Assert(m_pDummyDevice && "RHIDummyPipelineLayout::RHIDummyPipelineLayout")
+        F_Assert(m_pDummyDevice && "RHIDummyBindGroupPool::RHIDummyBindGroupPool")
     }
 
-    RHIDummyPipelineLayout::~RHIDummyPipelineLayout()
+    RHIDummyBindGroupPool::~RHIDummyBindGroupPool()
     {
         Destroy();
     }
     
-    void RHIDummyPipelineLayout::Destroy()
+    void RHIDummyBindGroupPool::Destroy()
     {
 
     }

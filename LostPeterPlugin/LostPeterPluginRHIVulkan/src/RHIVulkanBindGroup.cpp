@@ -10,13 +10,19 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanBindGroup.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanBindGroup::RHIVulkanBindGroup(const RHIBindGroupCreateInfo& createInfo)
-        : RHIBindGroup(createInfo)
+    RHIVulkanBindGroup::RHIVulkanBindGroup(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCreateInfo& createInfo)
+        : RHIBindGroup(pVulkanDevice, createInfo)
+        , m_pVulkanDevice(pVulkanDevice)
+        , m_vkDescriptorSet(VK_NULL_HANDLE)
+        , m_strDebugName(createInfo.strDebugName)
     {
+        F_Assert(m_pVulkanDevice && "RHIVulkanBindGroup::RHIVulkanBindGroup")
 
+        createVkDescriptorSet();
     }
 
     RHIVulkanBindGroup::~RHIVulkanBindGroup()
@@ -29,5 +35,17 @@ namespace LostPeterPluginRHIVulkan
 
     }
     
+    void RHIVulkanBindGroup::createVkDescriptorSet()
+    {   
+
+
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_DESCRIPTOR_SET, reinterpret_cast<uint64_t>(m_vkDescriptorSet), m_strDebugName.c_str());
+            }
+        }
+    }
 
 }; //LostPeterPluginRHIVulkan

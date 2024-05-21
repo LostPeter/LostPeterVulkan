@@ -16,6 +16,7 @@
 
 #include "RHIBindGroup.h"
 #include "RHIBindGroupLayout.h"
+#include "RHIBindGroupPool.h"
 #include "RHIBuffer.h"
 #include "RHIBufferView.h"
 #include "RHICommandBuffer.h"

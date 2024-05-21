@@ -19,11 +19,15 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyBindGroup : public RHIBindGroup
     {
     public:
-        RHIDummyBindGroup(const RHIBindGroupCreateInfo& createInfo);
+        RHIDummyBindGroup(RHIDummyDevice* pDummyDevice, const RHIBindGroupCreateInfo& createInfo);
         virtual ~RHIDummyBindGroup();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:
@@ -31,7 +35,6 @@ namespace LostPeterPluginRHIDummy
 
     };
     
-
 }; //LostPeterPluginRHIDummy
 
 #endif

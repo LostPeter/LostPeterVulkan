@@ -18,6 +18,7 @@
 #include "../include/RHIDummyTexture.h"
 #include "../include/RHIDummySampler.h"
 #include "../include/RHIDummyBindGroupLayout.h"
+#include "../include/RHIDummyBindGroupPool.h"
 #include "../include/RHIDummyBindGroup.h"
 #include "../include/RHIDummyPipelineLayout.h"
 #include "../include/RHIDummyShaderModule.h"
@@ -102,17 +103,22 @@ namespace LostPeterPluginRHIDummy
 
     RHIBindGroupLayout* RHIDummyDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
     {
-        return new RHIDummyBindGroupLayout(createInfo);
+        return new RHIDummyBindGroupLayout(this, createInfo);
+    }
+
+    RHIBindGroupPool* RHIDummyDevice::CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo)
+    {
+        return new RHIDummyBindGroupPool(this, createInfo);
     }
 
     RHIBindGroup* RHIDummyDevice::CreateBindGroup(const RHIBindGroupCreateInfo& createInfo)
     {
-        return new RHIDummyBindGroup(createInfo);
+        return new RHIDummyBindGroup(this, createInfo);
     }
 
     RHIPipelineLayout* RHIDummyDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
     {
-        return new RHIDummyPipelineLayout(createInfo);
+        return new RHIDummyPipelineLayout(this, createInfo);
     }
 
     RHIShaderModule* RHIDummyDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)

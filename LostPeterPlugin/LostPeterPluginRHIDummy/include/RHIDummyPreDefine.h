@@ -40,6 +40,7 @@ namespace LostPeterPluginRHIDummy
     ////////////////////////////// Class ///////////////////////////////
     class RHIDummyBindGroup;
     class RHIDummyBindGroupLayout;
+	class RHIDummyBindGroupPool;
 	class RHIDummyBuffer;
 	class RHIDummyBufferView;
 	class RHIDummyCommandBuffer;

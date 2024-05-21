@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIBindGroupLayout.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIBindGroupLayout::RHIBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
+    RHIBindGroupLayout::RHIBindGroupLayout(RHIDevice* pDevice, const RHIBindGroupLayoutCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIBindGroupLayout::RHIBindGroupLayout")
     }
 
     RHIBindGroupLayout::~RHIBindGroupLayout()

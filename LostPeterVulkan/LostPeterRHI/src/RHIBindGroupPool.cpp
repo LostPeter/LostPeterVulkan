@@ -2,25 +2,25 @@
 * LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-12
+* Time:     2024-05-21
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIPipelineLayout.h"
+#include "../include/RHIBindGroupPool.h"
 #include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIPipelineLayout::RHIPipelineLayout(RHIDevice* pDevice, const RHIPipelineLayoutCreateInfo& createInfo)
+    RHIBindGroupPool::RHIBindGroupPool(RHIDevice* pDevice, const RHIBindGroupPoolCreateInfo& createInfo)
         : m_pDevice(pDevice)
     {
-        F_Assert(m_pDevice && "RHIPipelineLayout::RHIPipelineLayout")
+        F_Assert(m_pDevice && "RHIBindGroupPool::RHIBindGroupPool")
     }
 
-    RHIPipelineLayout::~RHIPipelineLayout()
+    RHIBindGroupPool::~RHIBindGroupPool()
     {
         
     }

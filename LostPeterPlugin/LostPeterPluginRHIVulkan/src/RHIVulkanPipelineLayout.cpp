@@ -10,13 +10,20 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPipelineLayout::RHIVulkanPipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
-        : RHIPipelineLayout(createInfo)
-    {
+    RHIVulkanPipelineLayout::RHIVulkanPipelineLayout(RHIVulkanDevice* pVulkanDevice, const RHIPipelineLayoutCreateInfo& createInfo)
+        : RHIPipelineLayout(pVulkanDevice, createInfo)
+        , m_pVulkanDevice(pVulkanDevice)
+        , m_vkPipelineLayout(VK_NULL_HANDLE)
 
+        , m_strDebugName(createInfo.strDebugName)
+    {
+        F_Assert(m_pVulkanDevice && "RHIVulkanPipelineLayout::RHIVulkanPipelineLayout")
+
+        createVkPipelineLayout();
     }
 
     RHIVulkanPipelineLayout::~RHIVulkanPipelineLayout()
@@ -26,7 +33,24 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanPipelineLayout::Destroy()
     {
-
+        if (m_vkPipelineLayout != VK_NULL_HANDLE)
+        {
+            m_pVulkanDevice->DestroyVkPipelineLayout(m_vkPipelineLayout);
+        }
+        m_vkPipelineLayout = VK_NULL_HANDLE;
     }
     
+    void RHIVulkanPipelineLayout::createVkPipelineLayout()
+    {
+        
+
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_PIPELINE_LAYOUT, reinterpret_cast<uint64_t>(m_vkPipelineLayout), m_strDebugName.c_str());
+            }
+        }
+    }
+
 }; //LostPeterPluginRHIVulkan

@@ -710,6 +710,7 @@ namespace LostPeterRHI
     ////////////////////////////// Class ///////////////////////////////
     class RHIBindGroup;
     class RHIBindGroupLayout;
+    class RHIBindGroupPool;
 	class RHIBuffer;
 	class RHIBufferView;
 	class RHICommandBuffer;
@@ -1019,6 +1020,13 @@ namespace LostPeterRHI
             RHITextureView* pTextureView;
             RHIBufferView* pBufferView;
         };
+    };
+
+    //RHIBindGroupPoolCreateInfo
+    struct rhiExport RHIBindGroupPoolCreateInfo
+    {
+        uint32 nPoolCount;
+        String strDebugName;
     };
 
     //RHIBindGroupCreateInfo

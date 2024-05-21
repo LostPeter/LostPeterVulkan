@@ -19,12 +19,16 @@ namespace LostPeterRHI
     class rhiExport RHIBindGroup : public FNonCopyable
     {
     public:
-        RHIBindGroup(const RHIBindGroupCreateInfo& createInfo);
+        RHIBindGroup(RHIDevice* pDevice, const RHIBindGroupCreateInfo& createInfo);
         virtual ~RHIBindGroup();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
 
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        
 
     public:
         virtual void Destroy() = 0;

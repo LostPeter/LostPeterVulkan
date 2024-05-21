@@ -19,6 +19,7 @@
 #include "../include/RHIVulkanTexture.h"
 #include "../include/RHIVulkanSampler.h"
 #include "../include/RHIVulkanBindGroupLayout.h"
+#include "../include/RHIVulkanBindGroupPool.h"
 #include "../include/RHIVulkanBindGroup.h"
 #include "../include/RHIVulkanPipelineLayout.h"
 #include "../include/RHIVulkanShaderModule.h"
@@ -149,17 +150,22 @@ namespace LostPeterPluginRHIVulkan
 
     RHIBindGroupLayout* RHIVulkanDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
     {
-        return new RHIVulkanBindGroupLayout(createInfo);
+        return new RHIVulkanBindGroupLayout(this, createInfo);
+    }
+
+    RHIBindGroupPool* RHIVulkanDevice::CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo)
+    {
+        return new RHIVulkanBindGroupPool(this, createInfo);
     }
 
     RHIBindGroup* RHIVulkanDevice::CreateBindGroup(const RHIBindGroupCreateInfo& createInfo)
     {
-        return new RHIVulkanBindGroup(createInfo);
+        return new RHIVulkanBindGroup(this, createInfo);
     }
 
     RHIPipelineLayout* RHIVulkanDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
     {
-        return new RHIVulkanPipelineLayout(createInfo);
+        return new RHIVulkanPipelineLayout(this, createInfo);
     }
 
     RHIShaderModule* RHIVulkanDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)

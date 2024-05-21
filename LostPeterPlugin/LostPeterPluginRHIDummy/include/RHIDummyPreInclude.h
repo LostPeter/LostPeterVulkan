@@ -16,6 +16,7 @@
 
 #include "RHIDummyBindGroup.h"
 #include "RHIDummyBindGroupLayout.h"
+#include "RHIDummyBindGroupPool.h"
 #include "RHIDummyBuffer.h"
 #include "RHIDummyBufferView.h"
 #include "RHIDummyCommandBuffer.h"
