@@ -28,6 +28,7 @@
 #include "../include/RHIDummyPipelineGraphics.h"
 #include "../include/RHIDummyRenderPassCache.h"
 #include "../include/RHIDummyRenderPass.h"
+#include "../include/RHIDummyFrameBuffer.h"
 #include "../include/RHIDummyCommandPool.h"
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyFence.h"
@@ -158,6 +159,11 @@ namespace LostPeterPluginRHIDummy
     RHIRenderPass* RHIDummyDevice::CreateRenderPass(const RHIRenderPassCreateInfo& createInfo)
     {
         return new RHIDummyRenderPass(this, createInfo);
+    }
+
+    RHIFrameBuffer* RHIDummyDevice::CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo)
+    {
+        return new RHIDummyFrameBuffer(this, createInfo);
     }
 
     RHICommandPool* RHIDummyDevice::CreateCommandPool()

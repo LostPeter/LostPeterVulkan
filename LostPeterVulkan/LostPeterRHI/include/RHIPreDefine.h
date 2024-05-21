@@ -1096,6 +1096,12 @@ namespace LostPeterRHI
         String strDebugName;
     };
 
+    //RHIFrameBufferCreateInfo
+    struct rhiExport RHIFrameBufferCreateInfo
+    {
+        String strDebugName;
+    };
+
     //RHIVertexAttribute
     struct rhiExport RHIVertexAttribute
     {

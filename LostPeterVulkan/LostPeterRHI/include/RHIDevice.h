@@ -63,6 +63,7 @@ namespace LostPeterRHI
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo) = 0;
         virtual RHIRenderPassCache* CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo) = 0;
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassCreateInfo& createInfo) = 0;
+        virtual RHIFrameBuffer* CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo) = 0;
         virtual RHICommandPool* CreateCommandPool() = 0;
         virtual RHICommandBuffer* CreateCommandBuffer() = 0;
         virtual RHIFence* CreateFence() = 0;

@@ -19,15 +19,19 @@ namespace LostPeterRHI
     class rhiExport RHIFrameBuffer
     {
     public:
-        RHIFrameBuffer();
+        RHIFrameBuffer(RHIDevice* pDevice, const RHIFrameBufferCreateInfo& createInfo);
         virtual ~RHIFrameBuffer();
 
     public:
     protected:
+        RHIDevice* m_pDevice;
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:
-
+        virtual void Destroy() = 0;
 
     };
 

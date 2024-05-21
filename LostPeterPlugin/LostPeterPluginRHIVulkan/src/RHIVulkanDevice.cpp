@@ -29,6 +29,7 @@
 #include "../include/RHIVulkanPipelineGraphics.h"
 #include "../include/RHIVulkanRenderPassCache.h"
 #include "../include/RHIVulkanRenderPass.h"
+#include "../include/RHIVulkanFrameBuffer.h"
 #include "../include/RHIVulkanCommandPool.h"
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanFence.h"
@@ -205,6 +206,11 @@ namespace LostPeterPluginRHIVulkan
     RHIRenderPass* RHIVulkanDevice::CreateRenderPass(const RHIRenderPassCreateInfo& createInfo)
     {
         return new RHIVulkanRenderPass(this, createInfo);
+    }
+
+    RHIFrameBuffer* RHIVulkanDevice::CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo)
+    {
+        return new RHIVulkanFrameBuffer(this, createInfo);
     }
 
     RHICommandPool* RHIVulkanDevice::CreateCommandPool()

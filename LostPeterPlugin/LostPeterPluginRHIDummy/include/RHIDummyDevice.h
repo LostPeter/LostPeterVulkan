@@ -53,6 +53,7 @@ namespace LostPeterPluginRHIDummy
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual RHIRenderPassCache* CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo);
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassCreateInfo& createInfo);
+        virtual RHIFrameBuffer* CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo);
         virtual RHICommandPool* CreateCommandPool();
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();

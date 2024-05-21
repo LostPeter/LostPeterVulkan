@@ -2,7 +2,7 @@
 * LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-21
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -16,9 +16,26 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyFrameBuffer : public RHIFrameBuffer
+    {
+    public:
+        RHIDummyFrameBuffer(RHIDummyDevice* pDummyDevice, const RHIFrameBufferCreateInfo& createInfo);
+        virtual ~RHIDummyFrameBuffer();
 
+    public:
+    protected:
+        RHIDummyDevice* m_pDummyDevice;
+
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+
+        
+    public:
+        virtual void Destroy();
+
+    
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

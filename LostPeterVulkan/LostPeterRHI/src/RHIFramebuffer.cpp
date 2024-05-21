@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIFrameBuffer.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIFrameBuffer::RHIFrameBuffer()
+    RHIFrameBuffer::RHIFrameBuffer(RHIDevice* pDevice, const RHIFrameBufferCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIFrameBuffer::RHIFrameBuffer")
     }
 
     RHIFrameBuffer::~RHIFrameBuffer()
