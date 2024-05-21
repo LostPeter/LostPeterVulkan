@@ -128,6 +128,7 @@ namespace LostPeterPluginRHIVulkan
 
 	////////////////////////////// Class ///////////////////////////////
 	class RHIVulkanBindGroup;
+    class RHIVulkanBindGroupCache;
 	class RHIVulkanBindGroupLayout;
     class RHIVulkanBindGroupPool;
 	class RHIVulkanBuffer;
@@ -144,11 +145,13 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanGraphicsState;
 	class RHIVulkanInstance;
 	class RHIVulkanPhysicalDevice;
-	class RHIVulkanPipeline;
+    class RHIVulkanPipelineCache;
 	class RHIVulkanPipelineCompute;
 	class RHIVulkanPipelineGraphics;
 	class RHIVulkanPipelineLayout;
 	class RHIVulkanQueue;
+    class RHIVulkanRenderPass;
+    class RHIVulkanRenderPassCache;
 	class RHIVulkanSampler;
     class RHIVulkanSemaphore;
 	class RHIVulkanShaderModule;

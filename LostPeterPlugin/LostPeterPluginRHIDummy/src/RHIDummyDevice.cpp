@@ -19,11 +19,15 @@
 #include "../include/RHIDummySampler.h"
 #include "../include/RHIDummyBindGroupLayout.h"
 #include "../include/RHIDummyBindGroupPool.h"
+#include "../include/RHIDummyBindGroupCache.h"
 #include "../include/RHIDummyBindGroup.h"
-#include "../include/RHIDummyPipelineLayout.h"
 #include "../include/RHIDummyShaderModule.h"
+#include "../include/RHIDummyPipelineLayout.h"
+#include "../include/RHIDummyPipelineCache.h"
 #include "../include/RHIDummyPipelineCompute.h"
 #include "../include/RHIDummyPipelineGraphics.h"
+#include "../include/RHIDummyRenderPassCache.h"
+#include "../include/RHIDummyRenderPass.h"
 #include "../include/RHIDummyCommandPool.h"
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyFence.h"
@@ -111,14 +115,14 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummyBindGroupPool(this, createInfo);
     }
 
+    RHIBindGroupCache* RHIDummyDevice::CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyBindGroupCache(this, createInfo);
+    }
+
     RHIBindGroup* RHIDummyDevice::CreateBindGroup(const RHIBindGroupCreateInfo& createInfo)
     {
         return new RHIDummyBindGroup(this, createInfo);
-    }
-
-    RHIPipelineLayout* RHIDummyDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
-    {
-        return new RHIDummyPipelineLayout(this, createInfo);
     }
 
     RHIShaderModule* RHIDummyDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
@@ -126,14 +130,34 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummyShaderModule(this, createInfo);
     }
 
+    RHIPipelineLayout* RHIDummyDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
+    {
+        return new RHIDummyPipelineLayout(this, createInfo);
+    }
+
+    RHIPipelineCache* RHIDummyDevice::CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyPipelineCache(this, createInfo);
+    }
+
     RHIPipelineCompute* RHIDummyDevice::CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
     {
-        return new RHIDummyPipelineCompute(createInfo);
+        return new RHIDummyPipelineCompute(this, createInfo);
     }
 
     RHIPipelineGraphics* RHIDummyDevice::CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
     {
-        return new RHIDummyPipelineGraphics(createInfo);
+        return new RHIDummyPipelineGraphics(this, createInfo);
+    }
+
+    RHIRenderPassCache* RHIDummyDevice::CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyRenderPassCache(this, createInfo);
+    }
+
+    RHIRenderPass* RHIDummyDevice::CreateRenderPass(const RHIRenderPassCreateInfo& createInfo)
+    {
+        return new RHIDummyRenderPass(this, createInfo);
     }
 
     RHICommandPool* RHIDummyDevice::CreateCommandPool()

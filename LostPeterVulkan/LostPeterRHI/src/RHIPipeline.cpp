@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIPipeline.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIPipeline::RHIPipeline()
+    RHIPipeline::RHIPipeline(RHIDevice* pDevice)
+        : m_pDevice(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIPipeline::RHIPipeline")
     }
 
     RHIPipeline::~RHIPipeline()

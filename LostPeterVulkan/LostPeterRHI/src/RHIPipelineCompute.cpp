@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIPipelineCompute.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIPipelineCompute::RHIPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
+    RHIPipelineCompute::RHIPipelineCompute(RHIDevice* pDevice, const RHIPipelineComputeCreateInfo& createInfo)
+        : RHIPipeline(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIPipelineCompute::RHIPipelineCompute")
     }
 
     RHIPipelineCompute::~RHIPipelineCompute()

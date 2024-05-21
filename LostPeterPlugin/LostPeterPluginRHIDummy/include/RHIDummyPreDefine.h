@@ -39,6 +39,7 @@ namespace LostPeterPluginRHIDummy
 
     ////////////////////////////// Class ///////////////////////////////
     class RHIDummyBindGroup;
+	class RHIDummyBindGroupCache;
     class RHIDummyBindGroupLayout;
 	class RHIDummyBindGroupPool;
 	class RHIDummyBuffer;
@@ -53,11 +54,13 @@ namespace LostPeterPluginRHIDummy
 	class RHIDummyGraphicsState;
 	class RHIDummyInstance;
 	class RHIDummyPhysicalDevice;
-	class RHIDummyPipeline;
+	class RHIDummyPipelineCache;
     class RHIDummyPipelineCompute;
     class RHIDummyPipelineGraphics;
     class RHIDummyPipelineLayout;
 	class RHIDummyQueue;
+	class RHIDummyRenderPass;
+	class RHIDummyRenderPassCache;
 	class RHIDummySampler;
 	class RHIDummyShaderModule;
 	class RHIDummySurface;

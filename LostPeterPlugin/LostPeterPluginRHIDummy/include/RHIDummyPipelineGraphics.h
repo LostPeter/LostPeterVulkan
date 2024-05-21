@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyPipelineGraphics : public RHIPipelineGraphics
     {
     public:
-        RHIDummyPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        RHIDummyPipelineGraphics(RHIDummyDevice* pDummyDevice, const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual ~RHIDummyPipelineGraphics();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
 
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+        
 
     public:
         virtual void Destroy();

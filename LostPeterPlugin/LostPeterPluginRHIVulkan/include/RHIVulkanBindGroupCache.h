@@ -9,33 +9,38 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_VULKAN_RENDER_PASS_CACHE_H_
-#define _RHI_VULKAN_RENDER_PASS_CACHE_H_
+#ifndef _RHI_VULKAN_BIND_GROUP_CACHE_H_
+#define _RHI_VULKAN_BIND_GROUP_CACHE_H_
 
 #include "RHIVulkanPreDefine.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    class rhiVulkanExport RHIVulkanRenderPassCache : public RHIRenderPassCache
+    class rhiVulkanExport RHIVulkanBindGroupCache : public RHIBindGroupCache
     {
     public:
-        RHIVulkanRenderPassCache(RHIVulkanDevice* pVulkanDevice, const RHIRenderPassCacheCreateInfo& createInfo);
-        virtual ~RHIVulkanRenderPassCache();
+        RHIVulkanBindGroupCache(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCacheCreateInfo& createInfo);
+        virtual ~RHIVulkanBindGroupCache();
 
     public:
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
 
+
+        String m_strDebugName;
+
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
 
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
+
+    protected:
     };
     
-
 }; //LostPeterPluginRHIVulkan
 
 #endif

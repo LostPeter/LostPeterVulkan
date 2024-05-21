@@ -75,11 +75,15 @@ namespace LostPeterPluginRHIVulkan
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo);
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo);
         virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo);
+        virtual RHIBindGroupCache* CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo);
         virtual RHIBindGroup* CreateBindGroup(const RHIBindGroupCreateInfo& createInfo);
-        virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
+        virtual RHIPipelineCache* CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo);
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        virtual RHIRenderPassCache* CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo);
+        virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassCreateInfo& createInfo);
         virtual RHICommandPool* CreateCommandPool();
         virtual RHICommandBuffer* CreateCommandBuffer();
         virtual RHIFence* CreateFence();

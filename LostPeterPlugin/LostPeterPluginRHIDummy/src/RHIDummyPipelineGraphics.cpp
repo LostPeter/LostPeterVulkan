@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyPipelineGraphics.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyPipelineGraphics::RHIDummyPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
-        : RHIPipelineGraphics(createInfo)
+    RHIDummyPipelineGraphics::RHIDummyPipelineGraphics(RHIDummyDevice* pDummyDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
+        : RHIPipelineGraphics(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyPipelineGraphics::RHIDummyPipelineGraphics")
     }
 
     RHIDummyPipelineGraphics::~RHIDummyPipelineGraphics()

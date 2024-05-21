@@ -10,13 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyPipelineCompute.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyPipelineCompute::RHIDummyPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
-        : RHIPipelineCompute(createInfo)
+    RHIDummyPipelineCompute::RHIDummyPipelineCompute(RHIDummyDevice* pDummyDevice, const RHIPipelineComputeCreateInfo& createInfo)
+        : RHIPipelineCompute(pDummyDevice, createInfo)
+        , m_pDummyDevice(pDummyDevice)
     {
-
+        F_Assert(m_pDummyDevice && "RHIDummyPipelineCompute::RHIDummyPipelineCompute")
     }
 
     RHIDummyPipelineCompute::~RHIDummyPipelineCompute()

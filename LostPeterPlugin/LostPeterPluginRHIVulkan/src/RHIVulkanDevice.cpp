@@ -20,11 +20,15 @@
 #include "../include/RHIVulkanSampler.h"
 #include "../include/RHIVulkanBindGroupLayout.h"
 #include "../include/RHIVulkanBindGroupPool.h"
+#include "../include/RHIVulkanBindGroupCache.h"
 #include "../include/RHIVulkanBindGroup.h"
-#include "../include/RHIVulkanPipelineLayout.h"
 #include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanPipelineCache.h"
 #include "../include/RHIVulkanPipelineCompute.h"
 #include "../include/RHIVulkanPipelineGraphics.h"
+#include "../include/RHIVulkanRenderPassCache.h"
+#include "../include/RHIVulkanRenderPass.h"
 #include "../include/RHIVulkanCommandPool.h"
 #include "../include/RHIVulkanCommandBuffer.h"
 #include "../include/RHIVulkanFence.h"
@@ -158,14 +162,14 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanBindGroupPool(this, createInfo);
     }
 
+    RHIBindGroupCache* RHIVulkanDevice::CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanBindGroupCache(this, createInfo);
+    }
+
     RHIBindGroup* RHIVulkanDevice::CreateBindGroup(const RHIBindGroupCreateInfo& createInfo)
     {
         return new RHIVulkanBindGroup(this, createInfo);
-    }
-
-    RHIPipelineLayout* RHIVulkanDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
-    {
-        return new RHIVulkanPipelineLayout(this, createInfo);
     }
 
     RHIShaderModule* RHIVulkanDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
@@ -173,14 +177,34 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanShaderModule(this, createInfo);
     }
 
+    RHIPipelineLayout* RHIVulkanDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
+    {
+        return new RHIVulkanPipelineLayout(this, createInfo);
+    }
+
+    RHIPipelineCache* RHIVulkanDevice::CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanPipelineCache(this, createInfo);
+    }
+
     RHIPipelineCompute* RHIVulkanDevice::CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
     {
-        return new RHIVulkanPipelineCompute(createInfo);
+        return new RHIVulkanPipelineCompute(this, createInfo);
     }
 
     RHIPipelineGraphics* RHIVulkanDevice::CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
     {
-        return new RHIVulkanPipelineGraphics(createInfo);
+        return new RHIVulkanPipelineGraphics(this, createInfo);
+    }
+
+    RHIRenderPassCache* RHIVulkanDevice::CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanRenderPassCache(this, createInfo);
+    }
+
+    RHIRenderPass* RHIVulkanDevice::CreateRenderPass(const RHIRenderPassCreateInfo& createInfo)
+    {
+        return new RHIVulkanRenderPass(this, createInfo);
     }
 
     RHICommandPool* RHIVulkanDevice::CreateCommandPool()

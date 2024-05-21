@@ -709,6 +709,7 @@ namespace LostPeterRHI
 
     ////////////////////////////// Class ///////////////////////////////
     class RHIBindGroup;
+    class RHIBindGroupCache;
     class RHIBindGroupLayout;
     class RHIBindGroupPool;
 	class RHIBuffer;
@@ -724,10 +725,13 @@ namespace LostPeterRHI
 	class RHIInstance;
 	class RHIPhysicalDevice;
 	class RHIPipeline;
+    class RHIPipelineCache;
     class RHIPipelineCompute;
     class RHIPipelineGraphics;
     class RHIPipelineLayout;
 	class RHIQueue;
+    class RHIRenderPass;
+    class RHIRenderPassCache;
 	class RHISampler;
 	class RHIShaderModule;
 	class RHISurface;
@@ -1029,6 +1033,12 @@ namespace LostPeterRHI
         String strDebugName;
     };
 
+    //RHIBindGroupCacheCreateInfo
+    struct rhiExport RHIBindGroupCacheCreateInfo
+    {
+        String strDebugName;
+    };
+
     //RHIBindGroupCreateInfo
     struct rhiExport RHIBindGroupCreateInfo
     {
@@ -1072,6 +1082,18 @@ namespace LostPeterRHI
         {
 
         }
+    };
+
+    //RHIRenderPassCacheCreateInfo
+    struct rhiExport RHIRenderPassCacheCreateInfo
+    {
+        String strDebugName;
+    };
+
+    //RHIRenderPassCreateInfo
+    struct rhiExport RHIRenderPassCreateInfo
+    {
+        String strDebugName;
     };
 
     //RHIVertexAttribute
@@ -1244,6 +1266,12 @@ namespace LostPeterRHI
         {
 
         }
+    };
+
+    //RHIPipelineCacheCreateInfo
+    struct rhiExport RHIPipelineCacheCreateInfo
+    {
+        String strDebugName;
     };
 
     //RHIPipelineComputeCreateInfo

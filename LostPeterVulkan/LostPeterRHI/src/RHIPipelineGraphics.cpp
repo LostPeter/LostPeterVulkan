@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIPipelineGraphics.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIPipelineGraphics::RHIPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
+    RHIPipelineGraphics::RHIPipelineGraphics(RHIDevice* pDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
+         : RHIPipeline(pDevice)
     {
-
+        F_Assert(m_pDevice && "RHIPipelineGraphics::RHIPipelineGraphics")
     }
 
     RHIPipelineGraphics::~RHIPipelineGraphics()

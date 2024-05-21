@@ -19,7 +19,7 @@ namespace LostPeterRHI
     class rhiExport RHIPipelineGraphics : public RHIPipeline
     {
     public:
-        RHIPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        RHIPipelineGraphics(RHIDevice* pDevice, const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual ~RHIPipelineGraphics();
 
     public:

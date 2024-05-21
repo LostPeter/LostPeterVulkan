@@ -10,12 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPipelineGraphics.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo)
-        : RHIPipelineGraphics(createInfo)
+    RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics(RHIVulkanDevice* pVulkanDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
+        : RHIPipelineGraphics(pVulkanDevice, createInfo)
+        , m_pVulkanDevice(pVulkanDevice)
     {
+        F_Assert(m_pVulkanDevice && "RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics")
 
     }
 

@@ -2,39 +2,28 @@
 * LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-21
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_PIPELINE_H_
-#define _RHI_PIPELINE_H_
-
-#include "RHIPreDefine.h"
+#include "../include/RHIRenderPass.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIPipeline : public FNonCopyable
+    RHIRenderPass::RHIRenderPass(RHIDevice* pDevice, const RHIRenderPassCreateInfo& createInfo)
+        : m_pDevice(pDevice)
     {
-    public:
-        RHIPipeline(RHIDevice* pDevice);
-        virtual ~RHIPipeline();
+        F_Assert(m_pDevice && "RHIRenderPass::RHIRenderPass")
+    }
 
-    public:
-    protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+    RHIRenderPass::~RHIRenderPass()
+    {
         
-
-    public:
-        virtual void Destroy() = 0;
-
-    };
+    }
     
-}; //LostPeterRHI
 
-#endif
+}; //LostPeterRHI

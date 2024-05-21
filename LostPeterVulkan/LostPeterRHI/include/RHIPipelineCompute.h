@@ -19,7 +19,7 @@ namespace LostPeterRHI
     class rhiExport RHIPipelineCompute : public RHIPipeline
     {
     public:
-        RHIPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
+        RHIPipelineCompute(RHIDevice* pDevice, const RHIPipelineComputeCreateInfo& createInfo);
         virtual ~RHIPipelineCompute();
 
     public:

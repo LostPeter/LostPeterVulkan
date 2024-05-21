@@ -19,12 +19,17 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanPipelineGraphics : public RHIPipelineGraphics
     {
     public:
-        RHIVulkanPipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo);
+        RHIVulkanPipelineGraphics(RHIVulkanDevice* pVulkanDevice, const RHIPipelineGraphicsCreateInfo& createInfo);
         virtual ~RHIVulkanPipelineGraphics();
 
     public:
     protected:
+        RHIVulkanDevice* m_pVulkanDevice;
 
+
+    public:
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        
 
     public:
         virtual void Destroy();

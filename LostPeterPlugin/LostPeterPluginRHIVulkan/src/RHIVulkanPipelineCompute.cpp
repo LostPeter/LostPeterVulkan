@@ -10,12 +10,15 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanPipelineCompute.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
-        : RHIPipelineCompute(createInfo)
+    RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(RHIVulkanDevice* pVulkanDevice, const RHIPipelineComputeCreateInfo& createInfo)
+        : RHIPipelineCompute(pVulkanDevice, createInfo)
+        , m_pVulkanDevice(pVulkanDevice)
     {
+        F_Assert(m_pVulkanDevice && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")
 
     }
 

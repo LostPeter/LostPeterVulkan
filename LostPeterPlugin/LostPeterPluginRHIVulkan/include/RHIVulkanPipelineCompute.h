@@ -19,11 +19,16 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanPipelineCompute : public RHIPipelineCompute
     {
     public:
-        RHIVulkanPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
+        RHIVulkanPipelineCompute(RHIVulkanDevice* pVulkanDevice, const RHIPipelineComputeCreateInfo& createInfo);
         virtual ~RHIVulkanPipelineCompute();
 
     public:
     protected:
+        RHIVulkanDevice* m_pVulkanDevice;
+
+
+    public:
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
 
 
     public:

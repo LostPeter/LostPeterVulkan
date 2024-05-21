@@ -19,12 +19,16 @@ namespace LostPeterPluginRHIDummy
     class rhiDummyExport RHIDummyPipelineCompute : public RHIPipelineCompute
     {
     public:
-        RHIDummyPipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
+        RHIDummyPipelineCompute(RHIDummyDevice* pDummyDevice, const RHIPipelineComputeCreateInfo& createInfo);
         virtual ~RHIDummyPipelineCompute();
 
     public:
     protected:
+        RHIDummyDevice* m_pDummyDevice;
 
+    public:
+        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+        
 
     public:
         virtual void Destroy();

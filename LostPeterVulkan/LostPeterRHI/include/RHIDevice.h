@@ -54,11 +54,15 @@ namespace LostPeterRHI
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo) = 0;
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo) = 0;
         virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo) = 0;
+        virtual RHIBindGroupCache* CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo) = 0;
         virtual RHIBindGroup* CreateBindGroup(const RHIBindGroupCreateInfo& createInfo) = 0;
-        virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo) = 0;
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo) = 0;
+        virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo) = 0;
+        virtual RHIPipelineCache* CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo) = 0;
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo) = 0;
         virtual RHIPipelineGraphics* CreatePipelineGraphics(const RHIPipelineGraphicsCreateInfo& createInfo) = 0;
+        virtual RHIRenderPassCache* CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo) = 0;
+        virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassCreateInfo& createInfo) = 0;
         virtual RHICommandPool* CreateCommandPool() = 0;
         virtual RHICommandBuffer* CreateCommandBuffer() = 0;
         virtual RHIFence* CreateFence() = 0;
