@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHIQueue::RHIQueue(RHIDevice* pDevice)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHIQueue::RHIQueue")
+        m_eObject = RHIObjectType::RHI_Object_Queue;
     }
 
     RHIQueue::~RHIQueue()

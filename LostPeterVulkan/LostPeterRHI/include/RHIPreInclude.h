@@ -29,6 +29,8 @@
 #include "RHIFrameBuffer.h"
 #include "RHIGraphicsState.h"
 #include "RHIInstance.h"
+#include "RHIObject.h"
+#include "RHIObjectManager.h"
 #include "RHIPhysicalDevice.h"
 #include "RHIPipeline.h"
 #include "RHIPipelineCache.h"

@@ -31,9 +31,10 @@ namespace LostPeterPluginRHIDummy
 
 
     public:
+        virtual void Destroy();
+
         virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal);
         virtual void Wait(RHIFence* pFenceToSignal);
-
     };
     
 }; //LostPeterPluginRHIDummy

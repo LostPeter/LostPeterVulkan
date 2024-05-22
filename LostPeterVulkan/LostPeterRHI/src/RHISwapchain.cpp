@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHISwapChain::RHISwapChain(RHIDevice* pDevice, const RHISwapChainCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHISwapChain::RHISwapChain")
+        m_eObject = RHIObjectType::RHI_Object_SwapChain;
     }
 
     RHISwapChain::~RHISwapChain()

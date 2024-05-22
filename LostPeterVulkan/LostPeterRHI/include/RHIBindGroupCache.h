@@ -12,11 +12,11 @@
 #ifndef _RHI_BIND_GROUP_CACHE_H_
 #define _RHI_BIND_GROUP_CACHE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBindGroupCache : public FNonCopyable
+    class rhiExport RHIBindGroupCache : public RHIObject
     {
     public:
         RHIBindGroupCache(RHIDevice* pDevice, const RHIBindGroupCacheCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
+
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
-
-    public:
-        virtual void Destroy() = 0;
 
     };
     

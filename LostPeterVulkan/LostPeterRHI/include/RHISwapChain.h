@@ -12,11 +12,11 @@
 #ifndef _RHI_SWAP_CHAIN_H_
 #define _RHI_SWAP_CHAIN_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISwapChain : public FNonCopyable
+    class rhiExport RHISwapChain : public RHIObject
     {
     public:
         RHISwapChain(RHIDevice* pDevice, const RHISwapChainCreateInfo& createInfo);
@@ -24,14 +24,9 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
+        
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
-
-    public:
-        virtual void Destroy() = 0;
-
         virtual RHITexture* GetTexture(uint8 nIndex) = 0;
         virtual uint8 AcquireBackTexture() = 0;
         virtual void Present() = 0;

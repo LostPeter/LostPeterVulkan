@@ -12,11 +12,11 @@
 #ifndef _RHI_BUFFER_H_
 #define _RHI_BUFFER_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBuffer : public FNonCopyable
+    class rhiExport RHIBuffer : public RHIObject
     {
     public:
         RHIBuffer(RHIDevice* pDevice, const RHIBufferCreateInfo& createInfo);
@@ -24,16 +24,13 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
         RHIBufferView* m_pBufferView;
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         F_FORCEINLINE RHIBufferView* GetBufferView() { return m_pBufferView; }
         
 
     public:
-        virtual void Destroy() = 0;
         virtual void DestroyBufferView() = 0;
         virtual RHIBufferView* CreateBufferView(const RHIBufferViewCreateInfo& createInfo) = 0;
 

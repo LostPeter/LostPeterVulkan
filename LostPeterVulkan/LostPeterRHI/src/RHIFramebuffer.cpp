@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHIFrameBuffer::RHIFrameBuffer(RHIDevice* pDevice, const RHIFrameBufferCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHIFrameBuffer::RHIFrameBuffer")
+        m_eObject = RHIObjectType::RHI_Object_FrameBuffer;
     }
 
     RHIFrameBuffer::~RHIFrameBuffer()

@@ -12,11 +12,11 @@
 #ifndef _RHI_BIND_GROUP_LAYOUT_H_
 #define _RHI_BIND_GROUP_LAYOUT_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBindGroupLayout : public FNonCopyable
+    class rhiExport RHIBindGroupLayout : public RHIObject
     {
     public:
         RHIBindGroupLayout(RHIDevice* pDevice, const RHIBindGroupLayoutCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
+
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
-        
 
-    public:
-        virtual void Destroy() = 0;
 
     };
     

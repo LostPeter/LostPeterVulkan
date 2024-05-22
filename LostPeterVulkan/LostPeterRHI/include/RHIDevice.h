@@ -25,6 +25,7 @@ namespace LostPeterRHI
     public:
     protected:
         RHIPhysicalDevice* m_pPhysicalDevice;
+        RHIObjectManager* m_pObjectManager;
 
         RHIPixelFormatInfoPtrVector m_aPixelFormatInfos;
         RHIPixelFormatInfoPtrMap m_mapPixelFormatInfos;
@@ -32,6 +33,7 @@ namespace LostPeterRHI
 
     public:
         F_FORCEINLINE RHIPhysicalDevice* GetPhysicalDevice() { return m_pPhysicalDevice; }
+        F_FORCEINLINE RHIObjectManager* GetObjectManager() { return m_pObjectManager; }
 
         F_FORCEINLINE const RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() const { return m_aPixelFormatInfos; }
         F_FORCEINLINE RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() { return m_aPixelFormatInfos; }
@@ -47,6 +49,7 @@ namespace LostPeterRHI
         virtual uint32 GetQueueCount(RHIQueueType eQueue) = 0;
         virtual RHIQueue* GetQueue(RHIQueueType eQueue) = 0;
         virtual RHICommandPool* GetCommandPool(RHIQueueType eQueue) = 0;
+
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo) = 0;
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo) = 0;
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo) = 0;

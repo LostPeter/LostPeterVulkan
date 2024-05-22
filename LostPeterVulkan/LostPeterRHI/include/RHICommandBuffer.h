@@ -12,11 +12,11 @@
 #ifndef _RHI_COMMAND_BUFFER_H_
 #define _RHI_COMMAND_BUFFER_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHICommandBuffer : public FNonCopyable
+    class rhiExport RHICommandBuffer : public RHIObject
     {
     public:
         RHICommandBuffer(RHIDevice* pDevice);
@@ -24,15 +24,9 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
 
     public:
-        virtual void Destroy() = 0;
-
         virtual RHICommandEncoder* Begin() = 0;
 
     };

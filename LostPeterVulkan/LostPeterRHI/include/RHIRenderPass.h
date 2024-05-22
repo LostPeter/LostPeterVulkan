@@ -12,11 +12,11 @@
 #ifndef _RHI_RENDER_PASS_H_
 #define _RHI_RENDER_PASS_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIRenderPass : public FNonCopyable
+    class rhiExport RHIRenderPass : public RHIObject
     {
     public:
         RHIRenderPass(RHIDevice* pDevice, const RHIRenderPassCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
 
     public:
-        virtual void Destroy() = 0;
+        
 
     };
     

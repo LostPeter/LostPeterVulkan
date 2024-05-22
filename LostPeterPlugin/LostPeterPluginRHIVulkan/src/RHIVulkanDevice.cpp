@@ -37,6 +37,7 @@
 #include "../include/RHIVulkanVolk.h"
 #include "../include/RHIVulkanDebug.h"
 #include "../include/RHIVulkanConverter.h"
+#include "../include/RHIVulkanObjectManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
@@ -59,7 +60,8 @@ namespace LostPeterPluginRHIVulkan
         , m_pQueuePresent(nullptr)
     {
         F_Assert(m_pVulkanPhysicalDevice && "RHIVulkanDevice::RHIVulkanDevice")
-
+        m_pVulkanObjectManager = new RHIVulkanObjectManager(this);
+        m_pObjectManager = m_pVulkanObjectManager;
         init(m_pVulkanPhysicalDevice->GetVulkanInstance()->IsEnableValidationLayers());
     }
 

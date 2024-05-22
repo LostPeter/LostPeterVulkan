@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHIPipeline::RHIPipeline(RHIDevice* pDevice)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHIPipeline::RHIPipeline")
+        
     }
 
     RHIPipeline::~RHIPipeline()

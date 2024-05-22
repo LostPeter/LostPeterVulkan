@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHISurface::RHISurface(RHIDevice* pDevice, const RHISurfaceCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHISurface::RHISurface")
+        m_eObject = RHIObjectType::RHI_Object_Surface;
     }
 
     RHISurface::~RHISurface()

@@ -12,11 +12,11 @@
 #ifndef _RHI_SURFACE_H_
 #define _RHI_SURFACE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISurface : public FNonCopyable
+    class rhiExport RHISurface : public RHIObject
     {
     public:
         RHISurface(RHIDevice* pDevice, const RHISurfaceCreateInfo& createInfo);
@@ -24,15 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
 
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
-
-    public:
-        virtual void Destroy() = 0;
 
     };
     

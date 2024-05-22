@@ -16,6 +16,7 @@ namespace LostPeterRHI
 {
     RHIDevice::RHIDevice(RHIPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
         : m_pPhysicalDevice(pPhysicalDevice)
+        , m_pObjectManager(nullptr)
     {
         F_Assert(m_pPhysicalDevice && "RHIDevice::RHIDevice")
     }

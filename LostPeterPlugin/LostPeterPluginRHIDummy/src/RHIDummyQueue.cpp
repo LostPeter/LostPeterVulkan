@@ -25,6 +25,11 @@ namespace LostPeterPluginRHIDummy
     {
         
     }
+
+    void RHIDummyQueue::Destroy()
+    {
+
+    }
     
     void RHIDummyQueue::Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal)
     {

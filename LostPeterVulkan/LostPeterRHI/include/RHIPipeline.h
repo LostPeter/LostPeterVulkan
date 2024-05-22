@@ -12,11 +12,11 @@
 #ifndef _RHI_PIPELINE_H_
 #define _RHI_PIPELINE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIPipeline : public FNonCopyable
+    class rhiExport RHIPipeline : public RHIObject
     {
     public:
         RHIPipeline(RHIDevice* pDevice);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
 
     public:
-        virtual void Destroy() = 0;
+        
 
     };
     

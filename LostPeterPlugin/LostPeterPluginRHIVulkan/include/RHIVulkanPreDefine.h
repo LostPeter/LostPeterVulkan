@@ -144,6 +144,7 @@ namespace LostPeterPluginRHIVulkan
 	class RHIVulkanFrameBuffer;
 	class RHIVulkanGraphicsState;
 	class RHIVulkanInstance;
+    class RHIVulkanObjectManager;
 	class RHIVulkanPhysicalDevice;
     class RHIVulkanPipelineCache;
 	class RHIVulkanPipelineCompute;

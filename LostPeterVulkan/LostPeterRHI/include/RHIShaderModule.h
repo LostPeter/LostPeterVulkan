@@ -12,11 +12,11 @@
 #ifndef _RHI_SHADER_MODULE_H_
 #define _RHI_SHADER_MODULE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIShaderModule : public FNonCopyable
+    class rhiExport RHIShaderModule : public RHIObject
     {
     public:
         RHIShaderModule(RHIDevice* pDevice, const RHIShaderModuleCreateInfo& createInfo);
@@ -24,15 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-         RHIDevice* m_pDevice;
-         
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:
-        virtual void Destroy() = 0;
+        
 
     };
 

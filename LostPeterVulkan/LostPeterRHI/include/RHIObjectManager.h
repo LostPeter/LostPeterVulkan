@@ -2,35 +2,44 @@
 * LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-12
+* Time:     2024-05-22
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_BIND_GROUP_H_
-#define _RHI_BIND_GROUP_H_
+#ifndef _RHI_OBJECT_MANAGER_H_
+#define _RHI_OBJECT_MANAGER_H_
 
-#include "RHIObject.h"
+#include "RHIPreDefine.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBindGroup : public RHIObject
+    class rhiExport RHIObjectManager : public FSingleton<RHIObjectManager>
     {
     public:
-        RHIBindGroup(RHIDevice* pDevice, const RHIBindGroupCreateInfo& createInfo);
-        virtual ~RHIBindGroup();
+        RHIObjectManager(RHIDevice* pDevice);
+        virtual ~RHIObjectManager();
 
     public:
     protected:
-        
+        RHIDevice* m_pDevice;
+
 
     public:
+        static RHIObjectManager& GetSingleton();
+		static RHIObjectManager* GetSingletonPtr();
+
+    public:
+        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
+    public:
+        virtual void Destroy() = 0;
+        
     };
-    
+
 }; //LostPeterRHI
 
 #endif

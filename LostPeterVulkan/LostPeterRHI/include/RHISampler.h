@@ -12,11 +12,11 @@
 #ifndef _RHI_SAMPLER_H_
 #define _RHI_SAMPLER_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISampler : public FNonCopyable
+    class rhiExport RHISampler : public RHIObject
     {
     public:
         RHISampler(RHIDevice* pDevice, const RHISamplerCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
 
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
-
     public:
-        virtual void Destroy() = 0;
+        
 
     };
 

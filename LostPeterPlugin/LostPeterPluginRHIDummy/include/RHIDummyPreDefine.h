@@ -53,6 +53,7 @@ namespace LostPeterPluginRHIDummy
 	class RHIDummyFrameBuffer;
 	class RHIDummyGraphicsState;
 	class RHIDummyInstance;
+	class RHIDummyObjectManager;
 	class RHIDummyPhysicalDevice;
 	class RHIDummyPipelineCache;
     class RHIDummyPipelineCompute;

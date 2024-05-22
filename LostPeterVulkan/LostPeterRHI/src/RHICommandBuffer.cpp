@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHICommandBuffer::RHICommandBuffer(RHIDevice* pDevice)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHICommandBuffer::RHICommandBuffer")
+        m_eObject = RHIObjectType::RHI_Object_CommandBuffer;
     }
 
     RHICommandBuffer::~RHICommandBuffer()

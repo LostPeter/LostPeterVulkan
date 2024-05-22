@@ -42,11 +42,12 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
+        virtual void Destroy();
+
         virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal);
         virtual void Wait(RHIFence* pFenceToSignal);
 
     public:
-        void Destroy();
         bool Init();
     };
 

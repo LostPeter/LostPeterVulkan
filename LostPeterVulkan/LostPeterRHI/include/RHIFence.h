@@ -12,11 +12,11 @@
 #ifndef _RHI_FENCE_H_
 #define _RHI_FENCE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIFence : public FNonCopyable
+    class rhiExport RHIFence : public RHIObject
     {
     public:
         RHIFence(RHIDevice* pDevice, const RHIFenceCreateInfo& createInfo);
@@ -24,15 +24,9 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:
-        virtual void Destroy() = 0;
-
         virtual RHIFenceStatusType GetStatus() = 0;
         virtual void Reset() = 0;
         virtual void Wait() = 0;

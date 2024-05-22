@@ -633,6 +633,36 @@ namespace LostPeterRHI
         RHI_VertexFormat_Count,
     };
 
+    //RHIObjectType
+    enum class RHIObjectType : RHIEnumType 
+    {
+        RHI_Object_UnKnown = 0,                         //0:  UnKnown
+        RHI_Object_Surface,                             //1:  Surface
+        RHI_Object_SwapChain,                           //2:  SwapChain
+        RHI_Object_Buffer,                              //3:  Buffer
+        RHI_Object_Texture,                             //4:  Texture
+        RHI_Object_Sampler,                             //5:  Sampler
+        RHI_Object_BindGroupLayout,                     //6:  BindGroupLayout
+        RHI_Object_BindGroupPool,                       //7:  BindGroupPool
+        RHI_Object_BindGroupCache,                      //8:  BindGroupCache
+        RHI_Object_BindGroup,                           //9:  BindGroup
+        RHI_Object_ShaderModule,                        //10: ShaderModule
+        RHI_Object_PipelineLayout,                      //11: PipelineLayout
+        RHI_Object_PipelineCache,                       //12: PipelineCache
+        RHI_Object_PipelineCompute,                     //13: PipelineCompute
+        RHI_Object_PipelineGraphics,                    //14: PipelineGraphics 
+        RHI_Object_RenderPassCache,                     //15: RenderPassCache
+        RHI_Object_RenderPass,                          //16: RenderPass
+        RHI_Object_FrameBuffer,                         //17: FrameBuffer
+        RHI_Object_Fence,                               //18: Fence
+        RHI_Object_Semaphore,                           //19: Semaphore
+        RHI_Object_CommandPool,                         //20: CommandPool
+        RHI_Object_CommandBuffer,                       //21: CommandBuffer
+        RHI_Object_Queue,                               //22: Queue
+
+        RHI_Object_Count,
+    };
+
 
 	#define RHI_FLAGS_DECLARE(FlagsType, BitsType) \
 		rhiExport FlagsType operator &(BitsType a, BitsType b); \
@@ -723,6 +753,8 @@ namespace LostPeterRHI
 	class RHIFrameBuffer;
 	class RHIGraphicsState;
 	class RHIInstance;
+    class RHIObject;
+    class RHIObjectManager;
 	class RHIPhysicalDevice;
 	class RHIPipeline;
     class RHIPipelineCache;

@@ -12,11 +12,11 @@
 #ifndef _RHI_QUEUE_H_
 #define _RHI_QUEUE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIQueue : public FNonCopyable
+    class rhiExport RHIQueue : public RHIObject
     {
     public:
         RHIQueue(RHIDevice* pDevice);
@@ -24,11 +24,7 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
-
+        
 
     public:
         virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal) = 0;

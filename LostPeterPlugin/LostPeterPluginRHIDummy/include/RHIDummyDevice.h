@@ -28,8 +28,11 @@ namespace LostPeterPluginRHIDummy
         RHIDummyQueue* m_pDummyQueue;
         RHIDummyCommandPool* m_pDummyCommandPool;
 
+        RHIDummyObjectManager* m_pDummyObjectManager;
+
     public:
         F_FORCEINLINE RHIDummyPhysicalDevice* GetDummyPhysicalDevice() { return m_pDummyPhysicalDevice; }
+        F_FORCEINLINE RHIDummyObjectManager* GetDummyObjectManager() { return m_pDummyObjectManager; }
 
     public:
         virtual void Destroy();

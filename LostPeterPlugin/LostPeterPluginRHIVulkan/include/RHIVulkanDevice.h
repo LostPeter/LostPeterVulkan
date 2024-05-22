@@ -30,6 +30,7 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanPhysicalDevice* m_pVulkanPhysicalDevice;
         VkDevice m_vkDevice;
         VmaAllocator m_vmaAllocator;
+        RHIVulkanObjectManager* m_pVulkanObjectManager;
 
         String m_strDebugName;
 
@@ -50,6 +51,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIVulkanPhysicalDevice* GetVulkanPhysicalDevice() const { return m_pVulkanPhysicalDevice; }
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
+        F_FORCEINLINE RHIVulkanObjectManager* GetVulkanObjectManager() const { return m_pVulkanObjectManager; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
@@ -68,6 +70,7 @@ namespace LostPeterPluginRHIVulkan
         virtual uint32 GetQueueCount(RHIQueueType eQueue);
         virtual RHIQueue* GetQueue(RHIQueueType eQueue);
         virtual RHICommandPool* GetCommandPool(RHIQueueType eQueue);
+        
         virtual RHISurface* CreateSurface(const RHISurfaceCreateInfo& createInfo);
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo);

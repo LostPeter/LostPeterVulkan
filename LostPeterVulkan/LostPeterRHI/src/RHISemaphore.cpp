@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHISemaphore::RHISemaphore(RHIDevice* pDevice, const RHISemaphoreCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHISemaphore::RHISemaphore")
+        m_eObject = RHIObjectType::RHI_Object_Semaphore;
     }
 
     RHISemaphore::~RHISemaphore()

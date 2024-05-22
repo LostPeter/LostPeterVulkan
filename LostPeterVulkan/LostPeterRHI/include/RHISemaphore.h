@@ -12,11 +12,11 @@
 #ifndef _RHI_SEMAPHORE_H_
 #define _RHI_SEMAPHORE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHISemaphore : public FNonCopyable
+    class rhiExport RHISemaphore : public RHIObject
     {
     public:
         RHISemaphore(RHIDevice* pDevice, const RHISemaphoreCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
-
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
 
 
     public:
-        virtual void Destroy() = 0;
+        
 
     };
 

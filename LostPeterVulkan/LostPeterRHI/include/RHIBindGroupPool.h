@@ -12,11 +12,11 @@
 #ifndef _RHI_BIND_GROUP_POOL_H_
 #define _RHI_BIND_GROUP_POOL_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIBindGroupPool : public FNonCopyable
+    class rhiExport RHIBindGroupPool : public RHIObject
     {
     public:
         RHIBindGroupPool(RHIDevice* pDevice, const RHIBindGroupPoolCreateInfo& createInfo);
@@ -24,14 +24,10 @@ namespace LostPeterRHI
 
     public:
     protected:
-        RHIDevice* m_pDevice;
 
-    public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         
-
     public:
-        virtual void Destroy() = 0;
+        
 
     };
     

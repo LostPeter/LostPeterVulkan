@@ -15,10 +15,10 @@
 namespace LostPeterRHI
 {
     RHIBuffer::RHIBuffer(RHIDevice* pDevice, const RHIBufferCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
         , m_pBufferView(nullptr)
     {
-        F_Assert(m_pDevice && "RHIBuffer::RHIBuffer")
+        m_eObject = RHIObjectType::RHI_Object_Buffer;
     }
 
     RHIBuffer::~RHIBuffer()

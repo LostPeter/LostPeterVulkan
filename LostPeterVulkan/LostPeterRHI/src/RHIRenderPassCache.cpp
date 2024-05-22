@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHIRenderPassCache::RHIRenderPassCache(RHIDevice* pDevice, const RHIRenderPassCacheCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHIRenderPassCache::RHIRenderPassCache")
+        m_eObject = RHIObjectType::RHI_Object_RenderPassCache;
     }
 
     RHIRenderPassCache::~RHIRenderPassCache()

@@ -33,6 +33,7 @@
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyFence.h"
 #include "../include/RHIDummySemaphore.h"
+#include "../include/RHIDummyObjectManager.h"
 
 namespace LostPeterPluginRHIDummy
 {
@@ -43,6 +44,8 @@ namespace LostPeterPluginRHIDummy
         , m_pDummyCommandPool(nullptr)
     {
         F_Assert(m_pDummyPhysicalDevice && "RHIDummyDevice::RHIDummyDevice")
+        m_pDummyObjectManager = new RHIDummyObjectManager(this);
+        m_pObjectManager = m_pDummyObjectManager;
     }
 
     RHIDummyDevice::~RHIDummyDevice()
@@ -52,6 +55,7 @@ namespace LostPeterPluginRHIDummy
     
     void RHIDummyDevice::Destroy()
     {
+        F_DELETE(m_pDummyObjectManager)
         F_DELETE(m_pDummyQueue)
         F_DELETE(m_pDummyCommandPool)
     }

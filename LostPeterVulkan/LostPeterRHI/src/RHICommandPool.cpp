@@ -15,9 +15,9 @@
 namespace LostPeterRHI
 {
     RHICommandPool::RHICommandPool(RHIDevice* pDevice)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
     {
-        F_Assert(m_pDevice && "RHICommandPool::RHICommandPool")
+        m_eObject = RHIObjectType::RHI_Object_CommandPool;
     }
 
     RHICommandPool::~RHICommandPool()

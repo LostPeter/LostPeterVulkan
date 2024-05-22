@@ -15,10 +15,10 @@
 namespace LostPeterRHI
 {
     RHITexture::RHITexture(RHIDevice* pDevice, const RHITextureCreateInfo& createInfo)
-        : m_pDevice(pDevice)
+        : RHIObject(pDevice)
         , m_pTextureView(nullptr)
     {
-        F_Assert(m_pDevice && "RHITexture::RHITexture")
+        m_eObject = RHIObjectType::RHI_Object_Texture;
     }
 
     RHITexture::~RHITexture()

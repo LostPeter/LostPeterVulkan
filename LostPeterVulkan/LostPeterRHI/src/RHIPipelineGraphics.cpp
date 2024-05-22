@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIPipelineGraphics::RHIPipelineGraphics(RHIDevice* pDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
          : RHIPipeline(pDevice)
     {
-        F_Assert(m_pDevice && "RHIPipelineGraphics::RHIPipelineGraphics")
+        m_eObject = RHIObjectType::RHI_Object_PipelineGraphics;
     }
 
     RHIPipelineGraphics::~RHIPipelineGraphics()
