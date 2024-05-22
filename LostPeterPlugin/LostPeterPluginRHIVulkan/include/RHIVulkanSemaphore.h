@@ -16,24 +16,30 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    class rhiVulkanExport RHIVulkanSemaphore
+    class rhiVulkanExport RHIVulkanSemaphore : public RHISemaphore
     {
     public:
-        RHIVulkanSemaphore(RHIVulkanDevice* pVulkanDevice);
+        RHIVulkanSemaphore(RHIVulkanDevice* pVulkanDevice, const RHISemaphoreCreateInfo& createInfo);
         virtual ~RHIVulkanSemaphore();
 
     public:
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
         VkSemaphore m_vkSemaphore;
+
+        String m_strDebugName;
         
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkSemaphore& GetVkSemaphore() { return m_vkSemaphore; }
 
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+
     public:
         virtual void Destroy();
 
+    protected:
+        void createVkSemaphore();
     };
     
 }; //LostPeterPluginRHIVulkan

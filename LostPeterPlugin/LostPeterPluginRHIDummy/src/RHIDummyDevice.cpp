@@ -32,6 +32,7 @@
 #include "../include/RHIDummyCommandPool.h"
 #include "../include/RHIDummyCommandBuffer.h"
 #include "../include/RHIDummyFence.h"
+#include "../include/RHIDummySemaphore.h"
 
 namespace LostPeterPluginRHIDummy
 {
@@ -166,6 +167,16 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummyFrameBuffer(this, createInfo);
     }
 
+    RHIFence* RHIDummyDevice::CreateFence(const RHIFenceCreateInfo& createInfo)
+    {
+        return new RHIDummyFence(this, createInfo);
+    }
+
+    RHISemaphore* RHIDummyDevice::CreateSemaphore(const RHISemaphoreCreateInfo& createInfo)
+    {
+        return new RHIDummySemaphore(this, createInfo);
+    }   
+
     RHICommandPool* RHIDummyDevice::CreateCommandPool()
     {
         return new RHIDummyCommandPool(this);
@@ -174,15 +185,6 @@ namespace LostPeterPluginRHIDummy
     RHICommandBuffer* RHIDummyDevice::CreateCommandBuffer()
     {
         return new RHIDummyCommandBuffer(this);
-    }
-
-    RHIFence* RHIDummyDevice::CreateFence()
-    {
-        return new RHIDummyFence(this, false);
-    }
-    RHIFence* RHIDummyDevice::CreateFence(bool bIsSignaled)
-    {
-        return new RHIDummyFence(this, bIsSignaled);
     }
 
     bool RHIDummyDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)

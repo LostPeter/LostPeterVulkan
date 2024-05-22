@@ -64,10 +64,10 @@ namespace LostPeterRHI
         virtual RHIRenderPassCache* CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo) = 0;
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassCreateInfo& createInfo) = 0;
         virtual RHIFrameBuffer* CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo) = 0;
+        virtual RHIFence* CreateFence(const RHIFenceCreateInfo& createInfo) = 0;
+        virtual RHISemaphore* CreateSemaphore(const RHISemaphoreCreateInfo& createInfo) = 0;
         virtual RHICommandPool* CreateCommandPool() = 0;
         virtual RHICommandBuffer* CreateCommandBuffer() = 0;
-        virtual RHIFence* CreateFence() = 0;
-        virtual RHIFence* CreateFence(bool bIsSignaled) = 0;
 
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat) = 0;
         virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat) = 0;

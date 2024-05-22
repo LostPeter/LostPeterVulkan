@@ -733,6 +733,7 @@ namespace LostPeterRHI
     class RHIRenderPass;
     class RHIRenderPassCache;
 	class RHISampler;
+    class RHISemaphore;
 	class RHIShaderModule;
 	class RHISurface;
 	class RHISwapChain;
@@ -832,6 +833,14 @@ namespace LostPeterRHI
         uint32 nVendorID;
         uint32 nDeviceID;
         RHIPhysicalDeviceType ePhysicalDevice;
+
+        RHIPhysicalDeviceProperty()
+            : nVendorID(0)
+            , nDeviceID(0)
+            , ePhysicalDevice(RHIPhysicalDeviceType::RHI_PhysicalDevice_UnKnown)
+        {
+
+        }
     };
 
 	//RHIQueueInfo
@@ -840,6 +849,14 @@ namespace LostPeterRHI
         RHIQueueType eQueue;
         uint8 nCount;
         String strDebugName;
+
+        RHIQueueInfo()
+            : eQueue(RHIQueueType::RHI_Queue_Graphics)
+            , nCount(1)
+            , strDebugName("")
+        {
+
+        }
     };
 
 	//RHIDeviceCreateInfo
@@ -865,6 +882,13 @@ namespace LostPeterRHI
 	{
         void* pWindow;
         String strDebugName;
+
+        RHISurfaceCreateInfo()
+            : pWindow(nullptr)
+            , strDebugName("")
+        {
+
+        }
     };
 
 	//RHISwapChainCreateInfo
@@ -878,6 +902,18 @@ namespace LostPeterRHI
         RHIPresentType ePresent;
         RHIExtent<2> sExtent;
         String strDebugName;
+
+        RHISwapChainCreateInfo()
+            : pQueuePresent(nullptr)
+            , pSurface(nullptr)
+            , nTextureCount(0)
+            , ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_BGRA8UNormSRGB)
+            , eColorSpace(RHIColorSpaceType::RHI_ColorSpace_Gamma)
+            , ePresent(RHIPresentType::RHI_Present_Immediately)
+            , strDebugName("")
+        {
+
+        }
     };
 
 	//RHIBufferCreateInfo
@@ -886,18 +922,38 @@ namespace LostPeterRHI
         uint32 nSize;
         RHIBufferUsageFlags eUsages;
        	String strDebugName;
+
+        RHIBufferCreateInfo()
+            : nSize(0)
+            , eUsages(0)
+            , strDebugName("")
+        {
+
+        }
     };
 
 	//RHIVertexBufferViewInfo
 	struct rhiExport RHIVertexBufferViewInfo
 	{
         uint32 nStride;
+
+        RHIVertexBufferViewInfo()
+            : nStride(0)
+        {
+
+        }
     };
 
 	//RHIIndexBufferViewInfo
     struct rhiExport RHIIndexBufferViewInfo
 	{
         RHIIndexFormatType eIndexFormat;
+
+        RHIIndexBufferViewInfo()
+            : eIndexFormat(RHIIndexFormatType::RHI_IndexFormat_16Bit)
+        {
+
+        }
     };
 
 	//RHIBufferViewCreateInfo
@@ -911,6 +967,14 @@ namespace LostPeterRHI
             RHIVertexBufferViewInfo eVertexBufferViewInfo;
             RHIIndexBufferViewInfo eIndexBufferViewInfo;
         };
+
+        RHIBufferViewCreateInfo()
+            : eBufferView(RHIBufferViewType::RHI_BufferView_Vertex)
+            , nOffset(0)
+            , nSize(0)
+        {
+
+        }
     };
 
 	//RHITextureCreateInfo
@@ -924,6 +988,18 @@ namespace LostPeterRHI
         RHITextureUsageFlags eUsages;
         RHITextureStateType eState;
       	String strDebugName;
+
+        RHITextureCreateInfo()
+            : nMipLevels(0)
+            , eTextureDimension(RHITextureDimensionType::RHI_TextureDimension_2D)
+            , ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_BGRA8UNormSRGB)
+            , eSampleCount(RHISampleCountType::RHI_SampleCount_1_Bit)
+            , eUsages(0)
+            , eState(RHITextureStateType::RHI_TextureState_UnDefined)
+            , strDebugName("")
+        {
+
+        }
     };
 
 	//RHITextureViewCreateInfo
@@ -936,6 +1012,18 @@ namespace LostPeterRHI
         uint8 nMipLevelCount;
         uint8 nBaseArrayLayer;
         uint8 nArrayLayerCount;
+
+        RHITextureViewCreateInfo()
+            : eTextureView(RHITextureViewType::RHI_TextureView_ColorAttachment)
+            , eTextureViewDimension(RHITextureViewDimensionType::RHI_TextureViewDimension_2D)
+            , eTextureAspect(RHITextureAspectType::RHI_TextureAspect_Color)
+            , nBaseMipLevel(0)
+            , nMipLevelCount(1)
+            , nBaseArrayLayer(0)
+            , nArrayLayerCount(1)
+        {
+
+        }
     };
 
 	//RHISamplerCreateInfo
@@ -1003,6 +1091,12 @@ namespace LostPeterRHI
     {
         RHIResourceBinding sBinding;
         RHIShaderStageFlags flagsShaderVisibility;
+
+        RHIBindGroupLayoutEntry()
+            : flagsShaderVisibility(0)
+        {
+
+        }
     };
 
     //RHIBindGroupLayoutCreateInfo
@@ -1012,6 +1106,15 @@ namespace LostPeterRHI
         uint32 nEntryCount;
         const RHIBindGroupLayoutEntry* pEntries;
         String strDebugName;
+
+        RHIBindGroupLayoutCreateInfo()
+            : nLayoutIndex(0)
+            , nEntryCount(0)
+            , pEntries(nullptr)
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIBindGroupEntry
@@ -1024,6 +1127,11 @@ namespace LostPeterRHI
             RHITextureView* pTextureView;
             RHIBufferView* pBufferView;
         };
+
+        RHIBindGroupEntry()
+        {
+
+        }
     };
 
     //RHIBindGroupPoolCreateInfo
@@ -1031,12 +1139,25 @@ namespace LostPeterRHI
     {
         uint32 nPoolCount;
         String strDebugName;
+
+        RHIBindGroupPoolCreateInfo()
+            : nPoolCount(0)
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIBindGroupCacheCreateInfo
     struct rhiExport RHIBindGroupCacheCreateInfo
     {
         String strDebugName;
+
+        RHIBindGroupCacheCreateInfo()
+            : strDebugName("")
+        {
+
+        }
     };
 
     //RHIBindGroupCreateInfo
@@ -1046,6 +1167,15 @@ namespace LostPeterRHI
         uint32 nEntryCount;
         const RHIBindGroupEntry* pEntries;
         String strDebugName;
+
+        RHIBindGroupCreateInfo()
+            : pBindGroupLayout(nullptr)
+            , nEntryCount(0)
+            , pEntries(nullptr)
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIPipelineConstantLayout
@@ -1054,6 +1184,14 @@ namespace LostPeterRHI
         RHIShaderStageFlags flagsShaderStage;
         uint32 nOffset;
         uint32 nSize;
+
+        RHIPipelineConstantLayout()
+            : flagsShaderStage(0)
+            , nOffset(0)
+            , nSize(0)
+        {
+
+        }
     };
 
     //RHIPipelineLayoutCreateInfo
@@ -1064,6 +1202,16 @@ namespace LostPeterRHI
         uint32 nPipelineConstantLayoutCount;
         const RHIPipelineConstantLayout* pPipelineConstantLayouts;
         String strDebugName;
+
+        RHIPipelineLayoutCreateInfo()
+            : nBindGroupLayoutCount(0)
+            , pBindGroupLayouts(nullptr)
+            , nPipelineConstantLayoutCount(0)
+            , pPipelineConstantLayouts(nullptr)
+            , strDebugName("")
+        {
+
+        }
     };
 
     //RHIShaderModuleCreateInfo
@@ -1088,18 +1236,62 @@ namespace LostPeterRHI
     struct rhiExport RHIRenderPassCacheCreateInfo
     {
         String strDebugName;
+
+        RHIRenderPassCacheCreateInfo()
+            : strDebugName("")
+        {
+
+        }
     };
 
     //RHIRenderPassCreateInfo
     struct rhiExport RHIRenderPassCreateInfo
     {
         String strDebugName;
+
+        RHIRenderPassCreateInfo()
+            : strDebugName("")
+        {
+
+        }
     };
 
     //RHIFrameBufferCreateInfo
     struct rhiExport RHIFrameBufferCreateInfo
     {
         String strDebugName;
+
+        RHIFrameBufferCreateInfo()
+            : strDebugName("")
+        {
+
+        }
+    };
+
+    //RHIFenceCreateInfo
+    struct rhiExport RHIFenceCreateInfo
+    {
+        bool bIsSignaled;
+        String strDebugName;
+
+        RHIFenceCreateInfo()
+            : bIsSignaled(false)
+            , strDebugName("")
+        {
+
+        }
+    };
+
+    //RHISemaphoreCreateInfo
+    struct rhiExport RHISemaphoreCreateInfo
+    {
+        String strDebugName;
+
+        RHISemaphoreCreateInfo()
+            : strDebugName("")
+        {
+
+        }
     };
 
     //RHIVertexAttribute
@@ -1110,6 +1302,15 @@ namespace LostPeterRHI
 
         const char* pSemanticName;
         uint8 nSemanticIndex;
+
+        RHIVertexAttribute()
+            : eVertexFormat(RHIVertexFormatType::RHI_VertexFormat_Float32X4)
+            , nOffset(0)
+            , pSemanticName(nullptr)
+            , nSemanticIndex(0)
+        {
+
+        }
     };
 
     //RHIVertexBufferLayout
@@ -1119,6 +1320,15 @@ namespace LostPeterRHI
         RHIVertexStepType eVertexStep;
         uint32 nAttributeCount;
         const RHIVertexAttribute* pAttributes;
+
+        RHIVertexBufferLayout()
+            : nStride(0)
+            , eVertexStep(RHIVertexStepType::RHI_VertexStep_PerInstance)
+            , nAttributeCount(0)
+            , pAttributes(nullptr)
+        {
+
+        }
     };
 
     //RHIVertexState
@@ -1240,6 +1450,11 @@ namespace LostPeterRHI
     {
         RHIBlendComponent sBlendColor;
         RHIBlendComponent sBlendAlpha;
+
+        RHIBlendState()
+        {
+
+        }
     };
 
     //RHIColorTargetState
@@ -1278,6 +1493,12 @@ namespace LostPeterRHI
     struct rhiExport RHIPipelineCacheCreateInfo
     {
         String strDebugName;
+
+        RHIPipelineCacheCreateInfo()
+            : strDebugName("")
+        {
+
+        }
     };
 
     //RHIPipelineComputeCreateInfo
@@ -1349,6 +1570,15 @@ namespace LostPeterRHI
         RHIColorNormalized<4> sClearValue;
         RHILoadOpType eLoadOp;
         RHIStoreOpType eStoreOp;
+
+        RHIGraphicsPassColorAttachment()
+            : pView(nullptr)
+            , pResolve(nullptr)
+            , eLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
+            , eStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+        {
+
+        }
     };
 
     //RHIGraphicsPassDepthStencilAttachment
@@ -1363,6 +1593,20 @@ namespace LostPeterRHI
         RHILoadOpType eStencilLoadOp;
         RHIStoreOpType eStencilStoreOp;
         bool bStencilReadOnly;
+
+        RHIGraphicsPassDepthStencilAttachment()
+            : pView(nullptr)
+            , fDepthClearValue(0.0f)
+            , eDepthLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
+            , eDepthStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+            , bDepthReadOnly(true)
+            , nStencilClearValue(0)
+            , eStencilLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
+            , eStencilStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+            , bStencilReadOnly(true)
+        {
+
+        }
     };
 
     //RHIGraphicsPassBeginInfo
@@ -1371,6 +1615,14 @@ namespace LostPeterRHI
         uint32 nColorAttachmentCount;
         const RHIGraphicsPassColorAttachment* pColorAttachments;
         const RHIGraphicsPassDepthStencilAttachment* pDepthStencilAttachment;
+
+        RHIGraphicsPassBeginInfo()
+            : nColorAttachmentCount(0)
+            , pColorAttachments(nullptr)
+            , pDepthStencilAttachment(nullptr)
+        {
+
+        }
     };
 
 }; //LostPeterRHI

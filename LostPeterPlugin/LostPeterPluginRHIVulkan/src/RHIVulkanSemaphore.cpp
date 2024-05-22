@@ -14,13 +14,15 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanSemaphore::RHIVulkanSemaphore(RHIVulkanDevice* pVulkanDevice)
-        : m_pVulkanDevice(pVulkanDevice)
+    RHIVulkanSemaphore::RHIVulkanSemaphore(RHIVulkanDevice* pVulkanDevice, const RHISemaphoreCreateInfo& createInfo)
+        : RHISemaphore(pVulkanDevice, createInfo)
+        , m_pVulkanDevice(pVulkanDevice)
         , m_vkSemaphore(VK_NULL_HANDLE)
+        , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanSemaphore::RHIVulkanSemaphore")
 
-        m_vkSemaphore = m_pVulkanDevice->CreateVkSemaphore();
+        createVkSemaphore();
     }   
 
     RHIVulkanSemaphore::~RHIVulkanSemaphore()
@@ -37,5 +39,20 @@ namespace LostPeterPluginRHIVulkan
         m_vkSemaphore = VK_NULL_HANDLE;
     }
 
+    void RHIVulkanSemaphore::createVkSemaphore()
+    {
+        if (!m_pVulkanDevice->CreateVkSemaphore(m_vkSemaphore))
+        {
+            F_LogError("*********************** RHIVulkanSemaphore::createVkSemaphore: CreateVkSemaphore failed, name: [%s] !", m_strDebugName.c_str());
+        }
+
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SEMAPHORE, reinterpret_cast<uint64_t>(m_vkSemaphore), m_strDebugName.c_str());
+            }
+        }
+    }
     
 }; //LostPeterPluginRHIVulkan

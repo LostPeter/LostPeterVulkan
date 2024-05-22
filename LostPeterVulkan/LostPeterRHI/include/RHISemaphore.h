@@ -2,25 +2,25 @@
 * LostPeterRHI - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-05
+* Time:     2024-05-22
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_FENCE_H_
-#define _RHI_FENCE_H_
+#ifndef _RHI_SEMAPHORE_H_
+#define _RHI_SEMAPHORE_H_
 
 #include "RHIPreDefine.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIFence : public FNonCopyable
+    class rhiExport RHISemaphore : public FNonCopyable
     {
     public:
-        RHIFence(RHIDevice* pDevice, const RHIFenceCreateInfo& createInfo);
-        virtual ~RHIFence();
+        RHISemaphore(RHIDevice* pDevice, const RHISemaphoreCreateInfo& createInfo);
+        virtual ~RHISemaphore();
 
     public:
     protected:
@@ -33,9 +33,6 @@ namespace LostPeterRHI
     public:
         virtual void Destroy() = 0;
 
-        virtual RHIFenceStatusType GetStatus() = 0;
-        virtual void Reset() = 0;
-        virtual void Wait() = 0;
     };
 
 }; //LostPeterRHI

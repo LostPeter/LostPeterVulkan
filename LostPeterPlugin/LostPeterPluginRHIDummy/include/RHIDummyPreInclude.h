@@ -38,6 +38,7 @@
 #include "RHIDummyRenderPass.h"
 #include "RHIDummyRenderPassCache.h"
 #include "RHIDummySampler.h"
+#include "RHIDummySemaphore.h"
 #include "RHIDummyShaderModule.h"
 #include "RHIDummySurface.h"
 #include "RHIDummySwapChain.h"

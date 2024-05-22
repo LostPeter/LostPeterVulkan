@@ -17,10 +17,12 @@ namespace LostPeterPluginRHIVulkan
     RHIVulkanRenderPass::RHIVulkanRenderPass(RHIVulkanDevice* pVulkanDevice, const RHIRenderPassCreateInfo& createInfo)
         : RHIRenderPass(pVulkanDevice, createInfo)
         , m_pVulkanDevice(pVulkanDevice)
+        , m_vkRenderPass(VK_NULL_HANDLE)
         , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanRenderPass::RHIVulkanRenderPass")
 
+        createVkRenderPass();    
     }
 
     RHIVulkanRenderPass::~RHIVulkanRenderPass()
@@ -30,8 +32,24 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanRenderPass::Destroy()
     {
-
+        if (m_vkRenderPass != VK_NULL_HANDLE)
+        {
+            m_pVulkanDevice->DestroyVkRenderPass(m_vkRenderPass);
+        }
+        m_vkRenderPass = VK_NULL_HANDLE;
     }
     
+    void RHIVulkanRenderPass::createVkRenderPass()
+    {
+        
+
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_RENDER_PASS, reinterpret_cast<uint64_t>(m_vkRenderPass), m_strDebugName.c_str());
+            }
+        }
+    }
 
 }; //LostPeterPluginRHIVulkan

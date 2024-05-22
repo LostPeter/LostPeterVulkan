@@ -14,15 +14,16 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, bool bIsSignaled)
-        : RHIFence(pVulkanDevice)
+    RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, const RHIFenceCreateInfo& createInfo)
+        : RHIFence(pVulkanDevice, createInfo)
         , m_pVulkanDevice(pVulkanDevice)
         , m_vkFence(VK_NULL_HANDLE)
-        , m_bIsSignaled(bIsSignaled)
+        , m_bIsSignaled(createInfo.bIsSignaled)
+        , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanFence::RHIVulkanFence")
 
-        m_pVulkanDevice->CreateVkFence(bIsSignaled, m_vkFence);
+        createVkFence();
     }   
 
     RHIVulkanFence::~RHIVulkanFence()
@@ -56,6 +57,22 @@ namespace LostPeterPluginRHIVulkan
             return;
         
         m_pVulkanDevice->WaitVkFence(m_vkFence);
+    }
+
+    void RHIVulkanFence::createVkFence()
+    {
+        if (!m_pVulkanDevice->CreateVkFence(m_bIsSignaled, m_vkFence))
+        {
+            F_LogError("*********************** RHIVulkanFence::createVkFence: CreateVkFence failed, name: [%s] !", m_strDebugName.c_str());
+        }
+
+        if (RHI_IsDebug())
+        {
+            if (!m_strDebugName.empty())
+            {
+                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_FENCE, reinterpret_cast<uint64_t>(m_vkFence), m_strDebugName.c_str());
+            }
+        }
     }
     
 }; //LostPeterPluginRHIVulkan

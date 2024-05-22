@@ -25,15 +25,21 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
+        VkPipeline m_vkPipeline;
 
+        String m_strDebugName;
 
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        F_FORCEINLINE VkPipeline& GetVkPipeline() { return m_vkPipeline; }
 
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
+    protected:
+        void createVkPipeline();
     };
     
 }; //LostPeterPluginRHIVulkan

@@ -19,19 +19,23 @@ namespace LostPeterPluginRHIVulkan
     class rhiVulkanExport RHIVulkanFence : public RHIFence
     {
     public:
-        RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, bool bIsSignaled);
+        RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, const RHIFenceCreateInfo& createInfod);
         virtual ~RHIVulkanFence();
 
     public:
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
         VkFence m_vkFence;
+
         bool m_bIsSignaled;
-        
+        String m_strDebugName;
+
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkFence& GetVkFence() { return m_vkFence; }
+
         F_FORCEINLINE bool IsSignaled() { return m_bIsSignaled; }
+        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
         virtual void Destroy();
@@ -39,6 +43,9 @@ namespace LostPeterPluginRHIVulkan
         virtual RHIFenceStatusType GetStatus();
         virtual void Reset();
         virtual void Wait();
+
+    protected:
+        void createVkFence();
     };
     
 }; //LostPeterPluginRHIVulkan

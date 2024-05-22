@@ -25,12 +25,13 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         RHIVulkanDevice* m_pVulkanDevice;
-
+        VkRenderPass m_vkRenderPass;
 
         String m_strDebugName;
 
     public:
         F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        F_FORCEINLINE VkRenderPass& GetVkRenderPass() { return m_vkRenderPass; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
@@ -39,7 +40,7 @@ namespace LostPeterPluginRHIVulkan
 
 
     protected:
-    
+        void createVkRenderPass();    
     };
     
 }; //LostPeterPluginRHIVulkan

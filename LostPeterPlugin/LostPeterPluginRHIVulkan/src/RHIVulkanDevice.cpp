@@ -213,6 +213,16 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanFrameBuffer(this, createInfo);
     }
 
+    RHIFence* RHIVulkanDevice::CreateFence(const RHIFenceCreateInfo& createInfo)
+    {
+        return new RHIVulkanFence(this, createInfo);
+    }
+
+    RHISemaphore* RHIVulkanDevice::CreateSemaphore(const RHISemaphoreCreateInfo& createInfo)
+    {
+        return new RHIVulkanSemaphore(this, createInfo);
+    }
+
     RHICommandPool* RHIVulkanDevice::CreateCommandPool()
     {
         return new RHIVulkanCommandPool(this);
@@ -220,15 +230,6 @@ namespace LostPeterPluginRHIVulkan
     RHICommandBuffer* RHIVulkanDevice::CreateCommandBuffer()
     {
         return new RHIVulkanCommandBuffer(this);
-    }
-
-    RHIFence* RHIVulkanDevice::CreateFence()
-    {
-        return new RHIVulkanFence(this, false);
-    }
-    RHIFence* RHIVulkanDevice::CreateFence(bool bIsSignaled)
-    {
-        return new RHIVulkanFence(this, bIsSignaled);
     }
 
     bool RHIVulkanDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)

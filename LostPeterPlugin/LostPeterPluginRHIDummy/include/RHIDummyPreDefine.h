@@ -62,6 +62,7 @@ namespace LostPeterPluginRHIDummy
 	class RHIDummyRenderPass;
 	class RHIDummyRenderPassCache;
 	class RHIDummySampler;
+	class RHIDummySemaphore;
 	class RHIDummyShaderModule;
 	class RHIDummySurface;
 	class RHIDummySwapChain;

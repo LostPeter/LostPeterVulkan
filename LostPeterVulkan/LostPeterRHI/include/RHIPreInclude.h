@@ -39,6 +39,7 @@
 #include "RHIRenderPass.h"
 #include "RHIRenderPassCache.h"
 #include "RHISampler.h"
+#include "RHISemaphore.h"
 #include "RHIShaderModule.h"
 #include "RHISurface.h"
 #include "RHISwapChain.h"
