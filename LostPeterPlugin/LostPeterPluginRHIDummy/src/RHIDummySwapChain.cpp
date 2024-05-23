@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummySwapChain::RHIDummySwapChain(RHIDummyDevice* pDummyDevice, const RHISwapChainCreateInfo& createInfo)
         : RHISwapChain(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
         , m_bIsPingPong(true)
     {
         F_Assert(m_pDummyDevice && "RHIDummySwapChain::RHIDummySwapChain")

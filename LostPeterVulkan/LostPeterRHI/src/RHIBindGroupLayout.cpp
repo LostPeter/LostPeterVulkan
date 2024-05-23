@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIBindGroupLayout::RHIBindGroupLayout(RHIDevice* pDevice, const RHIBindGroupLayoutCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_BindGroupLayout;
+        setObjectType(RHIObjectType::RHI_Object_BindGroupLayout);
     }
 
     RHIBindGroupLayout::~RHIBindGroupLayout()

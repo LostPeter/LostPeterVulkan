@@ -13,21 +13,26 @@
 #define _RHI_VULKAN_FRAME_BUFFER_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanFrameBuffer : public RHIFrameBuffer
-    {
-    public:
+                                               , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanFrameBuffer(RHIVulkanDevice* pVulkanDevice, const RHIFrameBufferCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanFrameBuffer();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
+
         
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+
 
     public:
         virtual void Destroy();

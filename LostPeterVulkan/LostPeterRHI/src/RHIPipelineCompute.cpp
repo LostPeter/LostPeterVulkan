@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIPipelineCompute::RHIPipelineCompute(RHIDevice* pDevice, const RHIPipelineComputeCreateInfo& createInfo)
         : RHIPipeline(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_PipelineCompute;
+        setObjectType(RHIObjectType::RHI_Object_PipelineCompute);
     }
 
     RHIPipelineCompute::~RHIPipelineCompute()

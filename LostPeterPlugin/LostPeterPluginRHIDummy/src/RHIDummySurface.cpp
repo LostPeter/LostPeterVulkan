@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummySurface::RHIDummySurface(RHIDummyDevice* pDummyDevice, const RHISurfaceCreateInfo& createInfo)
         : RHISurface(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummySurface::RHIDummySurface")
     }

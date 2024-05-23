@@ -132,6 +132,53 @@ namespace LostPeterRHI
     }
 
 
+    //RHIObjectType
+    static String s_nameObjectTypes[] = 
+    {
+        "UnKnown",                      //0:  UnKnown
+        "Surface",                      //1:  Surface
+        "SwapChain",                    //2:  SwapChain
+        "Buffer",                       //3:  Buffer
+        "Texture",                      //4:  Texture
+        "Sampler",                      //5:  Sampler
+        "BindGroupLayout",              //6:  BindGroupLayout
+        "BindGroupPool",                //7:  BindGroupPool
+        "BindGroupCache",               //8:  BindGroupCache
+        "BindGroup",                    //9:  BindGroup
+        "ShaderModule",                 //10: ShaderModule
+        "PipelineLayout",               //11: PipelineLayout
+        "PipelineCache",                //12: PipelineCache
+        "PipelineCompute",              //13: PipelineCompute
+        "PipelineGraphics",             //14: PipelineGraphics
+        "RenderPassCache",              //15: RenderPassCache
+        "RenderPass",                   //16: RenderPass
+        "FrameBuffer",                  //17: FrameBuffer
+        "Fence",                        //18: Fence
+        "Semaphore",                    //19: Semaphore
+        "CommandPool",                  //20: CommandPool
+        "CommandBuffer",                //21: CommandBuffer
+        "Queue",                        //22: Queue
+    };
+    const String& RHI_GetObjectTypeName(RHIObjectType type)
+    {
+        return s_nameObjectTypes[(int)type];
+    }
+    const String& RHI_GetObjectTypeName(int type)
+    {
+        return s_nameObjectTypes[(int)type];
+    }
+    RHIObjectType RHI_ParseObjectType(const String& strName)
+    {
+        for (int i = 0; i < (int)RHIObjectType::RHI_Object_Count; i++)
+        {
+            if (s_nameObjectTypes[i] == strName)
+                return (RHIObjectType)(i);
+        }
+        F_Assert(false && "RHI_ParseObjectType: Wrong type name !")
+        return RHIObjectType::RHI_Object_UnKnown;
+    }
+
+
     //RHIShaderStageBitsType
     static String s_nameShaderStageBitsTypes[] = 
     {

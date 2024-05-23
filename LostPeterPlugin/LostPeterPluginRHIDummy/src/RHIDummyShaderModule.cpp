@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyShaderModule::RHIDummyShaderModule(RHIDummyDevice* pDummyDevice, const RHIShaderModuleCreateInfo& createInfo)
         : RHIShaderModule(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyShaderModule::RHIDummyShaderModule")
     }

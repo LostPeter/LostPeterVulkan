@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyBindGroupCache::RHIDummyBindGroupCache(RHIDummyDevice* pDummyDevice, const RHIBindGroupCacheCreateInfo& createInfo)
         : RHIBindGroupCache(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyBindGroupCache::RHIDummyBindGroupCache")
     }

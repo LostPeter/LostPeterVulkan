@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_RENDER_PASS_CACHE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyRenderPassCache : public RHIRenderPassCache
+                                                 , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyRenderPassCache(RHIDummyDevice* pDummyDevice, const RHIRenderPassCacheCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyRenderPassCache();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

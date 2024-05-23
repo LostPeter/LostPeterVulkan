@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanPipelineLayout::RHIVulkanPipelineLayout(RHIVulkanDevice* pVulkanDevice, const RHIPipelineLayoutCreateInfo& createInfo)
         : RHIPipelineLayout(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkPipelineLayout(VK_NULL_HANDLE)
 
         , m_strDebugName(createInfo.strDebugName)

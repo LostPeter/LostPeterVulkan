@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIVulkan
     uint32 RHIVulkanQueue::ms_nID = 0;
     RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex)
         : RHIQueue(pVulkanDevice)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_nFamilyIndex(nFamilyIndex)
         , m_vkQueue(VK_NULL_HANDLE)
         , m_nID(++ms_nID)

@@ -13,18 +13,22 @@
 #define _RHI_VULKAN_SAMPLER_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanSampler : public RHISampler
-    {
-    public:
+                                           , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanSampler(RHIVulkanDevice* pVulkanDevice, const RHISamplerCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanSampler();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkSampler m_vkSampler;
 
         RHIAddressType m_eAddressU;
@@ -42,7 +46,6 @@ namespace LostPeterPluginRHIVulkan
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkSampler& GetVkSampler() { return m_vkSampler; }
 
         F_FORCEINLINE RHIAddressType GetAddressU() const { return m_eAddressU; }

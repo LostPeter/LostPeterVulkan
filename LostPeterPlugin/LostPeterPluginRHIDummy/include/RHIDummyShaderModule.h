@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_SHADER_MODULE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyShaderModule : public RHIShaderModule
+                                              , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyShaderModule(RHIDummyDevice* pDummyDevice, const RHIShaderModuleCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyShaderModule();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         
 
     public:

@@ -18,7 +18,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanBuffer::RHIVulkanBuffer(RHIVulkanDevice* pVulkanDevice, const RHIBufferCreateInfo& createInfo)
         : RHIBuffer(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkBuffer(VK_NULL_HANDLE)
         , m_vmaAllocation(VK_NULL_HANDLE)
         , m_pVulkanBufferView(nullptr)

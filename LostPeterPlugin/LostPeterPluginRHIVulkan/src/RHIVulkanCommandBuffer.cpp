@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanCommandBuffer::RHIVulkanCommandBuffer(RHIVulkanDevice* pVulkanDevice)
         : RHICommandBuffer(pVulkanDevice)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanCommandBuffer::RHIVulkanCommandBuffer")
     }

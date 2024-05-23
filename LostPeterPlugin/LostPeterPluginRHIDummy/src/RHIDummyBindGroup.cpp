@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyBindGroup::RHIDummyBindGroup(RHIDummyDevice* pDummyDevice, const RHIBindGroupCreateInfo& createInfo)
         : RHIBindGroup(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyBindGroup::RHIDummyBindGroup")
     }

@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHISemaphore::RHISemaphore(RHIDevice* pDevice, const RHISemaphoreCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_Semaphore;
+        setObjectType(RHIObjectType::RHI_Object_Semaphore);
     }
 
     RHISemaphore::~RHISemaphore()

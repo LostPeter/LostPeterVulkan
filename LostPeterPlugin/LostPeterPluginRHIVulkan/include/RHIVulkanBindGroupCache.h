@@ -13,24 +13,27 @@
 #define _RHI_VULKAN_BIND_GROUP_CACHE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanBindGroupCache : public RHIBindGroupCache
-    {
-    public:
+                                                  , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanBindGroupCache(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCacheCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanBindGroupCache();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
 
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 

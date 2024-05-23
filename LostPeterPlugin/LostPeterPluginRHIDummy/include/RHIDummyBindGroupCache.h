@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_BIND_GROUP_CACHE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyBindGroupCache : public RHIBindGroupCache
+                                                , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyBindGroupCache(RHIDummyDevice* pDummyDevice, const RHIBindGroupCacheCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyBindGroupCache();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

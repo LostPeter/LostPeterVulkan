@@ -13,24 +13,27 @@
 #define _RHI_VULKAN_PIPELINE_CACHE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanPipelineCache : public RHIPipelineCache
-    {
-    public:
+                                                 , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanPipelineCache(RHIVulkanDevice* pVulkanDevice, const RHIPipelineCacheCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanPipelineCache();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkPipelineCache m_vkPipelineCache;
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkPipelineCache& GetVkPipelineCache() { return m_vkPipelineCache; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

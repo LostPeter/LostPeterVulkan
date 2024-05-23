@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics(RHIVulkanDevice* pVulkanDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
         : RHIPipelineGraphics(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkPipeline(VK_NULL_HANDLE)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics")

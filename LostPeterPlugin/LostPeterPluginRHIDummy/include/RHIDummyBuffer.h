@@ -13,24 +13,27 @@
 #define _RHI_DUMMY_BUFFER_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyBuffer : public RHIBuffer
+                                        , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyBuffer(RHIDummyDevice* pDummyDevice, const RHIBufferCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyBuffer();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
         RHIDummyBufferView* m_pDummyBufferView;
 
         std::vector<uint8> m_aDummyData;
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         F_FORCEINLINE RHIDummyBufferView* GetDummyBufferView() { return m_pDummyBufferView; }
 
 

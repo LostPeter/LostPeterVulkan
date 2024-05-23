@@ -13,25 +13,28 @@
 #define _RHI_VULKAN_PIPELINE_LAYOUT_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanPipelineLayout : public RHIPipelineLayout
-    {
-    public:
+                                                  , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanPipelineLayout(RHIVulkanDevice* pVulkanDevice, const RHIPipelineLayoutCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanPipelineLayout();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkPipelineLayout m_vkPipelineLayout;
 
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkPipelineLayout& GetVkPipelineLayout() { return m_vkPipelineLayout; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

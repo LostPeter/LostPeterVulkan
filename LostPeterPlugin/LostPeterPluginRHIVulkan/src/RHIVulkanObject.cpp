@@ -2,34 +2,28 @@
 * LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-21
+* Time:     2024-05-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIVulkanRenderPassCache.h"
+#include "../include/RHIVulkanObject.h"
 #include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    RHIVulkanRenderPassCache::RHIVulkanRenderPassCache(RHIVulkanDevice* pVulkanDevice, const RHIRenderPassCacheCreateInfo& createInfo)
-        : RHIRenderPassCache(pVulkanDevice, createInfo)
-        , RHIVulkanObject(pVulkanDevice)
+    RHIVulkanObject::RHIVulkanObject(RHIVulkanDevice* pVulkanDevice)
+        : m_pVulkanDevice(pVulkanDevice)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanRenderPassCache::RHIVulkanRenderPassCache")
+        F_Assert(m_pVulkanDevice && "RHIVulkanObject::RHIVulkanObject")
+    }   
+
+    RHIVulkanObject::~RHIVulkanObject()
+    {
+        
     }
 
-    RHIVulkanRenderPassCache::~RHIVulkanRenderPassCache()
-    {
-        Destroy();
-    }
-    
-    void RHIVulkanRenderPassCache::Destroy()
-    {
-
-    }
-    
 
 }; //LostPeterPluginRHIVulkan

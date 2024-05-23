@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIFence::RHIFence(RHIDevice* pDevice, const RHIFenceCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_Fence;
+        setObjectType(RHIObjectType::RHI_Object_Fence);
     }
 
     RHIFence::~RHIFence()

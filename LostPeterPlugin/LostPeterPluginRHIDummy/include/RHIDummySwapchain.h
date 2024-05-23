@@ -13,25 +13,27 @@
 #define _RHI_DUMMY_SWAP_CHAIN_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummySwapChain : public RHISwapChain
+                                           , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummySwapChain(RHIDummyDevice* pDummyDevice, const RHISwapChainCreateInfo& createInfo);
+    public:
         virtual ~RHIDummySwapChain();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
-
         RHIDummyTexturePtrVector m_aDummyTextures;
         bool m_bIsPingPong;
 
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

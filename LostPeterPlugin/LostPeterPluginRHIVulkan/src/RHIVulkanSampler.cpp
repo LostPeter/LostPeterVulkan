@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanSampler::RHIVulkanSampler(RHIVulkanDevice* pVulkanDevice, const RHISamplerCreateInfo& createInfo)
         : RHISampler(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkSampler(VK_NULL_HANDLE)
         , m_eAddressU(createInfo.eAddressU)
         , m_eAddressV(createInfo.eAddressV)

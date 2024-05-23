@@ -13,18 +13,22 @@
 #define _RHI_VULKAN_SHADER_MODULE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanShaderModule : public RHIShaderModule
-    {
-    public:
+                                                , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanShaderModule(RHIVulkanDevice* pVulkanDevice, const RHIShaderModuleCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanShaderModule();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkShaderModule m_vkShaderModule;
 
         RHIShaderStageBitsType m_eShaderStageBits;
@@ -33,7 +37,6 @@ namespace LostPeterPluginRHIVulkan
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkShaderModule& GetVkShaderModule() { return m_vkShaderModule; }
 
         F_FORCEINLINE RHIShaderStageBitsType GetShaderStageBitsType() const { return m_eShaderStageBits; }

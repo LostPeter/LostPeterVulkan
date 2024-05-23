@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIFrameBuffer::RHIFrameBuffer(RHIDevice* pDevice, const RHIFrameBufferCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_FrameBuffer;
+        setObjectType(RHIObjectType::RHI_Object_FrameBuffer);
     }
 
     RHIFrameBuffer::~RHIFrameBuffer()

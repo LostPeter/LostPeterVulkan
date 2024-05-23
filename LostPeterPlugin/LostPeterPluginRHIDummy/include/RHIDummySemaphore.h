@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_SEMAPHORE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummySemaphore : public RHISemaphore
+                                           , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummySemaphore(RHIDummyDevice* pDummyDevice, const RHISemaphoreCreateInfo& createInfo);
+    public:
         virtual ~RHIDummySemaphore();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
         
     public:

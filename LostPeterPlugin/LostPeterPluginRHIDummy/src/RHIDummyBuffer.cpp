@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyBuffer::RHIDummyBuffer(RHIDummyDevice* pDummyDevice, const RHIBufferCreateInfo& createInfo)
         : RHIBuffer(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
         , m_pDummyBufferView(nullptr)
         , m_aDummyData(1)
     {

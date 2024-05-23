@@ -21,7 +21,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanSwapChain::RHIVulkanSwapChain(RHIVulkanDevice* pVulkanDevice, const RHISwapChainCreateInfo& createInfo)
         : RHISwapChain(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkSwapChainKHR(VK_NULL_HANDLE)
         , m_pVulkanQueuePresent((RHIVulkanQueue*)createInfo.pQueuePresent)
         , m_pVulkanSurface((RHIVulkanSurface*)createInfo.pSurface)
@@ -274,7 +274,7 @@ namespace LostPeterPluginRHIVulkan
         vkGetSwapchainImagesKHR(m_pVulkanDevice->GetVkDevice(), m_vkSwapChainKHR, &m_nSwapChainImageCount, swapChainImages.data());
         for (uint32 i = 0; i < m_nSwapChainImageCount; i++) 
         {
-            RHIVulkanTexture* pVulkanTexture = new RHIVulkanTexture(m_pVulkanDevice, textureInfo, swapChainImages[i]);
+            RHIVulkanTexture* pVulkanTexture = (RHIVulkanTexture*)m_pVulkanDevice->CreateTexture(textureInfo, swapChainImages[i]);
             m_aVulkanTextures.push_back(pVulkanTexture);
         }
         m_nSwapChainImageCount = static_cast<uint32>(swapChainImages.size());

@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIPipelineCache::RHIPipelineCache(RHIDevice* pDevice, const RHIPipelineCacheCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_PipelineCache;
+        setObjectType(RHIObjectType::RHI_Object_PipelineCache);
     }
 
     RHIPipelineCache::~RHIPipelineCache()

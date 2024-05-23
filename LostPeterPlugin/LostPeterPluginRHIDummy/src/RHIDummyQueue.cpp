@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyQueue::RHIDummyQueue(RHIDummyDevice* pDummyDevice)
         : RHIQueue(pDummyDevice)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyQueue::RHIDummyQueue")
     }

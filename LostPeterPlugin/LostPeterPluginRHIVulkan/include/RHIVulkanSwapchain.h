@@ -13,18 +13,22 @@
 #define _RHI_VULKAN_SWAP_CHAIN_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanSwapChain : public RHISwapChain
-    {
-    public:
+                                             , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanSwapChain(RHIVulkanDevice* pVulkanDevice, const RHISwapChainCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanSwapChain();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkSwapchainKHR m_vkSwapChainKHR;
         VkSwapchainCreateInfoKHR m_vkSwapChainCreateInfoKHR;
         VkExtent2D m_vkExtent2D;
@@ -47,7 +51,6 @@ namespace LostPeterPluginRHIVulkan
         VkSemaphoreVector m_aWaitSemaphores;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkSwapchainKHR& GetVkSwapchainKHR() { return m_vkSwapChainKHR; }
         F_FORCEINLINE const VkSwapchainCreateInfoKHR& GetVkSwapchainCreateInfoKHR() const { return m_vkSwapChainCreateInfoKHR; }
         F_FORCEINLINE const VkExtent2D& GetVkExtent2D() const { return m_vkExtent2D; }

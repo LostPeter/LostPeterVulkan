@@ -13,24 +13,27 @@
 #define _RHI_VULKAN_RENDER_PASS_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanRenderPass : public RHIRenderPass
-    {
-    public:
+                                              , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanRenderPass(RHIVulkanDevice* pVulkanDevice, const RHIRenderPassCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanRenderPass();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkRenderPass m_vkRenderPass;
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkRenderPass& GetVkRenderPass() { return m_vkRenderPass; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

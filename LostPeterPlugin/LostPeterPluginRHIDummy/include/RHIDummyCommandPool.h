@@ -13,21 +13,26 @@
 #define _RHI_DUMMY_COMMAND_POOL_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyCommandPool : public RHICommandPool
+                                             , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyCommandPool(RHIDummyDevice* pDummyDevice);
+    public:
         virtual ~RHIDummyCommandPool();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
+
 
     public:
         virtual void Destroy();

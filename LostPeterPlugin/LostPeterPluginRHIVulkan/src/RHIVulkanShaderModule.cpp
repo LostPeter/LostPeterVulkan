@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanShaderModule::RHIVulkanShaderModule(RHIVulkanDevice* pVulkanDevice, const RHIShaderModuleCreateInfo& createInfo)
         : RHIShaderModule(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkShaderModule(VK_NULL_HANDLE)
         , m_eShaderStageBits(createInfo.eShaderStageBits)
         , m_strPath(createInfo.strPath)

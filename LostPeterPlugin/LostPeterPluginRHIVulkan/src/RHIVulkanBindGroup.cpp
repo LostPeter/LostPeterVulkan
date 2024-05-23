@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanBindGroup::RHIVulkanBindGroup(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCreateInfo& createInfo)
         : RHIBindGroup(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkDescriptorSet(VK_NULL_HANDLE)
         , m_strDebugName(createInfo.strDebugName)
     {

@@ -2,44 +2,37 @@
 * LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-21
+* Time:     2024-05-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_VULKAN_RENDER_PASS_CACHE_H_
-#define _RHI_VULKAN_RENDER_PASS_CACHE_H_
+#ifndef _RHI_VULKAN_OBJECT_H_
+#define _RHI_VULKAN_OBJECT_H_
 
 #include "RHIVulkanPreDefine.h"
-#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    class rhiVulkanExport RHIVulkanRenderPassCache : public RHIRenderPassCache
-                                                   , public RHIVulkanObject
-    {   
-        friend class RHIVulkanDevice;
-
-    protected:
-        RHIVulkanRenderPassCache(RHIVulkanDevice* pVulkanDevice, const RHIRenderPassCacheCreateInfo& createInfo);
+    class rhiVulkanExport RHIVulkanObject
+    {
     public:
-        virtual ~RHIVulkanRenderPassCache();
+        RHIVulkanObject(RHIVulkanDevice* pVulkanDevice);
+        virtual ~RHIVulkanObject();
 
     public:
     protected:
-
-
-    public:
-
+        RHIVulkanDevice* m_pVulkanDevice;
 
     public:
-        virtual void Destroy();
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
 
+    public:
+        
     };
     
-
 }; //LostPeterPluginRHIVulkan
 
 #endif

@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanBindGroupPool::RHIVulkanBindGroupPool(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupPoolCreateInfo& createInfo)
         : RHIBindGroupPool(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkDescriptorPool(VK_NULL_HANDLE)
         , m_nDescriptorCount(createInfo.nPoolCount)
         , m_strDebugName(createInfo.strDebugName)

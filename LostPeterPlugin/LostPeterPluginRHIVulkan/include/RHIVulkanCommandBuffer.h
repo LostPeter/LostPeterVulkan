@@ -13,21 +13,25 @@
 #define _RHI_VULKAN_COMMAND_BUFFER_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanCommandBuffer : public RHICommandBuffer
-    {
-    public:
+                                                 , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanCommandBuffer(RHIVulkanDevice* pVulkanDevice);
+    public:
         virtual ~RHIVulkanCommandBuffer();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
+
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
 
 
     public:

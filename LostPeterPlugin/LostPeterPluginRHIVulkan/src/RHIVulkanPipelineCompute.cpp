@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(RHIVulkanDevice* pVulkanDevice, const RHIPipelineComputeCreateInfo& createInfo)
         : RHIPipelineCompute(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkPipeline(VK_NULL_HANDLE)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")

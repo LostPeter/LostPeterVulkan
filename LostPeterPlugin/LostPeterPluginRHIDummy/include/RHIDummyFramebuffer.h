@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_FRAME_BUFFER_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyFrameBuffer : public RHIFrameBuffer
+                                             , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyFrameBuffer(RHIDummyDevice* pDummyDevice, const RHIFrameBufferCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyFrameBuffer();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
         
     public:

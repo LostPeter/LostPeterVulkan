@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_PIPELINE_CACHE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyPipelineCache : public RHIPipelineCache
+                                               , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyPipelineCache(RHIDummyDevice* pDummyDevice, const RHIPipelineCacheCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyPipelineCache();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

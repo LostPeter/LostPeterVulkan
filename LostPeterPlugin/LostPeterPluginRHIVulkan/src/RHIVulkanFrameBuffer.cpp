@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanFrameBuffer::RHIVulkanFrameBuffer(RHIVulkanDevice* pVulkanDevice, const RHIFrameBufferCreateInfo& createInfo)
         : RHIFrameBuffer(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanFrameBuffer::RHIVulkanFrameBuffer")
 

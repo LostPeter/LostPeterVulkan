@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyPipelineCache::RHIDummyPipelineCache(RHIDummyDevice* pDummyDevice, const RHIPipelineCacheCreateInfo& createInfo)
         : RHIPipelineCache(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyPipelineCache::RHIDummyPipelineCache")
     }

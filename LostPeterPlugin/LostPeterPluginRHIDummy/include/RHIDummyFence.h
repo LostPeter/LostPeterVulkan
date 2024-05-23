@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_FENCE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyFence : public RHIFence
+                                       , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyFence(RHIDummyDevice* pDummyDevice, const RHIFenceCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyFence();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
         
     public:

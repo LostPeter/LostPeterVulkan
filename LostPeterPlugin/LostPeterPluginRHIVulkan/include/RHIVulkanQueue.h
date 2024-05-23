@@ -13,20 +13,24 @@
 #define _RHI_VULKAN_QUEUE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanQueue : public RHIQueue
-    {
-    public:
+                                         , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex);
+    public:
         virtual ~RHIVulkanQueue();
 
     public:
         static uint32 ms_nID;
 
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         uint32 m_nFamilyIndex;
         VkQueue m_vkQueue;
 
@@ -34,7 +38,6 @@ namespace LostPeterPluginRHIVulkan
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkQueue& GetVkQueue() { return m_vkQueue; }
         F_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
 

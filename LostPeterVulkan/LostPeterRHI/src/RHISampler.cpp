@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHISampler::RHISampler(RHIDevice* pDevice, const RHISamplerCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_Sampler;
+        setObjectType(RHIObjectType::RHI_Object_Sampler);
     }
 
     RHISampler::~RHISampler()

@@ -13,25 +13,28 @@
 #define _RHI_VULKAN_BIND_GROUP_LAYOUT_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanBindGroupLayout : public RHIBindGroupLayout
-    {
-    public:
+                                                   , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanBindGroupLayout(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupLayoutCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanBindGroupLayout();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkDescriptorSetLayout m_vkDescriptorSetLayout;
 
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkDescriptorSetLayout& GetVkDescriptorSetLayout() { return m_vkDescriptorSetLayout; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

@@ -18,7 +18,7 @@ namespace LostPeterRHI
         : RHIObject(pDevice)
         , m_pTextureView(nullptr)
     {
-        m_eObject = RHIObjectType::RHI_Object_Texture;
+        setObjectType(RHIObjectType::RHI_Object_Texture);
     }
 
     RHITexture::~RHITexture()

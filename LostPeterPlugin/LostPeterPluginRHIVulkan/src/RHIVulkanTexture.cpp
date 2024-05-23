@@ -18,7 +18,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanTexture::RHIVulkanTexture(RHIVulkanDevice* pVulkanDevice, const RHITextureCreateInfo& createInfo)
         : RHITexture(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkImage(VK_NULL_HANDLE)
         , m_vmaAllocation(VK_NULL_HANDLE)
         , m_bIsOwnMemory(true)
@@ -42,7 +42,7 @@ namespace LostPeterPluginRHIVulkan
 
     RHIVulkanTexture::RHIVulkanTexture(RHIVulkanDevice* pVulkanDevice, const RHITextureCreateInfo& createInfo, VkImage& vkImage)
         : RHITexture(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkImage(vkImage)
         , m_vmaAllocation(VK_NULL_HANDLE)
         , m_bIsOwnMemory(false)

@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHICommandBuffer::RHICommandBuffer(RHIDevice* pDevice)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_CommandBuffer;
+        setObjectType(RHIObjectType::RHI_Object_CommandBuffer);
     }
 
     RHICommandBuffer::~RHICommandBuffer()

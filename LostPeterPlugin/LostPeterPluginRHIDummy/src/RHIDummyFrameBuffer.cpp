@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyFrameBuffer::RHIDummyFrameBuffer(RHIDummyDevice* pDummyDevice, const RHIFrameBufferCreateInfo& createInfo)
         : RHIFrameBuffer(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyFrameBuffer::RHIDummyFrameBuffer")
     }

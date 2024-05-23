@@ -13,19 +13,23 @@
 #define _RHI_VULKAN_TEXTURE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanTexture : public RHITexture
+                                           , public RHIVulkanObject
     {   
-    public:
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanTexture(RHIVulkanDevice* pVulkanDevice, const RHITextureCreateInfo& createInfo);
         RHIVulkanTexture(RHIVulkanDevice* pVulkanDevice, const RHITextureCreateInfo& createInfo, VkImage& vkImage);
+    public:
         virtual ~RHIVulkanTexture();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkImage m_vkImage;
         VmaAllocation m_vmaAllocation;
         bool m_bIsOwnMemory;
@@ -42,7 +46,6 @@ namespace LostPeterPluginRHIVulkan
       	String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkImage& GetVkImage() { return m_vkImage; }
         VkImageView GetVkImageView();
         F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }

@@ -31,6 +31,7 @@
 #include "RHIVulkanFrameBuffer.h"
 #include "RHIVulkanGraphicsState.h"
 #include "RHIVulkanInstance.h"
+#include "RHIVulkanObject.h"
 #include "RHIVulkanObjectManager.h"
 #include "RHIVulkanPhysicalDevice.h"
 #include "RHIVulkanPipelineCache.h"

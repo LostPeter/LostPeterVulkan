@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHISurface::RHISurface(RHIDevice* pDevice, const RHISurfaceCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_Surface;
+        setObjectType(RHIObjectType::RHI_Object_Surface);
     }
 
     RHISurface::~RHISurface()

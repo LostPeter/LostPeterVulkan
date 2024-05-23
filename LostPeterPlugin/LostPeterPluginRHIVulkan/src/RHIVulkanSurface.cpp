@@ -18,7 +18,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanSurface::RHIVulkanSurface(RHIVulkanDevice* pVulkanDevice, const RHISurfaceCreateInfo& createInfo)
         : RHISurface(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkSurface(VK_NULL_HANDLE)
         , m_pWindow((GLFWwindow*)createInfo.pWindow)
         , m_strDebugName(createInfo.strDebugName)

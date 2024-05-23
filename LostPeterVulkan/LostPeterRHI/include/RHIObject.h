@@ -26,15 +26,20 @@ namespace LostPeterRHI
     protected:
         RHIDevice* m_pDevice;
         RHIObjectType m_eObject;
+        uint32 m_nID;
+        String m_strName;
 
     public:
         F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
         F_FORCEINLINE RHIObjectType GetObjectType() const { return m_eObject; }
-        
+        F_FORCEINLINE uint32 GetID() const { return m_nID; }
+        F_FORCEINLINE const String& GetName() const { return m_strName; }
 
     public:
         virtual void Destroy() = 0;
 
+    protected:
+        virtual void setObjectType(RHIObjectType eObject);
     };
 
 }; //LostPeterRHI

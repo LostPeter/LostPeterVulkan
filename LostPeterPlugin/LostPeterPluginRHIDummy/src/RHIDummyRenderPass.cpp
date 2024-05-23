@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyRenderPass::RHIDummyRenderPass(RHIDummyDevice* pDummyDevice, const RHIRenderPassCreateInfo& createInfo)
         : RHIRenderPass(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyRenderPass::RHIDummyRenderPass")
     }

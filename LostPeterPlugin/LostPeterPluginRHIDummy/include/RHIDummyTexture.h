@@ -13,22 +13,25 @@
 #define _RHI_DUMMY_TEXTURE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyTexture : public RHITexture
+                                         , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyTexture(RHIDummyDevice* pDummyDevice, const RHITextureCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyTexture();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
         RHIDummyTextureView* m_pDummyTextureView;
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         F_FORCEINLINE RHIDummyTextureView* GetDummyTextureView() { return m_pDummyTextureView; }
 
 

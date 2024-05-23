@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIBindGroupPool::RHIBindGroupPool(RHIDevice* pDevice, const RHIBindGroupPoolCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_BindGroupPool;
+        setObjectType(RHIObjectType::RHI_Object_BindGroupPool);
     }
 
     RHIBindGroupPool::~RHIBindGroupPool()

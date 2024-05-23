@@ -29,6 +29,7 @@
 #include "RHIDummyFrameBuffer.h"
 #include "RHIDummyGraphicsState.h"
 #include "RHIDummyInstance.h"
+#include "RHIDummyObject.h"
 #include "RHIDummyObjectManager.h"
 #include "RHIDummyPhysicalDevice.h"
 #include "RHIDummyPipelineCache.h"

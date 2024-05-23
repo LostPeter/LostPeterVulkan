@@ -13,20 +13,24 @@
 #define _RHI_VULKAN_COMMAND_POOL_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanCommandPool : public RHICommandPool
-    {
-    public:
+                                               , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanCommandPool(RHIVulkanDevice* pVulkanDevice);
+    public:
         virtual ~RHIVulkanCommandPool();
 
     public:
         static uint32 ms_nID;
 
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         uint32 m_nFamilyIndex;
         VkCommandPool m_vkCommandPool;
 
@@ -34,7 +38,6 @@ namespace LostPeterPluginRHIVulkan
         String m_strDebugName;
         
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkCommandPool& GetVkCommandPool() { return m_vkCommandPool; }
 
         F_FORCEINLINE uint32 GetID() { return m_nID; }

@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_RENDER_PASS_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyRenderPass : public RHIRenderPass
+                                            , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyRenderPass(RHIDummyDevice* pDummyDevice, const RHIRenderPassCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyRenderPass();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
 
 
     public:

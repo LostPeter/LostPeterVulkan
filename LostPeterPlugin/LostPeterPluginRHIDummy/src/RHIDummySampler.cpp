@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummySampler::RHIDummySampler(RHIDummyDevice* pDummyDevice, const RHISamplerCreateInfo& createInfo)
         : RHISampler(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummySampler::RHIDummySampler")
     }

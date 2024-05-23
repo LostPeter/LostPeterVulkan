@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_PIPELINE_GRAPHICS_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyPipelineGraphics : public RHIPipelineGraphics
+                                                  , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyPipelineGraphics(RHIDummyDevice* pDummyDevice, const RHIPipelineGraphicsCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyPipelineGraphics();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         
 
     public:

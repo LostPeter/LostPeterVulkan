@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIVulkan
     uint32 RHIVulkanCommandPool::ms_nID = 0;
     RHIVulkanCommandPool::RHIVulkanCommandPool(RHIVulkanDevice* pVulkanDevice)
         : RHICommandPool(pVulkanDevice)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_nFamilyIndex(-1)
         , m_vkCommandPool(VK_NULL_HANDLE)
         , m_nID(++ms_nID)

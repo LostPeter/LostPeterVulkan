@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIQueue::RHIQueue(RHIDevice* pDevice)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_Queue;
+        setObjectType(RHIObjectType::RHI_Object_Queue);
     }
 
     RHIQueue::~RHIQueue()

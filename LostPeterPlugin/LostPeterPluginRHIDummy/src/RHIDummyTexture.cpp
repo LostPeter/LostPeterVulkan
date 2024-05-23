@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyTexture::RHIDummyTexture(RHIDummyDevice* pDummyDevice, const RHITextureCreateInfo& createInfo)
         : RHITexture(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
         , m_pDummyTextureView(nullptr)
     {
         F_Assert(m_pDummyDevice && "RHIDummyTexture::RHIDummyTexture")

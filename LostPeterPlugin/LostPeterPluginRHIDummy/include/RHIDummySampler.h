@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_SAMPLER_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummySampler : public RHISampler
+                                         , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummySampler(RHIDummyDevice* pDummyDevice, const RHISamplerCreateInfo& createInfo);
+    public:
         virtual ~RHIDummySampler();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         
 
     public:

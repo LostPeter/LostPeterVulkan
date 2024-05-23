@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIPipelineLayout::RHIPipelineLayout(RHIDevice* pDevice, const RHIPipelineLayoutCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_PipelineLayout;
+        setObjectType(RHIObjectType::RHI_Object_PipelineLayout);
     }
 
     RHIPipelineLayout::~RHIPipelineLayout()

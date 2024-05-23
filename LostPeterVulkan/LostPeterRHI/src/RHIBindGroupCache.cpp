@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIBindGroupCache::RHIBindGroupCache(RHIDevice* pDevice, const RHIBindGroupCacheCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_BindGroupCache;
+        setObjectType(RHIObjectType::RHI_Object_BindGroupCache);
     }
 
     RHIBindGroupCache::~RHIBindGroupCache()

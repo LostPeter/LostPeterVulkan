@@ -13,24 +13,27 @@
 #define _RHI_VULKAN_PIPELINE_GRAPHICS_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanPipelineGraphics : public RHIPipelineGraphics
-    {
-    public:
+                                                    , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanPipelineGraphics(RHIVulkanDevice* pVulkanDevice, const RHIPipelineGraphicsCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanPipelineGraphics();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkPipeline m_vkPipeline;
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkPipeline& GetVkPipeline() { return m_vkPipeline; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

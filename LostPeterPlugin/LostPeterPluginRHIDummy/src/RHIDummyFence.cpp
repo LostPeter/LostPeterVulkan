@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyFence::RHIDummyFence(RHIDummyDevice* pDummyDevice, const RHIFenceCreateInfo& createInfo)
         : RHIFence(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyFence::RHIDummyFence")
     }

@@ -13,25 +13,28 @@
 #define _RHI_VULKAN_FENCE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanFence : public RHIFence
-    {
-    public:
+                                         , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, const RHIFenceCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanFence();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkFence m_vkFence;
 
         bool m_bIsSignaled;
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkFence& GetVkFence() { return m_vkFence; }
 
         F_FORCEINLINE bool IsSignaled() { return m_bIsSignaled; }

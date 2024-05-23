@@ -13,25 +13,28 @@
 #define _RHI_VULKAN_SURFACE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanSurface : public RHISurface
-    {
-    public:
+                                           , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanSurface(RHIVulkanDevice* pVulkanDevice, const RHISurfaceCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanSurface();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkSurfaceKHR m_vkSurface;
 
         GLFWwindow* m_pWindow;
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkSurfaceKHR& GetVulkanSurface() { return m_vkSurface; }
 
         F_FORCEINLINE GLFWwindow* GetWindow() const { return m_pWindow; }

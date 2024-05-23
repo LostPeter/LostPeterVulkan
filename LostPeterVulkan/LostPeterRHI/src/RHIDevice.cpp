@@ -11,6 +11,8 @@
 
 #include "../include/RHIDevice.h"
 #include "../include/RHIPhysicalDevice.h"
+#include "../include/RHIObject.h"
+#include "../include/RHIObjectManager.h"
 
 namespace LostPeterRHI
 {
@@ -24,6 +26,11 @@ namespace LostPeterRHI
     RHIDevice::~RHIDevice()
     {
         
+    }
+
+    void RHIDevice::DestroyObject(RHIObject* pObject)
+    {
+        m_pObjectManager->DestroyObject(pObject);
     }
     
     void RHIDevice::destroyPixelFormatInfos()

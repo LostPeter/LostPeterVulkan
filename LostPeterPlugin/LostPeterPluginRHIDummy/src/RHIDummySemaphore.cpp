@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummySemaphore::RHIDummySemaphore(RHIDummyDevice* pDummyDevice, const RHISemaphoreCreateInfo& createInfo)
         : RHISemaphore(pDummyDevice, createInfo)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummySemaphore::RHIDummySemaphore")
     }

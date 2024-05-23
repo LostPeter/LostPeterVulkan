@@ -149,6 +149,10 @@ namespace LostPeterPluginRHIVulkan
     {
         return new RHIVulkanTexture(this, createInfo);
     }
+    RHITexture* RHIVulkanDevice::CreateTexture(const RHITextureCreateInfo& createInfo, VkImage& vkImage)
+    {
+        return new RHIVulkanTexture(this, createInfo, vkImage);
+    }
 
     RHISampler* RHIVulkanDevice::CreateSampler(const RHISamplerCreateInfo& createInfo)
     {

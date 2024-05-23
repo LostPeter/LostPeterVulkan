@@ -17,7 +17,7 @@ namespace LostPeterRHI
     RHIRenderPass::RHIRenderPass(RHIDevice* pDevice, const RHIRenderPassCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
-        m_eObject = RHIObjectType::RHI_Object_RenderPass;
+        setObjectType(RHIObjectType::RHI_Object_RenderPass);
     }
 
     RHIRenderPass::~RHIRenderPass()

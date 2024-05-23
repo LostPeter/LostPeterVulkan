@@ -13,18 +13,22 @@
 #define _RHI_VULKAN_BUFFER_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanBuffer : public RHIBuffer
-    {
-    public:
+                                          , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
+
+    protected:
         RHIVulkanBuffer(RHIVulkanDevice* pVulkanDevice, const RHIBufferCreateInfo& createInfo);
+    public:
         virtual ~RHIVulkanBuffer();
 
     public:
     protected:
-        RHIVulkanDevice* m_pVulkanDevice;
         VkBuffer m_vkBuffer;
         VmaAllocation m_vmaAllocation;
         RHIVulkanBufferView* m_pVulkanBufferView;
@@ -34,7 +38,6 @@ namespace LostPeterPluginRHIVulkan
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
         F_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
         F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }
         F_FORCEINLINE RHIVulkanBufferView* GetVulkanBufferView() { return m_pVulkanBufferView; }

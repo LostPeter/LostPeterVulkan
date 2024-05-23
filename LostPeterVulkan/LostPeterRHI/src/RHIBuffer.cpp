@@ -18,7 +18,7 @@ namespace LostPeterRHI
         : RHIObject(pDevice)
         , m_pBufferView(nullptr)
     {
-        m_eObject = RHIObjectType::RHI_Object_Buffer;
+        setObjectType(RHIObjectType::RHI_Object_Buffer);
     }
 
     RHIBuffer::~RHIBuffer()

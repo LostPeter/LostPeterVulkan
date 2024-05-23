@@ -13,21 +13,25 @@
 #define _RHI_DUMMY_PIPELINE_COMPUTE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
     class rhiDummyExport RHIDummyPipelineCompute : public RHIPipelineCompute
+                                                 , public RHIDummyObject
     {
-    public:
+        friend class RHIDummyDevice;
+
+    protected:    
         RHIDummyPipelineCompute(RHIDummyDevice* pDummyDevice, const RHIPipelineComputeCreateInfo& createInfo);
+    public:
         virtual ~RHIDummyPipelineCompute();
 
     public:
     protected:
-        RHIDummyDevice* m_pDummyDevice;
+
 
     public:
-        F_FORCEINLINE RHIDummyDevice* GetDummyDevice() { return m_pDummyDevice; }
         
 
     public:

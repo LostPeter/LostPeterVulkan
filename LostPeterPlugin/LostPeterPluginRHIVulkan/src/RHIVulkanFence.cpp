@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanFence::RHIVulkanFence(RHIVulkanDevice* pVulkanDevice, const RHIFenceCreateInfo& createInfo)
         : RHIFence(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_vkFence(VK_NULL_HANDLE)
         , m_bIsSignaled(createInfo.bIsSignaled)
         , m_strDebugName(createInfo.strDebugName)

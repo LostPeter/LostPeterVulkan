@@ -75,6 +75,7 @@ namespace LostPeterPluginRHIVulkan
         virtual RHISwapChain* CreateSwapChain(const RHISwapChainCreateInfo& createInfo);
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo);
         virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo);
+        virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo, VkImage& vkImage);
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo);
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo);
         virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo);

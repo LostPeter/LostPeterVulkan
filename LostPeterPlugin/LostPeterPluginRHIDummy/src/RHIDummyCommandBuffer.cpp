@@ -17,7 +17,7 @@ namespace LostPeterPluginRHIDummy
 {
     RHIDummyCommandBuffer::RHIDummyCommandBuffer(RHIDummyDevice* pDummyDevice)
         : RHICommandBuffer(pDummyDevice)
-        , m_pDummyDevice(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyCommandBuffer::RHIDummyCommandBuffer")
     }

@@ -662,6 +662,9 @@ namespace LostPeterRHI
 
         RHI_Object_Count,
     };
+    rhiExport const String& RHI_GetObjectTypeName(RHIObjectType type);
+    rhiExport const String& RHI_GetObjectTypeName(int type);
+    rhiExport RHIObjectType RHI_ParseObjectType(const String& strName);
 
 
 	#define RHI_FLAGS_DECLARE(FlagsType, BitsType) \
@@ -775,8 +778,109 @@ namespace LostPeterRHI
 	class RHIUtil;
 
     typedef std::vector<RHIPixelFormatType> RHIPixelFormatTypeVector;
-	typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
+	
+    typedef std::vector<RHIBindGroup*> RHIBindGroupPtrVector;
+    typedef std::map<uint32, RHIBindGroup*> RHIBindGroupPtrIDMap;
+    typedef std::map<String, RHIBindGroup*> RHIBindGroupPtrNameMap;
+    
+    typedef std::vector<RHIBindGroupLayout*> RHIBindGroupLayoutPtrVector;
+    typedef std::map<uint32, RHIBindGroupLayout*> RHIBindGroupLayoutPtrIDMap;
+    typedef std::map<String, RHIBindGroupLayout*> RHIBindGroupLayoutPtrNameMap;
+    
+    typedef std::vector<RHIBindGroupPool*> RHIBindGroupPoolPtrVector;
+    typedef std::map<uint32, RHIBindGroupPool*> RHIBindGroupPoolPtrIDMap;
+    typedef std::map<String, RHIBindGroupPool*> RHIBindGroupPoolPtrNameMap;
 
+    typedef std::vector<RHIBuffer*> RHIBufferPtrVector;
+    typedef std::map<uint32, RHIBuffer*> RHIBufferPtrIDMap;
+    typedef std::map<String, RHIBuffer*> RHIBufferPtrNameMap;
+    typedef std::vector<RHIBufferView*> RHIBufferViewPtrVector;
+    typedef std::map<uint32, RHIBufferView*> RHIBufferViewPtrIDMap;
+    typedef std::map<String, RHIBufferView*> RHIBufferViewPtrNameMap;
+
+    typedef std::vector<RHICommandBuffer*> RHICommandBufferPtrVector;
+    typedef std::map<uint32, RHICommandBuffer*> RHICommandBufferPtrIDMap;
+    typedef std::map<String, RHICommandBuffer*> RHICommandBufferPtrNameMap;
+
+    typedef std::vector<RHICommandPool*> RHICommandPoolPtrVector;
+    typedef std::map<uint32, RHICommandPool*> RHICommandPoolPtrIDMap;
+    typedef std::map<String, RHICommandPool*> RHICommandPoolPtrNameMap;
+
+    typedef std::vector<RHIFence*> RHIFencePtrVector;
+    typedef std::map<uint32, RHIFence*> RHIFencePtrIDMap;
+    typedef std::map<String, RHIFence*> RHIFencePtrNameMap;
+    
+    typedef std::vector<RHIFrameBuffer*> RHIFrameBufferPtrVector;
+    typedef std::map<uint32, RHIFrameBuffer*> RHIFrameBufferPtrIDMap;
+    typedef std::map<String, RHIFrameBuffer*> RHIFrameBufferPtrNameMap;
+
+    typedef std::vector<RHIObject*> RHIObjectPtrVector;
+    typedef std::map<uint32, RHIObject*> RHIObjectPtrIDMap;
+    typedef std::map<String, RHIObject*> RHIObjectPtrNameMap;
+    typedef std::map<RHIObjectType, RHIObjectPtrVector> RHIObjectPtrType2VectorMap;
+
+    typedef std::vector<RHIPhysicalDevice*> RHIPhysicalDevicePtrVector;
+    typedef std::map<uint32, RHIPhysicalDevice*> RHIPhysicalDevicePtrIDMap;
+    typedef std::map<String, RHIPhysicalDevice*> RHIPhysicalDevicePtrNameMap;
+
+    typedef std::vector<RHIPipeline*> RHIPipelinePtrVector;
+    typedef std::map<uint32, RHIPipeline*> RHIPipelinePtrIDMap;
+    typedef std::map<String, RHIPipeline*> RHIPipelinePtrNameMap;
+
+    typedef std::vector<RHIPipelineCompute*> RHIPipelineComputePtrVector;
+    typedef std::map<uint32, RHIPipelineCompute*> RHIPipelineComputePtrIDMap;
+    typedef std::map<String, RHIPipelineCompute*> RHIPipelineComputePtrNameMap;
+
+    typedef std::vector<RHIPipelineGraphics*> RHIPipelineGraphicsPtrVector;
+    typedef std::map<uint32, RHIPipelineGraphics*> RHIPipelineGraphicsPtrIDMap;
+    typedef std::map<String, RHIPipelineGraphics*> RHIPipelineGraphicsPtrNameMap;
+
+    typedef std::vector<RHIPipelineLayout*> RHIPipelineLayoutPtrVector;
+    typedef std::map<uint32, RHIPipelineLayout*> RHIPipelineLayoutPtrIDMap;
+    typedef std::map<String, RHIPipelineLayout*> RHIPipelineLayoutPtrNameMap;
+
+    typedef std::vector<RHIQueue*> RHIQueuePtrVector;
+    typedef std::map<uint32, RHIQueue*> RHIQueuePtrIDMap;
+    typedef std::map<String, RHIQueue*> RHIQueuePtrNameMap;
+
+    typedef std::vector<RHIRenderPass*> RHIRenderPassPtrVector;
+    typedef std::map<uint32, RHIRenderPass*> RHIRenderPassPtrIDMap;
+    typedef std::map<String, RHIRenderPass*> RHIRenderPassPtrNameMap;
+
+    typedef std::vector<RHISampler*> RHISamplerPtrVector;
+    typedef std::map<uint32, RHISampler*> RHISamplerPtrIDMap;
+    typedef std::map<String, RHISampler*> RHISamplerPtrNameMap;
+
+    typedef std::vector<RHISemaphore*> RHISemaphorePtrVector;
+    typedef std::map<uint32, RHISemaphore*> RHISemaphorePtrIDMap;
+    typedef std::map<String, RHISemaphore*> RHISemaphorePtrNameMap;
+
+    typedef std::vector<RHIShaderModule*> RHIShaderModulePtrVector;
+    typedef std::map<uint32, RHIShaderModule*> RHIShaderModulePtrIDMap;
+    typedef std::map<String, RHIShaderModule*> RHIShaderModulePtrNameMap;
+
+    typedef std::vector<RHISurface*> RHISurfacePtrVector;
+    typedef std::map<uint32, RHISurface*> RHISurfacePtrIDMap;
+    typedef std::map<String, RHISurface*> RHISurfacePtrNameMap;
+
+    typedef std::vector<RHISwapChain*> RHISwapChainPtrVector;
+    typedef std::map<uint32, RHISwapChain*> RHISwapChainPtrIDMap;
+    typedef std::map<String, RHISwapChain*> RHISwapChainPtrNameMap;
+
+    typedef std::vector<RHIShaderModule*> RHIShaderModulePtrVector;
+    typedef std::map<uint32, RHIShaderModule*> RHIShaderModulePtrIDMap;
+    typedef std::map<String, RHIShaderModule*> RHIShaderModulePtrNameMap;
+
+    typedef std::vector<RHIBarrier*> RHIBarrierPtrVector;
+    typedef std::map<uint32, RHIBarrier*> RHIBarrierPtrIDMap;
+    typedef std::map<String, RHIBarrier*> RHIBarrierPtrNameMap;
+
+    typedef std::vector<RHITexture*> RHITexturePtrVector;
+    typedef std::map<uint32, RHITexture*> RHITexturePtrIDMap;
+    typedef std::map<String, RHITexture*> RHITexturePtrNameMap;
+    typedef std::vector<RHITextureView*> RHITextureViewPtrVector;
+    typedef std::map<uint32, RHITextureView*> RHITextureViewPtrIDMap;
+    typedef std::map<String, RHITextureView*> RHITextureViewPtrNameMap;
 
 
     ////////////////////////////// Struct //////////////////////////////

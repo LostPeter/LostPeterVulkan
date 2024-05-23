@@ -16,7 +16,7 @@ namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanBindGroupCache::RHIVulkanBindGroupCache(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCacheCreateInfo& createInfo)
         : RHIBindGroupCache(pVulkanDevice, createInfo)
-        , m_pVulkanDevice(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
         , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanBindGroupCache::RHIVulkanBindGroupCache")
