@@ -27,13 +27,27 @@ namespace LostPeterRHI
         RHIPhysicalDevice* m_pPhysicalDevice;
         RHIObjectManager* m_pObjectManager;
 
+        RHIBindGroupLayoutCache* m_pBindGroupLayoutCache;
+        RHIBindGroupCache* m_pBindGroupCache;
+        RHIShaderModuleCache* m_pShaderModuleCache;
+        RHIPipelineLayoutCache* m_pPipelineLayoutCache;
+        RHIPipelineCache* m_pPipelineCache;
+        RHIRenderPassCache* m_pRenderPassCache;
+
         RHIPixelFormatInfoPtrVector m_aPixelFormatInfos;
         RHIPixelFormatInfoPtrMap m_mapPixelFormatInfos;
         RHIPixelFormatInfoPtrMap m_mapPixelFormatInfosOriginal;
 
     public:
-        F_FORCEINLINE RHIPhysicalDevice* GetPhysicalDevice() { return m_pPhysicalDevice; }
-        F_FORCEINLINE RHIObjectManager* GetObjectManager() { return m_pObjectManager; }
+        F_FORCEINLINE RHIPhysicalDevice* GetPhysicalDevice() const { return m_pPhysicalDevice; }
+        F_FORCEINLINE RHIObjectManager* GetObjectManager() const { return m_pObjectManager; }
+
+        F_FORCEINLINE RHIBindGroupLayoutCache* GetBindGroupLayoutCache() const { return m_pBindGroupLayoutCache; }
+        F_FORCEINLINE RHIBindGroupCache* GetBindGroupCache() const { return m_pBindGroupCache; }
+        F_FORCEINLINE RHIShaderModuleCache* GetShaderModuleCache() const { return m_pShaderModuleCache; }
+        F_FORCEINLINE RHIPipelineLayoutCache* GetPipelineLayoutCache() const { return m_pPipelineLayoutCache; }
+        F_FORCEINLINE RHIPipelineCache* GetPipelineCache() const { return m_pPipelineCache; }
+        F_FORCEINLINE RHIRenderPassCache* GetRenderPassCache() const { return m_pRenderPassCache; }
 
         F_FORCEINLINE const RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() const { return m_aPixelFormatInfos; }
         F_FORCEINLINE RHIPixelFormatInfoPtrVector& GetPixelFormatInfoPtrVector() { return m_aPixelFormatInfos; }
@@ -57,11 +71,14 @@ namespace LostPeterRHI
         virtual RHIBuffer* CreateBuffer(const RHIBufferCreateInfo& createInfo) = 0;
         virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo) = 0;
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo) = 0;
+        virtual RHIBindGroupLayoutCache* CreateBindGroupLayoutCache(const RHIBindGroupLayoutCacheCreateInfo& createInfo) = 0;
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo) = 0;
         virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo) = 0;
         virtual RHIBindGroupCache* CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo) = 0;
         virtual RHIBindGroup* CreateBindGroup(const RHIBindGroupCreateInfo& createInfo) = 0;
+        virtual RHIShaderModuleCache* CreateShaderModuleCache(const RHIShaderModuleCacheCreateInfo& createInfo) = 0;
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo) = 0;
+        virtual RHIPipelineLayoutCache* CreatePipelineLayoutCache(const RHIPipelineLayoutCacheCreateInfo& createInfo) = 0;
         virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo) = 0;
         virtual RHIPipelineCache* CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo) = 0;
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo) = 0;

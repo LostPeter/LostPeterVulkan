@@ -642,23 +642,26 @@ namespace LostPeterRHI
         RHI_Object_Buffer,                              //3:  Buffer
         RHI_Object_Texture,                             //4:  Texture
         RHI_Object_Sampler,                             //5:  Sampler
-        RHI_Object_BindGroupLayout,                     //6:  BindGroupLayout
-        RHI_Object_BindGroupPool,                       //7:  BindGroupPool
-        RHI_Object_BindGroupCache,                      //8:  BindGroupCache
-        RHI_Object_BindGroup,                           //9:  BindGroup
-        RHI_Object_ShaderModule,                        //10: ShaderModule
-        RHI_Object_PipelineLayout,                      //11: PipelineLayout
-        RHI_Object_PipelineCache,                       //12: PipelineCache
-        RHI_Object_PipelineCompute,                     //13: PipelineCompute
-        RHI_Object_PipelineGraphics,                    //14: PipelineGraphics 
-        RHI_Object_RenderPassCache,                     //15: RenderPassCache
-        RHI_Object_RenderPass,                          //16: RenderPass
-        RHI_Object_FrameBuffer,                         //17: FrameBuffer
-        RHI_Object_Fence,                               //18: Fence
-        RHI_Object_Semaphore,                           //19: Semaphore
-        RHI_Object_CommandPool,                         //20: CommandPool
-        RHI_Object_CommandBuffer,                       //21: CommandBuffer
-        RHI_Object_Queue,                               //22: Queue
+        RHI_Object_BindGroupLayoutCache,                //6:  BindGroupLayoutCache
+        RHI_Object_BindGroupLayout,                     //7:  BindGroupLayout
+        RHI_Object_BindGroupPool,                       //8:  BindGroupPool
+        RHI_Object_BindGroupCache,                      //9:  BindGroupCache
+        RHI_Object_BindGroup,                           //10: BindGroup
+        RHI_Object_ShaderModuleCache,                   //11: ShaderModuleCache
+        RHI_Object_ShaderModule,                        //12: ShaderModule
+        RHI_Object_PipelineLayoutCache,                 //13: PipelineLayoutCache
+        RHI_Object_PipelineLayout,                      //14: PipelineLayout
+        RHI_Object_PipelineCache,                       //15: PipelineCache
+        RHI_Object_PipelineCompute,                     //16: PipelineCompute
+        RHI_Object_PipelineGraphics,                    //17: PipelineGraphics 
+        RHI_Object_RenderPassCache,                     //18: RenderPassCache
+        RHI_Object_RenderPass,                          //19: RenderPass
+        RHI_Object_FrameBuffer,                         //20: FrameBuffer
+        RHI_Object_Fence,                               //21: Fence
+        RHI_Object_Semaphore,                           //22: Semaphore
+        RHI_Object_CommandPool,                         //23: CommandPool
+        RHI_Object_CommandBuffer,                       //24: CommandBuffer
+        RHI_Object_Queue,                               //25: Queue
 
         RHI_Object_Count,
     };
@@ -744,6 +747,7 @@ namespace LostPeterRHI
     class RHIBindGroup;
     class RHIBindGroupCache;
     class RHIBindGroupLayout;
+    class RHIBindGroupLayoutCache;
     class RHIBindGroupPool;
 	class RHIBuffer;
 	class RHIBufferView;
@@ -764,12 +768,14 @@ namespace LostPeterRHI
     class RHIPipelineCompute;
     class RHIPipelineGraphics;
     class RHIPipelineLayout;
+    class RHIPipelineLayoutCache;
 	class RHIQueue;
     class RHIRenderPass;
     class RHIRenderPassCache;
 	class RHISampler;
     class RHISemaphore;
 	class RHIShaderModule;
+    class RHIShaderModuleCache;
 	class RHISurface;
 	class RHISwapChain;
 	class RHIBarrier;
@@ -1235,6 +1241,18 @@ namespace LostPeterRHI
         }
     };
 
+    //RHIBindGroupLayoutCacheCreateInfo
+    struct rhiExport RHIBindGroupLayoutCacheCreateInfo
+    {
+        String strDebugName;
+
+        RHIBindGroupLayoutCacheCreateInfo()
+            : strDebugName("")
+        {
+
+        }
+    };
+
     //RHIBindGroupLayoutCreateInfo
     struct rhiExport RHIBindGroupLayoutCreateInfo
     {
@@ -1330,6 +1348,18 @@ namespace LostPeterRHI
         }
     };
 
+    //RHIPipelineLayoutCacheCreateInfo
+    struct rhiExport RHIPipelineLayoutCacheCreateInfo
+    {
+        String strDebugName;
+
+        RHIPipelineLayoutCacheCreateInfo()
+            : strDebugName("")
+        {
+
+        }
+    };
+
     //RHIPipelineLayoutCreateInfo
     struct rhiExport RHIPipelineLayoutCreateInfo
     {
@@ -1345,6 +1375,18 @@ namespace LostPeterRHI
             , nPipelineConstantLayoutCount(0)
             , pPipelineConstantLayouts(nullptr)
             , strDebugName("")
+        {
+
+        }
+    };
+
+    //RHIShaderModuleCacheCreateInfo
+    struct rhiExport RHIShaderModuleCacheCreateInfo
+    {
+        String strDebugName;
+
+        RHIShaderModuleCacheCreateInfo()
+            : strDebugName("")
         {
 
         }

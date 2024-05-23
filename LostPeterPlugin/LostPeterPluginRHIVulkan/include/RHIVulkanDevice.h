@@ -32,6 +32,13 @@ namespace LostPeterPluginRHIVulkan
         VmaAllocator m_vmaAllocator;
         RHIVulkanObjectManager* m_pVulkanObjectManager;
 
+        RHIVulkanBindGroupLayoutCache* m_pVulkanBindGroupLayoutCache;
+        RHIVulkanBindGroupCache* m_pVulkanBindGroupCache;
+        RHIVulkanShaderModuleCache* m_pVulkanShaderModuleCache;
+        RHIVulkanPipelineLayoutCache* m_pVulkanPipelineLayoutCache;
+        RHIVulkanPipelineCache* m_pVulkanPipelineCache;
+        RHIVulkanRenderPassCache* m_pVulkanRenderPassCache;
+
         String m_strDebugName;
 
         RHIVulkanCommandPool* m_pCommandPoolTransfer;
@@ -52,6 +59,13 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE VmaAllocator& GetVmaAllocator() { return m_vmaAllocator; }
         F_FORCEINLINE RHIVulkanObjectManager* GetVulkanObjectManager() const { return m_pVulkanObjectManager; }
+
+        F_FORCEINLINE RHIVulkanBindGroupLayoutCache* GetVulkanBindGroupLayoutCache() const { return m_pVulkanBindGroupLayoutCache; }
+        F_FORCEINLINE RHIVulkanBindGroupCache* GetVulkanBindGroupCache() const { return m_pVulkanBindGroupCache; }
+        F_FORCEINLINE RHIVulkanShaderModuleCache* GetVulkanShaderModuleCache() const { return m_pVulkanShaderModuleCache; }
+        F_FORCEINLINE RHIVulkanPipelineLayoutCache* GetVulkanPipelineLayoutCache() const { return m_pVulkanPipelineLayoutCache; }
+        F_FORCEINLINE RHIVulkanPipelineCache* GetVulkanPipelineCache() const { return m_pVulkanPipelineCache; }
+        F_FORCEINLINE RHIVulkanRenderPassCache* GetVulkanRenderPassCache() const { return m_pVulkanRenderPassCache; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
@@ -77,11 +91,14 @@ namespace LostPeterPluginRHIVulkan
         virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo);
         virtual RHITexture* CreateTexture(const RHITextureCreateInfo& createInfo, VkImage& vkImage);
         virtual RHISampler* CreateSampler(const RHISamplerCreateInfo& createInfo);
+        virtual RHIBindGroupLayoutCache* CreateBindGroupLayoutCache(const RHIBindGroupLayoutCacheCreateInfo& createInfo);
         virtual RHIBindGroupLayout* CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo);
         virtual RHIBindGroupPool* CreateBindGroupPool(const RHIBindGroupPoolCreateInfo& createInfo);
         virtual RHIBindGroupCache* CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo);
         virtual RHIBindGroup* CreateBindGroup(const RHIBindGroupCreateInfo& createInfo);
+        virtual RHIShaderModuleCache* CreateShaderModuleCache(const RHIShaderModuleCacheCreateInfo& createInfo);
         virtual RHIShaderModule* CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo);
+        virtual RHIPipelineLayoutCache* CreatePipelineLayoutCache(const RHIPipelineLayoutCacheCreateInfo& createInfo);
         virtual RHIPipelineLayout* CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo);
         virtual RHIPipelineCache* CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo);
         virtual RHIPipelineCompute* CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo);
@@ -109,6 +126,7 @@ namespace LostPeterPluginRHIVulkan
         void SetDebugObject(VkObjectType objectType, uint64_t objectHandle, const char* objectName);
 
     protected:
+        void destroyCache();
         void destroyVMA();
         void destroyVulkanQueue();
         void destroyVulkanCommandPool();

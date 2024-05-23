@@ -2,34 +2,33 @@
 * LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-05-22
+* Time:     2024-05-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIDummyObjectManager.h"
+#include "../include/RHIDummyShaderModuleCache.h"
 #include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyObjectManager::RHIDummyObjectManager(RHIDummyDevice* pDummyDevice)
-        : RHIObjectManager(pDummyDevice)
-        , m_pDummyDevice(pDummyDevice)
+    RHIDummyShaderModuleCache::RHIDummyShaderModuleCache(RHIDummyDevice* pDummyDevice, const RHIShaderModuleCacheCreateInfo& createInfo)
+        : RHIShaderModuleCache(pDummyDevice, createInfo)
+        , RHIDummyObject(pDummyDevice)
     {
-        F_Assert(m_pDummyDevice && "RHIDummyObjectManager::RHIDummyObjectManager")
+        F_Assert(m_pDummyDevice && "RHIDummyShaderModuleCache::RHIDummyShaderModuleCache")
     }
 
-    RHIDummyObjectManager::~RHIDummyObjectManager()
+    RHIDummyShaderModuleCache::~RHIDummyShaderModuleCache()
     {
         Destroy();
     }
     
-    void RHIDummyObjectManager::Destroy()
+    void RHIDummyShaderModuleCache::Destroy()
     {
-        DestroyObjectAll();
-    }
 
+    }
 
 }; //LostPeterPluginRHIDummy

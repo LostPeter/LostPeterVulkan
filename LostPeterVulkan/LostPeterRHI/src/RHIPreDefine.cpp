@@ -141,23 +141,26 @@ namespace LostPeterRHI
         "Buffer",                       //3:  Buffer
         "Texture",                      //4:  Texture
         "Sampler",                      //5:  Sampler
-        "BindGroupLayout",              //6:  BindGroupLayout
-        "BindGroupPool",                //7:  BindGroupPool
-        "BindGroupCache",               //8:  BindGroupCache
-        "BindGroup",                    //9:  BindGroup
-        "ShaderModule",                 //10: ShaderModule
-        "PipelineLayout",               //11: PipelineLayout
-        "PipelineCache",                //12: PipelineCache
-        "PipelineCompute",              //13: PipelineCompute
-        "PipelineGraphics",             //14: PipelineGraphics
-        "RenderPassCache",              //15: RenderPassCache
-        "RenderPass",                   //16: RenderPass
-        "FrameBuffer",                  //17: FrameBuffer
-        "Fence",                        //18: Fence
-        "Semaphore",                    //19: Semaphore
-        "CommandPool",                  //20: CommandPool
-        "CommandBuffer",                //21: CommandBuffer
-        "Queue",                        //22: Queue
+        "BindGroupLayoutCache",         //6:  BindGroupLayoutCache
+        "BindGroupLayout",              //7:  BindGroupLayout
+        "BindGroupPool",                //8:  BindGroupPool
+        "BindGroupCache",               //9:  BindGroupCache
+        "BindGroup",                    //10: BindGroup
+        "ShaderModuleCache",            //11: ShaderModuleCache
+        "ShaderModule",                 //12: ShaderModule
+        "PipelineLayoutCache",          //13: PipelineLayoutCache
+        "PipelineLayout",               //14: PipelineLayout
+        "PipelineCache",                //15: PipelineCache
+        "PipelineCompute",              //16: PipelineCompute
+        "PipelineGraphics",             //17: PipelineGraphics
+        "RenderPassCache",              //18: RenderPassCache
+        "RenderPass",                   //19: RenderPass
+        "FrameBuffer",                  //20: FrameBuffer
+        "Fence",                        //21: Fence
+        "Semaphore",                    //22: Semaphore
+        "CommandPool",                  //23: CommandPool
+        "CommandBuffer",                //24: CommandBuffer
+        "Queue",                        //25: Queue
     };
     const String& RHI_GetObjectTypeName(RHIObjectType type)
     {

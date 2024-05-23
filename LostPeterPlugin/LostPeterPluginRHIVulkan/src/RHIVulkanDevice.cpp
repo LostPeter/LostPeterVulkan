@@ -18,12 +18,15 @@
 #include "../include/RHIVulkanBuffer.h"
 #include "../include/RHIVulkanTexture.h"
 #include "../include/RHIVulkanSampler.h"
+#include "../include/RHIVulkanBindGroupLayoutCache.h"
 #include "../include/RHIVulkanBindGroupLayout.h"
 #include "../include/RHIVulkanBindGroupPool.h"
 #include "../include/RHIVulkanBindGroupCache.h"
 #include "../include/RHIVulkanBindGroup.h"
 #include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanShaderModuleCache.h"
 #include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanPipelineLayoutCache.h"
 #include "../include/RHIVulkanPipelineCache.h"
 #include "../include/RHIVulkanPipelineCompute.h"
 #include "../include/RHIVulkanPipelineGraphics.h"
@@ -50,6 +53,12 @@ namespace LostPeterPluginRHIVulkan
         , m_pVulkanPhysicalDevice(pVulkanPhysicalDevice)
         , m_vkDevice(VK_NULL_HANDLE)
         , m_vmaAllocator(VK_NULL_HANDLE)
+        , m_pVulkanBindGroupLayoutCache(nullptr)
+        , m_pVulkanBindGroupCache(nullptr)
+        , m_pVulkanShaderModuleCache(nullptr)
+        , m_pVulkanPipelineLayoutCache(nullptr)
+        , m_pVulkanPipelineCache(nullptr)
+        , m_pVulkanRenderPassCache(nullptr)
         , m_strDebugName(createInfo.strDebugName)
         , m_pCommandPoolTransfer(nullptr)
         , m_pCommandPoolGraphics(nullptr)
@@ -72,6 +81,7 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanDevice::Destroy()
     {
+        destroyCache();
         destroyPixelFormatInfos();
         destroyVMA();
         destroyVulkanQueue();
@@ -81,6 +91,15 @@ namespace LostPeterPluginRHIVulkan
         this->m_vkDevice = VK_NULL_HANDLE;
         
         m_pVulkanPhysicalDevice = nullptr;
+    }
+    void RHIVulkanDevice::destroyCache()
+    {
+        F_DELETE(m_pVulkanBindGroupLayoutCache)
+        F_DELETE(m_pVulkanBindGroupCache)
+        F_DELETE(m_pVulkanShaderModuleCache)
+        F_DELETE(m_pVulkanPipelineLayoutCache)
+        F_DELETE(m_pVulkanPipelineCache)
+        F_DELETE(m_pVulkanRenderPassCache)
     }
     void RHIVulkanDevice::destroyVMA()
     {
@@ -159,6 +178,11 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanSampler(this, createInfo);
     }
 
+    RHIBindGroupLayoutCache* RHIVulkanDevice::CreateBindGroupLayoutCache(const RHIBindGroupLayoutCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanBindGroupLayoutCache(this, createInfo);
+    }
+
     RHIBindGroupLayout* RHIVulkanDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
     {
         return new RHIVulkanBindGroupLayout(this, createInfo);
@@ -179,9 +203,19 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanBindGroup(this, createInfo);
     }
 
+    RHIShaderModuleCache* RHIVulkanDevice::CreateShaderModuleCache(const RHIShaderModuleCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanShaderModuleCache(this, createInfo);
+    }
+
     RHIShaderModule* RHIVulkanDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
     {
         return new RHIVulkanShaderModule(this, createInfo);
+    }
+
+    RHIPipelineLayoutCache* RHIVulkanDevice::CreatePipelineLayoutCache(const RHIPipelineLayoutCacheCreateInfo& createInfo)
+    {
+        return new RHIVulkanPipelineLayoutCache(this, createInfo);
     }
 
     RHIPipelineLayout* RHIVulkanDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)

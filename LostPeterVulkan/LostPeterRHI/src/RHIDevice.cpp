@@ -19,6 +19,12 @@ namespace LostPeterRHI
     RHIDevice::RHIDevice(RHIPhysicalDevice* pPhysicalDevice, const RHIDeviceCreateInfo& createInfo)
         : m_pPhysicalDevice(pPhysicalDevice)
         , m_pObjectManager(nullptr)
+        , m_pBindGroupLayoutCache(nullptr)
+        , m_pBindGroupCache(nullptr)
+        , m_pShaderModuleCache(nullptr)
+        , m_pPipelineLayoutCache(nullptr)
+        , m_pPipelineCache(nullptr)
+        , m_pRenderPassCache(nullptr)
     {
         F_Assert(m_pPhysicalDevice && "RHIDevice::RHIDevice")
     }

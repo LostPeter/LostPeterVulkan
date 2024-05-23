@@ -17,11 +17,14 @@
 #include "../include/RHIDummyBuffer.h"
 #include "../include/RHIDummyTexture.h"
 #include "../include/RHIDummySampler.h"
+#include "../include/RHIDummyBindGroupLayoutCache.h"
 #include "../include/RHIDummyBindGroupLayout.h"
 #include "../include/RHIDummyBindGroupPool.h"
 #include "../include/RHIDummyBindGroupCache.h"
 #include "../include/RHIDummyBindGroup.h"
+#include "../include/RHIDummyShaderModuleCache.h"
 #include "../include/RHIDummyShaderModule.h"
+#include "../include/RHIDummyPipelineLayoutCache.h"
 #include "../include/RHIDummyPipelineLayout.h"
 #include "../include/RHIDummyPipelineCache.h"
 #include "../include/RHIDummyPipelineCompute.h"
@@ -42,6 +45,12 @@ namespace LostPeterPluginRHIDummy
         , m_pDummyPhysicalDevice(pDummyPhysicalDevice)
         , m_pDummyQueue(nullptr)
         , m_pDummyCommandPool(nullptr)
+        , m_pDummyBindGroupLayoutCache(nullptr)
+        , m_pDummyBindGroupCache(nullptr)
+        , m_pDummyShaderModuleCache(nullptr)
+        , m_pDummyPipelineLayoutCache(nullptr)
+        , m_pDummyPipelineCache(nullptr)
+        , m_pDummyRenderPassCache(nullptr)
     {
         F_Assert(m_pDummyPhysicalDevice && "RHIDummyDevice::RHIDummyDevice")
         m_pDummyObjectManager = new RHIDummyObjectManager(this);
@@ -50,11 +59,18 @@ namespace LostPeterPluginRHIDummy
 
     RHIDummyDevice::~RHIDummyDevice()
     {
-        
+        Destroy();
     }
     
     void RHIDummyDevice::Destroy()
     {
+        F_DELETE(m_pDummyBindGroupLayoutCache)
+        F_DELETE(m_pDummyBindGroupCache)
+        F_DELETE(m_pDummyShaderModuleCache)
+        F_DELETE(m_pDummyPipelineLayoutCache)
+        F_DELETE(m_pDummyPipelineCache)
+        F_DELETE(m_pDummyRenderPassCache)
+
         F_DELETE(m_pDummyObjectManager)
         F_DELETE(m_pDummyQueue)
         F_DELETE(m_pDummyCommandPool)
@@ -111,6 +127,11 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummySampler(this, createInfo);
     }
 
+    RHIBindGroupLayoutCache* RHIDummyDevice::CreateBindGroupLayoutCache(const RHIBindGroupLayoutCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyBindGroupLayoutCache(this, createInfo);
+    }
+
     RHIBindGroupLayout* RHIDummyDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
     {
         return new RHIDummyBindGroupLayout(this, createInfo);
@@ -131,9 +152,19 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummyBindGroup(this, createInfo);
     }
 
+    RHIShaderModuleCache* RHIDummyDevice::CreateShaderModuleCache(const RHIShaderModuleCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyShaderModuleCache(this, createInfo);
+    }
+
     RHIShaderModule* RHIDummyDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
     {
         return new RHIDummyShaderModule(this, createInfo);
+    }
+
+    RHIPipelineLayoutCache* RHIDummyDevice::CreatePipelineLayoutCache(const RHIPipelineLayoutCacheCreateInfo& createInfo)
+    {
+        return new RHIDummyPipelineLayoutCache(this, createInfo);
     }
 
     RHIPipelineLayout* RHIDummyDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
