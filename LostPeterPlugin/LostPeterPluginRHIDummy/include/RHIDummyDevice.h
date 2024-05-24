@@ -76,9 +76,10 @@ namespace LostPeterPluginRHIDummy
         virtual RHIFrameBuffer* CreateFrameBuffer(const RHIFrameBufferCreateInfo& createInfo);
         virtual RHIFence* CreateFence(const RHIFenceCreateInfo& createInfo);
         virtual RHISemaphore* CreateSemaphore(const RHISemaphoreCreateInfo& createInfo);
-        virtual RHICommandPool* CreateCommandPool();
-        virtual RHICommandBuffer* CreateCommandBuffer();
-
+        virtual RHICommandPool* CreateCommandPool(const RHICommandPoolCreateInfo& createInfo);
+        virtual RHICommandBuffer* CreateCommandBuffer(const RHICommandBufferCreateInfo& createInfo);
+        virtual RHIQueue* CreateQueue(const RHIQueueCreateInfo& createInfo);
+        
         virtual bool CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat);
         virtual bool IsPixelFormatSupported(RHIPixelFormatType ePixelFormat);
     };

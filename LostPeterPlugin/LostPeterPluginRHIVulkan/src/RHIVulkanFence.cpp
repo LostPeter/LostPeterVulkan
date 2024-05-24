@@ -63,15 +63,16 @@ namespace LostPeterPluginRHIVulkan
     {
         if (!m_pVulkanDevice->CreateVkFence(m_bIsSignaled, m_vkFence))
         {
-            F_LogError("*********************** RHIVulkanFence::createVkFence: CreateVkFence failed, name: [%s] !", m_strDebugName.c_str());
+            F_LogError("*********************** RHIVulkanFence::createVkFence: CreateVkFence failed, Name: [%s] !", m_strName.c_str());
+            return;
         }
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_FENCE, reinterpret_cast<uint64_t>(m_vkFence), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_FENCE, reinterpret_cast<uint64_t>(m_vkFence), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanFence::createVkFence: Create VkFence success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
     

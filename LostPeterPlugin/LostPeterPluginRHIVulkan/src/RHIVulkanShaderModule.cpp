@@ -50,7 +50,7 @@ namespace LostPeterPluginRHIVulkan
                                                        m_strContent.data(),
                                                        m_vkShaderModule))
             {
-                F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, name: [%s], type: [%s] !", m_strDebugName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
+                F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, Name: [%s], Type: [%s] !", m_strName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
                 return;
             }
         }
@@ -60,17 +60,17 @@ namespace LostPeterPluginRHIVulkan
                                                        m_strPath,
                                                        m_vkShaderModule))
             {
-                F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, name: [%s], type: [%s] !", m_strDebugName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
+                F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, Name: [%s], Type: [%s] !", m_strName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
                 return;
             }
         }
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SHADER_MODULE, reinterpret_cast<uint64_t>(m_vkShaderModule), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SHADER_MODULE, reinterpret_cast<uint64_t>(m_vkShaderModule), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanShaderModule::createVkShaderModule: Create VkShaderModule success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

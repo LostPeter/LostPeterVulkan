@@ -23,24 +23,20 @@ namespace LostPeterPluginRHIVulkan
         friend class RHIVulkanDevice;
 
     protected:
-        RHIVulkanCommandPool(RHIVulkanDevice* pVulkanDevice);
+        RHIVulkanCommandPool(RHIVulkanDevice* pVulkanDevice, const RHICommandPoolCreateInfo& createInfo);
     public:
         virtual ~RHIVulkanCommandPool();
 
     public:
-        static uint32 ms_nID;
-
     protected:
-        uint32 m_nFamilyIndex;
         VkCommandPool m_vkCommandPool;
+        uint32 m_nFamilyIndex;
 
-        uint32 m_nID;
         String m_strDebugName;
         
     public:
         F_FORCEINLINE VkCommandPool& GetVkCommandPool() { return m_vkCommandPool; }
 
-        F_FORCEINLINE uint32 GetID() { return m_nID; }
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
@@ -49,8 +45,10 @@ namespace LostPeterPluginRHIVulkan
 
     public:
         bool AllocateCommandBuffers(VkCommandBufferLevel level, const void* pNext, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
-
         void FreeCommandBuffers(uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
+
+    protected:
+        void createVkCommandPool();
     };
 
 }; //LostPeterPluginRHIVulkan

@@ -10,13 +10,13 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyCommandBuffer.h"
-#include "../include/RHIDummyCommandEncoder.h"
 #include "../include/RHIDummyDevice.h"
+#include "../include/RHIDummyCommandEncoder.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyCommandBuffer::RHIDummyCommandBuffer(RHIDummyDevice* pDummyDevice)
-        : RHICommandBuffer(pDummyDevice)
+    RHIDummyCommandBuffer::RHIDummyCommandBuffer(RHIDummyDevice* pDummyDevice, const RHICommandBufferCreateInfo& createInfo)
+        : RHICommandBuffer(pDummyDevice, createInfo)
         , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyCommandBuffer::RHIDummyCommandBuffer")

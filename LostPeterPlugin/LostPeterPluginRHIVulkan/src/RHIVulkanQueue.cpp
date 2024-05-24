@@ -14,16 +14,16 @@
 
 namespace LostPeterPluginRHIVulkan
 {
-    uint32 RHIVulkanQueue::ms_nID = 0;
-    RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex)
-        : RHIQueue(pVulkanDevice)
+    RHIVulkanQueue::RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, const RHIQueueCreateInfo& createInfo)
+        : RHIQueue(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
-        , m_nFamilyIndex(nFamilyIndex)
         , m_vkQueue(VK_NULL_HANDLE)
-        , m_nID(++ms_nID)
-        , m_strDebugName("")
+        , m_nFamilyIndex(createInfo.nFamilyIndex)
+        , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanQueue::RHIVulkanQueue")
+
+        createVkQueue();
     }
 
     RHIVulkanQueue::~RHIVulkanQueue()
@@ -36,22 +36,22 @@ namespace LostPeterPluginRHIVulkan
         m_vkQueue = VK_NULL_HANDLE;
     }
 
-    bool RHIVulkanQueue::Init()
+    void RHIVulkanQueue::createVkQueue()
     {
         m_vkQueue = m_pVulkanDevice->GetVkQueue(m_nFamilyIndex, 0);
         if (m_vkQueue == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** RHIVulkanQueue::Init: GetVkQueue failed !");
-            return false;
+            F_LogError("*********************** RHIVulkanQueue::createVkQueue: GetVkQueue failed, Name: [%s], nFamilyIndex: [%u] !", m_strName.c_str(), m_nFamilyIndex);
+            return;
         }
 
         if (RHI_IsDebug())
         {
-            m_strDebugName = "VulkanQueue-" + FUtilString::SaveUInt(m_nFamilyIndex) + "-" + FUtilString::SaveUInt(m_nID);
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
             m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(m_vkQueue), m_strDebugName.c_str());
         }
-        F_LogInfo("RHIVulkanQueue::Init: Create Queue success, nFamilyIndex: [%u], ID: [%u] !", m_nFamilyIndex, m_nID);
-        return true;
+        F_LogInfo("RHIVulkanQueue::createVkQueue: Create VkQueue success, Name: [%s], nFamilyIndex: [%u] !", m_strDebugName.c_str(), m_nFamilyIndex);
     }
 
     void RHIVulkanQueue::Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal)

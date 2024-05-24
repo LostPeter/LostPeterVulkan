@@ -19,7 +19,7 @@ namespace LostPeterRHI
     class rhiExport RHICommandPool : public RHIObject
     {
     public:
-        RHICommandPool(RHIDevice* pDevice);
+        RHICommandPool(RHIDevice* pDevice, const RHICommandPoolCreateInfo& createInfo);
         virtual ~RHICommandPool();
 
     public:

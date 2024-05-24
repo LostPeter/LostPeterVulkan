@@ -99,15 +99,16 @@ namespace LostPeterPluginRHIVulkan
 
         if (vmaCreateBuffer(m_pVulkanDevice->GetVmaAllocator(), &bufferInfo, &allocInfo, &m_vkBuffer, &m_vmaAllocation, nullptr) != VK_SUCCESS)
         {
-            F_LogError("*********************** RHIVulkanBuffer::createVkBuffer: vmaCreateBuffer failed, name: [%s] !", m_strDebugName.c_str());
+            F_LogError("*********************** RHIVulkanBuffer::createVkBuffer: vmaCreateBuffer failed, Name: [%s] !", m_strName.c_str());
+            return;
         }
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_BUFFER, reinterpret_cast<uint64_t>(m_vkBuffer), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_BUFFER, reinterpret_cast<uint64_t>(m_vkBuffer), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanBuffer::createVkBuffer: Create VkBuffer success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
     

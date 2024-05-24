@@ -23,15 +23,20 @@ namespace LostPeterPluginRHIVulkan
         friend class RHIVulkanDevice;
 
     protected:
-        RHIVulkanCommandBuffer(RHIVulkanDevice* pVulkanDevice);
+        RHIVulkanCommandBuffer(RHIVulkanDevice* pVulkanDevice, RHIVulkanCommandPool* pVulkanCommandPool, const RHICommandBufferCreateInfo& createInfo);
     public:
         virtual ~RHIVulkanCommandBuffer();
 
     public:
     protected:
+        RHIVulkanCommandPool* m_pVulkanCommandPool;
+        VkCommandBuffer m_vkCommandBuffer;
+
 
 
     public:
+        F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPool() const { return m_pVulkanCommandPool; }
+        F_FORCEINLINE VkCommandBuffer& GetVkCommandBuffer() { return m_vkCommandBuffer; }
 
 
     public:
@@ -43,8 +48,7 @@ namespace LostPeterPluginRHIVulkan
 
 
     protected:
-        
-
+        void createVkCommandBuffer();
     };
 
 }; //LostPeterPluginRHIVulkan

@@ -37,6 +37,7 @@ namespace LostPeterPluginRHIVulkan
     public:
         virtual void Destroy();
 
+    
     };
     
 }; //LostPeterPluginRHIVulkan

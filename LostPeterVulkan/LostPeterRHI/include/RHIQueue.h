@@ -19,7 +19,7 @@ namespace LostPeterRHI
     class rhiExport RHIQueue : public RHIObject
     {
     public:
-        RHIQueue(RHIDevice* pDevice);
+        RHIQueue(RHIDevice* pDevice, const RHIQueueCreateInfo& createInfo);
         virtual ~RHIQueue();
 
     public:

@@ -23,7 +23,7 @@ namespace LostPeterPluginRHIDummy
         friend class RHIDummyDevice;
 
     protected:    
-        RHIDummyQueue(RHIDummyDevice* pDummyDevice);
+        RHIDummyQueue(RHIDummyDevice* pDummyDevice, const RHIQueueCreateInfo& createInfo);
     public:
         virtual ~RHIDummyQueue();
 

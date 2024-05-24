@@ -43,15 +43,16 @@ namespace LostPeterPluginRHIVulkan
     {
         if (!m_pVulkanDevice->CreateVkSemaphore(m_vkSemaphore))
         {
-            F_LogError("*********************** RHIVulkanSemaphore::createVkSemaphore: CreateVkSemaphore failed, name: [%s] !", m_strDebugName.c_str());
+            F_LogError("*********************** RHIVulkanSemaphore::createVkSemaphore: CreateVkSemaphore failed, Name: [%s] !", m_strName.c_str());
+            return;
         }
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SEMAPHORE, reinterpret_cast<uint64_t>(m_vkSemaphore), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SEMAPHORE, reinterpret_cast<uint64_t>(m_vkSemaphore), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanSemaphore::createVkSemaphore: Create VkSemaphore success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
     

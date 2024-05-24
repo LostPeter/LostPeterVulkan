@@ -14,8 +14,8 @@
 
 namespace LostPeterPluginRHIDummy
 {
-    RHIDummyCommandPool::RHIDummyCommandPool(RHIDummyDevice* pDummyDevice)
-        : RHICommandPool(pDummyDevice)
+    RHIDummyCommandPool::RHIDummyCommandPool(RHIDummyDevice* pDummyDevice, const RHICommandPoolCreateInfo& createInfo)
+        : RHICommandPool(pDummyDevice, createInfo)
         , RHIDummyObject(pDummyDevice)
     {
         F_Assert(m_pDummyDevice && "RHIDummyCommandPool::RHIDummyCommandPool")

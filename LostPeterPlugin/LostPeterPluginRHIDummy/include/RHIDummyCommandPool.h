@@ -23,7 +23,7 @@ namespace LostPeterPluginRHIDummy
         friend class RHIDummyDevice;
 
     protected:    
-        RHIDummyCommandPool(RHIDummyDevice* pDummyDevice);
+        RHIDummyCommandPool(RHIDummyDevice* pDummyDevice, const RHICommandPoolCreateInfo& createInfo);
     public:
         virtual ~RHIDummyCommandPool();
 

@@ -14,7 +14,7 @@
 
 namespace LostPeterRHI
 {
-    RHICommandPool::RHICommandPool(RHIDevice* pDevice)
+    RHICommandPool::RHICommandPool(RHIDevice* pDevice, const RHICommandPoolCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
         setObjectType(RHIObjectType::RHI_Object_CommandPool);

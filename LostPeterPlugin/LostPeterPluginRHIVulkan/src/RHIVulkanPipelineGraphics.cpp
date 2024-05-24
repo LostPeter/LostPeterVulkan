@@ -44,10 +44,10 @@ namespace LostPeterPluginRHIVulkan
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<uint64_t>(m_vkPipeline), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<uint64_t>(m_vkPipeline), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanPipelineGraphics::createVkPipeline: Create VkPipeline success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

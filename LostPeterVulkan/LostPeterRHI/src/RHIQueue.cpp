@@ -14,7 +14,7 @@
 
 namespace LostPeterRHI
 {
-    RHIQueue::RHIQueue(RHIDevice* pDevice)
+    RHIQueue::RHIQueue(RHIDevice* pDevice, const RHIQueueCreateInfo& createInfo)
         : RHIObject(pDevice)
     {
         setObjectType(RHIObjectType::RHI_Object_Queue);

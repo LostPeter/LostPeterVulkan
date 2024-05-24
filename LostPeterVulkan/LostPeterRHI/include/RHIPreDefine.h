@@ -1472,6 +1472,52 @@ namespace LostPeterRHI
         }
     };
 
+    //RHICommandPoolCreateInfo
+    struct rhiExport RHICommandPoolCreateInfo
+    {
+        RHIQueueType eQueue;
+        uint32 nFamilyIndex; 
+        String strDebugName;
+
+        RHICommandPoolCreateInfo()
+            : eQueue(RHIQueueType::RHI_Queue_Graphics)
+            , nFamilyIndex(0)
+            , strDebugName("")
+        {
+
+        }
+    };
+
+    //RHICommandBufferCreateInfo
+    struct rhiExport RHICommandBufferCreateInfo
+    {
+        RHIQueueType eQueue;
+        String strDebugName;
+
+        RHICommandBufferCreateInfo()
+            : eQueue(RHIQueueType::RHI_Queue_Graphics)
+            , strDebugName("")
+        {
+
+        }
+    };
+
+    //RHIQueueCreateInfo
+    struct rhiExport RHIQueueCreateInfo
+    {
+        RHIQueueType eQueue;
+        uint32 nFamilyIndex; 
+        String strDebugName;
+
+        RHIQueueCreateInfo()
+            : eQueue(RHIQueueType::RHI_Queue_Graphics)
+            , nFamilyIndex(0)
+            , strDebugName("")
+        {
+
+        }
+    };
+
     //RHIVertexAttribute
     struct rhiExport RHIVertexAttribute
     {

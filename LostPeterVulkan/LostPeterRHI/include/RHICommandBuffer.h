@@ -19,7 +19,7 @@ namespace LostPeterRHI
     class rhiExport RHICommandBuffer : public RHIObject
     {
     public:
-        RHICommandBuffer(RHIDevice* pDevice);
+        RHICommandBuffer(RHIDevice* pDevice, const RHICommandBufferCreateInfo& createInfo);
         virtual ~RHICommandBuffer();
 
     public:

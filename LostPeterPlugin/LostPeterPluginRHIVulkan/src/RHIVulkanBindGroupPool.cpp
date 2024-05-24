@@ -45,15 +45,16 @@ namespace LostPeterPluginRHIVulkan
         if (!m_pVulkanDevice->CreateVkDescriptorPool(m_nDescriptorCount,
                                                      m_vkDescriptorPool))
         {
-            F_LogError("*********************** RHIVulkanBindGroupPool::createVkDescriptorPool: CreateVkDescriptorPool failed, name: [%s] !", m_strDebugName.c_str());
+            F_LogError("*********************** RHIVulkanBindGroupPool::createVkDescriptorPool: CreateVkDescriptorPool failed, Name: [%s] !", m_strName.c_str());
+            return;
         }
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_DESCRIPTOR_POOL, reinterpret_cast<uint64_t>(m_vkDescriptorPool), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_DESCRIPTOR_POOL, reinterpret_cast<uint64_t>(m_vkDescriptorPool), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanBindGroupPool::createVkDescriptorPool: Create VkDescriptorPool success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

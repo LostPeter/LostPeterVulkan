@@ -45,10 +45,10 @@ namespace LostPeterPluginRHIVulkan
 
         if (RHI_IsDebug())
         {
-            if (!m_strDebugName.empty())
-            {
-                m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, reinterpret_cast<uint64_t>(m_vkDescriptorSetLayout), m_strDebugName.c_str());
-            }
+            if (m_strDebugName.empty())
+                m_strDebugName = m_strName;
+            m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, reinterpret_cast<uint64_t>(m_vkDescriptorSetLayout), m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanBindGroupLayout::createVkDescriptorSetLayout: Create VkDescriptorSetLayout success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

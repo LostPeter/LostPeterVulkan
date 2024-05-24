@@ -86,7 +86,9 @@ namespace LostPeterPluginRHIDummy
         F_Assert("RHIDummyDevice::GetQueue" && eQueue == RHIQueueType::RHI_Queue_Graphics);
         if (m_pDummyQueue == nullptr)
         {
-            m_pDummyQueue = new RHIDummyQueue(this);
+            RHIQueueCreateInfo createInfo;
+            createInfo.eQueue = eQueue;
+            m_pDummyQueue = (RHIDummyQueue*)CreateQueue(createInfo);
         }
         return m_pDummyQueue;
     }
@@ -96,7 +98,9 @@ namespace LostPeterPluginRHIDummy
         F_Assert("RHIDummyDevice::GetCommandPool" && eQueue == RHIQueueType::RHI_Queue_Graphics);
         if (m_pDummyCommandPool == nullptr)
         {
-            m_pDummyCommandPool = new RHIDummyCommandPool(this);
+            RHICommandPoolCreateInfo createInfo;
+            createInfo.eQueue = eQueue;
+            m_pDummyCommandPool = (RHIDummyCommandPool*)CreateCommandPool(createInfo);
         }
         return m_pDummyCommandPool;
         
@@ -212,14 +216,19 @@ namespace LostPeterPluginRHIDummy
         return new RHIDummySemaphore(this, createInfo);
     }   
 
-    RHICommandPool* RHIDummyDevice::CreateCommandPool()
+    RHICommandPool* RHIDummyDevice::CreateCommandPool(const RHICommandPoolCreateInfo& createInfo)
     {
-        return new RHIDummyCommandPool(this);
+        return new RHIDummyCommandPool(this, createInfo);
     }
 
-    RHICommandBuffer* RHIDummyDevice::CreateCommandBuffer()
+    RHICommandBuffer* RHIDummyDevice::CreateCommandBuffer(const RHICommandBufferCreateInfo& createInfo)
     {
-        return new RHIDummyCommandBuffer(this);
+        return new RHIDummyCommandBuffer(this, createInfo);
+    }
+
+    RHIQueue* RHIDummyDevice::CreateQueue(const RHIQueueCreateInfo& createInfo)
+    {
+        return new RHIDummyQueue(this, createInfo);
     }
 
     bool RHIDummyDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)

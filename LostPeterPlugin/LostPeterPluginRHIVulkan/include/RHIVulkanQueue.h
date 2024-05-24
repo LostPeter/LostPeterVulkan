@@ -23,25 +23,21 @@ namespace LostPeterPluginRHIVulkan
         friend class RHIVulkanDevice;
 
     protected:
-        RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, uint32 nFamilyIndex);
+        RHIVulkanQueue(RHIVulkanDevice* pVulkanDevice, const RHIQueueCreateInfo& createInfo);
     public:
         virtual ~RHIVulkanQueue();
 
     public:
-        static uint32 ms_nID;
-
     protected:
-        uint32 m_nFamilyIndex;
         VkQueue m_vkQueue;
+        uint32 m_nFamilyIndex;
 
-        uint32 m_nID;
         String m_strDebugName;
 
     public:
         F_FORCEINLINE VkQueue& GetVkQueue() { return m_vkQueue; }
         F_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
 
-        F_FORCEINLINE uint32 GetID() { return m_nID; }
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
 
     public:
@@ -50,8 +46,8 @@ namespace LostPeterPluginRHIVulkan
         virtual void Submit(RHICommandBuffer* pCommandBuffer, RHIFence* pFenceToSignal);
         virtual void Wait(RHIFence* pFenceToSignal);
 
-    public:
-        bool Init();
+    protected:
+        void createVkQueue();
     };
 
 }; //LostPeterPluginRHIVulkan

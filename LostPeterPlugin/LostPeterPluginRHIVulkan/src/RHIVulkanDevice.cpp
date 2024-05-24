@@ -263,13 +263,20 @@ namespace LostPeterPluginRHIVulkan
         return new RHIVulkanSemaphore(this, createInfo);
     }
 
-    RHICommandPool* RHIVulkanDevice::CreateCommandPool()
+    RHICommandPool* RHIVulkanDevice::CreateCommandPool(const RHICommandPoolCreateInfo& createInfo)
     {
-        return new RHIVulkanCommandPool(this);
+        return new RHIVulkanCommandPool(this, createInfo);
     }
-    RHICommandBuffer* RHIVulkanDevice::CreateCommandBuffer()
+
+    RHICommandBuffer* RHIVulkanDevice::CreateCommandBuffer(const RHICommandBufferCreateInfo& createInfo)
     {
-        return new RHIVulkanCommandBuffer(this);
+        RHIVulkanCommandPool* pVulkanCommandPool = (RHIVulkanCommandPool*)GetCommandPool(createInfo.eQueue);
+        return new RHIVulkanCommandBuffer(this, pVulkanCommandPool, createInfo);
+    }
+
+    RHIQueue* RHIVulkanDevice::CreateQueue(const RHIQueueCreateInfo& createInfo)
+    {
+        return new RHIVulkanQueue(this, createInfo);
     }
 
     bool RHIVulkanDevice::CheckSwapChainFormatSupport(RHISurface* pSurface, RHIPixelFormatType ePixelFormat)
@@ -406,7 +413,7 @@ namespace LostPeterPluginRHIVulkan
                 SetDebugObject(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(m_vkDevice), m_strDebugName.c_str());
             }
         }
-        F_LogInfo("RHIVulkanDevice::init: Init vulkan device success !");
+        F_LogInfo("RHIVulkanDevice::init: Init VkDevice success !");
         return true;
     }
     bool RHIVulkanDevice::createDevice(bool bIsEnableValidationLayers)
@@ -533,75 +540,65 @@ namespace LostPeterPluginRHIVulkan
         m_pVulkanPhysicalDevice->GetVulkanInstance()->GetVolk()->VolkLoadDevice(m_vkDevice);
 
         ////////////////////// RHIVulkanQueue //////////////////////
-        //RHIVulkanQueue Graphics
-        m_pQueueGraphics = new RHIVulkanQueue(this, queueFamilyIndex_Graphics);
-        if (!m_pQueueGraphics->Init())
         {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Graphics init failed !");
-            return false;
-        }
-        m_aVulkanQueues.push_back(m_pQueueGraphics);
-        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Graphics] = m_pQueueGraphics;
+            RHIQueueCreateInfo createInfo;
+            //RHIVulkanQueue Graphics
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Graphics;
+            createInfo.nFamilyIndex = queueFamilyIndex_Graphics;
+            createInfo.strDebugName = "Debug-Queue-Graphics";
+            m_pQueueGraphics = (RHIVulkanQueue*)CreateQueue(createInfo);
+            m_aVulkanQueues.push_back(m_pQueueGraphics);
+            m_mapVulkanQueues[RHIQueueType::RHI_Queue_Graphics] = m_pQueueGraphics;
 
-        //RHIVulkanQueue Compute
-        if (queueFamilyIndex_Compute == -1) 
-        {
-            queueFamilyIndex_Compute = queueFamilyIndex_Graphics;
-        }
-        m_pQueueCompute = new RHIVulkanQueue(this, queueFamilyIndex_Compute);
-        if (!m_pQueueCompute->Init())
-        {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Compute init failed !");
-            return false;
-        }
-        m_aVulkanQueues.push_back(m_pQueueCompute);
-        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Compute] = m_pQueueGraphics;
+            //RHIVulkanQueue Compute
+            if (queueFamilyIndex_Compute == -1) 
+            {
+                queueFamilyIndex_Compute = queueFamilyIndex_Graphics;
+            }
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Compute;
+            createInfo.nFamilyIndex = queueFamilyIndex_Compute;
+            createInfo.strDebugName = "Debug-Queue-Compute";
+            m_pQueueCompute = (RHIVulkanQueue*)CreateQueue(createInfo);
+            m_aVulkanQueues.push_back(m_pQueueCompute);
+            m_mapVulkanQueues[RHIQueueType::RHI_Queue_Compute] = m_pQueueGraphics;
 
-        //RHIVulkanQueue Transfer
-        if (queueFamilyIndex_Transfer == -1) 
-        {
-            queueFamilyIndex_Transfer = queueFamilyIndex_Compute;
+            //RHIVulkanQueue Transfer
+            if (queueFamilyIndex_Transfer == -1) 
+            {
+                queueFamilyIndex_Transfer = queueFamilyIndex_Compute;
+            }
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Transfer;
+            createInfo.nFamilyIndex = queueFamilyIndex_Transfer;
+            createInfo.strDebugName = "Debug-Queue-Transfer";
+            m_pQueueTransfer = (RHIVulkanQueue*)CreateQueue(createInfo);
+            m_aVulkanQueues.push_back(m_pQueueTransfer);
+            m_mapVulkanQueues[RHIQueueType::RHI_Queue_Transfer] = m_pQueueGraphics;
         }
-        m_pQueueTransfer = new RHIVulkanQueue(this, queueFamilyIndex_Transfer);
-        if (!m_pQueueTransfer->Init())
-        {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanQueue Transfer init failed !");
-            return false;
-        }
-        m_aVulkanQueues.push_back(m_pQueueTransfer);
-        m_mapVulkanQueues[RHIQueueType::RHI_Queue_Transfer] = m_pQueueGraphics;
-
+        
         ////////////////////// RHIVulkanCommandPool ////////////////
-        //RHIVulkanCommandPool Transfer
-        m_pCommandPoolTransfer = new RHIVulkanCommandPool(this);
-        if (!m_pCommandPoolTransfer->Init(queueFamilyIndex_Transfer))
         {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Transfer init failed !");
-            return false;
-        }
-        m_aVulkanCommandPools.push_back(m_pCommandPoolTransfer);
-        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Transfer] = m_pCommandPoolTransfer;
+            RHICommandPoolCreateInfo createInfo;
+            //RHIVulkanCommandPool Transfer
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Transfer;
+            createInfo.strDebugName = "Debug-CommandPool-Transfer";
+            m_pCommandPoolTransfer = (RHIVulkanCommandPool*)CreateCommandPool(createInfo);
+            m_aVulkanCommandPools.push_back(m_pCommandPoolTransfer);
+            m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Transfer] = m_pCommandPoolTransfer;
 
-        //RHIVulkanCommandPool Graphics
-        m_pCommandPoolGraphics = new RHIVulkanCommandPool(this);
-        if (!m_pCommandPoolGraphics->Init(queueFamilyIndex_Graphics))
-        {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Graphics init failed !");
-            return false;
-        }
-        m_aVulkanCommandPools.push_back(m_pCommandPoolGraphics);
-        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Graphics] = m_pCommandPoolGraphics;
+            //RHIVulkanCommandPool Graphics
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Graphics;
+            createInfo.strDebugName = "Debug-CommandPool-Graphics";
+            m_pCommandPoolGraphics = (RHIVulkanCommandPool*)CreateCommandPool(createInfo);
+            m_aVulkanCommandPools.push_back(m_pCommandPoolGraphics);
+            m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Graphics] = m_pCommandPoolGraphics;
 
-        //RHIVulkanCommandPool Compute
-        m_pCommandPoolCompute = new RHIVulkanCommandPool(this);
-        if (!m_pCommandPoolCompute->Init(queueFamilyIndex_Compute))
-        {
-            F_LogError("*********************** RHIVulkanDevice::createDevice: RHIVulkanCommandPool Compute init failed !");
-            return false;
+            //RHIVulkanCommandPool Compute
+            createInfo.eQueue = RHIQueueType::RHI_Queue_Compute;
+            createInfo.strDebugName = "Debug-CommandPool-Compute";
+            m_pCommandPoolCompute = (RHIVulkanCommandPool*)CreateCommandPool(createInfo);
+            m_aVulkanCommandPools.push_back(m_pCommandPoolCompute);
+            m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Compute] = m_pCommandPoolCompute;
         }
-        m_aVulkanCommandPools.push_back(m_pCommandPoolCompute);
-        m_mapVulkanCommandPools[RHIQueueType::RHI_Queue_Compute] = m_pCommandPoolCompute;
-
         return true;
     }
     bool RHIVulkanDevice::createVmaAllocator()
@@ -719,6 +716,16 @@ namespace LostPeterPluginRHIVulkan
                                  1,
                                  &vkCommandBuffer);
         return vkCommandBuffer;
+    }
+    bool RHIVulkanDevice::AllocateVkCommandBuffer(VkCommandPool vkCommandPool,
+                                                  VkCommandBufferLevel level,
+                                                  VkCommandBuffer& vkCommandBuffer)
+    {
+        return  AllocateVkCommandBuffers(vkCommandPool,
+                                         level,
+                                         nullptr,
+                                         1,
+                                         &vkCommandBuffer);
     }
     bool RHIVulkanDevice::AllocateVkCommandBuffers(VkCommandPool vkCommandPool,
                                                    VkCommandBufferLevel level,
