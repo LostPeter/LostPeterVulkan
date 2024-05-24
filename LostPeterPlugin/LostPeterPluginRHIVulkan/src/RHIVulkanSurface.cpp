@@ -46,7 +46,7 @@ namespace LostPeterPluginRHIVulkan
     {
         if (!m_pVulkanDevice->GetVulkanPhysicalDevice()->GetVulkanInstance()->CreateVkSurfaceKHR(m_pWindow, m_vkSurface))
         {
-            F_LogError("*********************** RHIVulkanSurface::createVkSurfaceKHR: CreateVkSurfaceKHR failed, Name: [%s] !", m_strName);
+            F_LogError("*********************** RHIVulkanSurface::createVkSurfaceKHR: CreateVkSurfaceKHR failed, Name: [%s] !", m_strName.c_str());
             return;
         }
 
@@ -56,7 +56,7 @@ namespace LostPeterPluginRHIVulkan
                 m_strDebugName = m_strName;
             m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_SURFACE_KHR, reinterpret_cast<uint64_t>(m_vkSurface), m_strDebugName.c_str());
         }
-        F_LogInfo("RHIVulkanSurface::createVkSurfaceKHR: Create VkSurfaceKHR success, Name: [%s] !", m_strName);
+        F_LogInfo("RHIVulkanSurface::createVkSurfaceKHR: Create VkSurfaceKHR success, Name: [%s] !", m_strName.c_str());
     }
     
 }; //LostPeterPluginRHIVulkan
