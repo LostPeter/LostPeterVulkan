@@ -9,8 +9,8 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RHI_SYNCHRONOUS_H_
-#define _RHI_SYNCHRONOUS_H_
+#ifndef _RHI_BARRIER_H_
+#define _RHI_BARRIER_H_
 
 #include "RHIPreDefine.h"
 

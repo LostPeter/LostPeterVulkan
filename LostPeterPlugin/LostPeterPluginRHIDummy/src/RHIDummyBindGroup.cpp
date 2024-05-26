@@ -11,14 +11,18 @@
 
 #include "../include/RHIDummyBindGroup.h"
 #include "../include/RHIDummyDevice.h"
+#include "../include/RHIDummyBindGroupPool.h"
+#include "../include/RHIDummyBindGroupLayout.h"
 
 namespace LostPeterPluginRHIDummy
 {
     RHIDummyBindGroup::RHIDummyBindGroup(RHIDummyDevice* pDummyDevice, const RHIBindGroupCreateInfo& createInfo)
         : RHIBindGroup(pDummyDevice, createInfo)
         , RHIDummyObject(pDummyDevice)
+        , m_pDummyBindGroupPool((RHIDummyBindGroupPool*)createInfo.pBindGroupPool)
+        , m_pDummyBindGroupLayout((RHIDummyBindGroupLayout*)createInfo.pBindGroupLayout)
     {
-        F_Assert(m_pDummyDevice && "RHIDummyBindGroup::RHIDummyBindGroup")
+        F_Assert(m_pDummyDevice && m_pDummyBindGroupPool && m_pDummyBindGroupLayout && "RHIDummyBindGroup::RHIDummyBindGroup")
     }
 
     RHIDummyBindGroup::~RHIDummyBindGroup()

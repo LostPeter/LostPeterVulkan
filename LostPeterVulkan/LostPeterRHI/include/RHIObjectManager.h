@@ -43,7 +43,7 @@ namespace LostPeterRHI
 		static RHIObjectManager* GetSingletonPtr();
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        F_FORCEINLINE RHIDevice* GetDevice() const { return m_pDevice; }
 
         F_FORCEINLINE const RHIObjectPtrVector& GetObjectPtrVector() const { return m_aObject; }
         F_FORCEINLINE RHIObjectPtrVector& GetObjectPtrVector() { return m_aObject; }

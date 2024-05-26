@@ -786,6 +786,8 @@ namespace LostPeterPluginRHIVulkan
                                     VkDescriptorSetLayout vkDescriptorSetLayout,
                                     VkDescriptorPool vkDescriptorPool,
                                     VkDescriptorSetVector& aDescriptorSets);
+        void FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, const VkDescriptorSet& vkDescriptorSet);
+        void FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, VkDescriptorSetVector& aDescriptorSets);
 
         VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
                                                                                 VkDescriptorType descriptorType,

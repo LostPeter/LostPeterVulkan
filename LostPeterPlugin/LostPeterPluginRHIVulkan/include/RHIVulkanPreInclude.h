@@ -14,6 +14,7 @@
 
 #include "RHIVulkanPreDefine.h"
 
+#include "RHIVulkanBarrier.h"
 #include "RHIVulkanBindGroup.h"
 #include "RHIVulkanBindGroupCache.h"
 #include "RHIVulkanBindGroupLayout.h"
@@ -49,7 +50,6 @@
 #include "RHIVulkanShaderModuleCache.h"
 #include "RHIVulkanSurface.h"
 #include "RHIVulkanSwapChain.h"
-#include "RHIVulkanSynchronous.h"
 #include "RHIVulkanTexture.h"
 #include "RHIVulkanTextureView.h"
 #include "RHIVulkanUtil.h"

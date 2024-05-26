@@ -11,16 +11,20 @@
 
 #include "../include/RHIVulkanBindGroup.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanBindGroupPool.h"
+#include "../include/RHIVulkanBindGroupLayout.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanBindGroup::RHIVulkanBindGroup(RHIVulkanDevice* pVulkanDevice, const RHIBindGroupCreateInfo& createInfo)
         : RHIBindGroup(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
+        , m_pVulkanBindGroupPool((RHIVulkanBindGroupPool*)createInfo.pBindGroupPool)
+        , m_pVulkanBindGroupLayout((RHIVulkanBindGroupLayout*)createInfo.pBindGroupLayout)
         , m_vkDescriptorSet(VK_NULL_HANDLE)
         , m_strDebugName(createInfo.strDebugName)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanBindGroup::RHIVulkanBindGroup")
+        F_Assert(m_pVulkanDevice && m_pVulkanBindGroupPool && m_pVulkanBindGroupLayout && "RHIVulkanBindGroup::RHIVulkanBindGroup")
 
         createVkDescriptorSet();
     }
@@ -32,7 +36,7 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanBindGroup::Destroy()
     {
-
+        
     }
     
     void RHIVulkanBindGroup::createVkDescriptorSet()

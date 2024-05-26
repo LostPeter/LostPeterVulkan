@@ -27,7 +27,7 @@ namespace LostPeterRHI
         RHIBuffer* m_pBuffer;
 
     public:
-        F_FORCEINLINE RHIBuffer* GetBuffer() { return m_pBuffer; }
+        F_FORCEINLINE RHIBuffer* GetBuffer() const { return m_pBuffer; }
         
 
     public:

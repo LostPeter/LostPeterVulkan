@@ -27,7 +27,7 @@ namespace LostPeterRHI
         RHIBufferView* m_pBufferView;
 
     public:
-        F_FORCEINLINE RHIBufferView* GetBufferView() { return m_pBufferView; }
+        F_FORCEINLINE RHIBufferView* GetBufferView() const { return m_pBufferView; }
         
 
     public:

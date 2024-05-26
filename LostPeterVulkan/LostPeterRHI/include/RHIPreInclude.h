@@ -14,6 +14,7 @@
 
 #include "RHIPreDefine.h"
 
+#include "RHIBarrier.h"
 #include "RHIBindGroup.h"
 #include "RHIBindGroupCache.h"
 #include "RHIBindGroupLayout.h"
@@ -48,7 +49,6 @@
 #include "RHIShaderModuleCache.h"
 #include "RHISurface.h"
 #include "RHISwapChain.h"
-#include "RHISynchronous.h"
 #include "RHITexture.h"
 #include "RHITextureView.h"
 #include "RHIUtil.h"

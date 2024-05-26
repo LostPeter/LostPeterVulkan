@@ -14,6 +14,7 @@
 
 #include "RHIDummyPreDefine.h"
 
+#include "RHIDummyBarrier.h"
 #include "RHIDummyBindGroup.h"
 #include "RHIDummyBindGroupCache.h"
 #include "RHIDummyBindGroupLayout.h"
@@ -47,7 +48,6 @@
 #include "RHIDummyShaderModuleCache.h"
 #include "RHIDummySurface.h"
 #include "RHIDummySwapChain.h"
-#include "RHIDummySynchronous.h"
 #include "RHIDummyTexture.h"
 #include "RHIDummyTextureView.h"
 #include "RHIDummyUtil.h"

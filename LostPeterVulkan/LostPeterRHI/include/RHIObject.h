@@ -30,7 +30,7 @@ namespace LostPeterRHI
         String m_strName;
 
     public:
-        F_FORCEINLINE RHIDevice* GetDevice() { return m_pDevice; }
+        F_FORCEINLINE RHIDevice* GetDevice() const { return m_pDevice; }
         F_FORCEINLINE RHIObjectType GetObjectType() const { return m_eObject; }
         F_FORCEINLINE uint32 GetID() const { return m_nID; }
         F_FORCEINLINE const String& GetName() const { return m_strName; }

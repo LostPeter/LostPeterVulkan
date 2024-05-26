@@ -24,10 +24,15 @@ namespace LostPeterRHI
 
     public:
     protected:
-        
+        RHIBindGroupPool* m_pBindGroupPool;
+        RHIBindGroupLayout* m_pBindGroupLayout;
 
     public:
+        F_FORCEINLINE RHIBindGroupPool* GetBindGroupPool() const { return m_pBindGroupPool; }
+        F_FORCEINLINE RHIBindGroupLayout* GetBindGroupLayout() const { return m_pBindGroupLayout; }
 
+
+    public:
 
     };
     

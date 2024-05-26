@@ -127,6 +127,7 @@ namespace LostPeterPluginRHIVulkan
 
 
 	////////////////////////////// Class ///////////////////////////////
+    class RHIVulkanBarrier;
 	class RHIVulkanBindGroup;
     class RHIVulkanBindGroupCache;
 	class RHIVulkanBindGroupLayout;
@@ -162,7 +163,6 @@ namespace LostPeterPluginRHIVulkan
     class RHIVulkanShaderModuleCache;
 	class RHIVulkanSurface;
 	class RHIVulkanSwapChain;
-	class RHIVulkanBarrier;
 	class RHIVulkanTexture;
 	class RHIVulkanTextureView;
 	class RHIVulkanUtil;

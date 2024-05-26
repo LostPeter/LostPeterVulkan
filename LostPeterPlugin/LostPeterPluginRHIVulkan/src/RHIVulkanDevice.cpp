@@ -3808,6 +3808,20 @@ namespace LostPeterPluginRHIVulkan
         }
         return true;
     }
+    void RHIVulkanDevice::FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, const VkDescriptorSet& vkDescriptorSet)
+    {
+        if (vkDescriptorSet != VK_NULL_HANDLE)
+        {
+            vkFreeDescriptorSets(this->m_vkDevice, vkDescriptorPool, 1, &vkDescriptorSet);
+        }
+    }
+    void RHIVulkanDevice::FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, VkDescriptorSetVector& aDescriptorSets)
+    {
+        if (!aDescriptorSets.empty())
+        {
+            vkFreeDescriptorSets(this->m_vkDevice, vkDescriptorPool, (uint32_t)aDescriptorSets.size(), aDescriptorSets.data());
+        }
+    }
 
     VkDescriptorSetLayoutBinding RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
                                                                                              VkDescriptorType descriptorType,

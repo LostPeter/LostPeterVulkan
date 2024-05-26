@@ -29,12 +29,16 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
+        RHIVulkanBindGroupPool* m_pVulkanBindGroupPool;
+        RHIVulkanBindGroupLayout* m_pVulkanBindGroupLayout;
         VkDescriptorSet m_vkDescriptorSet;
 
 
         String m_strDebugName;
 
     public:
+        F_FORCEINLINE RHIVulkanBindGroupPool* GetVulkanBindGroupPool() const { return m_pVulkanBindGroupPool; }
+        F_FORCEINLINE RHIVulkanBindGroupLayout* GetVulkanBindGroupLayout() const { return m_pVulkanBindGroupLayout; }
         F_FORCEINLINE VkDescriptorSet& GetVkDescriptorSet() { return m_vkDescriptorSet; }
 
         F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }

@@ -28,7 +28,7 @@ namespace LostPeterRHI
         RHICommandEncoder* m_pCommandEncoder;
 
     public:
-        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() { return m_pCommandEncoder; }
+        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() const { return m_pCommandEncoder; }
 
         
     public:
@@ -53,7 +53,7 @@ namespace LostPeterRHI
         RHICommandEncoder* m_pCommandEncoder;
 
     public:
-        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() { return m_pCommandEncoder; }
+        F_FORCEINLINE RHICommandEncoder* GetCommandEncoder() const { return m_pCommandEncoder; }
         
 
     public:
@@ -86,7 +86,7 @@ namespace LostPeterRHI
         RHICommandBuffer* m_pCommandBuffer;
 
     public:
-        F_FORCEINLINE RHICommandBuffer* GetCommandBuffer() { return m_pCommandBuffer; }
+        F_FORCEINLINE RHICommandBuffer* GetCommandBuffer() const { return m_pCommandBuffer; }
 
 
     public:

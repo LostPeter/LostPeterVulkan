@@ -29,9 +29,13 @@ namespace LostPeterPluginRHIDummy
 
     public:
     protected:
+        RHIDummyBindGroupPool* m_pDummyBindGroupPool;
+        RHIDummyBindGroupLayout* m_pDummyBindGroupLayout;
 
 
     public:
+        F_FORCEINLINE RHIDummyBindGroupPool* GetDummyBindGroupPool() const { return m_pDummyBindGroupPool; }
+        F_FORCEINLINE RHIDummyBindGroupLayout* GetDummyBindGroupLayout() const { return m_pDummyBindGroupLayout; }
 
 
     public:

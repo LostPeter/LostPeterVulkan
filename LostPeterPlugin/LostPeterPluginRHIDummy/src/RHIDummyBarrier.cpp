@@ -1,5 +1,5 @@
 /****************************************************************************
-* LostPeterPluginRHIVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterPluginRHIDummy - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
 * Time:     2024-05-12
@@ -9,11 +9,11 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RHIVulkanSynchronous.h"
+#include "../include/RHIDummyBarrier.h"
 
-namespace LostPeterPluginRHIVulkan
+namespace LostPeterPluginRHIDummy
 {
     
     
 
-}; //LostPeterPluginRHIVulkan
+}; //LostPeterPluginRHIDummy

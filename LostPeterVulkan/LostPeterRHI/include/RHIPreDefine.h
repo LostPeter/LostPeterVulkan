@@ -744,6 +744,7 @@ namespace LostPeterRHI
 
 
     ////////////////////////////// Class ///////////////////////////////
+    class RHIBarrier;
     class RHIBindGroup;
     class RHIBindGroupCache;
     class RHIBindGroupLayout;
@@ -778,7 +779,6 @@ namespace LostPeterRHI
     class RHIShaderModuleCache;
 	class RHISurface;
 	class RHISwapChain;
-	class RHIBarrier;
 	class RHITexture;
 	class RHITextureView;
 	class RHIUtil;
@@ -1317,13 +1317,15 @@ namespace LostPeterRHI
     //RHIBindGroupCreateInfo
     struct rhiExport RHIBindGroupCreateInfo
     {
+        RHIBindGroupPool* pBindGroupPool;
         RHIBindGroupLayout* pBindGroupLayout;
         uint32 nEntryCount;
         const RHIBindGroupEntry* pEntries;
         String strDebugName;
 
         RHIBindGroupCreateInfo()
-            : pBindGroupLayout(nullptr)
+            : pBindGroupPool(nullptr)
+            , pBindGroupLayout(nullptr)
             , nEntryCount(0)
             , pEntries(nullptr)
             , strDebugName("")
