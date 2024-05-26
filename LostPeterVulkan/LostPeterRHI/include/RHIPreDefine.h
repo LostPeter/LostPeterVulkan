@@ -375,8 +375,9 @@ namespace LostPeterRHI
         RHI_Binding_UniformBuffer = 0,					//0: UniformBuffer
         RHI_Binding_StorageBuffer,						//1: StorageBuffer
         RHI_Binding_Sampler,							//2: Sampler
-        RHI_Binding_Texture,							//3: Texture
-        RHI_Binding_StorageTexture,						//4: StorageTexture
+        RHI_Binding_CombinedImageSampler,               //3: CombinedImageSampler
+        RHI_Binding_Texture,							//4: Texture
+        RHI_Binding_StorageTexture,						//5: StorageTexture
 
         RHI_Binding_Count,
     };
@@ -1233,13 +1234,16 @@ namespace LostPeterRHI
     {
         RHIResourceBinding sBinding;
         RHIShaderStageFlags flagsShaderVisibility;
+        RHISampler* pSampler;
 
         RHIBindGroupLayoutEntry()
             : flagsShaderVisibility(0)
+            , pSampler(nullptr)
         {
 
         }
     };
+    typedef std::vector<RHIBindGroupLayoutEntry> RHIBindGroupLayoutEntryVector;
 
     //RHIBindGroupLayoutCacheCreateInfo
     struct rhiExport RHIBindGroupLayoutCacheCreateInfo
@@ -1257,14 +1261,11 @@ namespace LostPeterRHI
     struct rhiExport RHIBindGroupLayoutCreateInfo
     {
         uint8 nLayoutIndex;
-        uint32 nEntryCount;
-        const RHIBindGroupLayoutEntry* pEntries;
+        RHIBindGroupLayoutEntryVector aEntries;
         String strDebugName;
 
         RHIBindGroupLayoutCreateInfo()
             : nLayoutIndex(0)
-            , nEntryCount(0)
-            , pEntries(nullptr)
             , strDebugName("")
         {
 
@@ -1287,6 +1288,7 @@ namespace LostPeterRHI
 
         }
     };
+    typedef std::vector<RHIBindGroupEntry> RHIBindGroupEntryVector;
 
     //RHIBindGroupPoolCreateInfo
     struct rhiExport RHIBindGroupPoolCreateInfo
@@ -1319,15 +1321,12 @@ namespace LostPeterRHI
     {
         RHIBindGroupPool* pBindGroupPool;
         RHIBindGroupLayout* pBindGroupLayout;
-        uint32 nEntryCount;
-        const RHIBindGroupEntry* pEntries;
+        RHIBindGroupEntryVector aEntries;
         String strDebugName;
 
         RHIBindGroupCreateInfo()
             : pBindGroupPool(nullptr)
             , pBindGroupLayout(nullptr)
-            , nEntryCount(0)
-            , pEntries(nullptr)
             , strDebugName("")
         {
 

@@ -23,6 +23,8 @@ namespace LostPeterPluginRHIVulkan
         , m_eIndexFormat(createInfo.eBufferView == RHIBufferViewType::RHI_BufferView_Index ? createInfo.eIndexBufferViewInfo.eIndexFormat : RHIIndexFormatType::RHI_IndexFormat_16Bit)
     {
         F_Assert(m_pVulkanBuffer && "RHIVulkanBufferView::RHIVulkanBufferView")
+
+        createVkDescriptorBufferInfo();
     }
 
     RHIVulkanBufferView::~RHIVulkanBufferView()
@@ -33,6 +35,13 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanBufferView::Destroy()
     {
 
+    }
+
+    void RHIVulkanBufferView::createVkDescriptorBufferInfo()
+    {
+        m_vkDescriptorBufferInfo.buffer = m_pVulkanBuffer->GetVkBuffer();
+        m_vkDescriptorBufferInfo.offset = (VkDeviceSize)m_nOffset;
+        m_vkDescriptorBufferInfo.range = (VkDeviceSize)m_nSize;
     }
 
 }; //LostPeterPluginRHIVulkan

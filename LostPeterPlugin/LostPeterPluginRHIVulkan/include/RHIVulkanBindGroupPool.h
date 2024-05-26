@@ -38,7 +38,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE VkDescriptorPool& GetVkDescriptorPool() { return m_vkDescriptorPool; }
 
         F_FORCEINLINE uint32 GetDescriptorCount() const { return m_nDescriptorCount; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

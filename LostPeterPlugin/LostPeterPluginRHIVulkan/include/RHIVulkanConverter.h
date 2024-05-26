@@ -34,9 +34,12 @@ namespace LostPeterPluginRHIVulkan
         static RHITextureViewDimensionType TransformFromVkImageViewType(VkImageViewType vkImageViewType);
         static RHISampleCountType TransformFromVkSampleCountFlagBits(VkSampleCountFlagBits vkSampleCountFlagBits);
         static RHIPresentType TransformFromVkPresentModeKHR(VkPresentModeKHR vkPresentModeKHR);
+        static RHIBindingType TransformFromVkDescriptorType(VkDescriptorType vkDescriptorType);
+        static RHITextureStateType TransformFromVkImageLayout(VkImageLayout vkImageLayout); 
 
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
         static RHITextureUsageBitsType TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags);
+        static RHIShaderStageBitsType TransformFromVkShaderStageFlags(VkShaderStageFlags vkShaderStageFlags);
 
     public:
         ////////////////////// TransformToXXXX ////////////////////////
@@ -55,11 +58,15 @@ namespace LostPeterPluginRHIVulkan
         static VkImageViewType TransformToVkImageViewType(RHITextureViewDimensionType eTextureViewDimension);
         static VkSampleCountFlagBits TransformToVkSampleCountFlagBits(RHISampleCountType eSampleCount);
         static VkPresentModeKHR TransformToVkPresentModeKHR(RHIPresentType ePresent);
+        static VkDescriptorType TransformToVkDescriptorType(RHIBindingType eBinding);
+        static VkImageLayout TransformToVkImageLayout(RHITextureStateType eTextureState); 
 
         static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
         static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);
         static VkImageUsageFlags TransformToVkImageUsageFlags(RHITextureUsageBitsType eTextureUsageBits);
         static VkImageUsageFlags TransformToVkImageUsageFlagsFromTextureUsageFlags(RHITextureUsageFlags flagsTextureUsages);
+        static VkShaderStageFlags TransformToVkShaderStageFlags(RHIShaderStageBitsType eShaderStageBits);
+        static VkShaderStageFlags TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages);
     };
 
 }; //LostPeterPluginRHIVulkan

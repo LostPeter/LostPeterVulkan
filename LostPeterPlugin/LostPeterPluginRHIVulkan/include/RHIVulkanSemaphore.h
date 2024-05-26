@@ -36,7 +36,7 @@ namespace LostPeterPluginRHIVulkan
     public:
         F_FORCEINLINE VkSemaphore& GetVkSemaphore() { return m_vkSemaphore; }
 
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

@@ -42,7 +42,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIShaderStageBitsType GetShaderStageBitsType() const { return m_eShaderStageBits; }
         F_FORCEINLINE const String& GetPath() const { return m_strPath; }
         F_FORCEINLINE const String& GetContent() const { return m_strContent; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

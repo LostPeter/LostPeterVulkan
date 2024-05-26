@@ -27,7 +27,7 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanDevice* m_pVulkanDevice;
 
     public:
-        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() { return m_pVulkanDevice; }
+        F_FORCEINLINE RHIVulkanDevice* GetVulkanDevice() const { return m_pVulkanDevice; }
 
     public:
         

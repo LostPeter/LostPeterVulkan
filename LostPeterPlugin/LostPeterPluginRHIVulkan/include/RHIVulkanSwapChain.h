@@ -63,10 +63,10 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIPixelFormatType GetPixelFormatType() const { return m_ePixelFormat; }
         F_FORCEINLINE RHIColorSpaceType GetColorSpaceType() const { return m_eColorSpace; }
         F_FORCEINLINE RHIPresentType GetPresentType() const { return m_ePresent; }
-        F_FORCEINLINE const RHIExtent<2>& GetExtent() { return m_sExtent; }
+        F_FORCEINLINE const RHIExtent<2>& GetExtent() const { return m_sExtent; }
         F_FORCEINLINE uint32 GetSwapChainImageCount() const { return m_nSwapChainImageCount; }
         F_FORCEINLINE uint32 GetCurrentImageIndex() const { return m_nCurrentImageIndex; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
         F_FORCEINLINE const RHIVulkanTexturePtrVector& GetVulkanTextures() const { return m_aVulkanTextures; }
         F_FORCEINLINE RHIVulkanTexturePtrVector& GetVulkanTextures() { return m_aVulkanTextures; }

@@ -34,6 +34,12 @@ namespace LostPeterPluginRHIVulkan
         VmaAllocation m_vmaAllocation;
         bool m_bIsOwnMemory;
         VkImageAspectFlags m_vkImageAspectFlags;
+        VkImageType m_vkImageType;
+        VkExtent3D m_vkExtent3D;
+        VkFormat m_vkFormat;
+        VkSampleCountFlagBits m_vkSampleCountFlagBits;
+        VkImageLayout m_vkImageLayout;
+        VkImageUsageFlags m_vkImageUsageFlags;
         RHIVulkanTextureView* m_pVulkanTextureView;
 
         RHIExtent<3> m_sExtent;
@@ -50,8 +56,14 @@ namespace LostPeterPluginRHIVulkan
         VkImageView GetVkImageView();
         F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }
         F_FORCEINLINE bool IsOwnMemory() const { return m_bIsOwnMemory; }
-        F_FORCEINLINE VkImageAspectFlags GetVkImageAspectFlags() { return m_vkImageAspectFlags; }
-        F_FORCEINLINE RHIVulkanTextureView* GetVulkanTextureView() { return m_pVulkanTextureView; }
+        F_FORCEINLINE VkImageAspectFlags GetVkImageAspectFlags() const { return m_vkImageAspectFlags; }
+        F_FORCEINLINE VkImageType GetVkImageType() const { return m_vkImageType; }
+        F_FORCEINLINE const VkExtent3D& GetVkExtent3D() const { return m_vkExtent3D; }
+        F_FORCEINLINE VkFormat GetVkFormat() const { return m_vkFormat; }
+        F_FORCEINLINE VkSampleCountFlagBits GetVkSampleCountFlagBits() const { return m_vkSampleCountFlagBits; }
+        F_FORCEINLINE VkImageLayout GetVkImageLayout() const { return m_vkImageLayout; }
+        F_FORCEINLINE VkImageUsageFlags GetVkImageUsageFlags() const { return m_vkImageUsageFlags; }
+        F_FORCEINLINE RHIVulkanTextureView* GetVulkanTextureView() const { return m_pVulkanTextureView; }
 
         F_FORCEINLINE const RHIExtent<3>& GetExtent() const { return m_sExtent; }
         F_FORCEINLINE uint8 GetMipLevels() const { return m_nMipLevels; }
@@ -60,7 +72,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHISampleCountType GetSampleCountType() const { return m_eSampleCount; }
         F_FORCEINLINE RHITextureUsageFlags GetTextureUsageFlags() const { return m_eUsages; }
         F_FORCEINLINE RHITextureStateType GetTextureStateType() const { return m_eState; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();
@@ -71,11 +83,9 @@ namespace LostPeterPluginRHIVulkan
 
 
     protected:
-        void createVkImage();
-        void tansitionToInitState();
-
-    protected:
         void refreshParam(const RHITextureCreateInfo& createInfo);
+        void createVkImage();
+        void tansitionToInitState();        
     };
     
 }; //LostPeterPluginRHIVulkan

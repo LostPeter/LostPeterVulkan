@@ -31,13 +31,16 @@ namespace LostPeterPluginRHIVulkan
     protected:
         VkDescriptorSetLayout m_vkDescriptorSetLayout;
 
-
+        uint8 m_nLayoutIndex;
+        RHIBindGroupLayoutEntryVector m_aBindGroupLayoutEntries;
         String m_strDebugName;
 
     public:
         F_FORCEINLINE VkDescriptorSetLayout& GetVkDescriptorSetLayout() { return m_vkDescriptorSetLayout; }
 
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE uint8 GetLayoutIndex() const { return m_nLayoutIndex; }
+        F_FORCEINLINE const RHIBindGroupLayoutEntryVector& GetBindGroupLayoutEntries() const { return m_aBindGroupLayoutEntries; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

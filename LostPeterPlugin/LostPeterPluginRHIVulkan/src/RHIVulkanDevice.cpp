@@ -3823,24 +3823,24 @@ namespace LostPeterPluginRHIVulkan
         }
     }
 
-    VkDescriptorSetLayoutBinding RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                                                             VkDescriptorType descriptorType,
-                                                                                             uint32_t descriptorCount,
-                                                                                             VkShaderStageFlags stageFlags)
+    VkDescriptorSetLayoutBinding RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                                                            VkDescriptorType descriptorType,
+                                                                                            uint32_t descriptorCount,
+                                                                                            VkShaderStageFlags stageFlags)
     {
         VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-        CreateVkDescriptorSetLayoutBinding_Uniform(binding,
-                                                   descriptorType,
-                                                   descriptorCount,
-                                                   stageFlags,
-                                                   descriptorSetLayoutBinding);
+        CreateVkDescriptorSetLayoutBinding_Buffer(binding,
+                                                  descriptorType,
+                                                  descriptorCount,
+                                                  stageFlags,
+                                                  descriptorSetLayoutBinding);
         return descriptorSetLayoutBinding;
     }
-    void RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                                     VkDescriptorType descriptorType,
-                                                                     uint32_t descriptorCount,
-                                                                     VkShaderStageFlags stageFlags,
-                                                                     VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
+    void RHIVulkanDevice::CreateVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                                    VkDescriptorType descriptorType,
+                                                                    uint32_t descriptorCount,
+                                                                    VkShaderStageFlags stageFlags,
+                                                                    VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
     {
         descriptorSetLayoutBinding.binding = binding;
         descriptorSetLayoutBinding.descriptorType = descriptorType;
@@ -3877,12 +3877,13 @@ namespace LostPeterPluginRHIVulkan
         descriptorSetLayoutBinding.pImmutableSamplers = pImmutableSamplers;
     }
 
-    void RHIVulkanDevice::PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
-                                                      VkDescriptorSet dstSet,
-                                                      uint32_t dstBinding,
-                                                      uint32_t dstArrayElement,
-                                                      uint32_t descriptorCount,
-                                                      VkDescriptorBufferInfo& bufferInfo)
+    void RHIVulkanDevice::PushVkDescriptorSet_Buffer(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                     VkDescriptorSet dstSet,
+                                                     uint32_t dstBinding,
+                                                     uint32_t dstArrayElement,
+                                                     uint32_t descriptorCount,
+                                                     VkDescriptorType descriptorType,
+                                                     VkDescriptorBufferInfo& bufferInfo)
     {
         VkWriteDescriptorSet ds = {};
         ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -3890,7 +3891,7 @@ namespace LostPeterPluginRHIVulkan
         ds.dstBinding = dstBinding;
         ds.dstArrayElement = dstArrayElement;
         ds.descriptorCount = descriptorCount;
-        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        ds.descriptorType = descriptorType;
         ds.pBufferInfo = &bufferInfo;
 
         aWriteDescriptorSets.push_back(ds);

@@ -40,11 +40,11 @@ namespace LostPeterPluginRHIVulkan
     public:
         F_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
         F_FORCEINLINE VmaAllocation& GetVmaAllocation() { return m_vmaAllocation; }
-        F_FORCEINLINE RHIVulkanBufferView* GetVulkanBufferView() { return m_pVulkanBufferView; }
+        F_FORCEINLINE RHIVulkanBufferView* GetVulkanBufferView() const { return m_pVulkanBufferView; }
         
-        F_FORCEINLINE uint32 GetSize() { return m_nSize; }
-        F_FORCEINLINE const RHIBufferUsageFlags& GetBufferUsageFlags() { return m_flagsBufferUsages; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
+        F_FORCEINLINE const RHIBufferUsageFlags& GetBufferUsageFlags() const { return m_flagsBufferUsages; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

@@ -25,25 +25,29 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         RHIVulkanBuffer* m_pVulkanBuffer;
+        VkDescriptorBufferInfo m_vkDescriptorBufferInfo;
+
         uint32 m_nStride;
         uint32 m_nSize;
         uint32 m_nOffset;
         RHIIndexFormatType m_eIndexFormat;
 
     public:
-        F_FORCEINLINE RHIVulkanBuffer* GetVulkanBuffer() { return m_pVulkanBuffer; }
-        F_FORCEINLINE uint32 GetStride() { return m_nStride; }
-        F_FORCEINLINE uint32 GetSize() { return m_nSize; }
-        F_FORCEINLINE uint32 GetOffset() { return m_nOffset; }
-        F_FORCEINLINE RHIIndexFormatType GetIndexFormatType() { return m_eIndexFormat; }
+        F_FORCEINLINE RHIVulkanBuffer* GetVulkanBuffer() const { return m_pVulkanBuffer; }
+        F_FORCEINLINE const VkDescriptorBufferInfo& GetVkDescriptorBufferInfo() const { return m_vkDescriptorBufferInfo; }
+        F_FORCEINLINE VkDescriptorBufferInfo& GetVkDescriptorBufferInfo() { return m_vkDescriptorBufferInfo; }
+
+        F_FORCEINLINE uint32 GetStride() const { return m_nStride; }
+        F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
+        F_FORCEINLINE uint32 GetOffset() const { return m_nOffset; }
+        F_FORCEINLINE RHIIndexFormatType GetIndexFormatType() const { return m_eIndexFormat; }
 
     public:
         virtual void Destroy();
 
 
     protected:
-        
-
+        void createVkDescriptorBufferInfo();
     };
     
 }; //LostPeterPluginRHIVulkan

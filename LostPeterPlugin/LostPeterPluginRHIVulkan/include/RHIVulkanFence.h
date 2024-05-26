@@ -37,8 +37,8 @@ namespace LostPeterPluginRHIVulkan
     public:
         F_FORCEINLINE VkFence& GetVkFence() { return m_vkFence; }
 
-        F_FORCEINLINE bool IsSignaled() { return m_bIsSignaled; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE bool IsSignaled() const { return m_bIsSignaled; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

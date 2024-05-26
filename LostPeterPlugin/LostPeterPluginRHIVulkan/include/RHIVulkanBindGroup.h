@@ -33,7 +33,7 @@ namespace LostPeterPluginRHIVulkan
         RHIVulkanBindGroupLayout* m_pVulkanBindGroupLayout;
         VkDescriptorSet m_vkDescriptorSet;
 
-
+        RHIBindGroupEntryVector m_aBindGroupEntries;
         String m_strDebugName;
 
     public:
@@ -41,11 +41,14 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE RHIVulkanBindGroupLayout* GetVulkanBindGroupLayout() const { return m_pVulkanBindGroupLayout; }
         F_FORCEINLINE VkDescriptorSet& GetVkDescriptorSet() { return m_vkDescriptorSet; }
 
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const RHIBindGroupEntryVector& GetBindGroupEntries() const { return m_aBindGroupEntries; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
+    public:
+        void UpdateVkDescriptorSets();
 
     protected:
         void createVkDescriptorSet();

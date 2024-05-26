@@ -102,17 +102,37 @@ namespace LostPeterPluginRHIVulkan
         return m_pVulkanTextureView->GetVkImageView();
     }
 
+    void RHIVulkanTexture::refreshParam(const RHITextureCreateInfo& createInfo)
+    {
+        m_vkImageType = RHIVulkanConverter::TransformToVkImageType(m_eTextureDimension);;
+        m_vkExtent3D = RHIVulkanConverter::TransformToVkExtent3D(m_sExtent);
+        m_vkFormat = RHIVulkanConverter::TransformToVkFormat(m_ePixelFormat);
+        m_vkSampleCountFlagBits = RHIVulkanConverter::TransformToVkSampleCountFlagBits(m_eSampleCount);
+        m_vkImageLayout = RHIVulkanConverter::TransformToVkImageLayout(m_eState);
+        m_vkImageUsageFlags = RHIVulkanConverter::TransformToVkImageUsageFlagsFromTextureUsageFlags(m_eUsages);
+
+        if (createInfo.eUsages & RHITextureUsageBitsType::RHI_TextureUsageBits_DepthStencilAttachment) 
+        {
+            m_vkImageAspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+            if (createInfo.ePixelFormat == RHIPixelFormatType::RHI_PixelFormat_D32FloatS8UInt || 
+                createInfo.ePixelFormat == RHIPixelFormatType::RHI_PixelFormat_D24UNormS8UInt) 
+            {
+                m_vkImageAspectFlags |= VK_IMAGE_ASPECT_STENCIL_BIT;
+            }
+        }
+    }
+
     void RHIVulkanTexture::createVkImage()
     {
         VkImageCreateInfo imageInfo = {};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.arrayLayers = m_sExtent.z;
         imageInfo.mipLevels = m_nMipLevels;
-        imageInfo.extent = RHIVulkanConverter::TransformToVkExtent3D(m_sExtent);
-        imageInfo.samples = RHIVulkanConverter::TransformToVkSampleCountFlagBits(m_eSampleCount);
-        imageInfo.imageType = RHIVulkanConverter::TransformToVkImageType(m_eTextureDimension);
-        imageInfo.format = RHIVulkanConverter::TransformToVkFormat(m_ePixelFormat);
-        imageInfo.usage = RHIVulkanConverter::TransformToVkImageUsageFlagsFromTextureUsageFlags(m_eUsages);
+        imageInfo.extent = m_vkExtent3D;
+        imageInfo.samples = m_vkSampleCountFlagBits;
+        imageInfo.imageType = m_vkImageType;
+        imageInfo.format = m_vkFormat;
+        imageInfo.usage = m_vkImageUsageFlags;
 
         VmaAllocationCreateInfo allocInfo = {};
         allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -135,19 +155,6 @@ namespace LostPeterPluginRHIVulkan
     void RHIVulkanTexture::tansitionToInitState()
     {
 
-    }
-
-    void RHIVulkanTexture::refreshParam(const RHITextureCreateInfo& createInfo)
-    {
-        if (createInfo.eUsages & RHITextureUsageBitsType::RHI_TextureUsageBits_DepthStencilAttachment) 
-        {
-            m_vkImageAspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-            if (createInfo.ePixelFormat == RHIPixelFormatType::RHI_PixelFormat_D32FloatS8UInt || 
-                createInfo.ePixelFormat == RHIPixelFormatType::RHI_PixelFormat_D24UNormS8UInt) 
-            {
-                m_vkImageAspectFlags |= VK_IMAGE_ASPECT_STENCIL_BIT;
-            }
-        }
     }
     
 }; //LostPeterPluginRHIVulkan

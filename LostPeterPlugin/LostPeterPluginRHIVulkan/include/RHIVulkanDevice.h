@@ -789,15 +789,15 @@ namespace LostPeterPluginRHIVulkan
         void FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, const VkDescriptorSet& vkDescriptorSet);
         void FreeVkDescriptorSets(VkDescriptorPool vkDescriptorPool, VkDescriptorSetVector& aDescriptorSets);
 
-        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                                                VkDescriptorType descriptorType,
-                                                                                uint32_t descriptorCount,
-                                                                                VkShaderStageFlags stageFlags);
-        void CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                        VkDescriptorType descriptorType,
-                                                        uint32_t descriptorCount,
-                                                        VkShaderStageFlags stageFlags,
-                                                        VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
+        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                                               VkDescriptorType descriptorType,
+                                                                               uint32_t descriptorCount,
+                                                                               VkShaderStageFlags stageFlags);
+        void CreateVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                       VkDescriptorType descriptorType,
+                                                       uint32_t descriptorCount,
+                                                       VkShaderStageFlags stageFlags,
+                                                       VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
         VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
                                                                               VkDescriptorType descriptorType,
                                                                               uint32_t descriptorCount,
@@ -810,12 +810,13 @@ namespace LostPeterPluginRHIVulkan
                                                       VkSampler* pImmutableSamplers,
                                                       VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
         
-        void PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
-                                         VkDescriptorSet dstSet,
-                                         uint32_t dstBinding,
-                                         uint32_t dstArrayElement,
-                                         uint32_t descriptorCount,
-                                         VkDescriptorBufferInfo& bufferInfo);
+        void PushVkDescriptorSet_Buffer(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                        VkDescriptorSet dstSet,
+                                        uint32_t dstBinding,
+                                        uint32_t dstArrayElement,
+                                        uint32_t descriptorCount,
+                                        VkDescriptorType descriptorType,
+                                        VkDescriptorBufferInfo& bufferInfo);
         void PushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                        VkDescriptorSet dstSet,
                                        uint32_t dstBinding,

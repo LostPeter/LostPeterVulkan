@@ -11,6 +11,8 @@
 
 #include "../include/RHIVulkanBindGroupLayout.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanSampler.h"
+#include "../include/RHIVulkanConverter.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -18,6 +20,8 @@ namespace LostPeterPluginRHIVulkan
         : RHIBindGroupLayout(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
         , m_vkDescriptorSetLayout(VK_NULL_HANDLE)
+        , m_nLayoutIndex(createInfo.nLayoutIndex)
+        , m_aBindGroupLayoutEntries(createInfo.aEntries)
         , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanBindGroupLayout::RHIVulkanBindGroupLayout")
@@ -41,7 +45,56 @@ namespace LostPeterPluginRHIVulkan
     
     void RHIVulkanBindGroupLayout::createVkDescriptorSetLayout()
     {
+        VkDescriptorSetLayoutBindingVector aDescriptorSetLayoutBinding;
+        uint32 count = (uint32)m_aBindGroupLayoutEntries.size();
+        for (uint32 i = 0; i < count; i++)
+        {
+            RHIBindGroupLayoutEntry& entry = m_aBindGroupLayoutEntries[i];
 
+            VkDescriptorSetLayoutBinding vkDescriptorSetLayoutBinding;
+            VkDescriptorType vkDescriptorType = RHIVulkanConverter::TransformToVkDescriptorType(entry.sBinding.eBinding);
+            VkShaderStageFlags vkShaderStageFlags = RHIVulkanConverter::TransformToVkShaderStageFlagsFromShaderStagelags(entry.flagsShaderVisibility);
+            if (entry.sBinding.eBinding == RHIBindingType::RHI_Binding_UniformBuffer ||
+                entry.sBinding.eBinding == RHIBindingType::RHI_Binding_StorageBuffer)
+            {
+                m_pVulkanDevice->CreateVkDescriptorSetLayoutBinding_Buffer(entry.sBinding.sBinding.sBindingHLSL.nIndex,
+                                                                           vkDescriptorType,
+                                                                           1,
+                                                                           vkShaderStageFlags,
+                                                                           vkDescriptorSetLayoutBinding);
+                
+            }
+            else if (entry.sBinding.eBinding == RHIBindingType::RHI_Binding_Sampler ||
+                     entry.sBinding.eBinding == RHIBindingType::RHI_Binding_Texture ||
+                     entry.sBinding.eBinding == RHIBindingType::RHI_Binding_StorageTexture)
+            {
+                VkSampler* pVkSampler = nullptr;
+                if (entry.pSampler != nullptr)
+                {
+                    RHIVulkanSampler* pVulkanSampler = (RHIVulkanSampler*)entry.pSampler;
+                    pVkSampler = pVulkanSampler->GetVkSamplerPtr();
+                }
+                m_pVulkanDevice->CreateVkDescriptorSetLayoutBinding_Image(entry.sBinding.sBinding.sBindingHLSL.nIndex,
+                                                                          vkDescriptorType,
+                                                                          1,
+                                                                          vkShaderStageFlags,
+                                                                          pVkSampler,
+                                                                          vkDescriptorSetLayoutBinding);
+            }   
+            else
+            {
+                F_LogError("*********************** RHIVulkanBindGroupLayout::createVkDescriptorSetLayout: Wrong RHIBindingType, Name: [%s] !", m_strName.c_str());
+                return;
+            }
+            aDescriptorSetLayoutBinding.push_back(vkDescriptorSetLayoutBinding);
+        }
+
+        if (aDescriptorSetLayoutBinding.empty() ||
+            !m_pVulkanDevice->CreateVkDescriptorSetLayout(aDescriptorSetLayoutBinding, m_vkDescriptorSetLayout))
+        {
+            F_LogError("*********************** RHIVulkanBindGroupLayout::createVkDescriptorSetLayout: Wrong CreateVkDescriptorSetLayout failed, Name: [%s] !", m_strName.c_str());
+            return;
+        }
 
         if (RHI_IsDebug())
         {

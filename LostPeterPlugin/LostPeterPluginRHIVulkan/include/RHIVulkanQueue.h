@@ -38,7 +38,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE VkQueue& GetVkQueue() { return m_vkQueue; }
         F_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
 
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

@@ -47,6 +47,7 @@ namespace LostPeterPluginRHIVulkan
 
     public:
         F_FORCEINLINE VkSampler& GetVkSampler() { return m_vkSampler; }
+        F_FORCEINLINE VkSampler* GetVkSamplerPtr() { return &m_vkSampler; }
 
         F_FORCEINLINE RHIAddressType GetAddressU() const { return m_eAddressU; }
         F_FORCEINLINE RHIAddressType GetAddressV() const { return m_eAddressV; }
@@ -60,7 +61,7 @@ namespace LostPeterPluginRHIVulkan
         F_FORCEINLINE float GetLodMipBias() const { return m_fLodMipBias; }
         F_FORCEINLINE RHIComparisonFuncType GetComparisonFunc() const { return m_eComparisonFunc; }
         F_FORCEINLINE uint8 GetMaxAnisotropy() const { return m_nMaxAnisotropy; }
-        F_FORCEINLINE const String& GetDebugName() { return m_strDebugName; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

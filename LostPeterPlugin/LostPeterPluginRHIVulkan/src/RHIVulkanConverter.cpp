@@ -241,6 +241,41 @@ namespace LostPeterPluginRHIVulkan
         return RHIPresentType::RHI_Present_Immediately;
     }
 
+    RHIBindingType RHIVulkanConverter::TransformFromVkDescriptorType(VkDescriptorType vkDescriptorType)
+    {
+        switch ((int32)vkDescriptorType)
+        {
+        case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:             return RHIBindingType::RHI_Binding_UniformBuffer;
+        case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:             return RHIBindingType::RHI_Binding_StorageBuffer;
+        case VK_DESCRIPTOR_TYPE_SAMPLER:                    return RHIBindingType::RHI_Binding_Sampler;
+        case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:     return RHIBindingType::RHI_Binding_CombinedImageSampler;
+        case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:              return RHIBindingType::RHI_Binding_Texture;
+        case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:              return RHIBindingType::RHI_Binding_StorageTexture;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkDescriptorType: Wrong VkDescriptorType type !")
+        }
+        return RHIBindingType::RHI_Binding_UniformBuffer;
+    }
+
+    RHITextureStateType RHIVulkanConverter::TransformFromVkImageLayout(VkImageLayout vkImageLayout)
+    {
+        switch ((int32)vkImageLayout)
+        {
+        case VK_IMAGE_LAYOUT_UNDEFINED:                         return RHITextureStateType::RHI_TextureState_UnDefined;
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:              return RHITextureStateType::RHI_TextureState_CopySrc;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:              return RHITextureStateType::RHI_TextureState_CopyDst;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:          return RHITextureStateType::RHI_TextureState_ShaderReadOnly;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:          return RHITextureStateType::RHI_TextureState_RenderTarget;
+        case VK_IMAGE_LAYOUT_GENERAL:                           return RHITextureStateType::RHI_TextureState_Storage;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:   return RHITextureStateType::RHI_TextureState_DepthStencilReadonly;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:  return RHITextureStateType::RHI_TextureState_DepthStencilWrite;
+        case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:                   return RHITextureStateType::RHI_TextureState_Present;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkImageLayout: Wrong VkImageLayout type !")
+        }
+        return RHITextureStateType::RHI_TextureState_UnDefined;
+    }
+
 
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
@@ -275,6 +310,21 @@ namespace LostPeterPluginRHIVulkan
         return RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding;
     }
 
+    RHIShaderStageBitsType RHIVulkanConverter::TransformFromVkShaderStageFlags(VkShaderStageFlags vkShaderStageFlags)
+    {
+        switch ((int32)vkShaderStageFlags)
+        {
+        case VK_SHADER_STAGE_VERTEX_BIT:                        return RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex;
+        case VK_SHADER_STAGE_FRAGMENT_BIT:                      return RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel;
+        case VK_SHADER_STAGE_COMPUTE_BIT:                       return RHIShaderStageBitsType::RHI_ShaderStageBits_Compute;
+        case VK_SHADER_STAGE_GEOMETRY_BIT:                      return RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry;
+        case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:          return RHIShaderStageBitsType::RHI_ShaderStageBits_Domain;
+        case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:       return RHIShaderStageBitsType::RHI_ShaderStageBits_Hull;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkShaderStageFlags: Wrong VkShaderStageFlags type !")
+        }
+        return RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex;
+    }
 
 
     ////////////////////// TransformToXXXX ////////////////////////
@@ -562,6 +612,41 @@ namespace LostPeterPluginRHIVulkan
         return VK_PRESENT_MODE_IMMEDIATE_KHR;
     }
 
+    VkDescriptorType RHIVulkanConverter::TransformToVkDescriptorType(RHIBindingType eBinding)
+    {
+        switch (eBinding)
+        {
+        case RHIBindingType::RHI_Binding_UniformBuffer:         return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case RHIBindingType::RHI_Binding_StorageBuffer:         return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        case RHIBindingType::RHI_Binding_Sampler:               return VK_DESCRIPTOR_TYPE_SAMPLER;
+        case RHIBindingType::RHI_Binding_CombinedImageSampler:  return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        case RHIBindingType::RHI_Binding_Texture:               return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        case RHIBindingType::RHI_Binding_StorageTexture:        return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkDescriptorType: Wrong RHIBindingType type !")
+        }
+        return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    }
+
+    VkImageLayout RHIVulkanConverter::TransformToVkImageLayout(RHITextureStateType eTextureState)
+    {
+        switch (eTextureState)
+        {
+        case RHITextureStateType::RHI_TextureState_UnDefined:               return VK_IMAGE_LAYOUT_UNDEFINED;
+        case RHITextureStateType::RHI_TextureState_CopySrc:                 return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_CopyDst:                 return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_ShaderReadOnly:          return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_RenderTarget:            return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_Storage:                 return VK_IMAGE_LAYOUT_GENERAL;
+        case RHITextureStateType::RHI_TextureState_DepthStencilReadonly:    return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_DepthStencilWrite:       return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        case RHITextureStateType::RHI_TextureState_Present:                 return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkImageLayout: Wrong RHITextureStateType type !")
+        }
+        return VK_IMAGE_LAYOUT_UNDEFINED;
+    }
+
 
     VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
     {
@@ -636,6 +721,46 @@ namespace LostPeterPluginRHIVulkan
              it != s_Rules.end(); ++it)
         {
             if (flagsTextureUsages & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+
+    VkShaderStageFlags RHIVulkanConverter::TransformToVkShaderStageFlags(RHIShaderStageBitsType eShaderStageBits)
+    {
+        switch (eShaderStageBits)
+        {
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex:            return VK_SHADER_STAGE_VERTEX_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel:             return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Compute:           return VK_SHADER_STAGE_COMPUTE_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry:          return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Domain:            return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Hull:              return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkShaderStageFlags: Wrong RHIShaderStageBitsType type !")
+        }
+        return VK_SHADER_STAGE_VERTEX_BIT;
+    }
+    VkShaderStageFlags RHIVulkanConverter::TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages)
+    {
+        static std::map<RHIShaderStageBitsType, VkShaderStageFlags> s_Rules = 
+         {
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex,       VK_SHADER_STAGE_VERTEX_BIT },
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel,        VK_SHADER_STAGE_FRAGMENT_BIT },
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Compute,      VK_SHADER_STAGE_COMPUTE_BIT },
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry,     VK_SHADER_STAGE_GEOMETRY_BIT },
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Domain,       VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT },
+            { RHIShaderStageBitsType::RHI_ShaderStageBits_Hull,         VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT },
+        };
+
+        VkShaderStageFlags vkResult = {};
+        for (std::map<RHIShaderStageBitsType, VkShaderStageFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsShaderStages & it->first) 
             {
                 vkResult |= it->second;
             }
