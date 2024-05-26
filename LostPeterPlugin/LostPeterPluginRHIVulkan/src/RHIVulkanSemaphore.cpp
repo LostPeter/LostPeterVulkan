@@ -43,6 +43,7 @@ namespace LostPeterPluginRHIVulkan
     {
         if (!m_pVulkanDevice->CreateVkSemaphore(m_vkSemaphore))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSemaphore::createVkSemaphore: CreateVkSemaphore failed, Name: [%s] !", m_strName.c_str());
             return;
         }

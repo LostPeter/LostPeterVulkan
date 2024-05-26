@@ -109,6 +109,8 @@ namespace LostPeterPluginRHIVulkan
 
     typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
     typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
+    typedef std::vector<VkPushConstantRange> VkPushConstantRangeVector;
+    typedef std::map<String, VkPushConstantRange> VkPushConstantRangeMap;
 
     typedef std::vector<VkShaderModule> VkShaderModuleVector;
     typedef std::map<String, VkShaderModule> VkShaderModuleMap;

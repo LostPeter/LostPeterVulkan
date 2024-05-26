@@ -128,6 +128,7 @@ namespace LostPeterPluginRHIVulkan
                                                     m_pVulkanBindGroupPool->GetVkDescriptorPool(),
                                                     m_vkDescriptorSet))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanBindGroup::createVkDescriptorSet: Wrong CreateVkDescriptorSet failed, Name: [%s] !", m_strName.c_str());
             return;
         }

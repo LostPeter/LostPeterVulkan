@@ -181,6 +181,7 @@ namespace LostPeterPluginRHIVulkan
         VkSurfaceCapabilitiesKHR surfaceProperties;
         if (!m_pVulkanDevice->GetVulkanPhysicalDevice()->GetVkSurfaceCapabilitiesKHR(m_pVulkanSurface->GetVulkanSurface(), surfaceProperties))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: GetVkSurfaceCapabilitiesKHR failed, Name: [%s] !", m_strName.c_str());
             return;
         }
@@ -190,6 +191,7 @@ namespace LostPeterPluginRHIVulkan
 
         if (!m_pVulkanDevice->CheckSwapChainFormatSupport(m_pVulkanSurface, m_ePixelFormat))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: CheckSwapChainFormatSupport failed, Name: [%s] !", m_strName.c_str());
             return;
         }
@@ -245,17 +247,20 @@ namespace LostPeterPluginRHIVulkan
         VkBool32 supportsPresent;
         if (!RHI_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_pVulkanDevice->GetVulkanPhysicalDevice()->GetVkPhysicalDevice(), m_pVulkanDevice->GetVulkanQueuePresent()->GetFamilyIndex(), m_pVulkanSurface->GetVulkanSurface(), &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: vkGetPhysicalDeviceSurfaceSupportKHR failed, Name: [%s] !", m_strName.c_str());
             return;
         }
         if (!supportsPresent) 
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: Present queue not support, Name: [%s] !", m_strName.c_str());
             return;
         }
 
         if (!m_pVulkanDevice->CreateVkSwapchainKHR(m_vkSwapChainCreateInfoKHR, m_vkSwapChainKHR))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: CreateVkSwapchainKHR failed, Name: [%s] !", m_strName.c_str());
             return;
         }
@@ -282,6 +287,7 @@ namespace LostPeterPluginRHIVulkan
 
         if (!m_pVulkanDevice->CreateVkSemaphore(m_vkImageAvailableSemaphore))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSwapChain::createVkSwapchainKHR: CreateVkSemaphore failed, Name: [%s] !", m_strName.c_str());
             return;
         }

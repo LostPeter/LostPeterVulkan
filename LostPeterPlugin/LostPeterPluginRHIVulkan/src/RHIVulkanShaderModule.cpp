@@ -50,6 +50,7 @@ namespace LostPeterPluginRHIVulkan
                                                        m_strContent.data(),
                                                        m_vkShaderModule))
             {
+                setIsError(true);
                 F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, Name: [%s], Type: [%s] !", m_strName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
                 return;
             }
@@ -60,6 +61,7 @@ namespace LostPeterPluginRHIVulkan
                                                        m_strPath,
                                                        m_vkShaderModule))
             {
+                setIsError(true);
                 F_LogError("*********************** RHIVulkanShaderModule::createVkShaderModule: CreateVkShaderModule failed, Name: [%s], Type: [%s] !", m_strName.c_str(), RHI_GetShaderStageBitsTypeName(m_eShaderStageBits).c_str());
                 return;
             }

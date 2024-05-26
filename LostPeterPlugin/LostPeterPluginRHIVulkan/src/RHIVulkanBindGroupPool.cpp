@@ -45,6 +45,7 @@ namespace LostPeterPluginRHIVulkan
         if (!m_pVulkanDevice->CreateVkDescriptorPool(m_nDescriptorCount,
                                                      m_vkDescriptorPool))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanBindGroupPool::createVkDescriptorPool: CreateVkDescriptorPool failed, Name: [%s] !", m_strName.c_str());
             return;
         }

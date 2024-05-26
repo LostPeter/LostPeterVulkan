@@ -64,6 +64,17 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanTextureView::createVkImageView: CreateVkImageView failed, name: [%s] !", m_pVulkanTexture->GetDebugName().c_str());
             return;
         }
+
+        if (RHI_IsDebug())
+        {
+            const String& strName = m_pVulkanTexture->GetName();
+            const String& strDebugName = m_pVulkanTexture->GetDebugName();
+            String strNameView = strDebugName;
+            if (strDebugName.empty())
+                strNameView = strName;
+            m_pVulkanTexture->GetVulkanDevice()->SetDebugObject(VK_OBJECT_TYPE_IMAGE_VIEW, reinterpret_cast<uint64_t>(m_vkImageView), strNameView.c_str());
+            F_LogInfo("RHIVulkanTextureView::createVkImageView: Create VkImageView success, Name: [%s] !", strNameView.c_str());
+        }
     }
     
 }; //LostPeterPluginRHIVulkan

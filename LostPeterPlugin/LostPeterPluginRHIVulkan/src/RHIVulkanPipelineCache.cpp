@@ -43,6 +43,7 @@ namespace LostPeterPluginRHIVulkan
     {   
         if (!m_pVulkanDevice->CreateVkPipelineCache(m_vkPipelineCache))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanPipelineCache::createVkPipelineCache: CreateVkPipelineCache failed, Name: [%s] !", m_strName.c_str());
             return;
         }

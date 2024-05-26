@@ -41,11 +41,11 @@ namespace LostPeterPluginRHIVulkan
             m_pVulkanDevice->DestroyVkDescriptorSetLayout(m_vkDescriptorSetLayout);
         }
         m_vkDescriptorSetLayout = VK_NULL_HANDLE;
+        m_aDescriptorSetLayoutBinding.clear();
     }
     
     void RHIVulkanBindGroupLayout::createVkDescriptorSetLayout()
     {
-        VkDescriptorSetLayoutBindingVector aDescriptorSetLayoutBinding;
         uint32 count = (uint32)m_aBindGroupLayoutEntries.size();
         for (uint32 i = 0; i < count; i++)
         {
@@ -83,15 +83,17 @@ namespace LostPeterPluginRHIVulkan
             }   
             else
             {
+                setIsError(true);
                 F_LogError("*********************** RHIVulkanBindGroupLayout::createVkDescriptorSetLayout: Wrong RHIBindingType, Name: [%s] !", m_strName.c_str());
                 return;
             }
-            aDescriptorSetLayoutBinding.push_back(vkDescriptorSetLayoutBinding);
+            m_aDescriptorSetLayoutBinding.push_back(vkDescriptorSetLayoutBinding);
         }
-
-        if (aDescriptorSetLayoutBinding.empty() ||
-            !m_pVulkanDevice->CreateVkDescriptorSetLayout(aDescriptorSetLayoutBinding, m_vkDescriptorSetLayout))
+        
+        if (m_aDescriptorSetLayoutBinding.empty() ||
+            !m_pVulkanDevice->CreateVkDescriptorSetLayout(m_aDescriptorSetLayoutBinding, m_vkDescriptorSetLayout))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanBindGroupLayout::createVkDescriptorSetLayout: Wrong CreateVkDescriptorSetLayout failed, Name: [%s] !", m_strName.c_str());
             return;
         }

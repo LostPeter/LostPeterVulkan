@@ -3408,13 +3408,15 @@ namespace LostPeterPluginRHIVulkan
 
     //////////////////// VkPipelineLayout ///////////////
     bool RHIVulkanDevice::CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                                 const VkPushConstantRangeVector& aPushConstantRange,
                                                  VkPipelineLayout& vkPipelineLayout)
     {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
         pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(aDescriptorSetLayout.size());
         pipelineLayoutInfo.pSetLayouts = aDescriptorSetLayout.data();
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(aPushConstantRange.size());
+        pipelineLayoutInfo.pPushConstantRanges = aPushConstantRange.data();
 
         if (vkCreatePipelineLayout(this->m_vkDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
         {
@@ -3921,6 +3923,15 @@ namespace LostPeterPluginRHIVulkan
         {
             vkUpdateDescriptorSets(this->m_vkDevice, static_cast<uint32_t>(aWriteDescriptorSets.size()), aWriteDescriptorSets.data(), 0, nullptr);
         }
+    }
+    void RHIVulkanDevice::CreateVkPushConstantRange(VkShaderStageFlags stageFlags,
+                                                    uint32_t offset,
+                                                    uint32_t size,
+                                                    VkPushConstantRange& pushConstantRange)
+    {
+        pushConstantRange.stageFlags = stageFlags;
+        pushConstantRange.offset = offset;
+        pushConstantRange.size = size;
     }
 
 

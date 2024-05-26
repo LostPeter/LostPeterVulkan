@@ -41,6 +41,7 @@ namespace LostPeterPluginRHIVulkan
         m_vkQueue = m_pVulkanDevice->GetVkQueue(m_nFamilyIndex, 0);
         if (m_vkQueue == VK_NULL_HANDLE)
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanQueue::createVkQueue: GetVkQueue failed, Name: [%s], nFamilyIndex: [%u] !", m_strName.c_str(), m_nFamilyIndex);
             return;
         }

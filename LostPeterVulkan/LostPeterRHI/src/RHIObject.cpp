@@ -20,6 +20,7 @@ namespace LostPeterRHI
         , m_eObject(RHIObjectType::RHI_Object_UnKnown)
         , m_nID(RHIObjectManager::GetNextID())
         , m_strName("")
+        , m_bIsError(false)
     {
         F_Assert(m_pDevice && "RHIObject::RHIObject")
     }
@@ -34,6 +35,11 @@ namespace LostPeterRHI
         m_eObject = eObject;
         m_strName = RHIObjectManager::GetAutoName(m_eObject, m_nID);
         RHIObjectManager::GetSingleton().AddObject(this);
+    }
+
+    void RHIObject::setIsError(bool isError)
+    {
+        m_bIsError = isError;
     }
 
 }; //LostPeterRHI

@@ -29,15 +29,22 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
+        VkFramebuffer m_vkFramebuffer;
 
+
+        String m_strDebugName;
         
     public:
+        F_FORCEINLINE VkFramebuffer& GetVkFramebuffer() { return m_vkFramebuffer; }
 
+
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
-    
+    protected:
+        void createVkFramebuffer();
     };
     
 }; //LostPeterPluginRHIVulkan

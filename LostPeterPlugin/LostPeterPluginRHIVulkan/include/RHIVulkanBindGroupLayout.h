@@ -30,6 +30,7 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         VkDescriptorSetLayout m_vkDescriptorSetLayout;
+        VkDescriptorSetLayoutBindingVector m_aDescriptorSetLayoutBinding;
 
         uint8 m_nLayoutIndex;
         RHIBindGroupLayoutEntryVector m_aBindGroupLayoutEntries;
@@ -37,6 +38,7 @@ namespace LostPeterPluginRHIVulkan
 
     public:
         F_FORCEINLINE VkDescriptorSetLayout& GetVkDescriptorSetLayout() { return m_vkDescriptorSetLayout; }
+        F_FORCEINLINE const VkDescriptorSetLayoutBindingVector& GetVkDescriptorSetLayoutBindingVector() const { return m_aDescriptorSetLayoutBinding; }
 
         F_FORCEINLINE uint8 GetLayoutIndex() const { return m_nLayoutIndex; }
         F_FORCEINLINE const RHIBindGroupLayoutEntryVector& GetBindGroupLayoutEntries() const { return m_aBindGroupLayoutEntries; }

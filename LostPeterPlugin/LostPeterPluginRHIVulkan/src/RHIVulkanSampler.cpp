@@ -68,6 +68,7 @@ namespace LostPeterPluginRHIVulkan
                                               m_fLodMipBias,
                                               m_vkSampler))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanSampler::createVkSampler: CreateVkSampler failed, Name: [%s] !", m_strName.c_str());
             return;
         }

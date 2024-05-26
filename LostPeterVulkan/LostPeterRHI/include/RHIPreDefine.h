@@ -1348,6 +1348,7 @@ namespace LostPeterRHI
 
         }
     };
+    typedef std::vector<RHIPipelineConstantLayout> RHIPipelineConstantLayoutVector;
 
     //RHIPipelineLayoutCacheCreateInfo
     struct rhiExport RHIPipelineLayoutCacheCreateInfo
@@ -1364,18 +1365,12 @@ namespace LostPeterRHI
     //RHIPipelineLayoutCreateInfo
     struct rhiExport RHIPipelineLayoutCreateInfo
     {
-        uint32 nBindGroupLayoutCount;
-        const RHIBindGroupLayout* const* pBindGroupLayouts;
-        uint32 nPipelineConstantLayoutCount;
-        const RHIPipelineConstantLayout* pPipelineConstantLayouts;
+        RHIBindGroupLayoutPtrVector aBindGroupLayout;
+        RHIPipelineConstantLayoutVector aPipelineConstantLayout;
         String strDebugName;
 
         RHIPipelineLayoutCreateInfo()
-            : nBindGroupLayoutCount(0)
-            , pBindGroupLayouts(nullptr)
-            , nPipelineConstantLayoutCount(0)
-            , pPipelineConstantLayouts(nullptr)
-            , strDebugName("")
+            : strDebugName("")
         {
 
         }

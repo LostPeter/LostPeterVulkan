@@ -63,6 +63,7 @@ namespace LostPeterPluginRHIVulkan
     {
         if (!m_pVulkanDevice->CreateVkFence(m_bIsSignaled, m_vkFence))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanFence::createVkFence: CreateVkFence failed, Name: [%s] !", m_strName.c_str());
             return;
         }

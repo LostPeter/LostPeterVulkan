@@ -30,19 +30,27 @@ namespace LostPeterPluginRHIVulkan
     public:
     protected:
         VkPipelineLayout m_vkPipelineLayout;
+        VkDescriptorSetLayoutVector m_aVkDescriptorSetLayout;
+        VkPushConstantRangeVector m_aVkPushConstantRange;
 
-
+        RHIBindGroupLayoutPtrVector m_aBindGroupLayout;
+        RHIPipelineConstantLayoutVector m_aPipelineConstantLayout;
         String m_strDebugName;
 
     public:
         F_FORCEINLINE VkPipelineLayout& GetVkPipelineLayout() { return m_vkPipelineLayout; }
+        F_FORCEINLINE const VkDescriptorSetLayoutVector& GetVkDescriptorSetLayoutVector() const { return m_aVkDescriptorSetLayout; }
+        F_FORCEINLINE const VkPushConstantRangeVector& GetVkPushConstantRangeVector() const { return m_aVkPushConstantRange; }
 
+        F_FORCEINLINE const RHIBindGroupLayoutPtrVector& GetBindGroupLayouttrVector() const { return m_aBindGroupLayout; }
+        F_FORCEINLINE const RHIPipelineConstantLayoutVector& GetPipelineConstantLayoutVector() const { return m_aPipelineConstantLayout; }
         F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
     protected:
+        void refreshParam();
         void createVkPipelineLayout();
     };
     

@@ -711,6 +711,7 @@ namespace LostPeterPluginRHIVulkan
 
         //////////////////// VkPipelineLayout ///////////////
         bool CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                    const VkPushConstantRangeVector& aPushConstantRange,
                                     VkPipelineLayout& vkPipelineLayout);
         void DestroyVkPipelineLayout(const VkPipelineLayout& vkPipelineLayout);
 
@@ -825,6 +826,11 @@ namespace LostPeterPluginRHIVulkan
                                        VkDescriptorType descriptorType,
                                        VkDescriptorImageInfo& imageInfo);
         void UpdateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
+
+        void CreateVkPushConstantRange(VkShaderStageFlags stageFlags,
+                                       uint32_t offset,
+                                       uint32_t size,
+                                       VkPushConstantRange& pushConstantRange);
 
     public:
         //////////////////// VkCommandBuffer ////////////////

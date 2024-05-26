@@ -63,6 +63,7 @@ namespace LostPeterPluginRHIVulkan
                                                   (uint32_t)m_nFamilyIndex, 
                                                   m_vkCommandPool))
         {
+            setIsError(true);
             F_LogError("*********************** RHIVulkanCommandPool::createVkCommandPool: CreateVkCommandPool failed, Name: [%s] !", m_strName.c_str());
             return;
         }
