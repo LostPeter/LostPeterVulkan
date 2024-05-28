@@ -151,6 +151,7 @@ namespace LostPeterPluginRHIVulkan
     class RHIVulkanObject;
     class RHIVulkanObjectManager;
 	class RHIVulkanPhysicalDevice;
+    class RHIVulkanPipeline;
     class RHIVulkanPipelineCache;
 	class RHIVulkanPipelineCompute;
 	class RHIVulkanPipelineGraphics;

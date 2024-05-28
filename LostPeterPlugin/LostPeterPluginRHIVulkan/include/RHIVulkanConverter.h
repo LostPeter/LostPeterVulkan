@@ -25,11 +25,19 @@ namespace LostPeterPluginRHIVulkan
         static RHIPhysicalDeviceType TransformFromVkPhysicalDeviceType(VkPhysicalDeviceType vkPhysicalDevice);
         static RHIPixelFormatType TransformFromVkFormat(VkFormat vkFormat);
         static RHIColorSpaceType TransformFromVkColorSpaceKHR(VkColorSpaceKHR vkColorSpaceKHR);
+        static RHIPrimitiveTopologyType TransformFromVkPrimitiveTopology(VkPrimitiveTopology vkPrimitiveTopology);
+        static RHIFrontFaceType TransformFromVkFrontFace(VkFrontFace vkFrontFace);
+        static RHICullType TransformFromVkCullModeFlagBits(VkCullModeFlagBits vkCullModeFlagBits);
+        static RHIPolygonType TransformFromVkPolygonMode(VkPolygonMode vkPolygonMode);
+        static RHIComparisonFuncType TransformFromVkCompareOp(VkCompareOp vkCompareOp);
+        static RHIBlendOpType TransformFromVkBlendOp(VkBlendOp vkBlendOp);
+        static RHIBlendFactorType TransformFromVkBlendFactor(VkBlendFactor vkBlendFactor);
+        static RHIStencilOpType TransformFromVkStencilOp(VkStencilOp vkStencilOp);
+
         static RHIFilterType TransformFromVkFilter(VkFilter vkFilter);
         static RHIFilterType TransformFromVkSamplerMipmapMode(VkSamplerMipmapMode vkSamplerMipmapMode);
         static RHIAddressType TransformFromVkSamplerAddressMode(VkSamplerAddressMode vkSamplerAddressMode);
         static RHIBorderColorType TransformFromVkBorderColor(VkBorderColor vkBorderColor);
-        static RHIComparisonFuncType TransformFromVkCompareOp(VkCompareOp vkCompareOp);
         static RHITextureDimensionType TransformFromVkImageType(VkImageType vkImageType);
         static RHITextureViewDimensionType TransformFromVkImageViewType(VkImageViewType vkImageViewType);
         static RHISampleCountType TransformFromVkSampleCountFlagBits(VkSampleCountFlagBits vkSampleCountFlagBits);
@@ -49,11 +57,19 @@ namespace LostPeterPluginRHIVulkan
         static VkFormat TransformToVkFormat(RHIPixelFormatType ePixelFormat);
         static const String& TransformToVkFormatName(RHIPixelFormatType ePixelFormat);
         static VkColorSpaceKHR TransformToVkColorSpaceKHR(RHIColorSpaceType eColorSpace);
+        static VkPrimitiveTopology TransformToVkPrimitiveTopology(RHIPrimitiveTopologyType ePrimitiveTopology);
+        static VkFrontFace TransformToVkFrontFace(RHIFrontFaceType eFrontFace); 
+        static VkCullModeFlagBits TransformToVkCullModeFlagBits(RHICullType eCull);
+        static VkPolygonMode TransformToVkPolygonMode(RHIPolygonType ePolygon);
+        static VkCompareOp TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc);
+        static VkBlendOp TransformToVkBlendOp(RHIBlendOpType eBlendOp);
+        static VkBlendFactor TransformToVkBlendFactor(RHIBlendFactorType eBlendFactor);
+        static VkStencilOp TransformToVkStencilOp(RHIStencilOpType eStencilOP);
+
         static VkFilter TransformToVkFilter(RHIFilterType eFilter);
         static VkSamplerMipmapMode TransformToVkSamplerMipmapMode(RHIFilterType eFilter);
         static VkSamplerAddressMode TransformToVkSamplerAddressMode(RHIAddressType eAddress);
         static VkBorderColor TransformToVkBorderColor(RHIBorderColorType eBorderColor);
-        static VkCompareOp TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc);
         static VkImageType TransformToVkImageType(RHITextureDimensionType eTextureDimension);
         static VkImageViewType TransformToVkImageViewType(RHITextureViewDimensionType eTextureViewDimension);
         static VkSampleCountFlagBits TransformToVkSampleCountFlagBits(RHISampleCountType eSampleCount);

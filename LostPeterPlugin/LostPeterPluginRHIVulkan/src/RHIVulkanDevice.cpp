@@ -3460,7 +3460,7 @@ namespace LostPeterPluginRHIVulkan
                                                     VkShaderModule fragShaderModule, const String& fragMain,
                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkRenderPass renderPass, VkPipelineLayout vkPipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
                                                     VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -3493,7 +3493,7 @@ namespace LostPeterPluginRHIVulkan
                                          false, 0, 0,
                                          pBindingDescriptions,
                                          pAttributeDescriptions,
-                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         renderPass, vkPipelineLayout, aViewports, aScissors,
                                          primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
                                          bDepthTest, bDepthWrite, depthCompareOp,
                                          bStencilTest, stencilOpFront, stencilOpBack,
@@ -3511,7 +3511,7 @@ namespace LostPeterPluginRHIVulkan
                                                     VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkRenderPass renderPass, VkPipelineLayout vkPipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
                                                     VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -3560,7 +3560,7 @@ namespace LostPeterPluginRHIVulkan
                                          true, tessellationFlags, tessellationPatchControlPoints,
                                          pBindingDescriptions,
                                          pAttributeDescriptions,
-                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         renderPass, vkPipelineLayout, aViewports, aScissors,
                                          primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
                                          bDepthTest, bDepthWrite, depthCompareOp,
                                          bStencilTest, stencilOpFront, stencilOpBack,
@@ -3575,7 +3575,7 @@ namespace LostPeterPluginRHIVulkan
                                                     bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                    VkRenderPass renderPass, VkPipelineLayout vkPipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
                                                     VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -3710,7 +3710,7 @@ namespace LostPeterPluginRHIVulkan
         pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
         pipelineInfo.pColorBlendState = &colorBlendingStateInfo;
         pipelineInfo.pDynamicState = &dynamicStateInfo;
-        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.layout = vkPipelineLayout;
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -3725,7 +3725,7 @@ namespace LostPeterPluginRHIVulkan
     }
     bool RHIVulkanDevice::CreateVkPipeline_Compute(VkShaderModule compShaderModule,
                                                    const String& compMain,
-                                                   VkPipelineLayout pipelineLayout, 
+                                                   VkPipelineLayout vkPipelineLayout, 
                                                    VkPipelineCreateFlags flags,
                                                    VkPipelineCache vkPipelineCache,
                                                    VkPipeline& vkPipeline)
@@ -3737,13 +3737,13 @@ namespace LostPeterPluginRHIVulkan
         compShaderStageInfo.pName = compMain.c_str();
 
         return CreateVkPipeline_Compute(compShaderStageInfo,
-                                        pipelineLayout,
+                                        vkPipelineLayout,
                                         flags,
                                         vkPipelineCache,
                                         vkPipeline);
     }
     bool RHIVulkanDevice::CreateVkPipeline_Compute(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
-                                                   VkPipelineLayout pipelineLayout, 
+                                                   VkPipelineLayout vkPipelineLayout, 
                                                    VkPipelineCreateFlags flags,
                                                    VkPipelineCache vkPipelineCache,
                                                    VkPipeline& vkPipeline)
@@ -3753,7 +3753,7 @@ namespace LostPeterPluginRHIVulkan
         pipelineInfo.pNext = nullptr;
         pipelineInfo.flags = flags; 
         pipelineInfo.stage = shaderStageCreateInfo;
-        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.layout = vkPipelineLayout;
         
         if (!RHI_CheckVkResult(vkCreateComputePipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateComputePipelines"))
         {

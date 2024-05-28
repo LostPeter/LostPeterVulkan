@@ -24,11 +24,13 @@ namespace LostPeterRHI
 
     public:
     protected:
+        String m_strNameMain;
 
 
     public:
-        
+        F_FORCEINLINE const String& GetNameMain() const { return m_strNameMain; }
 
+        
     };
 
 }; //LostPeterRHI

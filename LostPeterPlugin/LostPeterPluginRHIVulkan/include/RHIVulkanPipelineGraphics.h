@@ -14,11 +14,13 @@
 
 #include "RHIVulkanPreDefine.h"
 #include "RHIVulkanObject.h"
+#include "RHIVulkanPipeline.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     class rhiVulkanExport RHIVulkanPipelineGraphics : public RHIPipelineGraphics
                                                     , public RHIVulkanObject
+                                                    , public RHIVulkanPipeline
     {   
         friend class RHIVulkanDevice;
 
@@ -29,12 +31,14 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
-        VkPipeline m_vkPipeline;
+        RHIVulkanPipelineCache* m_pVulkanPipelineCache;
+        RHIVulkanPipelineLayout* m_pVulkanPipelineLayout;
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE VkPipeline& GetVkPipeline() { return m_vkPipeline; }
+        F_FORCEINLINE RHIVulkanPipelineCache* GetVulkanPipelineCache() const { return m_pVulkanPipelineCache; }
+        F_FORCEINLINE RHIVulkanPipelineLayout* GetVulkanPipelineLayout() const { return m_pVulkanPipelineLayout; }
 
         F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
@@ -42,7 +46,7 @@ namespace LostPeterPluginRHIVulkan
         virtual void Destroy();
 
     protected:
-        void createVkPipeline();
+        void createVkPipelineGraphics();
     };
 
 }; //LostPeterPluginRHIVulkan

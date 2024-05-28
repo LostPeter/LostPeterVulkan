@@ -36,6 +36,7 @@
 #include "RHIVulkanObject.h"
 #include "RHIVulkanObjectManager.h"
 #include "RHIVulkanPhysicalDevice.h"
+#include "RHIVulkanPipeline.h"
 #include "RHIVulkanPipelineCache.h"
 #include "RHIVulkanPipelineCompute.h"
 #include "RHIVulkanPipelineGraphics.h"

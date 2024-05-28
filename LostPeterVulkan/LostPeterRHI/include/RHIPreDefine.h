@@ -434,15 +434,17 @@ namespace LostPeterRHI
 	//RHIPrimitiveTopologyType
     enum class RHIPrimitiveTopologyType : RHIEnumType 
 	{
-        RHI_PrimitiveTopology_PointList = 0,			//0: PointList
-        RHI_PrimitiveTopology_LineList,					//1: LineList
-        RHI_PrimitiveTopology_LineStrip,				//2: LineStrip
-        RHI_PrimitiveTopology_TriangleList,				//3: TriangleList
-        RHI_PrimitiveTopology_TriangleStrip,			//4: TriangleStrip
-        RHI_PrimitiveTopology_LineListAdj,				//5: LineListAdj
-        RHI_PrimitiveTopology_LineStripAdj,				//6: LineStripAdj
-        RHI_PrimitiveTopology_TriangleListAdj,			//7: TriangleListAdj
-        RHI_PrimitiveTopology_TriangleStripAdj,			//8: TriangleStripAdj
+        RHI_PrimitiveTopology_PointList = 0,			//0:  PointList
+        RHI_PrimitiveTopology_LineList,					//1:  LineList
+        RHI_PrimitiveTopology_LineStrip,				//2:  LineStrip
+        RHI_PrimitiveTopology_TriangleList,				//3:  TriangleList
+        RHI_PrimitiveTopology_TriangleStrip,			//4:  TriangleStrip
+        RHI_PrimitiveTopology_TriangleFan,			    //5:  TriangleFan
+        RHI_PrimitiveTopology_LineListAdj,				//6:  LineListAdj
+        RHI_PrimitiveTopology_LineStripAdj,				//7:  LineStripAdj
+        RHI_PrimitiveTopology_TriangleListAdj,			//8:  TriangleListAdj
+        RHI_PrimitiveTopology_TriangleStripAdj,			//9:  TriangleStripAdj
+        RHI_PrimitiveTopology_PatchList,			    //10: PatchList
 
         RHI_PrimitiveTopology_Count,
     };
@@ -459,8 +461,8 @@ namespace LostPeterRHI
 	//RHIFrontFaceType
     enum class RHIFrontFaceType : RHIEnumType 
 	{
-        RHI_FrontFace_CCW = 0,							//0: CCW
-        RHI_FrontFace_CW,								//1: CW
+        RHI_FrontFace_ClockWise = 0,				    //0: ClockWise
+        RHI_FrontFace_CounterClockWise,					//1: CounterClockWise
 
         RHI_FrontFace_Count,
     };
@@ -473,6 +475,16 @@ namespace LostPeterRHI
         RHI_Cull_Back,									//2: Back
 
         RHI_Cull_Count,
+    };
+
+    //RHICullType
+    enum class RHIPolygonType : RHIEnumType 
+	{
+        RHI_Polygon_Point = 0,							//0: Point
+        RHI_Polygon_WireFrame,							//1: WireFrame
+        RHI_Polygon_Solid,								//2: Solid
+
+        RHI_Polygon_Count,
     };
 
 	//RHIStencilOpType
@@ -1394,12 +1406,14 @@ namespace LostPeterRHI
         RHIShaderStageBitsType eShaderStageBits;
         String strPath;
         String strByteCode;
+        String strNameMain;
         String strDebugName;
 
         RHIShaderModuleCreateInfo()
             : eShaderStageBits(RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex)
             , strPath("")
             , strByteCode("")
+            , strNameMain("main")
             , strDebugName("")
         {
 
@@ -1577,7 +1591,7 @@ namespace LostPeterRHI
         RHIPrimitiveState()
             : ePrimitiveTopologySort(RHIPrimitiveTopologySortType::RHI_PrimitiveTopologySort_Triangle)
             , eIndexFormat(RHIIndexFormatType::RHI_IndexFormat_16Bit)
-            , eFrontFace(RHIFrontFaceType::RHI_FrontFace_CCW)
+            , eFrontFace(RHIFrontFaceType::RHI_FrontFace_Count)
             , eCull(RHICullType::RHI_Cull_Back)
             , bDepthClip(false)
         {
@@ -1724,11 +1738,15 @@ namespace LostPeterRHI
     //RHIPipelineComputeCreateInfo
     struct rhiExport RHIPipelineComputeCreateInfo
     {
+        RHIPipelineCache* pPipelineCache;
         RHIPipelineLayout* pPipelineLayout;
         RHIShaderModule* pComputeShader;
 
+        String strDebugName;
+
         RHIPipelineComputeCreateInfo()
-            : pPipelineLayout(nullptr)
+            : pPipelineCache(nullptr)
+            , pPipelineLayout(nullptr)
             , pComputeShader(nullptr)
         {
 
@@ -1738,13 +1756,13 @@ namespace LostPeterRHI
     //RHIPipelineGraphicsCreateInfo
     struct rhiExport RHIPipelineGraphicsCreateInfo
     {
+        RHIPipelineCache* pPipelineCache;
         RHIPipelineLayout* pPipelineLayout;
-
-        RHIShaderModule* pVertexShader;
-        RHIShaderModule* pPixelShader;
-        RHIShaderModule* pGeometryShader;
-        RHIShaderModule* pDomainShader;
-        RHIShaderModule* pHullShader;
+        RHIShaderModule* pShaderVertex;
+        RHIShaderModule* pShaderPixel;
+        RHIShaderModule* pShaderGeometry;
+        RHIShaderModule* pShaderDomain;
+        RHIShaderModule* pShaderHull;
 
         RHIVertexState sVertexState;
         RHIPrimitiveState sPrimitiveState;
@@ -1755,12 +1773,13 @@ namespace LostPeterRHI
         String strDebugName;
 
         RHIPipelineGraphicsCreateInfo()
-            : pPipelineLayout(nullptr)
-            , pVertexShader(nullptr)
-            , pPixelShader(nullptr)
-            , pGeometryShader(nullptr)
-            , pDomainShader(nullptr)
-            , pHullShader(nullptr)
+            : pPipelineCache(nullptr)
+            , pPipelineLayout(nullptr)
+            , pShaderVertex(nullptr)
+            , pShaderPixel(nullptr)
+            , pShaderGeometry(nullptr)
+            , pShaderDomain(nullptr)
+            , pShaderHull(nullptr)
         {
 
         }

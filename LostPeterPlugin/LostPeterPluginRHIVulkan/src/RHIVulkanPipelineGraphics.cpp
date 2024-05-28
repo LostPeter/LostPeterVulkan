@@ -17,11 +17,13 @@ namespace LostPeterPluginRHIVulkan
     RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics(RHIVulkanDevice* pVulkanDevice, const RHIPipelineGraphicsCreateInfo& createInfo)
         : RHIPipelineGraphics(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
-        , m_vkPipeline(VK_NULL_HANDLE)
+        , m_pVulkanPipelineCache((RHIVulkanPipelineCache*)createInfo.pPipelineCache)
+        , m_pVulkanPipelineLayout((RHIVulkanPipelineLayout*)createInfo.pPipelineLayout)
+        , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics")
 
-        createVkPipeline();
+        createVkPipelineGraphics();
     }
 
     RHIVulkanPipelineGraphics::~RHIVulkanPipelineGraphics()
@@ -31,14 +33,10 @@ namespace LostPeterPluginRHIVulkan
     
     void RHIVulkanPipelineGraphics::Destroy()
     {
-        if (m_vkPipeline != VK_NULL_HANDLE)
-        {
-            m_pVulkanDevice->DestroyVkPipeline(m_vkPipeline);
-        }
-        m_vkPipeline = VK_NULL_HANDLE;
+        destroyVkPipeline(m_pVulkanDevice);
     }
 
-    void RHIVulkanPipelineGraphics::createVkPipeline()
+    void RHIVulkanPipelineGraphics::createVkPipelineGraphics()
     {
         
 
@@ -47,7 +45,7 @@ namespace LostPeterPluginRHIVulkan
             if (m_strDebugName.empty())
                 m_strDebugName = m_strName;
             m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<uint64_t>(m_vkPipeline), m_strDebugName.c_str());
-            F_LogInfo("RHIVulkanPipelineGraphics::createVkPipeline: Create VkPipeline success, Name: [%s] !", m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanPipelineGraphics::createVkPipelineGraphics: Create VkPipeline Graphics success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

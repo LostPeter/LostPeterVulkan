@@ -11,17 +11,23 @@
 
 #include "../include/RHIVulkanPipelineCompute.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanPipelineCache.h"
+#include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanShaderModule.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(RHIVulkanDevice* pVulkanDevice, const RHIPipelineComputeCreateInfo& createInfo)
         : RHIPipelineCompute(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
-        , m_vkPipeline(VK_NULL_HANDLE)
+        , m_pVulkanPipelineCache((RHIVulkanPipelineCache*)createInfo.pPipelineCache)
+        , m_pVulkanPipelineLayout((RHIVulkanPipelineLayout*)createInfo.pPipelineLayout)
+        , m_pVulkanComputeShader((RHIVulkanShaderModule*)createInfo.pComputeShader)
+        , m_strDebugName(createInfo.strDebugName)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")
+        F_Assert(m_pVulkanDevice && m_pVulkanPipelineLayout && m_pVulkanComputeShader && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")
 
-        createVkPipeline();
+        createVkPipelineCompute();
     }
 
     RHIVulkanPipelineCompute::~RHIVulkanPipelineCompute()
@@ -31,23 +37,29 @@ namespace LostPeterPluginRHIVulkan
     
     void RHIVulkanPipelineCompute::Destroy()
     {
-        if (m_vkPipeline != VK_NULL_HANDLE)
-        {
-            m_pVulkanDevice->DestroyVkPipeline(m_vkPipeline);
-        }
-        m_vkPipeline = VK_NULL_HANDLE;
+        destroyVkPipeline(m_pVulkanDevice);
     }
 
-    void RHIVulkanPipelineCompute::createVkPipeline()
+    void RHIVulkanPipelineCompute::createVkPipelineCompute()
     {
-
+        if (!m_pVulkanDevice->CreateVkPipeline_Compute(m_pVulkanComputeShader->GetVkShaderModule(),
+                                                       m_pVulkanComputeShader->GetNameMain(),
+                                                       m_pVulkanPipelineLayout->GetVkPipelineLayout(),  
+                                                       0,
+                                                       m_pVulkanPipelineCache->GetVkPipelineCache(),
+                                                       m_vkPipeline))
+        {
+            setIsError(true);
+            F_LogError("*********************** RHIVulkanPipelineCompute::createVkPipelineCompute: CreateVkPipeline_Compute failed, Name: [%s] !", m_strName.c_str());
+            return;
+        }
 
         if (RHI_IsDebug())
         {
             if (m_strDebugName.empty())
                 m_strDebugName = m_strName;
             m_pVulkanDevice->SetDebugObject(VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<uint64_t>(m_vkPipeline), m_strDebugName.c_str());
-            F_LogInfo("RHIVulkanPipelineCompute::createVkPipeline: Create VkPipeline success, Name: [%s] !", m_strDebugName.c_str());
+            F_LogInfo("RHIVulkanPipelineCompute::createVkPipelineCompute: Create VkPipeline Compute success, Name: [%s] !", m_strDebugName.c_str());
         }
     }
 

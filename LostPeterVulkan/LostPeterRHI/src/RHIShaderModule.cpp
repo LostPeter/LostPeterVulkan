@@ -16,6 +16,7 @@ namespace LostPeterRHI
 {
     RHIShaderModule::RHIShaderModule(RHIDevice* pDevice, const RHIShaderModuleCreateInfo& createInfo)   
         : RHIObject(pDevice)
+        , m_strNameMain(createInfo.strNameMain)
     {
         setObjectType(RHIObjectType::RHI_Object_ShaderModule);
     }

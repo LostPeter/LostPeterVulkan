@@ -114,6 +114,136 @@ namespace LostPeterPluginRHIVulkan
         return RHIColorSpaceType::RHI_ColorSpace_Linear;
     }
 
+    RHIPrimitiveTopologyType RHIVulkanConverter::TransformFromVkPrimitiveTopology(VkPrimitiveTopology vkPrimitiveTopology)
+    {
+        switch ((int32)vkPrimitiveTopology)
+        {
+        case VK_PRIMITIVE_TOPOLOGY_POINT_LIST:                      return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_PointList;
+        case VK_PRIMITIVE_TOPOLOGY_LINE_LIST:                       return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineList;
+        case VK_PRIMITIVE_TOPOLOGY_LINE_STRIP:                      return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineStrip;
+        case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST:                   return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleList;
+        case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP:                  return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleStrip;
+        case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN:                    return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleFan;
+        case VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY:        return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineListAdj;
+        case VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY:       return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineStripAdj;
+        case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY:    return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleListAdj;
+        case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY:   return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleStripAdj;
+        case VK_PRIMITIVE_TOPOLOGY_PATCH_LIST:                      return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_PatchList;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPrimitiveTopology: Wrong VkPrimitiveTopology type !")
+        }
+        return RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleList;
+    }
+
+    RHIFrontFaceType RHIVulkanConverter::TransformFromVkFrontFace(VkFrontFace vkFrontFace)
+    {
+        switch ((int32)vkFrontFace)
+        {
+        case VK_FRONT_FACE_CLOCKWISE:               return RHIFrontFaceType::RHI_FrontFace_ClockWise;
+        case VK_FRONT_FACE_COUNTER_CLOCKWISE:       return RHIFrontFaceType::RHI_FrontFace_CounterClockWise;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkFrontFace: Wrong VkFrontFace type !")
+        }
+        return RHIFrontFaceType::RHI_FrontFace_CounterClockWise;
+    }
+
+    RHICullType RHIVulkanConverter::TransformFromVkCullModeFlagBits(VkCullModeFlagBits vkCullModeFlagBits)
+    {
+        switch ((int32)vkCullModeFlagBits)
+        {
+        case VK_CULL_MODE_NONE:             return RHICullType::RHI_Cull_None;
+        case VK_CULL_MODE_FRONT_BIT:        return RHICullType::RHI_Cull_Front;
+        case VK_CULL_MODE_BACK_BIT:         return RHICullType::RHI_Cull_Back;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkCullModeFlagBits: Wrong VkCullModeFlagBits type !")
+        }
+        return RHICullType::RHI_Cull_Back;
+    }
+
+    RHIPolygonType RHIVulkanConverter::TransformFromVkPolygonMode(VkPolygonMode vkPolygonMode)
+    {
+        switch ((int32)vkPolygonMode)
+        {
+        case VK_POLYGON_MODE_POINT:         return RHIPolygonType::RHI_Polygon_Point;
+        case VK_POLYGON_MODE_LINE:          return RHIPolygonType::RHI_Polygon_WireFrame;
+        case VK_POLYGON_MODE_FILL:          return RHIPolygonType::RHI_Polygon_Solid;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPolygonMode: Wrong VkPolygonMode type !")
+        }
+        return RHIPolygonType::RHI_Polygon_Solid;
+    }
+
+    RHIComparisonFuncType RHIVulkanConverter::TransformFromVkCompareOp(VkCompareOp vkCompareOp)
+    {
+        switch ((int32)vkCompareOp)
+        {
+        case VK_COMPARE_OP_NEVER:               return RHIComparisonFuncType::RHI_ComparisonFunc_Never;
+        case VK_COMPARE_OP_LESS:                return RHIComparisonFuncType::RHI_ComparisonFunc_Less;
+        case VK_COMPARE_OP_EQUAL:               return RHIComparisonFuncType::RHI_ComparisonFunc_Equal;
+        case VK_COMPARE_OP_LESS_OR_EQUAL:       return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;
+        case VK_COMPARE_OP_GREATER:             return RHIComparisonFuncType::RHI_ComparisonFunc_Greater;
+        case VK_COMPARE_OP_NOT_EQUAL:           return RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual;
+        case VK_COMPARE_OP_GREATER_OR_EQUAL:    return RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual;
+        case VK_COMPARE_OP_ALWAYS:              return RHIComparisonFuncType::RHI_ComparisonFunc_Always;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkCompareOp: Wrong VkCompareOp type !")
+        }
+        return RHIComparisonFuncType::RHI_ComparisonFunc_Never;
+    }
+
+    RHIBlendOpType RHIVulkanConverter::TransformFromVkBlendOp(VkBlendOp vkBlendOp)
+    {
+        switch ((int32)vkBlendOp)
+        {
+        case VK_BLEND_OP_ADD:                   return RHIBlendOpType::RHI_BlendOp_Add;
+        case VK_BLEND_OP_SUBTRACT:              return RHIBlendOpType::RHI_BlendOp_Substract;
+        case VK_BLEND_OP_REVERSE_SUBTRACT:      return RHIBlendOpType::RHI_BlendOp_ReverseSubstract;
+        case VK_BLEND_OP_MIN:                   return RHIBlendOpType::RHI_BlendOp_Min;
+        case VK_BLEND_OP_MAX:                   return RHIBlendOpType::RHI_BlendOp_Max;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkBlendOp: Wrong VkBlendOp type !")
+        }
+        return RHIBlendOpType::RHI_BlendOp_Add;
+    }
+
+    RHIBlendFactorType RHIVulkanConverter::TransformFromVkBlendFactor(VkBlendFactor vkBlendFactor)
+    {
+        switch ((int32)vkBlendFactor)
+        {
+        case VK_BLEND_FACTOR_ZERO:                      return RHIBlendFactorType::RHI_BlendFactor_Zero;
+        case VK_BLEND_FACTOR_ONE:                       return RHIBlendFactorType::RHI_BlendFactor_One;
+        case VK_BLEND_FACTOR_SRC_COLOR:                 return RHIBlendFactorType::RHI_BlendFactor_Src;
+        case VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR:       return RHIBlendFactorType::RHI_BlendFactor_OneMinusSrc;
+        case VK_BLEND_FACTOR_SRC_ALPHA:                 return RHIBlendFactorType::RHI_BlendFactor_SrcAlpha;
+        case VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA:       return RHIBlendFactorType::RHI_BlendFactor_OneMinusSrcAlpha;
+        case VK_BLEND_FACTOR_DST_COLOR:                 return RHIBlendFactorType::RHI_BlendFactor_Dst;
+        case VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR:       return RHIBlendFactorType::RHI_BlendFactor_OneMinusDst;
+        case VK_BLEND_FACTOR_DST_ALPHA:                 return RHIBlendFactorType::RHI_BlendFactor_DstAlpha;
+        case VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA:       return RHIBlendFactorType::RHI_BlendFactor_OneMinusDstAlpha;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkBlendFactor: Wrong VkBlendFactor type !")
+        }
+        return RHIBlendFactorType::RHI_BlendFactor_One;
+    }
+
+    RHIStencilOpType RHIVulkanConverter::TransformFromVkStencilOp(VkStencilOp vkStencilOp)
+    {
+        switch ((int32)vkStencilOp)
+        {
+        case VK_STENCIL_OP_KEEP:                    return RHIStencilOpType::RHI_StencilOp_Keep;
+        case VK_STENCIL_OP_ZERO:                    return RHIStencilOpType::RHI_StencilOp_Zero;
+        case VK_STENCIL_OP_REPLACE:                 return RHIStencilOpType::RHI_StencilOp_Replace;
+        case VK_STENCIL_OP_INVERT:                  return RHIStencilOpType::RHI_StencilOp_Invert;
+        case VK_STENCIL_OP_INCREMENT_AND_CLAMP:     return RHIStencilOpType::RHI_StencilOp_IncrementClamp;
+        case VK_STENCIL_OP_DECREMENT_AND_CLAMP:     return RHIStencilOpType::RHI_StencilOp_DecrementClamp;
+        case VK_STENCIL_OP_INCREMENT_AND_WRAP:      return RHIStencilOpType::RHI_StencilOp_IncrementWrap;
+        case VK_STENCIL_OP_DECREMENT_AND_WRAP:      return RHIStencilOpType::RHI_StencilOp_DecrementWrap;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkStencilOp: Wrong VkStencilOp type !")
+        }
+        return RHIStencilOpType::RHI_StencilOp_Keep;
+    }
+
     RHIFilterType RHIVulkanConverter::TransformFromVkFilter(VkFilter vkFilter)
     {
         switch ((int32)vkFilter)
@@ -163,24 +293,6 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformFromVkBorderColor: Wrong VkBorderColor type !")
         }
         return RHIBorderColorType::RHI_BorderColor_OpaqueBlack;
-    }
-
-    RHIComparisonFuncType RHIVulkanConverter::TransformFromVkCompareOp(VkCompareOp vkCompareOp)
-    {
-        switch ((int32)vkCompareOp)
-        {
-        case VK_COMPARE_OP_NEVER:               return RHIComparisonFuncType::RHI_ComparisonFunc_Never;
-        case VK_COMPARE_OP_LESS:                return RHIComparisonFuncType::RHI_ComparisonFunc_Less;
-        case VK_COMPARE_OP_EQUAL:               return RHIComparisonFuncType::RHI_ComparisonFunc_Equal;
-        case VK_COMPARE_OP_LESS_OR_EQUAL:       return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;
-        case VK_COMPARE_OP_GREATER:             return RHIComparisonFuncType::RHI_ComparisonFunc_Greater;
-        case VK_COMPARE_OP_NOT_EQUAL:           return RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual;
-        case VK_COMPARE_OP_GREATER_OR_EQUAL:    return RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual;
-        case VK_COMPARE_OP_ALWAYS:              return RHIComparisonFuncType::RHI_ComparisonFunc_Always;
-        default:
-            F_Assert(false && "RHIVulkanConverter::TransformFromVkCompareOp: Wrong VkCompareOp type !")
-        }
-        return RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual;;
     }
 
     RHITextureDimensionType RHIVulkanConverter::TransformFromVkImageType(VkImageType vkImageType)
@@ -485,6 +597,136 @@ namespace LostPeterPluginRHIVulkan
         return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
     }
 
+    VkPrimitiveTopology RHIVulkanConverter::TransformToVkPrimitiveTopology(RHIPrimitiveTopologyType ePrimitiveTopology)
+    {
+        switch (ePrimitiveTopology)
+        {
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_PointList:         return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineList:          return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineStrip:         return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleList:      return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleStrip:     return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleFan:       return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineListAdj:       return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_LineStripAdj:      return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleListAdj:   return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleStripAdj:  return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
+        case RHIPrimitiveTopologyType::RHI_PrimitiveTopology_PatchList:         return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPrimitiveTopology: Wrong RHIPrimitiveTopologyType type !")
+        }
+        return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    }
+
+    VkFrontFace RHIVulkanConverter::TransformToVkFrontFace(RHIFrontFaceType eFrontFace)
+    {
+        switch (eFrontFace)
+        {
+        case RHIFrontFaceType::RHI_FrontFace_ClockWise:             return VK_FRONT_FACE_CLOCKWISE;
+        case RHIFrontFaceType::RHI_FrontFace_CounterClockWise:      return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkFrontFace: Wrong RHIFrontFaceType type !")
+        }
+        return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    }
+
+    VkCullModeFlagBits RHIVulkanConverter::TransformToVkCullModeFlagBits(RHICullType eCull)
+    {
+        switch (eCull)
+        {
+        case RHICullType::RHI_Cull_None:        return VK_CULL_MODE_NONE;
+        case RHICullType::RHI_Cull_Front:       return VK_CULL_MODE_FRONT_BIT;
+        case RHICullType::RHI_Cull_Back:        return VK_CULL_MODE_BACK_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkCullModeFlagBits: Wrong RHICullType type !")
+        }
+        return VK_CULL_MODE_BACK_BIT;
+    }
+
+    VkPolygonMode RHIVulkanConverter::TransformToVkPolygonMode(RHIPolygonType ePolygon)
+    {
+        switch (ePolygon)
+        {
+        case RHIPolygonType::RHI_Polygon_Point:        return VK_POLYGON_MODE_POINT;
+        case RHIPolygonType::RHI_Polygon_WireFrame:    return VK_POLYGON_MODE_LINE;
+        case RHIPolygonType::RHI_Polygon_Solid:        return VK_POLYGON_MODE_FILL;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPolygonMode: Wrong RHIPolygonType type !")
+        }
+        return VK_POLYGON_MODE_FILL;
+    }
+
+    VkCompareOp RHIVulkanConverter::TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc)
+    {
+        switch (eComparisonFunc)
+        {
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Never:           return VK_COMPARE_OP_NEVER;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Less:            return VK_COMPARE_OP_LESS;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Equal:           return VK_COMPARE_OP_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual:       return VK_COMPARE_OP_LESS_OR_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Greater:         return VK_COMPARE_OP_GREATER;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual:        return VK_COMPARE_OP_NOT_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual:    return VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case RHIComparisonFuncType::RHI_ComparisonFunc_Always:          return VK_COMPARE_OP_ALWAYS;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkCompareOp: Wrong RHIComparisonFuncType type !")
+        }
+        return VK_COMPARE_OP_NEVER;
+    }
+
+    VkBlendOp RHIVulkanConverter::TransformToVkBlendOp(RHIBlendOpType eBlendOp)
+    {
+        switch (eBlendOp)
+        {
+        case RHIBlendOpType::RHI_BlendOp_Add:                   return VK_BLEND_OP_ADD;
+        case RHIBlendOpType::RHI_BlendOp_Substract:             return VK_BLEND_OP_SUBTRACT;
+        case RHIBlendOpType::RHI_BlendOp_ReverseSubstract:      return VK_BLEND_OP_REVERSE_SUBTRACT;
+        case RHIBlendOpType::RHI_BlendOp_Min:                   return VK_BLEND_OP_MIN;
+        case RHIBlendOpType::RHI_BlendOp_Max:                   return VK_BLEND_OP_MAX;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkBlendOp: Wrong RHIBlendOpType type !")
+        }
+        return VK_BLEND_OP_ADD;
+    }
+
+    VkBlendFactor RHIVulkanConverter::TransformToVkBlendFactor(RHIBlendFactorType eBlendFactor)
+    {
+        switch (eBlendFactor)
+        {
+        case RHIBlendFactorType::RHI_BlendFactor_Zero:                  return VK_BLEND_FACTOR_ZERO;
+        case RHIBlendFactorType::RHI_BlendFactor_One:                   return VK_BLEND_FACTOR_ONE;
+        case RHIBlendFactorType::RHI_BlendFactor_Src:                   return VK_BLEND_FACTOR_SRC_COLOR;
+        case RHIBlendFactorType::RHI_BlendFactor_OneMinusSrc:           return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+        case RHIBlendFactorType::RHI_BlendFactor_SrcAlpha:              return VK_BLEND_FACTOR_SRC_ALPHA;
+        case RHIBlendFactorType::RHI_BlendFactor_OneMinusSrcAlpha:      return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        case RHIBlendFactorType::RHI_BlendFactor_Dst:                   return VK_BLEND_FACTOR_DST_COLOR;
+        case RHIBlendFactorType::RHI_BlendFactor_OneMinusDst:           return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+        case RHIBlendFactorType::RHI_BlendFactor_DstAlpha:              return VK_BLEND_FACTOR_DST_ALPHA;
+        case RHIBlendFactorType::RHI_BlendFactor_OneMinusDstAlpha:      return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkBlendFactor: Wrong RHIBlendFactorType type !")
+        }
+        return VK_BLEND_FACTOR_ONE;
+    }
+
+    VkStencilOp RHIVulkanConverter::TransformToVkStencilOp(RHIStencilOpType eStencilOP)
+    {
+        switch (eStencilOP)
+        {
+        case RHIStencilOpType::RHI_StencilOp_Keep:                  return VK_STENCIL_OP_KEEP;
+        case RHIStencilOpType::RHI_StencilOp_Zero:                  return VK_STENCIL_OP_ZERO;
+        case RHIStencilOpType::RHI_StencilOp_Replace:               return VK_STENCIL_OP_REPLACE;
+        case RHIStencilOpType::RHI_StencilOp_Invert:                return VK_STENCIL_OP_INVERT;
+        case RHIStencilOpType::RHI_StencilOp_IncrementClamp:        return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+        case RHIStencilOpType::RHI_StencilOp_DecrementClamp:        return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+        case RHIStencilOpType::RHI_StencilOp_IncrementWrap:         return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+        case RHIStencilOpType::RHI_StencilOp_DecrementWrap:         return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkStencilOp: Wrong RHIStencilOpType type !")
+        }
+        return VK_STENCIL_OP_KEEP;
+    }
+
     VkFilter RHIVulkanConverter::TransformToVkFilter(RHIFilterType eFilter)
     {
         switch (eFilter)
@@ -534,24 +776,6 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformToVkBorderColor: Wrong RHIBorderColorType type !")
         }
         return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-    }
-
-    VkCompareOp RHIVulkanConverter::TransformToVkCompareOp(RHIComparisonFuncType eComparisonFunc)
-    {
-        switch (eComparisonFunc)
-        {
-        case RHIComparisonFuncType::RHI_ComparisonFunc_Never:           return VK_COMPARE_OP_NEVER;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_Less:            return VK_COMPARE_OP_LESS;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_Equal:           return VK_COMPARE_OP_EQUAL;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_LessEqual:       return VK_COMPARE_OP_LESS_OR_EQUAL;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_Greater:         return VK_COMPARE_OP_GREATER;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_NotEqual:        return VK_COMPARE_OP_NOT_EQUAL;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_GreaterEqual:    return VK_COMPARE_OP_GREATER_OR_EQUAL;
-        case RHIComparisonFuncType::RHI_ComparisonFunc_Always:          return VK_COMPARE_OP_ALWAYS;
-        default:
-            F_Assert(false && "RHIVulkanConverter::TransformToVkCompareOp: Wrong RHIComparisonFuncType type !")
-        }
-        return VK_COMPARE_OP_LESS_OR_EQUAL;
     }
 
     VkImageType RHIVulkanConverter::TransformToVkImageType(RHITextureDimensionType eTextureDimension)
