@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanConverter.h"
+#include "../include/RHIVulkanShaderModule.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -968,6 +969,21 @@ namespace LostPeterPluginRHIVulkan
         }
         return VK_SHADER_STAGE_VERTEX_BIT;
     }
+    VkShaderStageFlagBits RHIVulkanConverter::TransformToVkShaderStageFlagBits(RHIShaderStageBitsType eShaderStageBits)
+    {
+        switch (eShaderStageBits)
+        {
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex:            return VK_SHADER_STAGE_VERTEX_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel:             return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Compute:           return VK_SHADER_STAGE_COMPUTE_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry:          return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Domain:            return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        case RHIShaderStageBitsType::RHI_ShaderStageBits_Hull:              return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkShaderStageFlagBits: Wrong RHIShaderStageBitsType type !")
+        }
+        return VK_SHADER_STAGE_VERTEX_BIT;
+    }
     VkShaderStageFlags RHIVulkanConverter::TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages)
     {
         static std::map<RHIShaderStageBitsType, VkShaderStageFlags> s_Rules = 
@@ -991,5 +1007,52 @@ namespace LostPeterPluginRHIVulkan
         }
         return vkResult;
     }
+
+
+    VkPipelineShaderStageCreateInfo RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(RHIVulkanShaderModule* pShader, 
+                                                                                                   RHIShaderStageBitsType eShaderStageBits)
+    {
+        VkPipelineShaderStageCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        createInfo.stage = TransformToVkShaderStageFlagBits(eShaderStageBits);
+        createInfo.module = pShader->GetVkShaderModule();
+        createInfo.pName = pShader->GetNameMain().c_str();
+        return createInfo;
+    }
+    void RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(RHIVulkanShaderModule* pShader, 
+                                                                        RHIShaderStageBitsType eShaderStageBits,
+                                                                        VkPipelineShaderStageCreateInfo& vkPipelineShaderStageCreateInfo)
+    {
+        vkPipelineShaderStageCreateInfo = TransformToVkPipelineShaderStageCreateInfo(pShader, eShaderStageBits);
+    }
+    void RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfoVector(VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                                              RHIVulkanShaderModule* pShaderVertex, 
+                                                                              RHIVulkanShaderModule* pShaderPixel, 
+                                                                              RHIVulkanShaderModule* pShaderGeometry, 
+                                                                              RHIVulkanShaderModule* pShaderDomain, 
+                                                                              RHIVulkanShaderModule* pShaderHull)
+    {
+        F_Assert(pShaderVertex && pShaderPixel && "RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfoVector")
+        VkPipelineShaderStageCreateInfo createInfo_Vertex = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(pShaderVertex, RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex);
+        aShaderStageCreateInfos.push_back(createInfo_Vertex);
+        VkPipelineShaderStageCreateInfo createInfo_Pixel = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(pShaderPixel, RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel);
+        aShaderStageCreateInfos.push_back(createInfo_Pixel);
+        if (pShaderGeometry != nullptr)
+        {
+            VkPipelineShaderStageCreateInfo createInfo_Geometry = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(pShaderGeometry, RHIShaderStageBitsType::RHI_ShaderStageBits_Geometry);
+            aShaderStageCreateInfos.push_back(createInfo_Geometry);
+        }
+        if (pShaderDomain != nullptr)
+        {
+            VkPipelineShaderStageCreateInfo createInfo_Domain = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(pShaderDomain, RHIShaderStageBitsType::RHI_ShaderStageBits_Domain);
+            aShaderStageCreateInfos.push_back(createInfo_Domain);
+        }
+        if (pShaderHull != nullptr)
+        {
+            VkPipelineShaderStageCreateInfo createInfo_Hull = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(pShaderHull, RHIShaderStageBitsType::RHI_ShaderStageBits_Hull);
+            aShaderStageCreateInfos.push_back(createInfo_Hull);
+        }
+    }
+
 
 }; //LostPeterPluginRHIVulkan

@@ -11,6 +11,10 @@
 
 #include "../include/RHIVulkanPipelineGraphics.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanPipelineCache.h"
+#include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanConverter.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -19,9 +23,19 @@ namespace LostPeterPluginRHIVulkan
         , RHIVulkanObject(pVulkanDevice)
         , m_pVulkanPipelineCache((RHIVulkanPipelineCache*)createInfo.pPipelineCache)
         , m_pVulkanPipelineLayout((RHIVulkanPipelineLayout*)createInfo.pPipelineLayout)
+        , m_pShaderVertex((RHIVulkanShaderModule*)createInfo.pShaderVertex)
+        , m_pShaderPixel((RHIVulkanShaderModule*)createInfo.pShaderPixel)
+        , m_pShaderGeometry((RHIVulkanShaderModule*)createInfo.pShaderGeometry)
+        , m_pShaderDomain((RHIVulkanShaderModule*)createInfo.pShaderDomain)
+        , m_pShaderHull((RHIVulkanShaderModule*)createInfo.pShaderHull)
+        , m_sVertexState(createInfo.sVertexState)
+        , m_sPrimitiveState(createInfo.sPrimitiveState)
+        , m_sDepthStencilState(createInfo.sDepthStencilState)
+        , m_sMultiSampleState(createInfo.sMultiSampleState)
+        , m_sFragmentState(createInfo.sFragmentState)
         , m_strDebugName(createInfo.strDebugName)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics")
+        F_Assert(m_pVulkanDevice && m_pVulkanPipelineCache && m_pVulkanPipelineLayout && m_pShaderVertex && m_pShaderPixel && "RHIVulkanPipelineGraphics::RHIVulkanPipelineGraphics")
 
         createVkPipelineGraphics();
     }
@@ -38,7 +52,15 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanPipelineGraphics::createVkPipelineGraphics()
     {
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfoVector(aShaderStageCreateInfos,
+                                                                             m_pShaderVertex,
+                                                                             m_pShaderPixel,
+                                                                             m_pShaderGeometry,
+                                                                             m_pShaderDomain,
+                                                                             m_pShaderHull);
         
+
 
         if (RHI_IsDebug())
         {

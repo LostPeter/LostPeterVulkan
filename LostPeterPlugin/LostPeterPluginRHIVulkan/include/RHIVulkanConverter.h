@@ -82,7 +82,22 @@ namespace LostPeterPluginRHIVulkan
         static VkImageUsageFlags TransformToVkImageUsageFlags(RHITextureUsageBitsType eTextureUsageBits);
         static VkImageUsageFlags TransformToVkImageUsageFlagsFromTextureUsageFlags(RHITextureUsageFlags flagsTextureUsages);
         static VkShaderStageFlags TransformToVkShaderStageFlags(RHIShaderStageBitsType eShaderStageBits);
+        static VkShaderStageFlagBits TransformToVkShaderStageFlagBits(RHIShaderStageBitsType eShaderStageBits);
         static VkShaderStageFlags TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages);
+
+
+        static VkPipelineShaderStageCreateInfo TransformToVkPipelineShaderStageCreateInfo(RHIVulkanShaderModule* pShader, 
+                                                                                          RHIShaderStageBitsType eShaderStageBits);
+        static void TransformToVkPipelineShaderStageCreateInfo(RHIVulkanShaderModule* pShader, 
+                                                               RHIShaderStageBitsType eShaderStageBits,
+                                                               VkPipelineShaderStageCreateInfo& vkPipelineShaderStageCreateInfo);
+        static void TransformToVkPipelineShaderStageCreateInfoVector(VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                                     RHIVulkanShaderModule* pShaderVertex, 
+                                                                     RHIVulkanShaderModule* pShaderPixel, 
+                                                                     RHIVulkanShaderModule* pShaderGeometry, 
+                                                                     RHIVulkanShaderModule* pShaderDomain, 
+                                                                     RHIVulkanShaderModule* pShaderHull);
+
     };
 
 }; //LostPeterPluginRHIVulkan
