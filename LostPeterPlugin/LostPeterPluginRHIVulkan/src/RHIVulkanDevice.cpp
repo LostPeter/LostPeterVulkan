@@ -3474,19 +3474,10 @@ namespace LostPeterPluginRHIVulkan
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
         //1> Pipeline Shader Stage
         //vert
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertShaderModule;
-        vertShaderStageInfo.pName = vertMain.c_str();
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, vertMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(vertShaderStageInfo);
-
         //frag
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
-        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;
-        fragShaderStageInfo.pName = fragMain.c_str();
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo =RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, fragMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(fragShaderStageInfo);
 
         return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
@@ -3525,35 +3516,16 @@ namespace LostPeterPluginRHIVulkan
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
         //1> Pipeline Shader Stage
         //vert
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertShaderModule;
-        vertShaderStageInfo.pName = vertMain.c_str();
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, vertMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(vertShaderStageInfo);
-
         //tesc
-        VkPipelineShaderStageCreateInfo tescShaderStageInfo = {};
-        tescShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        tescShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-        tescShaderStageInfo.module = tescShaderModule;
-        tescShaderStageInfo.pName = tescMain.c_str();
+        VkPipelineShaderStageCreateInfo tescShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, tescShaderModule, tescMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(tescShaderStageInfo);
-
         //tese
-        VkPipelineShaderStageCreateInfo teseShaderStageInfo = {};
-        teseShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        teseShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-        teseShaderStageInfo.module = teseShaderModule;
-        teseShaderStageInfo.pName = teseMain.c_str();
+        VkPipelineShaderStageCreateInfo teseShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, teseShaderModule, teseMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(teseShaderStageInfo);
-
         //frag
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
-        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;
-        fragShaderStageInfo.pName = fragMain.c_str();
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, fragMain.c_str(), nullptr);
         aShaderStageCreateInfos.push_back(fragShaderStageInfo);
 
         return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
@@ -3587,33 +3559,11 @@ namespace LostPeterPluginRHIVulkan
                                                     VkPipeline& vkPipeline)
     {
         //1> Pipeline VertexInput State
-        VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
-        vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        if (pBindingDescriptions != nullptr)
-        {   
-            vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
-            vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
-        }
-        if (pAttributeDescriptions != nullptr)
-        {
-            vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-            vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-        }
-
+        VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = RHIVulkanConverter::TransformToVkPipelineVertexInputStateCreateInfo(pBindingDescriptions, pAttributeDescriptions);
         //2> Pipeline InputAssembly
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
-        inputAssemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssemblyStateInfo.topology = primitiveTopology;
-        inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
-
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = RHIVulkanConverter::TransformToVkPipelineInputAssemblyStateCreateInfo(primitiveTopology, VK_FALSE);
         //3> Pipeline Viewport State
-        VkPipelineViewportStateCreateInfo viewportStateInfo = {};
-        viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportStateInfo.viewportCount = static_cast<uint32_t>(aViewports.size());
-        viewportStateInfo.pViewports = aViewports.data();
-        viewportStateInfo.scissorCount = static_cast<uint32_t>(aScissors.size());
-        viewportStateInfo.pScissors = aScissors.data();
-
+        VkPipelineViewportStateCreateInfo viewportStateInfo = RHIVulkanConverter::TransformToVkPipelineViewportStateCreateInfo(aViewports, aScissors);
         //4> Pipeline Rasterization State
         VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
         rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -3629,28 +3579,9 @@ namespace LostPeterPluginRHIVulkan
         rasterizationStateInfo.lineWidth = lineWidth;
 
         //5> Pipeline Multisample State
-        VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
-        multisamplingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisamplingStateInfo.sampleShadingEnable = VK_FALSE;
-        multisamplingStateInfo.rasterizationSamples = msaaSamples;
-        multisamplingStateInfo.minSampleShading = 1.0f; // Optional
-        multisamplingStateInfo.pSampleMask = nullptr; // Optional
-        multisamplingStateInfo.alphaToCoverageEnable = VK_FALSE; // Optional
-        multisamplingStateInfo.alphaToOneEnable = VK_FALSE; // Optional
-
+        VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = RHIVulkanConverter::TransformToVkPipelineMultisampleStateCreateInfo(msaaSamples, VK_FALSE, nullptr);
         //6> Pipeline DepthStencil State
-        VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
-        depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencilStateInfo.depthTestEnable = bDepthTest;
-        depthStencilStateInfo.depthWriteEnable = bDepthWrite;
-        depthStencilStateInfo.depthCompareOp = depthCompareOp;
-        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
-        depthStencilStateInfo.stencilTestEnable = bStencilTest;
-        if (bStencilTest)
-        {
-            depthStencilStateInfo.front = stencilOpFront;
-            depthStencilStateInfo.back = stencilOpBack;
-        }
+        VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = RHIVulkanConverter::TransformToVkPipelineDepthStencilStateCreateInfo(bDepthTest, bDepthWrite, depthCompareOp, VK_FALSE, bStencilTest, stencilOpFront, stencilOpBack, 0.0f, 1.0f);
 
         //7> Pipeline ColorBlend State 
         VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
@@ -3730,12 +3661,7 @@ namespace LostPeterPluginRHIVulkan
                                                    VkPipelineCache vkPipelineCache,
                                                    VkPipeline& vkPipeline)
     {
-        VkPipelineShaderStageCreateInfo compShaderStageInfo = {};
-        compShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        compShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-        compShaderStageInfo.module = compShaderModule;
-        compShaderStageInfo.pName = compMain.c_str();
-
+        VkPipelineShaderStageCreateInfo compShaderStageInfo = RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VK_SHADER_STAGE_COMPUTE_BIT, compShaderModule, compMain.c_str(), nullptr);
         return CreateVkPipeline_Compute(compShaderStageInfo,
                                         vkPipelineLayout,
                                         flags,
@@ -3748,12 +3674,9 @@ namespace LostPeterPluginRHIVulkan
                                                    VkPipelineCache vkPipelineCache,
                                                    VkPipeline& vkPipeline)
     {
-        VkComputePipelineCreateInfo pipelineInfo = {};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-        pipelineInfo.pNext = nullptr;
-        pipelineInfo.flags = flags; 
-        pipelineInfo.stage = shaderStageCreateInfo;
-        pipelineInfo.layout = vkPipelineLayout;
+        VkComputePipelineCreateInfo pipelineInfo = RHIVulkanConverter::TransformToVkComputePipelineCreateInfo(shaderStageCreateInfo,
+                                                                                                              vkPipelineLayout,
+                                                                                                              flags);
         
         if (!RHI_CheckVkResult(vkCreateComputePipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateComputePipelines"))
         {

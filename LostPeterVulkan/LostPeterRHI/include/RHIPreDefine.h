@@ -421,16 +421,6 @@ namespace LostPeterRHI
         RHI_VertexStep_Count,
     };
 
-	//RHIPrimitiveTopologySortType
-    enum class RHIPrimitiveTopologySortType : RHIEnumType 
-	{
-        RHI_PrimitiveTopologySort_Point = 0,			//0: Point
-        RHI_PrimitiveTopologySort_Line,					//1: Line
-        RHI_PrimitiveTopologySort_Triangle,				//2: Triangle
-
-        RHI_PrimitiveTopologySort_Count,
-    };
-
 	//RHIPrimitiveTopologyType
     enum class RHIPrimitiveTopologyType : RHIEnumType 
 	{
@@ -1582,14 +1572,14 @@ namespace LostPeterRHI
     //RHIPrimitiveState
     struct rhiExport RHIPrimitiveState 
     {
-        RHIPrimitiveTopologySortType ePrimitiveTopologySort;
+        RHIPrimitiveTopologyType ePrimitiveTopology;
         RHIIndexFormatType eIndexFormat;
         RHIFrontFaceType eFrontFace;
         RHICullType eCull;
         bool bDepthClip;
 
         RHIPrimitiveState()
-            : ePrimitiveTopologySort(RHIPrimitiveTopologySortType::RHI_PrimitiveTopologySort_Triangle)
+            : ePrimitiveTopology(RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleList)
             , eIndexFormat(RHIIndexFormatType::RHI_IndexFormat_16Bit)
             , eFrontFace(RHIFrontFaceType::RHI_FrontFace_Count)
             , eCull(RHICullType::RHI_Cull_Back)
@@ -1606,12 +1596,18 @@ namespace LostPeterRHI
         RHIStencilOpType eFailOp;
         RHIStencilOpType eDepthFailOp;
         RHIStencilOpType ePassOp;
+        uint32 nCompareMask;
+        uint32 nWriteMask;
+        uint32 nReference;
 
         RHIStencilFaceState()
             : eComparisonFunc(RHIComparisonFuncType::RHI_ComparisonFunc_Always)
             , eFailOp(RHIStencilOpType::RHI_StencilOp_Keep)
             , eDepthFailOp(RHIStencilOpType::RHI_StencilOp_Keep)
             , ePassOp(RHIStencilOpType::RHI_StencilOp_Keep)
+            , nCompareMask(0)
+            , nWriteMask(0)
+            , nReference(0)
         {
 
         }
@@ -1620,7 +1616,8 @@ namespace LostPeterRHI
     //RHIDepthStencilState
     struct rhiExport RHIDepthStencilState 
     {
-        bool bDepthEnable;
+        bool bDepthTestEnable;
+        bool bDepthWriteEnable;
         bool bStencilEnable;
         RHIPixelFormatType ePixelFormat;
         RHIComparisonFuncType eDepthComparisonFunc;
@@ -1633,7 +1630,8 @@ namespace LostPeterRHI
         float fDepthBiasClamp;
 
         RHIDepthStencilState()
-            : bDepthEnable(false)
+            : bDepthTestEnable(true)
+            , bDepthWriteEnable(true)
             , bStencilEnable(false)
             , ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_Unknown)
             , eDepthComparisonFunc(RHIComparisonFuncType::RHI_ComparisonFunc_Always)
@@ -1650,12 +1648,12 @@ namespace LostPeterRHI
     //RHIMultiSampleState
     struct rhiExport RHIMultiSampleState
     {
-        uint8 nCount;
+        RHISampleCountType eSampleCount;
         uint32 nMask;
         bool bAlphaToCoverage;
 
         RHIMultiSampleState()
-            : nCount(1)
+            : eSampleCount(RHISampleCountType::RHI_SampleCount_1_Bit)
             , nMask(0xFFFFFFFF)
             , bAlphaToCoverage(false)
         {
