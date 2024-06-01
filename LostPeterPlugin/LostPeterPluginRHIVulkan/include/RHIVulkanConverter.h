@@ -48,6 +48,7 @@ namespace LostPeterPluginRHIVulkan
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
         static RHITextureUsageBitsType TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags);
         static RHIShaderStageBitsType TransformFromVkShaderStageFlags(VkShaderStageFlags vkShaderStageFlags);
+        static RHIColorWriteBitsType TransformFromVkColorComponentFlags(VkColorComponentFlags vkColorComponentFlags);
 
     public:
         ////////////////////// TransformToXXXX ////////////////////////
@@ -84,9 +85,10 @@ namespace LostPeterPluginRHIVulkan
         static VkShaderStageFlags TransformToVkShaderStageFlags(RHIShaderStageBitsType eShaderStageBits);
         static VkShaderStageFlagBits TransformToVkShaderStageFlagBits(RHIShaderStageBitsType eShaderStageBits);
         static VkShaderStageFlags TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages);
+        static VkColorComponentFlags TransformToVkColorComponentFlags(RHIColorWriteBitsType eColorWriteBits);
+        static VkColorComponentFlags TransformToVkColorComponentFlagsFromColorWriteFlags(RHIColorWriteFlags flagsColorWrite);
 
-
-        //VkPipelineShaderStageCreateInfo
+        //0> VkPipelineShaderStageCreateInfo
         static VkPipelineShaderStageCreateInfo TransformToVkPipelineShaderStageCreateInfo(VkShaderStageFlagBits stage,
                                                                                           VkShaderModule module,
                                                                                           const char* pName,
@@ -103,27 +105,48 @@ namespace LostPeterPluginRHIVulkan
                                                                      RHIVulkanShaderModule* pShaderDomain, 
                                                                      RHIVulkanShaderModule* pShaderHull);
 
-        //VkPipelineVertexInputStateCreateInfo
+        //1> VkPipelineVertexInputStateCreateInfo
         static VkPipelineVertexInputStateCreateInfo TransformToVkPipelineVertexInputStateCreateInfo(VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions);                                                   
         static void TransformToVkPipelineVertexInputStateCreateInfo(VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions, 
                                                                     VkPipelineVertexInputStateCreateInfo& createInfo);
 
-        //VkPipelineInputAssemblyStateCreateInfo
+        //2> VkPipelineInputAssemblyStateCreateInfo
         static VkPipelineInputAssemblyStateCreateInfo TransformToVkPipelineInputAssemblyStateCreateInfo(VkPrimitiveTopology topology, VkBool32 primitiveRestartEnable);
         static VkPipelineInputAssemblyStateCreateInfo TransformToVkPipelineInputAssemblyStateCreateInfo(RHIPrimitiveTopologyType ePrimitiveTopology, bool bPrimitiveRestartEnable);
         static void TransformToVkPipelineInputAssemblyStateCreateInfo(RHIPrimitiveTopologyType ePrimitiveTopology, bool bPrimitiveRestartEnable, VkPipelineInputAssemblyStateCreateInfo& createInfo);
         
-        //VkPipelineViewportStateCreateInfo
+        //3> VkPipelineViewportStateCreateInfo
         static VkPipelineViewportStateCreateInfo TransformToVkPipelineViewportStateCreateInfo(const VkViewportVector& aViewports, const VkRect2DVector& aScissors);
         static void TransformToVkPipelineViewportStateCreateInfo(const VkViewportVector& aViewports, const VkRect2DVector& aScissors, VkPipelineViewportStateCreateInfo& createInfo); 
         
-        //VkPipelineRasterizationStateCreateInfo
-        static VkPipelineRasterizationStateCreateInfo TransformToVkPipelineRasterizationStateCreateInfo();
-        static void TransformToVkPipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo& createInfo); 
+        //4> VkPipelineRasterizationStateCreateInfo
+        static VkPipelineRasterizationStateCreateInfo TransformToVkPipelineRasterizationStateCreateInfo(VkBool32 depthClampEnable,
+                                                                                                        VkBool32 rasterizerDiscardEnable,
+                                                                                                        VkPolygonMode polygonMode,
+                                                                                                        VkCullModeFlags cullMode,
+                                                                                                        VkFrontFace frontFace,
+                                                                                                        VkBool32 depthBiasEnable,
+                                                                                                        float depthBiasConstantFactor,
+                                                                                                        float depthBiasClamp,
+                                                                                                        float depthBiasSlopeFactor,
+                                                                                                        float lineWidth);
+        static void TransformToVkPipelineRasterizationStateCreateInfo(VkBool32 depthClampEnable,
+                                                                      VkBool32 rasterizerDiscardEnable,
+                                                                      VkPolygonMode polygonMode,
+                                                                      VkCullModeFlags cullMode,
+                                                                      VkFrontFace frontFace,
+                                                                      VkBool32 depthBiasEnable,
+                                                                      float depthBiasConstantFactor,
+                                                                      float depthBiasClamp,
+                                                                      float depthBiasSlopeFactor,
+                                                                      float lineWidth,
+                                                                      VkPipelineRasterizationStateCreateInfo& createInfo); 
+        static VkPipelineRasterizationStateCreateInfo TransformToVkPipelineRasterizationStateCreateInfo(const RHIPrimitiveState& statePrimitive, 
+                                                                                                        const RHIDepthStencilState& stateDepthStencil);
         
-        //VkPipelineMultisampleStateCreateInfo
+        //5> VkPipelineMultisampleStateCreateInfo
         static VkPipelineMultisampleStateCreateInfo TransformToVkPipelineMultisampleStateCreateInfo(VkSampleCountFlagBits rasterizationSamples,
                                                                                                     VkBool32 alphaToCoverageEnable,
                                                                                                     VkSampleMask* pSampleMask);
@@ -133,7 +156,7 @@ namespace LostPeterPluginRHIVulkan
                                                                     VkPipelineMultisampleStateCreateInfo& createInfo);
         static VkPipelineMultisampleStateCreateInfo TransformToVkPipelineMultisampleStateCreateInfo(const RHIMultiSampleState& state);
         
-        //VkPipelineDepthStencilStateCreateInfo
+        //6> VkPipelineDepthStencilStateCreateInfo
         static VkStencilOpState TransformToVkStencilOpState(VkStencilOp failOp,
                                                             VkStencilOp passOp,
                                                             VkStencilOp depthFailOp,
@@ -163,27 +186,81 @@ namespace LostPeterPluginRHIVulkan
                                                                      VkPipelineDepthStencilStateCreateInfo& createInfo); 
         static VkPipelineDepthStencilStateCreateInfo TransformToVkPipelineDepthStencilStateCreateInfo(const RHIDepthStencilState& state);
         
-        //VkPipelineColorBlendAttachmentState
-        static VkPipelineColorBlendAttachmentState TransformToVkPipelineColorBlendAttachmentState();
-        static void TransformToVkPipelineColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& createInfo); 
+        //7> VkPipelineColorBlendAttachmentState/VkPipelineColorBlendStateCreateInfo
+        static VkPipelineColorBlendAttachmentState TransformToVkPipelineColorBlendAttachmentState(VkBool32 blendEnable,
+                                                                                                  VkBlendFactor srcColorBlendFactor,
+                                                                                                  VkBlendFactor dstColorBlendFactor,
+                                                                                                  VkBlendOp colorBlendOp,
+                                                                                                  VkBlendFactor srcAlphaBlendFactor,
+                                                                                                  VkBlendFactor dstAlphaBlendFactor,
+                                                                                                  VkBlendOp alphaBlendOp,
+                                                                                                  VkColorComponentFlags colorWriteMask);
+        static void TransformToVkPipelineColorBlendAttachmentState(VkBool32 blendEnable,
+                                                                   VkBlendFactor srcColorBlendFactor,
+                                                                   VkBlendFactor dstColorBlendFactor,
+                                                                   VkBlendOp colorBlendOp,
+                                                                   VkBlendFactor srcAlphaBlendFactor,
+                                                                   VkBlendFactor dstAlphaBlendFactor,
+                                                                   VkBlendOp alphaBlendOp,
+                                                                   VkColorComponentFlags colorWriteMask,
+                                                                   VkPipelineColorBlendAttachmentState& createInfo);
+        static VkPipelineColorBlendAttachmentState TransformToVkPipelineColorBlendAttachmentState(const RHIColorTargetState& state);
+
+        static VkPipelineColorBlendStateCreateInfo TransformToVkPipelineColorBlendStateCreateInfo(const VkPipelineColorBlendAttachmentStateVector& aState);
+        static void TransformToVkPipelineColorBlendStateCreateInfo(const VkPipelineColorBlendAttachmentStateVector& aState, VkPipelineColorBlendStateCreateInfo& createInfo); 
+        static VkPipelineColorBlendStateCreateInfo TransformToVkPipelineColorBlendStateCreateInfo(const RHIColorTargetStateVector& aColorTargetState); 
+
+        //8> VkPipelineDynamicStateCreateInfo
+        static VkPipelineDynamicStateCreateInfo TransformToVkPipelineDynamicStateCreateInfo(const VkDynamicStateVector& aState);
+        static void TransformToVkPipelineDynamicStateCreateInfo(const VkDynamicStateVector& aState,
+                                                                VkPipelineDynamicStateCreateInfo& createInfo); 
         
-        //VkPipelineColorBlendStateCreateInfo
-        static VkPipelineColorBlendStateCreateInfo TransformToVkPipelineColorBlendStateCreateInfo();
-        static void TransformToVkPipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& createInfo); 
+        //9> VkPipelineTessellationStateCreateInfo
+        static VkPipelineTessellationStateCreateInfo TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateFlags flags,
+                                                                                                      uint32_t patchControlPoints);
+        static void TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateFlags flags,
+                                                                     uint32_t patchControlPoints,
+                                                                     VkPipelineTessellationStateCreateInfo& createInfo); 
         
-        //VkPipelineDynamicStateCreateInfo
-        static VkPipelineDynamicStateCreateInfo TransformToVkPipelineDynamicStateCreateInfo();
-        static void TransformToVkPipelineDynamicStateCreateInfo(VkPipelineDynamicStateCreateInfo& createInfo); 
+        //10> VkGraphicsPipelineCreateInfo
+        static VkGraphicsPipelineCreateInfo TransformToVkGraphicsPipelineCreateInfo(VkPipelineCreateFlags flags,
+                                                                                    uint32_t stageCount,
+                                                                                    const VkPipelineShaderStageCreateInfo* pStages,
+                                                                                    const VkPipelineVertexInputStateCreateInfo* pVertexInputState,
+                                                                                    const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState,
+                                                                                    const VkPipelineTessellationStateCreateInfo* pTessellationState,
+                                                                                    const VkPipelineViewportStateCreateInfo* pViewportState,
+                                                                                    const VkPipelineRasterizationStateCreateInfo* pRasterizationState,
+                                                                                    const VkPipelineMultisampleStateCreateInfo* pMultisampleState,
+                                                                                    const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState,
+                                                                                    const VkPipelineColorBlendStateCreateInfo* pColorBlendState,
+                                                                                    const VkPipelineDynamicStateCreateInfo* pDynamicState,
+                                                                                    VkPipelineLayout layout,
+                                                                                    VkRenderPass renderPass,
+                                                                                    uint32_t subpass,
+                                                                                    VkPipeline basePipelineHandle,
+                                                                                    int32_t basePipelineIndex);
+        static void TransformToVkGraphicsPipelineCreateInfo(VkPipelineCreateFlags flags,
+                                                            uint32_t stageCount,
+                                                            const VkPipelineShaderStageCreateInfo* pStages,
+                                                            const VkPipelineVertexInputStateCreateInfo* pVertexInputState,
+                                                            const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState,
+                                                            const VkPipelineTessellationStateCreateInfo* pTessellationState,
+                                                            const VkPipelineViewportStateCreateInfo* pViewportState,
+                                                            const VkPipelineRasterizationStateCreateInfo* pRasterizationState,
+                                                            const VkPipelineMultisampleStateCreateInfo* pMultisampleState,
+                                                            const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState,
+                                                            const VkPipelineColorBlendStateCreateInfo* pColorBlendState,
+                                                            const VkPipelineDynamicStateCreateInfo* pDynamicState,
+                                                            VkPipelineLayout layout,
+                                                            VkRenderPass renderPass,
+                                                            uint32_t subpass,
+                                                            VkPipeline basePipelineHandle,
+                                                            int32_t basePipelineIndex,
+                                                            VkGraphicsPipelineCreateInfo& createInfo); 
         
-        //VkPipelineTessellationStateCreateInfo
-        static VkPipelineTessellationStateCreateInfo TransformToVkPipelineTessellationStateCreateInfo();
-        static void TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateInfo& createInfo); 
         
-        //VkGraphicsPipelineCreateInfo
-        static VkGraphicsPipelineCreateInfo TransformToVkGraphicsPipelineCreateInfo();
-        static void TransformToVkGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo& createInfo); 
-        
-        //VkComputePipelineCreateInfo
+        //11> VkComputePipelineCreateInfo
         static VkComputePipelineCreateInfo TransformToVkComputePipelineCreateInfo(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
                                                                                   VkPipelineLayout vkPipelineLayout, 
                                                                                   VkPipelineCreateFlags flags);
@@ -191,6 +268,7 @@ namespace LostPeterPluginRHIVulkan
                                                            VkPipelineLayout vkPipelineLayout, 
                                                            VkPipelineCreateFlags flags,
                                                            VkComputePipelineCreateInfo& createInfo); 
+        
     };
 
 }; //LostPeterPluginRHIVulkan

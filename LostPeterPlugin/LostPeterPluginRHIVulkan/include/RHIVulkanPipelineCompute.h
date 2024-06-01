@@ -31,16 +31,17 @@ namespace LostPeterPluginRHIVulkan
 
     public:
     protected:
-        RHIVulkanPipelineCache* m_pVulkanPipelineCache;
-        RHIVulkanPipelineLayout* m_pVulkanPipelineLayout;
         RHIVulkanShaderModule* m_pVulkanComputeShader;
+        RHIVulkanPipelineLayout* m_pVulkanPipelineLayout;
+        RHIVulkanPipelineCache* m_pVulkanPipelineCache;
 
         String m_strDebugName;
 
     public:
-        F_FORCEINLINE RHIVulkanPipelineCache* GetVulkanPipelineCache() const { return m_pVulkanPipelineCache; }
-        F_FORCEINLINE RHIVulkanPipelineLayout* GetVulkanPipelineLayout() const { return m_pVulkanPipelineLayout; }
         F_FORCEINLINE RHIVulkanShaderModule* GetVulkanComputeShaderModule() const { return m_pVulkanComputeShader; }
+        F_FORCEINLINE RHIVulkanPipelineLayout* GetVulkanPipelineLayout() const { return m_pVulkanPipelineLayout; }
+        F_FORCEINLINE RHIVulkanPipelineCache* GetVulkanPipelineCache() const { return m_pVulkanPipelineCache; }
+        
         F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:

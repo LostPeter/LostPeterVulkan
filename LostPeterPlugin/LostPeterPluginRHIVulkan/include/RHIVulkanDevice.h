@@ -765,6 +765,25 @@ namespace LostPeterPluginRHIVulkan
                                        VkSampleCountFlagBits msaaSamples,
                                        VkPipelineCache vkPipelineCache,
                                        VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(const VkGraphicsPipelineCreateInfo& createInfo,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(RHIVulkanShaderModule* pVulkanShaderVertex, 
+                                       RHIVulkanShaderModule* pVulkanShaderPixel,
+                                       RHIVulkanShaderModule* pVulkanShaderGeometry,
+                                       RHIVulkanShaderModule* pVulkanShaderDomain,
+                                       RHIVulkanShaderModule* pVulkanShaderHull,
+                                       RHIVulkanPipelineLayout* pVulkanPipelineLayout,
+                                       RHIVulkanPipelineCache* pVulkanPipelineCache,
+                                       RHIVulkanRenderPass* pVulkanRenderPass,
+                                       const RHIVertexState& sVertexState,
+                                       const RHIPrimitiveState& sPrimitiveState,
+                                       const RHITessellationState& sTessellationState,
+                                       const RHIDepthStencilState& sDepthStencilState,
+                                       const RHIMultiSampleState& sMultiSampleState,
+                                       const RHIFragmentState& sFragmentState,
+                                       VkPipeline& vkPipeline);
+
         bool CreateVkPipeline_Compute(VkShaderModule compShaderModule,
                                       const String& compMain,
                                       VkPipelineLayout vkPipelineLayout, 
@@ -775,6 +794,10 @@ namespace LostPeterPluginRHIVulkan
                                       VkPipelineLayout vkPipelineLayout, 
                                       VkPipelineCreateFlags flags,
                                       VkPipelineCache vkPipelineCache,
+                                      VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Compute(RHIVulkanShaderModule* pVulkanComputeShader,
+                                      RHIVulkanPipelineLayout* pVulkanPipelineLayout,
+                                      RHIVulkanPipelineCache* pVulkanPipelineCache,
                                       VkPipeline& vkPipeline);
         void DestroyVkPipeline(const VkPipeline& vkPipeline);
 

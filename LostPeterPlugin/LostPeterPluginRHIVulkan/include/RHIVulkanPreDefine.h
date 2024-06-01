@@ -127,6 +127,9 @@ namespace LostPeterPluginRHIVulkan
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
+    typedef std::vector<VkPipelineColorBlendAttachmentState> VkPipelineColorBlendAttachmentStateVector;
+
+    typedef std::vector<VkDynamicState> VkDynamicStateVector;
 
 	////////////////////////////// Class ///////////////////////////////
     class RHIVulkanBarrier;

@@ -11,22 +11,22 @@
 
 #include "../include/RHIVulkanPipelineCompute.h"
 #include "../include/RHIVulkanDevice.h"
-#include "../include/RHIVulkanPipelineCache.h"
-#include "../include/RHIVulkanPipelineLayout.h"
 #include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanPipelineLayout.h"
+#include "../include/RHIVulkanPipelineCache.h"
 
 namespace LostPeterPluginRHIVulkan
 {
     RHIVulkanPipelineCompute::RHIVulkanPipelineCompute(RHIVulkanDevice* pVulkanDevice, const RHIPipelineComputeCreateInfo& createInfo)
         : RHIPipelineCompute(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
-        , m_pVulkanPipelineCache((RHIVulkanPipelineCache*)createInfo.pPipelineCache)
-        , m_pVulkanPipelineLayout((RHIVulkanPipelineLayout*)createInfo.pPipelineLayout)
         , m_pVulkanComputeShader((RHIVulkanShaderModule*)createInfo.pComputeShader)
+        , m_pVulkanPipelineLayout((RHIVulkanPipelineLayout*)createInfo.pPipelineLayout)
+        , m_pVulkanPipelineCache((RHIVulkanPipelineCache*)createInfo.pPipelineCache)
         , m_strDebugName(createInfo.strDebugName)
     {
-        F_Assert(m_pVulkanDevice && m_pVulkanPipelineLayout && m_pVulkanComputeShader && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")
-
+        F_Assert(m_pVulkanDevice && m_pVulkanComputeShader && m_pVulkanPipelineLayout && m_pVulkanPipelineCache && "RHIVulkanPipelineCompute::RHIVulkanPipelineCompute")
+    
         createVkPipelineCompute();
     }
 
@@ -42,11 +42,9 @@ namespace LostPeterPluginRHIVulkan
 
     void RHIVulkanPipelineCompute::createVkPipelineCompute()
     {
-        if (!m_pVulkanDevice->CreateVkPipeline_Compute(m_pVulkanComputeShader->GetVkShaderModule(),
-                                                       m_pVulkanComputeShader->GetNameMain(),
-                                                       m_pVulkanPipelineLayout->GetVkPipelineLayout(),  
-                                                       0,
-                                                       m_pVulkanPipelineCache->GetVkPipelineCache(),
+        if (!m_pVulkanDevice->CreateVkPipeline_Compute(m_pVulkanComputeShader,
+                                                       m_pVulkanPipelineLayout,
+                                                       m_pVulkanPipelineCache,
                                                        m_vkPipeline))
         {
             setIsError(true);

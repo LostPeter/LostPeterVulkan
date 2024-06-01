@@ -1574,16 +1574,22 @@ namespace LostPeterRHI
     {
         RHIPrimitiveTopologyType ePrimitiveTopology;
         RHIIndexFormatType eIndexFormat;
+        RHIPolygonType ePolygon;
         RHIFrontFaceType eFrontFace;
         RHICullType eCull;
-        bool bDepthClip;
+        bool bDepthClipEnable;
+        bool bRasterizerDiscardEnable;
+        float fLineWidth;
 
         RHIPrimitiveState()
             : ePrimitiveTopology(RHIPrimitiveTopologyType::RHI_PrimitiveTopology_TriangleList)
             , eIndexFormat(RHIIndexFormatType::RHI_IndexFormat_16Bit)
+            , ePolygon(RHIPolygonType::RHI_Polygon_Solid)
             , eFrontFace(RHIFrontFaceType::RHI_FrontFace_Count)
             , eCull(RHICullType::RHI_Cull_Back)
-            , bDepthClip(false)
+            , bDepthClipEnable(false)
+            , bRasterizerDiscardEnable(false)
+            , fLineWidth(1.0f)
         {
 
         }
@@ -1645,6 +1651,20 @@ namespace LostPeterRHI
         }
     };
 
+    //RHITessellationState
+    struct rhiExport RHITessellationState
+    {
+        bool isTessellationUsed;
+        uint32 nPatchControlPoints;
+
+        RHITessellationState()
+            : isTessellationUsed(false)
+            , nPatchControlPoints(3)
+        {
+
+        }
+    };
+
     //RHIMultiSampleState
     struct rhiExport RHIMultiSampleState
     {
@@ -1693,11 +1713,13 @@ namespace LostPeterRHI
     struct rhiExport RHIColorTargetState 
     {
         RHIPixelFormatType ePixelFormat;
+        bool bBlendEnable;
         RHIBlendState sBlendState;
         RHIColorWriteFlags flagsWrite;
 
         RHIColorTargetState()
             : ePixelFormat(RHIPixelFormatType::RHI_PixelFormat_BGRA8UNorm)
+            , bBlendEnable(false)
             , flagsWrite(RHIColorWriteBitsType::RHI_ColorWriteBits_Red |
                          RHIColorWriteBitsType::RHI_ColorWriteBits_Green | 
                          RHIColorWriteBitsType::RHI_ColorWriteBits_Blue | 
@@ -1706,16 +1728,14 @@ namespace LostPeterRHI
 
         }
     };
+    typedef std::vector<RHIColorTargetState> RHIColorTargetStateVector;
 
     //RHIFragmentState
     struct rhiExport RHIFragmentState 
     {
-        uint8 nColorTargetCount;
-        const RHIColorTargetState* pColorTargets;
+        RHIColorTargetStateVector aColorTargets;
 
         RHIFragmentState()
-            : nColorTargetCount(0)
-            , pColorTargets(nullptr)
         {
 
         }
@@ -1754,16 +1774,18 @@ namespace LostPeterRHI
     //RHIPipelineGraphicsCreateInfo
     struct rhiExport RHIPipelineGraphicsCreateInfo
     {
-        RHIPipelineCache* pPipelineCache;
-        RHIPipelineLayout* pPipelineLayout;
         RHIShaderModule* pShaderVertex;
         RHIShaderModule* pShaderPixel;
         RHIShaderModule* pShaderGeometry;
         RHIShaderModule* pShaderDomain;
         RHIShaderModule* pShaderHull;
+        RHIPipelineLayout* pPipelineLayout;
+        RHIPipelineCache* pPipelineCache;
+        RHIRenderPass* pRenderPass;
 
         RHIVertexState sVertexState;
         RHIPrimitiveState sPrimitiveState;
+        RHITessellationState sTessellationState;
         RHIDepthStencilState sDepthStencilState;
         RHIMultiSampleState sMultiSampleState;
         RHIFragmentState sFragmentState;
@@ -1771,13 +1793,14 @@ namespace LostPeterRHI
         String strDebugName;
 
         RHIPipelineGraphicsCreateInfo()
-            : pPipelineCache(nullptr)
-            , pPipelineLayout(nullptr)
-            , pShaderVertex(nullptr)
+            : pShaderVertex(nullptr)
             , pShaderPixel(nullptr)
             , pShaderGeometry(nullptr)
             , pShaderDomain(nullptr)
             , pShaderHull(nullptr)
+            , pPipelineLayout(nullptr)
+            , pPipelineCache(nullptr)
+            , pRenderPass(nullptr)
         {
 
         }

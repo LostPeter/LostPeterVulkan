@@ -439,6 +439,19 @@ namespace LostPeterPluginRHIVulkan
         return RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex;
     }
 
+    RHIColorWriteBitsType RHIVulkanConverter::TransformFromVkColorComponentFlags(VkColorComponentFlags vkColorComponentFlags)
+    {
+        switch ((int32)vkColorComponentFlags)
+        {
+        case VK_COLOR_COMPONENT_R_BIT:              return RHIColorWriteBitsType::RHI_ColorWriteBits_Red;
+        case VK_COLOR_COMPONENT_G_BIT:              return RHIColorWriteBitsType::RHI_ColorWriteBits_Green;
+        case VK_COLOR_COMPONENT_B_BIT:              return RHIColorWriteBitsType::RHI_ColorWriteBits_Blue;
+        case VK_COLOR_COMPONENT_A_BIT:              return RHIColorWriteBitsType::RHI_ColorWriteBits_Alpha;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkColorComponentFlags: Wrong VkColorComponentFlags type !")
+        }
+        return RHIColorWriteBitsType::RHI_ColorWriteBits_Red;
+    }
 
     ////////////////////// TransformToXXXX ////////////////////////
     VkExtent2D RHIVulkanConverter::TransformToVkExtent2D(const RHIExtent<2>& sExtent)
@@ -1008,8 +1021,43 @@ namespace LostPeterPluginRHIVulkan
         return vkResult;
     }
 
+    VkColorComponentFlags RHIVulkanConverter::TransformToVkColorComponentFlags(RHIColorWriteBitsType eColorWriteBits)
+    {
+        switch (eColorWriteBits)
+        {
+        case RHIColorWriteBitsType::RHI_ColorWriteBits_Red:            return VK_COLOR_COMPONENT_R_BIT;
+        case RHIColorWriteBitsType::RHI_ColorWriteBits_Green:          return VK_COLOR_COMPONENT_G_BIT;
+        case RHIColorWriteBitsType::RHI_ColorWriteBits_Blue:           return VK_COLOR_COMPONENT_B_BIT;
+        case RHIColorWriteBitsType::RHI_ColorWriteBits_Alpha:          return VK_COLOR_COMPONENT_A_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkColorComponentFlags: Wrong RHIColorWriteBitsType type !")
+        }
+        return VK_COLOR_COMPONENT_R_BIT;
+    }
+    VkColorComponentFlags RHIVulkanConverter::TransformToVkColorComponentFlagsFromColorWriteFlags(RHIColorWriteFlags flagsColorWrite)
+    {
+        static std::map<RHIColorWriteBitsType, VkColorComponentFlags> s_Rules = 
+         {
+            { RHIColorWriteBitsType::RHI_ColorWriteBits_Red,       VK_COLOR_COMPONENT_R_BIT },
+            { RHIColorWriteBitsType::RHI_ColorWriteBits_Green,     VK_COLOR_COMPONENT_G_BIT },
+            { RHIColorWriteBitsType::RHI_ColorWriteBits_Blue,      VK_COLOR_COMPONENT_B_BIT },
+            { RHIColorWriteBitsType::RHI_ColorWriteBits_Alpha,     VK_COLOR_COMPONENT_A_BIT },
+        };
 
-    //VkPipelineShaderStageCreateInfo
+        VkColorComponentFlags vkResult = {};
+        for (std::map<RHIColorWriteBitsType, VkColorComponentFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsColorWrite & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+
+    //0> VkPipelineShaderStageCreateInfo
     VkPipelineShaderStageCreateInfo RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfo(VkShaderStageFlagBits stage,
                                                                                                    VkShaderModule module,
                                                                                                    const char* pName,
@@ -1067,7 +1115,7 @@ namespace LostPeterPluginRHIVulkan
         }
     }
 
-    //VkPipelineVertexInputStateCreateInfo
+    //1> VkPipelineVertexInputStateCreateInfo
     VkPipelineVertexInputStateCreateInfo RHIVulkanConverter::TransformToVkPipelineVertexInputStateCreateInfo(VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                                                              VkVertexInputAttributeDescriptionVector* pAttributeDescriptions)
     {
@@ -1093,7 +1141,7 @@ namespace LostPeterPluginRHIVulkan
         createInfo = RHIVulkanConverter::TransformToVkPipelineVertexInputStateCreateInfo(pBindingDescriptions, pAttributeDescriptions);
     }
 
-    //VkPipelineInputAssemblyStateCreateInfo
+    //2> VkPipelineInputAssemblyStateCreateInfo
     VkPipelineInputAssemblyStateCreateInfo RHIVulkanConverter::TransformToVkPipelineInputAssemblyStateCreateInfo(VkPrimitiveTopology topology, VkBool32 primitiveRestartEnable)
     {
         VkPipelineInputAssemblyStateCreateInfo createInfo = {};
@@ -1112,7 +1160,7 @@ namespace LostPeterPluginRHIVulkan
         createInfo = TransformToVkPipelineInputAssemblyStateCreateInfo(ePrimitiveTopology, bPrimitiveRestartEnable);
     }
 
-    //VkPipelineViewportStateCreateInfo
+    //3> VkPipelineViewportStateCreateInfo
     VkPipelineViewportStateCreateInfo RHIVulkanConverter::TransformToVkPipelineViewportStateCreateInfo(const VkViewportVector& aViewports, const VkRect2DVector& aScissors)
     {
         VkPipelineViewportStateCreateInfo createInfo = {};
@@ -1128,20 +1176,72 @@ namespace LostPeterPluginRHIVulkan
         createInfo = TransformToVkPipelineViewportStateCreateInfo(aViewports, aScissors);
     }
 
-    //VkPipelineRasterizationStateCreateInfo
-    VkPipelineRasterizationStateCreateInfo RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo()
+    //4> VkPipelineRasterizationStateCreateInfo
+    VkPipelineRasterizationStateCreateInfo RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(VkBool32 depthClampEnable,
+                                                                                                                 VkBool32 rasterizerDiscardEnable,
+                                                                                                                 VkPolygonMode polygonMode,
+                                                                                                                 VkCullModeFlags cullMode,
+                                                                                                                 VkFrontFace frontFace,
+                                                                                                                 VkBool32 depthBiasEnable,
+                                                                                                                 float depthBiasConstantFactor,
+                                                                                                                 float depthBiasClamp,
+                                                                                                                 float depthBiasSlopeFactor,
+                                                                                                                 float lineWidth)
     {
         VkPipelineRasterizationStateCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        createInfo.depthClampEnable = depthClampEnable;
+        createInfo.rasterizerDiscardEnable = rasterizerDiscardEnable;
+        createInfo.polygonMode = polygonMode;
+        createInfo.cullMode = cullMode;
+        createInfo.frontFace = frontFace;
+        createInfo.depthBiasEnable = depthBiasEnable;
+        createInfo.depthBiasConstantFactor = depthBiasConstantFactor;
+        createInfo.depthBiasClamp = depthBiasClamp;
+        createInfo.depthBiasSlopeFactor = depthBiasSlopeFactor;
+        createInfo.lineWidth = lineWidth;
 
         return createInfo;
     }
-    void RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo& createInfo)
+    void RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(VkBool32 depthClampEnable,
+                                                                               VkBool32 rasterizerDiscardEnable,
+                                                                               VkPolygonMode polygonMode,
+                                                                               VkCullModeFlags cullMode,
+                                                                               VkFrontFace frontFace,
+                                                                               VkBool32 depthBiasEnable,
+                                                                               float depthBiasConstantFactor,
+                                                                               float depthBiasClamp,
+                                                                               float depthBiasSlopeFactor,
+                                                                               float lineWidth,
+                                                                               VkPipelineRasterizationStateCreateInfo& createInfo)
     {
-        createInfo = TransformToVkPipelineRasterizationStateCreateInfo();
+        createInfo = TransformToVkPipelineRasterizationStateCreateInfo(depthClampEnable,
+                                                                       rasterizerDiscardEnable,
+                                                                       polygonMode,
+                                                                       cullMode,
+                                                                       frontFace,
+                                                                       depthBiasEnable,
+                                                                       depthBiasConstantFactor,
+                                                                       depthBiasClamp,
+                                                                       depthBiasSlopeFactor,
+                                                                       lineWidth);
+    }
+    VkPipelineRasterizationStateCreateInfo RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(const RHIPrimitiveState& statePrimitive, 
+                                                                                                                 const RHIDepthStencilState& stateDepthStencil)
+    {
+        return TransformToVkPipelineRasterizationStateCreateInfo(statePrimitive.bDepthClipEnable ? VK_TRUE : VK_FALSE,
+                                                                 statePrimitive.bRasterizerDiscardEnable ? VK_TRUE : VK_FALSE,
+                                                                 TransformToVkPolygonMode(statePrimitive.ePolygon),
+                                                                 TransformToVkCullModeFlagBits(statePrimitive.eCull),
+                                                                 TransformToVkFrontFace(statePrimitive.eFrontFace),
+                                                                 stateDepthStencil.nDepthBias == 0 ? VK_FALSE : VK_TRUE,
+                                                                 (float)stateDepthStencil.nDepthBias,
+                                                                 stateDepthStencil.fDepthBiasClamp,
+                                                                 stateDepthStencil.fDepthBiasSlopeScale,
+                                                                 statePrimitive.fLineWidth);
     }
 
-    //VkPipelineMultisampleStateCreateInfo
+    //5> VkPipelineMultisampleStateCreateInfo
     VkPipelineMultisampleStateCreateInfo RHIVulkanConverter::TransformToVkPipelineMultisampleStateCreateInfo(VkSampleCountFlagBits rasterizationSamples,
                                                                                                              VkBool32 alphaToCoverageEnable,
                                                                                                              VkSampleMask* pSampleMask)
@@ -1176,7 +1276,7 @@ namespace LostPeterPluginRHIVulkan
                                                                pSampleMask);
     }
 
-    //VkPipelineDepthStencilStateCreateInfo
+    //6> VkPipelineDepthStencilStateCreateInfo
     VkStencilOpState RHIVulkanConverter::TransformToVkStencilOpState(VkStencilOp failOp,
                                                                      VkStencilOp passOp,
                                                                      VkStencilOp depthFailOp,
@@ -1267,71 +1367,227 @@ namespace LostPeterPluginRHIVulkan
                                                                 1.0f);
     }
 
-    //VkPipelineColorBlendAttachmentState
-    VkPipelineColorBlendAttachmentState RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState()
+    //7> VkPipelineColorBlendAttachmentState/VkPipelineColorBlendStateCreateInfo
+    VkPipelineColorBlendAttachmentState RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState(VkBool32 blendEnable,
+                                                                                                           VkBlendFactor srcColorBlendFactor,
+                                                                                                           VkBlendFactor dstColorBlendFactor,
+                                                                                                           VkBlendOp colorBlendOp,
+                                                                                                           VkBlendFactor srcAlphaBlendFactor,
+                                                                                                           VkBlendFactor dstAlphaBlendFactor,
+                                                                                                           VkBlendOp alphaBlendOp,
+                                                                                                           VkColorComponentFlags colorWriteMask)
     {
-        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+        VkPipelineColorBlendAttachmentState state = {};
+        state.blendEnable = blendEnable;
+        if (blendEnable)
+        {
+            state.srcColorBlendFactor = srcColorBlendFactor;
+            state.dstColorBlendFactor = dstColorBlendFactor;
+            state.colorBlendOp = colorBlendOp;
+            state.srcAlphaBlendFactor = srcAlphaBlendFactor;
+            state.dstAlphaBlendFactor = dstAlphaBlendFactor;
+            state.alphaBlendOp = alphaBlendOp;
+        }
+        state.colorWriteMask = colorWriteMask;
 
-        return colorBlendAttachment;
+        return state;
     }
-    void RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& createInfo) 
+    void RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState(VkBool32 blendEnable,
+                                                                            VkBlendFactor srcColorBlendFactor,
+                                                                            VkBlendFactor dstColorBlendFactor,
+                                                                            VkBlendOp colorBlendOp,
+                                                                            VkBlendFactor srcAlphaBlendFactor,
+                                                                            VkBlendFactor dstAlphaBlendFactor,
+                                                                            VkBlendOp alphaBlendOp,
+                                                                            VkColorComponentFlags colorWriteMask,
+                                                                            VkPipelineColorBlendAttachmentState& createInfo) 
     {
-        createInfo = TransformToVkPipelineColorBlendAttachmentState();
+        createInfo = TransformToVkPipelineColorBlendAttachmentState(blendEnable,
+                                                                    srcColorBlendFactor,
+                                                                    dstColorBlendFactor,
+                                                                    colorBlendOp,
+                                                                    srcAlphaBlendFactor,
+                                                                    dstAlphaBlendFactor,
+                                                                    alphaBlendOp,
+                                                                    colorWriteMask);
+    }
+    VkPipelineColorBlendAttachmentState RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState(const RHIColorTargetState& state)
+    {
+        VkBool32 blendEnable = state.bBlendEnable ? VK_TRUE : VK_FALSE;
+        VkBlendFactor srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+        VkBlendFactor dstColorBlendFactor =VK_BLEND_FACTOR_ZERO;
+        VkBlendOp colorBlendOp = VK_BLEND_OP_ADD;
+        VkBlendFactor srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        VkBlendFactor dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        VkBlendOp alphaBlendOp = VK_BLEND_OP_ADD;
+        if (blendEnable)
+        {
+            srcColorBlendFactor = TransformToVkBlendFactor(state.sBlendState.sBlendColor.eBlendFactorSrc);
+            dstColorBlendFactor = TransformToVkBlendFactor(state.sBlendState.sBlendColor.eBlendFactorDst);
+            colorBlendOp = TransformToVkBlendOp(state.sBlendState.sBlendColor.eBlendOp);
+            srcAlphaBlendFactor = TransformToVkBlendFactor(state.sBlendState.sBlendAlpha.eBlendFactorSrc);
+            dstAlphaBlendFactor = TransformToVkBlendFactor(state.sBlendState.sBlendAlpha.eBlendFactorDst);
+            alphaBlendOp = TransformToVkBlendOp(state.sBlendState.sBlendAlpha.eBlendOp);
+        }
+        VkColorComponentFlags colorWriteMask = TransformToVkColorComponentFlagsFromColorWriteFlags(state.flagsWrite);
+
+        return TransformToVkPipelineColorBlendAttachmentState(blendEnable,
+                                                              srcColorBlendFactor,
+                                                              dstColorBlendFactor,
+                                                              colorBlendOp,
+                                                              srcAlphaBlendFactor,
+                                                              dstAlphaBlendFactor,
+                                                              alphaBlendOp,
+                                                              colorWriteMask);
     }
 
-    //VkPipelineColorBlendStateCreateInfo
-    VkPipelineColorBlendStateCreateInfo RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo()
+    VkPipelineColorBlendStateCreateInfo RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(const VkPipelineColorBlendAttachmentStateVector& aState)
     {
         VkPipelineColorBlendStateCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        createInfo.logicOpEnable = VK_FALSE;
+        createInfo.logicOp = VK_LOGIC_OP_COPY;
+        createInfo.attachmentCount = (uint32_t)aState.size();
+        createInfo.pAttachments = aState.data();
+        createInfo.blendConstants[0] = 0.0f;
+        createInfo.blendConstants[1] = 0.0f;
+        createInfo.blendConstants[2] = 0.0f;
+        createInfo.blendConstants[3] = 0.0f;
 
         return createInfo;
     }
-    void RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& createInfo)
+    void RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(const VkPipelineColorBlendAttachmentStateVector& aState,
+                                                                            VkPipelineColorBlendStateCreateInfo& createInfo)
     {
-        createInfo = TransformToVkPipelineColorBlendStateCreateInfo();
+        createInfo = TransformToVkPipelineColorBlendStateCreateInfo(aState);
+    }
+    VkPipelineColorBlendStateCreateInfo RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(const RHIColorTargetStateVector& aColorTargetState)
+    {
+        VkPipelineColorBlendAttachmentStateVector aState;
+        size_t count = aColorTargetState.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkPipelineColorBlendAttachmentState createInfo = TransformToVkPipelineColorBlendAttachmentState(aColorTargetState[i]);
+            aState.push_back(createInfo);
+        }
+        return TransformToVkPipelineColorBlendStateCreateInfo(aState);
     }
 
-    //VkPipelineDynamicStateCreateInfo
-    VkPipelineDynamicStateCreateInfo RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo()
+    //8> VkPipelineDynamicStateCreateInfo
+    VkPipelineDynamicStateCreateInfo RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo(const VkDynamicStateVector& aState)
     {
         VkPipelineDynamicStateCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        
+        createInfo.dynamicStateCount = static_cast<uint32_t>(aState.size());
+        createInfo.pDynamicStates = aState.data();
+        createInfo.flags = 0;
+
         return createInfo;
     }
-    void RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo(VkPipelineDynamicStateCreateInfo& createInfo)
+    void RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo(const VkDynamicStateVector& aState,
+                                                                         VkPipelineDynamicStateCreateInfo& createInfo)
     {
-        createInfo = TransformToVkPipelineDynamicStateCreateInfo();
+        createInfo = TransformToVkPipelineDynamicStateCreateInfo(aState);
     }
 
-    //VkPipelineTessellationStateCreateInfo
-    VkPipelineTessellationStateCreateInfo RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo()
+    //9> VkPipelineTessellationStateCreateInfo
+    VkPipelineTessellationStateCreateInfo RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateFlags flags,
+                                                                                                               uint32_t patchControlPoints)
     {
         VkPipelineTessellationStateCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+        createInfo.flags = flags;
+        createInfo.patchControlPoints = patchControlPoints;
 
         return createInfo;
     }
-    void RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateInfo& createInfo)
+    void RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateFlags flags,
+                                                                              uint32_t patchControlPoints,
+                                                                              VkPipelineTessellationStateCreateInfo& createInfo)
     {
-        createInfo = TransformToVkPipelineTessellationStateCreateInfo();
+        createInfo = TransformToVkPipelineTessellationStateCreateInfo(flags, patchControlPoints);
     }
 
-    //VkGraphicsPipelineCreateInfo
-    VkGraphicsPipelineCreateInfo RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo()
+    //10> VkGraphicsPipelineCreateInfo
+    VkGraphicsPipelineCreateInfo RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo(VkPipelineCreateFlags flags,
+                                                                                             uint32_t stageCount,
+                                                                                             const VkPipelineShaderStageCreateInfo* pStages,
+                                                                                             const VkPipelineVertexInputStateCreateInfo* pVertexInputState,
+                                                                                             const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState,
+                                                                                             const VkPipelineTessellationStateCreateInfo* pTessellationState,
+                                                                                             const VkPipelineViewportStateCreateInfo* pViewportState,
+                                                                                             const VkPipelineRasterizationStateCreateInfo* pRasterizationState,
+                                                                                             const VkPipelineMultisampleStateCreateInfo* pMultisampleState,
+                                                                                             const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState,
+                                                                                             const VkPipelineColorBlendStateCreateInfo* pColorBlendState,
+                                                                                             const VkPipelineDynamicStateCreateInfo* pDynamicState,
+                                                                                             VkPipelineLayout layout,
+                                                                                             VkRenderPass renderPass,
+                                                                                             uint32_t subpass,
+                                                                                             VkPipeline basePipelineHandle,
+                                                                                             int32_t basePipelineIndex)
     {
         VkGraphicsPipelineCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        createInfo.flags = flags;
+        createInfo.stageCount = stageCount;
+        createInfo.pStages = pStages;
+        createInfo.pVertexInputState = pVertexInputState;
+        createInfo.pInputAssemblyState = pInputAssemblyState;
+        createInfo.pTessellationState = pTessellationState;
+        createInfo.pViewportState = pViewportState;
+        createInfo.pRasterizationState = pRasterizationState;
+        createInfo.pMultisampleState = pMultisampleState;
+        createInfo.pDepthStencilState = pDepthStencilState;
+        createInfo.pColorBlendState = pColorBlendState;
+        createInfo.pDynamicState = pDynamicState;
+        createInfo.layout = layout;
+        createInfo.renderPass = renderPass;
+        createInfo.subpass = subpass;
+        createInfo.basePipelineHandle = basePipelineHandle;
+        createInfo.basePipelineIndex = basePipelineIndex;
 
         return createInfo;
     }
-    void RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo& createInfo)
+    void RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo(VkPipelineCreateFlags flags,
+                                                                     uint32_t stageCount,
+                                                                     const VkPipelineShaderStageCreateInfo* pStages,
+                                                                     const VkPipelineVertexInputStateCreateInfo* pVertexInputState,
+                                                                     const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState,
+                                                                     const VkPipelineTessellationStateCreateInfo* pTessellationState,
+                                                                     const VkPipelineViewportStateCreateInfo* pViewportState,
+                                                                     const VkPipelineRasterizationStateCreateInfo* pRasterizationState,
+                                                                     const VkPipelineMultisampleStateCreateInfo* pMultisampleState,
+                                                                     const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState,
+                                                                     const VkPipelineColorBlendStateCreateInfo* pColorBlendState,
+                                                                     const VkPipelineDynamicStateCreateInfo* pDynamicState,
+                                                                     VkPipelineLayout layout,
+                                                                     VkRenderPass renderPass,
+                                                                     uint32_t subpass,
+                                                                     VkPipeline basePipelineHandle,
+                                                                     int32_t basePipelineIndex,
+                                                                     VkGraphicsPipelineCreateInfo& createInfo)
     {
-        createInfo = TransformToVkGraphicsPipelineCreateInfo();
+        createInfo = TransformToVkGraphicsPipelineCreateInfo(flags,
+                                                             stageCount,
+                                                             pStages,
+                                                             pVertexInputState,
+                                                             pInputAssemblyState,
+                                                             pTessellationState,
+                                                             pViewportState,
+                                                             pRasterizationState,
+                                                             pMultisampleState,
+                                                             pDepthStencilState,
+                                                             pColorBlendState,
+                                                             pDynamicState,
+                                                             layout,
+                                                             renderPass,
+                                                             subpass,
+                                                             basePipelineHandle,
+                                                             basePipelineIndex);
     }
 
-    //VkComputePipelineCreateInfo
+    //10> VkComputePipelineCreateInfo
     VkComputePipelineCreateInfo RHIVulkanConverter::TransformToVkComputePipelineCreateInfo(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
                                                                                            VkPipelineLayout vkPipelineLayout, 
                                                                                            VkPipelineCreateFlags flags)

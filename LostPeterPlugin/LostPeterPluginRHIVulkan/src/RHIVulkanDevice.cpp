@@ -3565,95 +3565,128 @@ namespace LostPeterPluginRHIVulkan
         //3> Pipeline Viewport State
         VkPipelineViewportStateCreateInfo viewportStateInfo = RHIVulkanConverter::TransformToVkPipelineViewportStateCreateInfo(aViewports, aScissors);
         //4> Pipeline Rasterization State
-        VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
-        rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizationStateInfo.depthClampEnable = VK_FALSE;
-        rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
-        rasterizationStateInfo.polygonMode = polygonMode;
-        rasterizationStateInfo.cullMode = cullMode;
-        rasterizationStateInfo.frontFace = frontFace;
-        rasterizationStateInfo.depthBiasEnable = VK_FALSE;
-        rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
-        rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
-        rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
-        rasterizationStateInfo.lineWidth = lineWidth;
-
+        VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(VK_FALSE, VK_FALSE, polygonMode, cullMode, frontFace, VK_FALSE, 0.0f, 0.0f, 0.0f, lineWidth);
         //5> Pipeline Multisample State
         VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = RHIVulkanConverter::TransformToVkPipelineMultisampleStateCreateInfo(msaaSamples, VK_FALSE, nullptr);
         //6> Pipeline DepthStencil State
         VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = RHIVulkanConverter::TransformToVkPipelineDepthStencilStateCreateInfo(bDepthTest, bDepthWrite, depthCompareOp, VK_FALSE, bStencilTest, stencilOpFront, stencilOpBack, 0.0f, 1.0f);
-
         //7> Pipeline ColorBlend State 
-        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-        colorBlendAttachment.blendEnable = bBlend;
-        colorBlendAttachment.colorWriteMask = colorWriteMask;
-        if (bBlend)
-        {
-            colorBlendAttachment.srcColorBlendFactor = blendColorFactorSrc;
-            colorBlendAttachment.dstColorBlendFactor = blendColorFactorDst;
-            colorBlendAttachment.colorBlendOp = blendColorOp;
-            colorBlendAttachment.srcAlphaBlendFactor = blendAlphaFactorSrc;
-            colorBlendAttachment.dstAlphaBlendFactor = blendAlphaFactorDst;
-            colorBlendAttachment.alphaBlendOp = blendAlphaOp;
-        }
-        
-        VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = {};
-        colorBlendingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlendingStateInfo.logicOpEnable = VK_FALSE;
-        colorBlendingStateInfo.logicOp = VK_LOGIC_OP_COPY;
-        colorBlendingStateInfo.attachmentCount = 1;
-        colorBlendingStateInfo.pAttachments = &colorBlendAttachment;
-        colorBlendingStateInfo.blendConstants[0] = 0.0f;
-        colorBlendingStateInfo.blendConstants[1] = 0.0f;
-        colorBlendingStateInfo.blendConstants[2] = 0.0f;
-        colorBlendingStateInfo.blendConstants[3] = 0.0f;
-
+        VkPipelineColorBlendAttachmentStateVector aState;
+        VkPipelineColorBlendAttachmentState colorBlendAttachment = RHIVulkanConverter::TransformToVkPipelineColorBlendAttachmentState(bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp, blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp, colorWriteMask);
+        aState.push_back(colorBlendAttachment);
+        VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(aState);
         //8> Pipeline Dynamic State
-        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-        const std::vector<VkDynamicState> dynamicStateEnables = 
+        VkDynamicStateVector dynamicStateEnables = 
         { 
             VK_DYNAMIC_STATE_VIEWPORT, 
             VK_DYNAMIC_STATE_SCISSOR 
         };
-        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
-        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
-        dynamicStateInfo.flags = 0;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo(dynamicStateEnables);
+        //9> Pipeline Tessellation State
+        VkPipelineTessellationStateCreateInfo tessellationState = RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo(tessellationFlags, tessellationPatchControlPoints);
+        //10> Graphics Pipeline Info
+        VkGraphicsPipelineCreateInfo pipelineInfo = RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo(0,
+                                                                                                                static_cast<uint32_t>(aShaderStageCreateInfos.size()),
+                                                                                                                aShaderStageCreateInfos.data(),
+                                                                                                                &vertexInputStateInfo,
+                                                                                                                &inputAssemblyStateInfo,
+                                                                                                                tessellationIsUsed ? &tessellationState : nullptr,
+                                                                                                                &viewportStateInfo,
+                                                                                                                &rasterizationStateInfo,
+                                                                                                                &multisamplingStateInfo,
+                                                                                                                &depthStencilStateInfo,
+                                                                                                                &colorBlendingStateInfo,
+                                                                                                                &dynamicStateInfo,
+                                                                                                                vkPipelineLayout,
+                                                                                                                renderPass,
+                                                                                                                0,
+                                                                                                                VK_NULL_HANDLE,
+                                                                                                                0);
 
-        //9> Tessellation State
-        VkPipelineTessellationStateCreateInfo tessellationState = {};
-        tessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
-        tessellationState.flags = tessellationFlags;
-        tessellationState.patchControlPoints = tessellationPatchControlPoints;
-
-        //10> Graphics Pipeline
-        VkGraphicsPipelineCreateInfo pipelineInfo = {};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.pNext = nullptr;
-        pipelineInfo.stageCount = static_cast<uint32_t>(aShaderStageCreateInfos.size());
-        pipelineInfo.pStages = aShaderStageCreateInfos.data();
-        pipelineInfo.pVertexInputState = &vertexInputStateInfo;
-        pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
-        pipelineInfo.pTessellationState = tessellationIsUsed ? &tessellationState : nullptr;
-        pipelineInfo.pViewportState = &viewportStateInfo;
-        pipelineInfo.pRasterizationState = &rasterizationStateInfo;
-        pipelineInfo.pMultisampleState = &multisamplingStateInfo;
-        pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
-        pipelineInfo.pColorBlendState = &colorBlendingStateInfo;
-        pipelineInfo.pDynamicState = &dynamicStateInfo;
-        pipelineInfo.layout = vkPipelineLayout;
-        pipelineInfo.renderPass = renderPass;
-        pipelineInfo.subpass = 0;
-        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-        pipelineInfo.basePipelineIndex = 0;
-
-        if (!RHI_CheckVkResult(vkCreateGraphicsPipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateGraphicsPipelines"))
+        return CreateVkPipeline_Graphics(pipelineInfo,
+                                         vkPipelineCache,
+                                         vkPipeline);
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Graphics(const VkGraphicsPipelineCreateInfo& createInfo,
+                                                    VkPipelineCache vkPipelineCache,
+                                                    VkPipeline& vkPipeline)
+    {
+        if (!RHI_CheckVkResult(vkCreateGraphicsPipelines(this->m_vkDevice, vkPipelineCache, 1, &createInfo, nullptr, &vkPipeline), "vkCreateGraphicsPipelines"))
         {
             F_LogError("*********************** RHIVulkanDevice::CreateVkPipeline_Graphics: Failed to create VkPipeline !");
             return false;
         }
         return true;
     }
+    bool RHIVulkanDevice::CreateVkPipeline_Graphics(RHIVulkanShaderModule* pVulkanShaderVertex, 
+                                                    RHIVulkanShaderModule* pVulkanShaderPixel,
+                                                    RHIVulkanShaderModule* pVulkanShaderGeometry,
+                                                    RHIVulkanShaderModule* pVulkanShaderDomain,
+                                                    RHIVulkanShaderModule* pVulkanShaderHull,
+                                                    RHIVulkanPipelineLayout* pVulkanPipelineLayout,
+                                                    RHIVulkanPipelineCache* pVulkanPipelineCache,
+                                                    RHIVulkanRenderPass* pVulkanRenderPass,
+                                                    const RHIVertexState& sVertexState,
+                                                    const RHIPrimitiveState& sPrimitiveState,
+                                                    const RHITessellationState& sTessellationState,
+                                                    const RHIDepthStencilState& sDepthStencilState,
+                                                    const RHIMultiSampleState& sMultiSampleState,
+                                                    const RHIFragmentState& sFragmentState,
+                                                    VkPipeline& vkPipeline)
+    {
+        bool tessellationIsUsed = pVulkanShaderDomain != nullptr ? true : false;
+        //0> Pipeline ShaderStage 
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        RHIVulkanConverter::TransformToVkPipelineShaderStageCreateInfoVector(aShaderStageCreateInfos, pVulkanShaderVertex, pVulkanShaderPixel, pVulkanShaderGeometry, pVulkanShaderDomain, pVulkanShaderHull);
+        //1> Pipeline VertexInput State
+        VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {}; //RHIVulkanConverter::TransformToVkPipelineVertexInputStateCreateInfo(pBindingDescriptions, pAttributeDescriptions);
+        //2> Pipeline InputAssembly
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = RHIVulkanConverter::TransformToVkPipelineInputAssemblyStateCreateInfo(sPrimitiveState.ePrimitiveTopology, sPrimitiveState.bRasterizerDiscardEnable);
+        //3> Pipeline Viewport State
+        VkViewportVector aViewports;
+        VkRect2DVector aScissors;
+        VkPipelineViewportStateCreateInfo viewportStateInfo = RHIVulkanConverter::TransformToVkPipelineViewportStateCreateInfo(aViewports, aScissors);
+        //4> Pipeline Rasterization State
+        VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = RHIVulkanConverter::TransformToVkPipelineRasterizationStateCreateInfo(sPrimitiveState, sDepthStencilState);
+        //5> Pipeline Multisample State
+        VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = RHIVulkanConverter::TransformToVkPipelineMultisampleStateCreateInfo(sMultiSampleState);
+        //6> Pipeline DepthStencil State
+        VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = RHIVulkanConverter::TransformToVkPipelineDepthStencilStateCreateInfo(sDepthStencilState);
+        //7> Pipeline ColorBlend State 
+        VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = RHIVulkanConverter::TransformToVkPipelineColorBlendStateCreateInfo(sFragmentState.aColorTargets);
+        //8> Pipeline Dynamic State
+        VkDynamicStateVector dynamicStateEnables = 
+        { 
+            VK_DYNAMIC_STATE_VIEWPORT, 
+            VK_DYNAMIC_STATE_SCISSOR 
+        };
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = RHIVulkanConverter::TransformToVkPipelineDynamicStateCreateInfo(dynamicStateEnables);
+        //9> Pipeline Tessellation State
+        VkPipelineTessellationStateCreateInfo tessellationState = RHIVulkanConverter::TransformToVkPipelineTessellationStateCreateInfo(0, sTessellationState.nPatchControlPoints);
+        //10> Graphics Pipeline Info
+        VkGraphicsPipelineCreateInfo pipelineInfo = RHIVulkanConverter::TransformToVkGraphicsPipelineCreateInfo(0,
+                                                                                                                static_cast<uint32_t>(aShaderStageCreateInfos.size()),
+                                                                                                                aShaderStageCreateInfos.data(),
+                                                                                                                &vertexInputStateInfo,
+                                                                                                                &inputAssemblyStateInfo,
+                                                                                                                tessellationIsUsed ? &tessellationState : nullptr,
+                                                                                                                &viewportStateInfo,
+                                                                                                                &rasterizationStateInfo,
+                                                                                                                &multisamplingStateInfo,
+                                                                                                                &depthStencilStateInfo,
+                                                                                                                &colorBlendingStateInfo,
+                                                                                                                &dynamicStateInfo,
+                                                                                                                pVulkanPipelineLayout->GetVkPipelineLayout(),
+                                                                                                                pVulkanRenderPass->GetVkRenderPass(),
+                                                                                                                0,
+                                                                                                                VK_NULL_HANDLE,
+                                                                                                                0);
+
+        return CreateVkPipeline_Graphics(pipelineInfo,
+                                         pVulkanPipelineCache->GetVkPipelineCache(),
+                                         vkPipeline);
+    }
+
     bool RHIVulkanDevice::CreateVkPipeline_Compute(VkShaderModule compShaderModule,
                                                    const String& compMain,
                                                    VkPipelineLayout vkPipelineLayout, 
@@ -3684,6 +3717,19 @@ namespace LostPeterPluginRHIVulkan
             return false;
         }
         return true;
+    }
+    bool RHIVulkanDevice::CreateVkPipeline_Compute(RHIVulkanShaderModule* pVulkanComputeShader,
+                                                   RHIVulkanPipelineLayout* pVulkanPipelineLayout,
+                                                   RHIVulkanPipelineCache* pVulkanPipelineCache,
+                                                   VkPipeline& vkPipeline)
+    {
+        F_Assert(pVulkanComputeShader && pVulkanComputeShader && pVulkanComputeShader && "RHIVulkanDevice::CreateVkPipeline_Compute")
+        return CreateVkPipeline_Compute(pVulkanComputeShader->GetVkShaderModule(),
+                                        pVulkanComputeShader->GetNameMain(),
+                                        pVulkanPipelineLayout->GetVkPipelineLayout(),  
+                                        0,
+                                        pVulkanPipelineCache->GetVkPipelineCache(),
+                                        vkPipeline);
     }
     void RHIVulkanDevice::DestroyVkPipeline(const VkPipeline& vkPipeline)
     {
