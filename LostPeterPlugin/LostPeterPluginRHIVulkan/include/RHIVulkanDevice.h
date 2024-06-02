@@ -249,24 +249,18 @@ namespace LostPeterPluginRHIVulkan
                               VkViewport& vkViewport, 
                               VkRect2D& vkScissor);
 
-        //////////////////// VkAttachmentDescription ////////
-        void CreateVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
-                                           VkFormat typeFormat,
-                                           VkSampleCountFlagBits samples,
-                                           VkAttachmentLoadOp loadOp,
-                                           VkAttachmentStoreOp storeOp,
-                                           VkAttachmentLoadOp stencilLoadOp,
-                                           VkAttachmentStoreOp stencilStoreOp,
-                                           VkImageLayout initialLayout,
-                                           VkImageLayout finalLayout,
-                                           VkAttachmentDescription& vkAttachmentDescription);
-
         //////////////////// VkRenderPass ///////////////////
         bool CreateVkRenderPass(const String& nameRenderPass,
                                 const VkAttachmentDescriptionVector& aAttachmentDescription,
                                 const VkSubpassDescriptionVector& aSubpassDescription,
                                 const VkSubpassDependencyVector& aSubpassDependency,
                                 VkRenderPassMultiviewCreateInfo* pMultiviewCI,
+                                VkRenderPass& vkRenderPass);
+        bool CreateVkRenderPass(const String& nameRenderPass,
+                                const RHIGraphicsPassColorAttachmentVector& aColorAttachment,
+                                const RHIGraphicsPassDepthStencilAttachmentVector& aDepthStencilAttachment,
+                                const RHIGraphicsSubpassDescriptionVector& aSubpassDescription,
+                                const RHIGraphicsSubpassDependencyVector& aSubpassDependency,
                                 VkRenderPass& vkRenderPass);
         void DestroyVkRenderPass(const VkRenderPass& vkRenderPass);
 

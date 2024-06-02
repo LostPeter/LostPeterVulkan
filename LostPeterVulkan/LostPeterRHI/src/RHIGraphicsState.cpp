@@ -10,12 +10,14 @@
 ****************************************************************************/
 
 #include "../include/RHIGraphicsState.h"
+#include "../include/RHIDevice.h"
 
 namespace LostPeterRHI
 {
-    RHIGraphicsState::RHIGraphicsState()
+    RHIGraphicsState::RHIGraphicsState(RHIDevice* pDevice)
+        : RHIObject(pDevice)
     {
-
+        
     }
 
     RHIGraphicsState::~RHIGraphicsState()

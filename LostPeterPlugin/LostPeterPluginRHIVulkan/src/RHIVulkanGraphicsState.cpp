@@ -10,10 +10,27 @@
 ****************************************************************************/
 
 #include "../include/RHIVulkanGraphicsState.h"
+#include "../include/RHIVulkanDevice.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
+    RHIVulkanGraphicsState::RHIVulkanGraphicsState(RHIVulkanDevice* pVulkanDevice)
+        : RHIGraphicsState(pVulkanDevice)
+        , RHIVulkanObject(pVulkanDevice)
+    {
+        F_Assert(m_pVulkanDevice && "RHIVulkanGraphicsState::RHIVulkanGraphicsState")
+
+    }   
+
+    RHIVulkanGraphicsState::~RHIVulkanGraphicsState()
+    {
+        Destroy();
+    }
+
+    void RHIVulkanGraphicsState::Destroy()
+    {
+        
+    }
     
 
 }; //LostPeterPluginRHIVulkan

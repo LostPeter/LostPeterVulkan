@@ -1120,30 +1120,6 @@ namespace LostPeterPluginRHIVulkan
     }
 
 
-    //////////////////// VkAttachmentDescription ////////
-    void RHIVulkanDevice::CreateVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
-                                                        VkFormat typeFormat,
-                                                        VkSampleCountFlagBits samples,
-                                                        VkAttachmentLoadOp loadOp,
-                                                        VkAttachmentStoreOp storeOp,
-                                                        VkAttachmentLoadOp stencilLoadOp,
-                                                        VkAttachmentStoreOp stencilStoreOp,
-                                                        VkImageLayout initialLayout,
-                                                        VkImageLayout finalLayout,
-                                                        VkAttachmentDescription& vkAttachmentDescription)
-    {
-        vkAttachmentDescription.flags = flags;
-        vkAttachmentDescription.format = typeFormat;
-        vkAttachmentDescription.samples = samples;
-        vkAttachmentDescription.loadOp = loadOp;
-        vkAttachmentDescription.storeOp = storeOp;
-        vkAttachmentDescription.stencilLoadOp = stencilLoadOp;
-        vkAttachmentDescription.stencilStoreOp = stencilStoreOp;
-        vkAttachmentDescription.initialLayout = initialLayout;
-        vkAttachmentDescription.finalLayout = finalLayout;
-    }
-
-
     //////////////////// VkRenderPass ///////////////////
     bool RHIVulkanDevice::CreateVkRenderPass(const String& nameRenderPass,
                                              const VkAttachmentDescriptionVector& aAttachmentDescription,
@@ -1152,19 +1128,10 @@ namespace LostPeterPluginRHIVulkan
                                              VkRenderPassMultiviewCreateInfo* pMultiviewCI,
                                              VkRenderPass& vkRenderPass)
     {
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(aAttachmentDescription.size());
-        renderPassInfo.pAttachments = &aAttachmentDescription[0];
-        renderPassInfo.subpassCount = static_cast<uint32_t>(aSubpassDescription.size());
-        renderPassInfo.pSubpasses = &aSubpassDescription[0];
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
-        renderPassInfo.pDependencies = &aSubpassDependency[0];
-        if (pMultiviewCI != nullptr)
-        {
-            renderPassInfo.pNext = pMultiviewCI;
-        }
-
+        VkRenderPassCreateInfo renderPassInfo = RHIVulkanConverter::TransformToVkRenderPassCreateInfo(aAttachmentDescription,
+                                                                                                      aSubpassDescription,
+                                                                                                      aSubpassDependency,
+                                                                                                      pMultiviewCI);
         if (vkCreateRenderPass(this->m_vkDevice, &renderPassInfo, nullptr, &vkRenderPass) != VK_SUCCESS)
         {
             F_LogError("*********************** RHIVulkanDevice::CreateVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
@@ -1173,6 +1140,27 @@ namespace LostPeterPluginRHIVulkan
 
         F_LogInfo("RHIVulkanDevice::CreateVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
         return true;
+    }
+    bool RHIVulkanDevice::CreateVkRenderPass(const String& nameRenderPass,
+                                             const RHIGraphicsPassColorAttachmentVector& aColorAttachment,
+                                             const RHIGraphicsPassDepthStencilAttachmentVector& aDepthStencilAttachment,
+                                             const RHIGraphicsSubpassDescriptionVector& aSubpassDescription,
+                                             const RHIGraphicsSubpassDependencyVector& aSubpassDependency,
+                                             VkRenderPass& vkRenderPass)
+    {
+        VkAttachmentDescriptionVector aVkAttachmentDescription;
+        RHIVulkanConverter::TransformToVkAttachmentDescription(aVkAttachmentDescription, aColorAttachment, aDepthStencilAttachment);
+        VkSubpassDescriptionVector aVkSubpassDescription;
+        RHIVulkanConverter::TransformToVkSubpassDescription(aVkSubpassDescription, aSubpassDescription);
+        VkSubpassDependencyVector aVkSubpassDependency;
+        RHIVulkanConverter::TransformToVkSubpassDependency(aVkSubpassDependency, aSubpassDependency);
+
+        return CreateVkRenderPass(nameRenderPass,
+                                  aVkAttachmentDescription,
+                                  aVkSubpassDescription,
+                                  aVkSubpassDependency,
+                                  nullptr,
+                                  vkRenderPass);
     }
     void RHIVulkanDevice::DestroyVkRenderPass(const VkRenderPass& vkRenderPass)
     {

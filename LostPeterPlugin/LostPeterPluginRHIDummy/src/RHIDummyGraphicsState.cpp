@@ -10,10 +10,25 @@
 ****************************************************************************/
 
 #include "../include/RHIDummyGraphicsState.h"
+#include "../include/RHIDummyDevice.h"
 
 namespace LostPeterPluginRHIDummy
 {
+    RHIDummyGraphicsState::RHIDummyGraphicsState(RHIDummyDevice* pDummyDevice)
+        : RHIGraphicsState(pDummyDevice)
+        , RHIDummyObject(pDummyDevice)
+    {
+        F_Assert(m_pDummyDevice && "RHIDummyGraphicsState::RHIDummyGraphicsState")
+    }
+
+    RHIDummyGraphicsState::~RHIDummyGraphicsState()
+    {
+        Destroy();
+    }
     
-    
+    void RHIDummyGraphicsState::Destroy()
+    {
+
+    }
 
 }; //LostPeterPluginRHIDummy

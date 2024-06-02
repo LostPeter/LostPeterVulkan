@@ -13,12 +13,32 @@
 #define _RHI_DUMMY_GRAPHICS_STATE_H_
 
 #include "RHIDummyPreDefine.h"
+#include "RHIDummyObject.h"
 
 namespace LostPeterPluginRHIDummy
 {
-    
-    
+    class rhiDummyExport RHIDummyGraphicsState : public RHIGraphicsState
+                                               , public RHIDummyObject
+    {
+        friend class RHIDummyDevice;
 
+    protected:    
+        RHIDummyGraphicsState(RHIDummyDevice* pDummyDevice);
+    public:
+        virtual ~RHIDummyGraphicsState();
+
+    public:
+    protected:
+
+
+    public:
+
+        
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIDummy
 
 #endif

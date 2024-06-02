@@ -132,6 +132,76 @@ namespace LostPeterRHI
     }
 
 
+    //RHICommandIDType
+    static String s_nameCommandIDTypes[] = 
+    {   
+        "BeginRenderPass",              //0:  BeginRenderPass
+        "NextSubPass",                  //1:  NextSubPass
+        "EndRenderPass",                //2:  EndRenderPass
+        "BindPipeline",                 //3:  BindPipeline
+        "PushConstants",                //4:  PushConstants
+        "BindBuffer",                   //5:  BindBuffer
+        "BindBufferView",               //6:  BindBufferView
+        "BindImageView",                //7:  BindImageView
+        "BindSampler",                  //8:  BindSampler
+        "BindVertexBuffer",             //9:  BindVertexBuffer
+        "BindIndexBuffer",              //10: BindIndexBuffer
+        "SetVertexInputFormat",         //11: SetVertexInputFormat
+        "SetViewportState",             //12: SetViewportState
+        "SetInputAssemblyState",        //13: SetInputAssemblyState
+        "SetRasterizationState",        //14: SetRasterizationState
+        "SetMultiSampleState",          //15: SetMultiSampleState
+        "SetDepthStencilState",         //16: SetDepthStencilState
+        "SetColorBlendState",           //17: SetColorBlendState
+        "SetViewport",                  //18: SetViewport
+        "SetScissor",                   //19: SetScissor
+        "SetLineWidth",                 //20: SetLineWidth
+        "SetDepthBias",                 //21: SetDepthBias
+        "SetBlendConstants",            //22: SetBlendConstants
+        "SetDepthBounds",               //23: SetDepthBounds
+        "SetStencilCompareMask",        //24: SetStencilCompareMask
+        "SetStencilWriteMask",          //25: SetStencilWriteMask
+        "SetStencilReference",          //26: SetStencilReference
+        "Draw",                         //27: Draw
+        "DrawIndexed",                  //28: DrawIndexed
+        "DrawIndirect",                 //29: DrawIndirect
+        "DrawIndexedIndirect",          //30: DrawIndexedIndirect
+        "Dispatch",                     //31: Dispatch
+        "DispatchIndirect",             //32: DispatchIndirect
+        "CopyBuffer",                   //33: CopyBuffer
+        "CopyImage",                    //34: CopyImage
+        "BlitImage",                    //35: BlitImage
+        "CopyBufferToImage",            //36: CopyBufferToImage
+        "CopyImageToBuffer",            //37: CopyImageToBuffer
+        "UpdateBuffer",                 //38: UpdateBuffer
+        "FillBuffer",                   //39: FillBuffer
+        "ClearColorImage",              //40: ClearColorImage
+        "ClearDepthStencilImage",       //41: ClearDepthStencilImage
+        "ClearAttachments",             //42: ClearAttachments
+        "ResolveImag",                  //43: ResolveImag
+        "SetEvent",                     //44: SetEvent
+        "ResetEvent",                   //45: ResetEvent
+    };
+    const String& RHI_GetCommandIDTypeName(RHICommandIDType type)
+    {
+        return s_nameCommandIDTypes[(int)type];
+    }
+    const String& RHI_GetCommandIDTypeName(int type)
+    {
+        return s_nameCommandIDTypes[(int)type];
+    }
+    RHICommandIDType RHI_ParseCommandIDType(const String& strName)
+    {
+        for (int i = 0; i < (int)RHICommandIDType::RHI_CommandID_COUNT; i++)
+        {
+            if (s_nameCommandIDTypes[i] == strName)
+                return (RHICommandIDType)(i);
+        }
+        F_Assert(false && "RHI_ParseCommandIDType: Wrong type name !")
+        return RHICommandIDType::RHI_CommandID_BeginRenderPass;
+    }
+
+
     //RHIObjectType
     static String s_nameObjectTypes[] = 
     {
@@ -161,6 +231,7 @@ namespace LostPeterRHI
         "CommandPool",                  //23: CommandPool
         "CommandBuffer",                //24: CommandBuffer
         "Queue",                        //25: Queue
+        "GraphicsState",                //26: GraphicsState
     };
     const String& RHI_GetObjectTypeName(RHIObjectType type)
     {
@@ -253,7 +324,8 @@ namespace LostPeterRHI
     RHI_FLAGS_IMPL(RHITextureUsageFlags, RHITextureUsageBitsType)
     RHI_FLAGS_IMPL(RHIShaderStageFlags, RHIShaderStageBitsType)
     RHI_FLAGS_IMPL(RHIColorWriteFlags, RHIColorWriteBitsType)
-
-    
+    RHI_FLAGS_IMPL(RHIPipelineStageFlags, RHIPipelineStageBitsType)
+    RHI_FLAGS_IMPL(RHIAccessFlags, RHIAccessBitsType)
+    RHI_FLAGS_IMPL(RHIDependencyFlags, RHIDependencyBitsType)
 
 }; //LostPeterRHI

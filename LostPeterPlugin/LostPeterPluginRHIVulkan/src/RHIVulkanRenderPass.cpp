@@ -11,6 +11,7 @@
 
 #include "../include/RHIVulkanRenderPass.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanFrameBuffer.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -41,7 +42,17 @@ namespace LostPeterPluginRHIVulkan
     
     void RHIVulkanRenderPass::createVkRenderPass()
     {
-        
+        if (!m_pVulkanDevice->CreateVkRenderPass(m_strName,
+                                                 m_aColorAttachment,
+                                                 m_aDepthStencilAttachment,
+                                                 m_aSubpassDescription,
+                                                 m_aSubpassDependency,
+                                                 m_vkRenderPass))
+        {
+            setIsError(true);
+            F_LogError("*********************** RHIVulkanRenderPass::createVkRenderPass: CreateVkRenderPass failed, Name: [%s] !", m_strName.c_str());
+            return;
+        }
 
         if (RHI_IsDebug())
         {

@@ -300,6 +300,7 @@ namespace LostPeterRHI
 	{
         RHI_LoadOp_Load = 0,							//0: Load
         RHI_LoadOp_Clear,								//1: Clear
+        RHI_LoadOp_DoNotCare,                           //2: DoNotCare
 
         RHI_LoadOp_Count,
     };
@@ -308,7 +309,7 @@ namespace LostPeterRHI
     enum class RHIStoreOpType : RHIEnumType 
 	{
         RHI_StoreOp_Store = 0,							//0: Store
-        RHI_StoreOp_Discard,							//1: Discard
+        RHI_StoreOp_DoNotCare,							//1: DoNotCare
 
         RHI_StoreOp_Count,
     };
@@ -636,6 +637,62 @@ namespace LostPeterRHI
         RHI_VertexFormat_Count,
     };
 
+    //RHICommandIDType
+    enum class RHICommandIDType : RHIEnumType 
+    {
+        RHI_CommandID_BeginRenderPass = 0,              //0:  BeginRenderPass
+        RHI_CommandID_NextSubPass,                      //1:  NextSubPass
+        RHI_CommandID_EndRenderPass,                    //2:  EndRenderPass
+        RHI_CommandID_BindPipeline,                     //3:  BindPipeline
+        RHI_CommandID_PushConstants,                    //4:  PushConstants
+        RHI_CommandID_BindBuffer,                       //5:  BindBuffer
+        RHI_CommandID_BindBufferView,                   //6:  BindBufferView
+        RHI_CommandID_BindImageView,                    //7:  BindImageView
+        RHI_CommandID_BindSampler,                      //8:  BindSampler
+        RHI_CommandID_BindVertexBuffer,                 //9:  BindVertexBuffer
+        RHI_CommandID_BindIndexBuffer,                  //10: BindIndexBuffer
+        RHI_CommandID_SetVertexInputFormat,             //11: SetVertexInputFormat
+        RHI_CommandID_SetViewportState,                 //12: SetViewportState
+        RHI_CommandID_SetInputAssemblyState,            //13: SetInputAssemblyState
+        RHI_CommandID_SetRasterizationState,            //14: SetRasterizationState
+        RHI_CommandID_SetMultiSampleState,              //15: SetMultiSampleState
+        RHI_CommandID_SetDepthStencilState,             //16: SetDepthStencilState
+        RHI_CommandID_SetColorBlendState,               //17: SetColorBlendState
+        RHI_CommandID_SetViewport,                      //18: SetViewport
+        RHI_CommandID_SetScissor,                       //19: SetScissor
+        RHI_CommandID_SetLineWidth,                     //20: SetLineWidth
+        RHI_CommandID_SetDepthBias,                     //21: SetDepthBias
+        RHI_CommandID_SetBlendConstants,                //22: SetBlendConstants
+        RHI_CommandID_SetDepthBounds,                   //23: SetDepthBounds
+        RHI_CommandID_SetStencilCompareMask,            //24: SetStencilCompareMask
+        RHI_CommandID_SetStencilWriteMask,              //25: SetStencilWriteMask
+        RHI_CommandID_SetStencilReference,              //26: SetStencilReference
+        RHI_CommandID_Draw,                             //27: Draw
+        RHI_CommandID_DrawIndexed,                      //28: DrawIndexed
+        RHI_CommandID_DrawIndirect,                     //29: DrawIndirect
+        RHI_CommandID_DrawIndexedIndirect,              //30: DrawIndexedIndirect
+        RHI_CommandID_Dispatch,                         //31: Dispatch
+        RHI_CommandID_DispatchIndirect,                 //32: DispatchIndirect
+        RHI_CommandID_CopyBuffer,                       //33: CopyBuffer
+        RHI_CommandID_CopyImage,                        //34: CopyImage
+        RHI_CommandID_BlitImage,                        //35: BlitImage
+        RHI_CommandID_CopyBufferToImage,                //36: CopyBufferToImage
+        RHI_CommandID_CopyImageToBuffer,                //37: CopyImageToBuffer
+        RHI_CommandID_UpdateBuffer,                     //38: UpdateBuffer
+        RHI_CommandID_FillBuffer,                       //39: FillBuffer
+        RHI_CommandID_ClearColorImage,                  //40: ClearColorImage
+        RHI_CommandID_ClearDepthStencilImage,           //41: ClearDepthStencilImage
+        RHI_CommandID_ClearAttachments,                 //42: ClearAttachments
+        RHI_CommandID_ResolveImage,                     //43: ResolveImag
+        RHI_CommandID_SetEvent,                         //44: SetEvent
+        RHI_CommandID_ResetEvent,                       //45: ResetEvent
+
+        RHI_CommandID_COUNT,
+    };
+    rhiExport const String& RHI_GetCommandIDTypeName(RHICommandIDType type);
+    rhiExport const String& RHI_GetCommandIDTypeName(int type);
+    rhiExport RHICommandIDType RHI_ParseCommandIDType(const String& strName);
+
     //RHIObjectType
     enum class RHIObjectType : RHIEnumType 
     {
@@ -665,6 +722,7 @@ namespace LostPeterRHI
         RHI_Object_CommandPool,                         //23: CommandPool
         RHI_Object_CommandBuffer,                       //24: CommandBuffer
         RHI_Object_Queue,                               //25: Queue
+        RHI_Object_GraphicsState,                       //26: GraphicsState
 
         RHI_Object_Count,
     };
@@ -745,6 +803,67 @@ namespace LostPeterRHI
     };
     RHI_FLAGS_DECLARE(RHIColorWriteFlags, RHIColorWriteBitsType)
 
+    //RHIPipelineStageBitsType
+    using RHIPipelineStageFlags = RHIFlags;
+    enum class rhiExport RHIPipelineStageBitsType : RHIEnumType
+	{
+        RHI_PipelineStageBits_TopOfPipe                     = 0x0001,	//0:  TopOfPipe
+        RHI_PipelineStageBits_DrawIndirect                  = 0x0002,	//1:  DrawIndirect
+        RHI_PipelineStageBits_VertexInput                   = 0x0004,	//2:  VertexInput
+        RHI_PipelineStageBits_VertexShader                  = 0x0008,   //3:  VertexShader
+        RHI_PipelineStageBits_TessellationControlShader     = 0x0010,	//4:  TessellationControlShader
+        RHI_PipelineStageBits_TessellationEvaluationShader  = 0x0020,	//5:  TessellationEvaluationShader
+        RHI_PipelineStageBits_GeometryShader                = 0x0040,   //6:  GeometryShader
+        RHI_PipelineStageBits_FragmentShader                = 0x0080,   //7:  FragmentShader
+        RHI_PipelineStageBits_EarlyFragmentTests            = 0x0100,   //8:  EarlyFragmentTests
+        RHI_PipelineStageBits_LateFragmentTests             = 0x0200,   //9:  LateFragmentTests
+        RHI_PipelineStageBits_ColorAttachmentOutput         = 0x0400,   //10: ColorAttachmentOutput 
+        RHI_PipelineStageBits_ComputeShader                 = 0x0800,   //11: ComputeShader
+        RHI_PipelineStageBits_Transfer                      = 0x1000,   //12: Transfer
+        RHI_PipelineStageBits_BottomOfPipe                  = 0x2000,   //13: BottomOfPipe 
+        RHI_PipelineStageBits_Host                          = 0x4000,   //14: Host
+         
+        RHI_PipelineStageBits_Count,
+    };
+    RHI_FLAGS_DECLARE(RHIPipelineStageFlags, RHIPipelineStageBitsType)
+    
+    //RHIAccessFlagBitsType
+    using RHIAccessFlags = RHIFlags;
+    enum class rhiExport RHIAccessBitsType : RHIEnumType
+	{
+        RHI_AccessBits_IndirectCommandRead                  = 0x000001, //0:  IndirectCommandRead
+        RHI_AccessBits_IndexRead                            = 0x000002,	//1:  IndexRead
+        RHI_AccessBits_VertexAttributeRead                  = 0x000004,	//2:  VertexAttributeRead
+        RHI_AccessBits_UniformRead                          = 0x000008, //3:  UniformRead
+        RHI_AccessBits_InputAttachmentRead                  = 0x000010,	//4:  InputAttachmentRead
+        RHI_AccessBits_ShaderRead                           = 0x000020,	//5:  ShaderRead
+        RHI_AccessBits_ShaderWrite                          = 0x000040, //6:  ShaderWrite 
+        RHI_AccessBits_ColorAttachmentRead                  = 0x000080, //7:  ColorAttachmentRead 
+        RHI_AccessBits_ColorAttachmentWrite                 = 0x000100, //8:  ColorAttachmentWrite
+        RHI_AccessBits_DepthStencilAttachmentRead           = 0x000200, //9:  DepthStencilAttachmentRead 
+        RHI_AccessBits_DepthStencilAttachmentWrite          = 0x000400, //10: DepthStencilAttachmentWrite 
+        RHI_AccessBits_TransferRead                         = 0x000800, //11: TransferRead 
+        RHI_AccessBits_TransferWrite                        = 0x001000, //12: TransferWrite
+        RHI_AccessBits_HostRead                             = 0x002000, //13: HostRead 
+        RHI_AccessBits_HostWrite                            = 0x004000, //14: HostWrite
+        RHI_AccessBits_MemoryRead                           = 0x008000, //15: MemoryRead 
+        RHI_AccessBits_MemoryWrite                          = 0x010000, //16: MemoryWrite
+         
+        RHI_AccessBits_Count,
+    };
+    RHI_FLAGS_DECLARE(RHIAccessFlags, RHIAccessBitsType)
+
+    //RHIPDependencyBitsType
+    using RHIDependencyFlags = RHIFlags;
+    enum class rhiExport RHIDependencyBitsType : RHIEnumType
+    {   
+        RHI_DependencyBits_ByRegion         = 0x0001,	//0:  ByRegion
+        RHI_DependencyBits_ViewLocal        = 0x0002,	//1:  ViewLocal
+        RHI_DependencyBits_DeviceGroup      = 0x0004,	//2:  DeviceGroup
+
+        RHI_DependencyBits_Count,
+    };
+    RHI_FLAGS_DECLARE(RHIDependencyFlags, RHIDependencyBitsType)
 
     ////////////////////////////// Class ///////////////////////////////
     class RHIBarrier;
@@ -823,6 +942,11 @@ namespace LostPeterRHI
     typedef std::map<uint32, RHIFrameBuffer*> RHIFrameBufferPtrIDMap;
     typedef std::map<String, RHIFrameBuffer*> RHIFrameBufferPtrNameMap;
 
+    typedef std::vector<RHIGraphicsState*> RHIGraphicsStatePtrVector;
+    typedef std::map<uint32, RHIGraphicsState*> RHIGraphicsStatePtrIDMap;
+    typedef std::map<String, RHIGraphicsState*> RHIGraphicsStatePtrNameMap;
+    typedef std::vector<uint64> RHIGraphicsStateHash;
+
     typedef std::vector<RHIObject*> RHIObjectPtrVector;
     typedef std::map<uint32, RHIObject*> RHIObjectPtrIDMap;
     typedef std::map<String, RHIObject*> RHIObjectPtrNameMap;
@@ -835,6 +959,7 @@ namespace LostPeterRHI
     typedef std::vector<RHIPipeline*> RHIPipelinePtrVector;
     typedef std::map<uint32, RHIPipeline*> RHIPipelinePtrIDMap;
     typedef std::map<String, RHIPipeline*> RHIPipelinePtrNameMap;
+    typedef std::vector<uint64> RHIPipelineHash;
 
     typedef std::vector<RHIPipelineCompute*> RHIPipelineComputePtrVector;
     typedef std::map<uint32, RHIPipelineCompute*> RHIPipelineComputePtrIDMap;
@@ -851,10 +976,12 @@ namespace LostPeterRHI
     typedef std::vector<RHIQueue*> RHIQueuePtrVector;
     typedef std::map<uint32, RHIQueue*> RHIQueuePtrIDMap;
     typedef std::map<String, RHIQueue*> RHIQueuePtrNameMap;
+    typedef std::vector<uint64> RHIQueueHash;
 
     typedef std::vector<RHIRenderPass*> RHIRenderPassPtrVector;
     typedef std::map<uint32, RHIRenderPass*> RHIRenderPassPtrIDMap;
     typedef std::map<String, RHIRenderPass*> RHIRenderPassPtrNameMap;
+    typedef std::vector<uint64> RHIRenderPassHash;
 
     typedef std::vector<RHISampler*> RHISamplerPtrVector;
     typedef std::map<uint32, RHISampler*> RHISamplerPtrIDMap;
@@ -1410,42 +1537,6 @@ namespace LostPeterRHI
         }
     };
 
-    //RHIRenderPassCacheCreateInfo
-    struct rhiExport RHIRenderPassCacheCreateInfo
-    {
-        String strDebugName;
-
-        RHIRenderPassCacheCreateInfo()
-            : strDebugName("")
-        {
-
-        }
-    };
-
-    //RHIRenderPassCreateInfo
-    struct rhiExport RHIRenderPassCreateInfo
-    {
-        String strDebugName;
-
-        RHIRenderPassCreateInfo()
-            : strDebugName("")
-        {
-
-        }
-    };
-
-    //RHIFrameBufferCreateInfo
-    struct rhiExport RHIFrameBufferCreateInfo
-    {
-        String strDebugName;
-
-        RHIFrameBufferCreateInfo()
-            : strDebugName("")
-        {
-
-        }
-    };
-
     //RHIFenceCreateInfo
     struct rhiExport RHIFenceCreateInfo
     {
@@ -1822,28 +1913,48 @@ namespace LostPeterRHI
         }
     };
 
-    //RHIGraphicsPassColorAttachment
-    struct rhiExport RHIGraphicsPassColorAttachment 
+    //RHIFrameBufferCreateInfo
+    struct rhiExport RHIFrameBufferCreateInfo
     {
-        RHITextureView* pView;
-        RHITextureView* pResolve;
-        RHIColorNormalized<4> sClearValue;
-        RHILoadOpType eLoadOp;
-        RHIStoreOpType eStoreOp;
+        String strDebugName;
 
-        RHIGraphicsPassColorAttachment()
-            : pView(nullptr)
-            , pResolve(nullptr)
-            , eLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
-            , eStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+        RHIFrameBufferCreateInfo()
+            : strDebugName("")
         {
 
         }
     };
 
+    //RHIGraphicsPassColorAttachment
+    struct rhiExport RHIGraphicsPassColorAttachment 
+    {
+        int nIndex;
+        RHITextureView* pView;
+        RHITextureView* pResolve;
+        RHIColorNormalized<4> sClearValue;
+        RHILoadOpType eLoadOp;
+        RHIStoreOpType eStoreOp;
+        RHITextureStateType eStateInitial;
+        RHITextureStateType eStateFinal;
+
+        RHIGraphicsPassColorAttachment()
+            : nIndex(0)
+            , pView(nullptr)
+            , pResolve(nullptr)
+            , eLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
+            , eStoreOp(RHIStoreOpType::RHI_StoreOp_Store)
+            , eStateInitial(RHITextureStateType::RHI_TextureState_UnDefined)
+            , eStateFinal(RHITextureStateType::RHI_TextureState_RenderTarget)
+        {
+
+        }
+    };
+    typedef std::vector<RHIGraphicsPassColorAttachment> RHIGraphicsPassColorAttachmentVector;
+
     //RHIGraphicsPassDepthStencilAttachment
     struct rhiExport RHIGraphicsPassDepthStencilAttachment 
     {
+        int nIndex;
         RHITextureView* pView;
         float fDepthClearValue;
         RHILoadOpType eDepthLoadOp;
@@ -1853,17 +1964,116 @@ namespace LostPeterRHI
         RHILoadOpType eStencilLoadOp;
         RHIStoreOpType eStencilStoreOp;
         bool bStencilReadOnly;
+        RHITextureStateType eStateInitial;
+        RHITextureStateType eStateFinal;
 
         RHIGraphicsPassDepthStencilAttachment()
-            : pView(nullptr)
+            : nIndex(0)
+            , pView(nullptr)
             , fDepthClearValue(0.0f)
             , eDepthLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
-            , eDepthStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+            , eDepthStoreOp(RHIStoreOpType::RHI_StoreOp_DoNotCare)
             , bDepthReadOnly(true)
             , nStencilClearValue(0)
             , eStencilLoadOp(RHILoadOpType::RHI_LoadOp_Clear)
-            , eStencilStoreOp(RHIStoreOpType::RHI_StoreOp_Discard)
+            , eStencilStoreOp(RHIStoreOpType::RHI_StoreOp_DoNotCare)
             , bStencilReadOnly(true)
+            , eStateInitial(RHITextureStateType::RHI_TextureState_UnDefined)
+            , eStateFinal(RHITextureStateType::RHI_TextureState_DepthStencilWrite)
+        {
+
+        }
+    };
+    typedef std::vector<RHIGraphicsPassDepthStencilAttachment> RHIGraphicsPassDepthStencilAttachmentVector;
+
+    //RHIGraphicsAttachmentReference
+    struct rhiExport RHIGraphicsAttachmentReference
+    {
+        uint32 nAttachment;
+        RHITextureStateType eState;
+
+        RHIGraphicsAttachmentReference()
+            : nAttachment(0)
+            , eState(RHITextureStateType::RHI_TextureState_RenderTarget)
+        {
+
+        }
+    };
+    typedef std::vector<RHIGraphicsAttachmentReference> RHIGraphicsAttachmentReferenceVector;
+
+    //RHIGraphicsSubpassDescription
+    struct rhiExport RHIGraphicsSubpassDescription
+    {
+        uint64 nStreamPosition;
+        RHIGraphicsAttachmentReferenceVector aAttachmentReference;
+
+        RHIGraphicsSubpassDescription()
+            : nStreamPosition(0)
+        {
+
+        }
+    };
+    typedef std::vector<RHIGraphicsSubpassDescription> RHIGraphicsSubpassDescriptionVector;
+    
+    //RHIGraphicsSubpassDependency
+    struct rhiExport RHIGraphicsSubpassDependency
+    {
+        uint64 nStreamPosition;
+        uint32 nSrcSubpass;
+        uint32 nDstSubpass;
+        RHIPipelineStageFlags nSrcStageMask;
+        RHIPipelineStageFlags nDstStageMask;
+        RHIAccessFlags nSrcAccessMask;
+        RHIAccessFlags nDstAccessMask;
+        RHIDependencyFlags nDependencyMask;
+
+        RHIGraphicsSubpassDependency()
+            : nStreamPosition(0)
+            , nSrcSubpass(0)
+            , nDstSubpass(0)
+            , nSrcStageMask((uint32)RHIPipelineStageBitsType::RHI_PipelineStageBits_BottomOfPipe)
+            , nDstStageMask((uint32)RHIPipelineStageBitsType::RHI_PipelineStageBits_ColorAttachmentOutput)
+            , nSrcAccessMask((uint32)RHIAccessBitsType::RHI_AccessBits_MemoryRead)
+            , nDstAccessMask(RHIAccessBitsType::RHI_AccessBits_ColorAttachmentRead | RHIAccessBitsType::RHI_AccessBits_ColorAttachmentWrite)
+            , nDependencyMask((uint32)RHIDependencyBitsType::RHI_DependencyBits_ByRegion)
+        {
+
+        }
+    };
+    typedef std::vector<RHIGraphicsSubpassDependency> RHIGraphicsSubpassDependencyVector;
+
+    //RHIRenderPassCreateInfo
+    struct rhiExport RHIRenderPassCreateInfo
+    {
+        const void* pNext;
+        uint64 nStreamPosition;
+        RHIFrameBuffer* pFrameBuffer;
+
+        RHIGraphicsPassColorAttachmentVector aColorAttachment;
+        RHIGraphicsPassDepthStencilAttachmentVector aDepthStencilAttachment;
+        RHIGraphicsSubpassDescriptionVector aSubpassDescription;
+        RHIGraphicsSubpassDependencyVector aSubpassDependency;
+
+        String strDebugName;
+
+        RHIRenderPassCreateInfo()
+            : pNext(nullptr)
+            , nStreamPosition(0)
+            , pFrameBuffer(nullptr)
+
+            , strDebugName("")
+        {
+
+        }
+    };
+
+    //RHIRenderPassCacheCreateInfo
+    struct rhiExport RHIRenderPassCacheCreateInfo
+    {
+        String strDebugName;
+
+        RHIRenderPassCacheCreateInfo()
+            : strDebugName("")
         {
 
         }

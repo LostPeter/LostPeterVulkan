@@ -11,6 +11,8 @@
 
 #include "../include/RHIVulkanConverter.h"
 #include "../include/RHIVulkanShaderModule.h"
+#include "../include/RHIVulkanTexture.h"
+#include "../include/RHIVulkanTextureView.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -389,6 +391,30 @@ namespace LostPeterPluginRHIVulkan
         return RHITextureStateType::RHI_TextureState_UnDefined;
     }
 
+    RHILoadOpType RHIVulkanConverter::TransformFromVkAttachmentLoadOp(VkAttachmentLoadOp vkAttachmentLoadOp)
+    {
+        switch ((int32)vkAttachmentLoadOp)
+        {
+        case VK_ATTACHMENT_LOAD_OP_LOAD:            return RHILoadOpType::RHI_LoadOp_Load;
+        case VK_ATTACHMENT_LOAD_OP_CLEAR:           return RHILoadOpType::RHI_LoadOp_Clear;
+        case VK_ATTACHMENT_LOAD_OP_DONT_CARE:       return RHILoadOpType::RHI_LoadOp_DoNotCare;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkAttachmentLoadOp: Wrong VkAttachmentLoadOp type !")
+        }
+        return RHILoadOpType::RHI_LoadOp_Clear;
+    }
+
+    RHIStoreOpType RHIVulkanConverter::TransformFromVkAttachmentStoreOp(VkAttachmentStoreOp vkAttachmentStoreOp)
+    {
+        switch ((int32)vkAttachmentStoreOp)
+        {
+        case VK_ATTACHMENT_STORE_OP_STORE:          return RHIStoreOpType::RHI_StoreOp_Store;
+        case VK_ATTACHMENT_STORE_OP_DONT_CARE:      return RHIStoreOpType::RHI_StoreOp_DoNotCare;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkAttachmentStoreOp: Wrong VkAttachmentStoreOp type !")
+        }
+        return RHIStoreOpType::RHI_StoreOp_DoNotCare;
+    }
 
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
@@ -452,6 +478,72 @@ namespace LostPeterPluginRHIVulkan
         }
         return RHIColorWriteBitsType::RHI_ColorWriteBits_Red;
     }
+
+    RHIPipelineStageBitsType RHIVulkanConverter::TransformFromVkPipelineStageFlags(VkPipelineStageFlags vkPipelineStageFlags)
+    {
+        switch ((int32)vkPipelineStageFlags)
+        {
+        case VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT:                     return RHIPipelineStageBitsType::RHI_PipelineStageBits_TopOfPipe;
+        case VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT:                   return RHIPipelineStageBitsType::RHI_PipelineStageBits_DrawIndirect;
+        case VK_PIPELINE_STAGE_VERTEX_INPUT_BIT:                    return RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexInput;
+        case VK_PIPELINE_STAGE_VERTEX_SHADER_BIT:                   return RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexShader;
+        case VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT:     return RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationControlShader;
+        case VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT:  return RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationEvaluationShader;
+        case VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT:                 return RHIPipelineStageBitsType::RHI_PipelineStageBits_GeometryShader;
+        case VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT:                 return RHIPipelineStageBitsType::RHI_PipelineStageBits_FragmentShader;
+        case VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT:            return RHIPipelineStageBitsType::RHI_PipelineStageBits_EarlyFragmentTests;
+        case VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT:             return RHIPipelineStageBitsType::RHI_PipelineStageBits_LateFragmentTests;
+        case VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT:         return RHIPipelineStageBitsType::RHI_PipelineStageBits_ColorAttachmentOutput;
+        case VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT:                  return RHIPipelineStageBitsType::RHI_PipelineStageBits_ComputeShader;
+        case VK_PIPELINE_STAGE_TRANSFER_BIT:                        return RHIPipelineStageBitsType::RHI_PipelineStageBits_Transfer;
+        case VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT:                  return RHIPipelineStageBitsType::RHI_PipelineStageBits_BottomOfPipe;
+        case VK_PIPELINE_STAGE_HOST_BIT:                            return RHIPipelineStageBitsType::RHI_PipelineStageBits_Host;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPipelineStageFlags: Wrong VkPipelineStageFlags type !")
+        }
+        return RHIPipelineStageBitsType::RHI_PipelineStageBits_BottomOfPipe;
+    }
+
+    RHIAccessBitsType RHIVulkanConverter::TransformFromVkAccessFlags(VkAccessFlags vkAccessFlags)
+    {
+        switch ((int32)vkAccessFlags)
+        {
+        case VK_ACCESS_INDIRECT_COMMAND_READ_BIT:                   return RHIAccessBitsType::RHI_AccessBits_IndirectCommandRead;
+        case VK_ACCESS_INDEX_READ_BIT:                              return RHIAccessBitsType::RHI_AccessBits_IndexRead;
+        case VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT:                   return RHIAccessBitsType::RHI_AccessBits_VertexAttributeRead;
+        case VK_ACCESS_UNIFORM_READ_BIT:                            return RHIAccessBitsType::RHI_AccessBits_UniformRead;
+        case VK_ACCESS_INPUT_ATTACHMENT_READ_BIT:                   return RHIAccessBitsType::RHI_AccessBits_InputAttachmentRead;
+        case VK_ACCESS_SHADER_READ_BIT:                             return RHIAccessBitsType::RHI_AccessBits_ShaderRead;
+        case VK_ACCESS_SHADER_WRITE_BIT:                            return RHIAccessBitsType::RHI_AccessBits_ShaderWrite;
+        case VK_ACCESS_COLOR_ATTACHMENT_READ_BIT:                   return RHIAccessBitsType::RHI_AccessBits_ColorAttachmentRead;
+        case VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT:                  return RHIAccessBitsType::RHI_AccessBits_ColorAttachmentWrite;
+        case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT:           return RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentRead;
+        case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT:          return RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentWrite;
+        case VK_ACCESS_TRANSFER_READ_BIT:                           return RHIAccessBitsType::RHI_AccessBits_TransferRead;
+        case VK_ACCESS_TRANSFER_WRITE_BIT:                          return RHIAccessBitsType::RHI_AccessBits_TransferWrite;
+        case VK_ACCESS_HOST_READ_BIT:                               return RHIAccessBitsType::RHI_AccessBits_HostRead;
+        case VK_ACCESS_HOST_WRITE_BIT:                              return RHIAccessBitsType::RHI_AccessBits_HostWrite;
+        case VK_ACCESS_MEMORY_READ_BIT:                             return RHIAccessBitsType::RHI_AccessBits_MemoryRead;
+        case VK_ACCESS_MEMORY_WRITE_BIT:                            return RHIAccessBitsType::RHI_AccessBits_MemoryWrite;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkAccessFlags: Wrong VkAccessFlags type !")
+        }
+        return RHIAccessBitsType::RHI_AccessBits_MemoryRead;
+    }
+
+    RHIDependencyBitsType RHIVulkanConverter::TransformFromVkDependencyFlags(VkDependencyFlags vkDependencyFlags)
+    {
+        switch ((int32)vkDependencyFlags)
+        {
+        case VK_DEPENDENCY_BY_REGION_BIT:                   return RHIDependencyBitsType::RHI_DependencyBits_ByRegion;
+        case VK_DEPENDENCY_VIEW_LOCAL_BIT:                  return RHIDependencyBitsType::RHI_DependencyBits_ViewLocal;
+        case VK_DEPENDENCY_DEVICE_GROUP_BIT:                return RHIDependencyBitsType::RHI_DependencyBits_DeviceGroup;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkDependencyFlags: Wrong VkDependencyFlags type !")
+        }
+        return RHIDependencyBitsType::RHI_DependencyBits_ByRegion;
+    }
+
 
     ////////////////////// TransformToXXXX ////////////////////////
     VkExtent2D RHIVulkanConverter::TransformToVkExtent2D(const RHIExtent<2>& sExtent)
@@ -885,6 +977,31 @@ namespace LostPeterPluginRHIVulkan
         return VK_IMAGE_LAYOUT_UNDEFINED;
     }
 
+    VkAttachmentLoadOp RHIVulkanConverter::TransformToVkAttachmentLoadOp(RHILoadOpType eLoadOp)
+    {
+        switch (eLoadOp)
+        {
+        case RHILoadOpType::RHI_LoadOp_Load:            return VK_ATTACHMENT_LOAD_OP_LOAD;
+        case RHILoadOpType::RHI_LoadOp_Clear:           return VK_ATTACHMENT_LOAD_OP_CLEAR;
+        case RHILoadOpType::RHI_LoadOp_DoNotCare:       return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkAttachmentLoadOp: Wrong RHILoadOpType type !")
+        }
+        return VK_ATTACHMENT_LOAD_OP_CLEAR;
+    }
+
+    VkAttachmentStoreOp RHIVulkanConverter::TransformToVkAttachmentStoreOp(RHIStoreOpType eStoreOp)
+    {
+        switch (eStoreOp)
+        {
+        case RHIStoreOpType::RHI_StoreOp_Store:            return VK_ATTACHMENT_STORE_OP_STORE;
+        case RHIStoreOpType::RHI_StoreOp_DoNotCare:         return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkAttachmentStoreOp: Wrong RHIStoreOpType type !")
+        }
+        return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    }
+
 
     VkBufferUsageFlags RHIVulkanConverter::TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits)
     {
@@ -944,8 +1061,8 @@ namespace LostPeterPluginRHIVulkan
     }
     VkImageUsageFlags RHIVulkanConverter::TransformToVkImageUsageFlagsFromTextureUsageFlags(RHITextureUsageFlags flagsTextureUsages)
     {
-         static std::map<RHITextureUsageBitsType, VkImageUsageFlags> s_Rules = 
-         {
+        static std::map<RHITextureUsageBitsType, VkImageUsageFlags> s_Rules = 
+        {
             { RHITextureUsageBitsType::RHI_TextureUsageBits_CopySrc,                VK_IMAGE_USAGE_TRANSFER_SRC_BIT },
             { RHITextureUsageBitsType::RHI_TextureUsageBits_CopyDst,                VK_IMAGE_USAGE_TRANSFER_DST_BIT },
             { RHITextureUsageBitsType::RHI_TextureUsageBits_TextureBinding,         VK_IMAGE_USAGE_SAMPLED_BIT },
@@ -1000,7 +1117,7 @@ namespace LostPeterPluginRHIVulkan
     VkShaderStageFlags RHIVulkanConverter::TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages)
     {
         static std::map<RHIShaderStageBitsType, VkShaderStageFlags> s_Rules = 
-         {
+        {
             { RHIShaderStageBitsType::RHI_ShaderStageBits_Vertex,       VK_SHADER_STAGE_VERTEX_BIT },
             { RHIShaderStageBitsType::RHI_ShaderStageBits_Pixel,        VK_SHADER_STAGE_FRAGMENT_BIT },
             { RHIShaderStageBitsType::RHI_ShaderStageBits_Compute,      VK_SHADER_STAGE_COMPUTE_BIT },
@@ -1037,7 +1154,7 @@ namespace LostPeterPluginRHIVulkan
     VkColorComponentFlags RHIVulkanConverter::TransformToVkColorComponentFlagsFromColorWriteFlags(RHIColorWriteFlags flagsColorWrite)
     {
         static std::map<RHIColorWriteBitsType, VkColorComponentFlags> s_Rules = 
-         {
+        {
             { RHIColorWriteBitsType::RHI_ColorWriteBits_Red,       VK_COLOR_COMPONENT_R_BIT },
             { RHIColorWriteBitsType::RHI_ColorWriteBits_Green,     VK_COLOR_COMPONENT_G_BIT },
             { RHIColorWriteBitsType::RHI_ColorWriteBits_Blue,      VK_COLOR_COMPONENT_B_BIT },
@@ -1049,6 +1166,157 @@ namespace LostPeterPluginRHIVulkan
              it != s_Rules.end(); ++it)
         {
             if (flagsColorWrite & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+    VkPipelineStageFlags RHIVulkanConverter::TransformToVkPipelineStageFlags(RHIPipelineStageBitsType ePipelineStageBits)
+    {
+        switch (ePipelineStageBits)
+        {
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_TopOfPipe:                     return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_DrawIndirect:                  return VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexInput:                   return VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexShader:                  return VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationControlShader:     return VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationEvaluationShader:  return VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_GeometryShader:                return VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_FragmentShader:                return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_EarlyFragmentTests:            return VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_LateFragmentTests:             return VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_ColorAttachmentOutput:         return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_ComputeShader:                 return VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_Transfer:                      return VK_PIPELINE_STAGE_TRANSFER_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_BottomOfPipe:                  return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        case RHIPipelineStageBitsType::RHI_PipelineStageBits_Host:                          return VK_PIPELINE_STAGE_HOST_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPipelineStageFlags: Wrong RHIPipelineStageBitsType type !")
+        }
+        return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    }
+    VkPipelineStageFlags RHIVulkanConverter::TransformToVkPipelineStageFlagsFromPipelineStageFlags(RHIPipelineStageFlags flagsPipelineStage)
+    {
+        static std::map<RHIPipelineStageBitsType, VkPipelineStageFlags> s_Rules = 
+        {
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_TopOfPipe,                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_DrawIndirect,                 VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexInput,                  VK_PIPELINE_STAGE_VERTEX_INPUT_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_VertexShader,                 VK_PIPELINE_STAGE_VERTEX_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationControlShader,    VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_TessellationEvaluationShader, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_GeometryShader,               VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_FragmentShader,               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_EarlyFragmentTests,           VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_LateFragmentTests,            VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_ColorAttachmentOutput,        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_ComputeShader,                VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_Transfer,                     VK_PIPELINE_STAGE_TRANSFER_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_BottomOfPipe,                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT },
+            { RHIPipelineStageBitsType::RHI_PipelineStageBits_Host,                         VK_PIPELINE_STAGE_HOST_BIT },
+        };
+
+        VkPipelineStageFlags vkResult = {};
+        for (std::map<RHIPipelineStageBitsType, VkPipelineStageFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsPipelineStage & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+    VkAccessFlags RHIVulkanConverter::TransformToVkAccessFlags(RHIAccessBitsType eAccessBits)
+    {
+        switch (eAccessBits)
+        {
+        case RHIAccessBitsType::RHI_AccessBits_IndirectCommandRead:                 return VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_IndexRead:                           return VK_ACCESS_INDEX_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_VertexAttributeRead:                 return VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_UniformRead:                         return VK_ACCESS_UNIFORM_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_InputAttachmentRead:                 return VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_ShaderRead:                          return VK_ACCESS_SHADER_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_ShaderWrite:                         return VK_ACCESS_SHADER_WRITE_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_ColorAttachmentRead:                 return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_ColorAttachmentWrite:                return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentRead:          return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentWrite:         return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_TransferRead:                        return VK_ACCESS_TRANSFER_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_TransferWrite:                       return VK_ACCESS_TRANSFER_WRITE_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_HostRead:                            return VK_ACCESS_HOST_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_HostWrite:                           return VK_ACCESS_HOST_WRITE_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_MemoryRead:                          return VK_ACCESS_MEMORY_READ_BIT;
+        case RHIAccessBitsType::RHI_AccessBits_MemoryWrite:                         return VK_ACCESS_MEMORY_WRITE_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkAccessFlags: Wrong RHIAccessBitsType type !")
+        }
+        return VK_ACCESS_MEMORY_READ_BIT;
+    }
+    VkAccessFlags RHIVulkanConverter::TransformToVkAccessFlagsFromAccessFlags(RHIAccessFlags flagsAccess)
+    {
+        static std::map<RHIAccessBitsType, VkAccessFlags> s_Rules = 
+        {
+            { RHIAccessBitsType::RHI_AccessBits_IndirectCommandRead,            VK_ACCESS_INDIRECT_COMMAND_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_IndexRead,                      VK_ACCESS_INDEX_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_VertexAttributeRead,            VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_UniformRead,                    VK_ACCESS_UNIFORM_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_InputAttachmentRead,            VK_ACCESS_INPUT_ATTACHMENT_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_ShaderRead,                     VK_ACCESS_SHADER_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_ShaderWrite,                    VK_ACCESS_SHADER_WRITE_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_ColorAttachmentRead,            VK_ACCESS_COLOR_ATTACHMENT_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_ColorAttachmentWrite,           VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentRead,     VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_DepthStencilAttachmentWrite,    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_TransferRead,                   VK_ACCESS_TRANSFER_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_TransferWrite,                  VK_ACCESS_TRANSFER_WRITE_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_HostRead,                       VK_ACCESS_HOST_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_HostWrite,                      VK_ACCESS_HOST_WRITE_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_MemoryRead,                     VK_ACCESS_MEMORY_READ_BIT },
+            { RHIAccessBitsType::RHI_AccessBits_MemoryWrite,                    VK_ACCESS_MEMORY_WRITE_BIT },
+        };
+
+        VkAccessFlags vkResult = {};
+        for (std::map<RHIAccessBitsType, VkAccessFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsAccess & it->first) 
+            {
+                vkResult |= it->second;
+            }
+        }
+        return vkResult;
+    }
+
+    VkDependencyFlags RHIVulkanConverter::TransformToVkDependencyFlags(RHIDependencyBitsType eDependencyBits)
+    {
+        switch (eDependencyBits)
+        {
+        case RHIDependencyBitsType::RHI_DependencyBits_ByRegion:                   return VK_DEPENDENCY_BY_REGION_BIT;
+        case RHIDependencyBitsType::RHI_DependencyBits_ViewLocal:                  return VK_DEPENDENCY_VIEW_LOCAL_BIT;
+        case RHIDependencyBitsType::RHI_DependencyBits_DeviceGroup:                return VK_DEPENDENCY_DEVICE_GROUP_BIT;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkDependencyFlags: Wrong RHIDependencyBitsType type !")
+        }
+        return VK_DEPENDENCY_BY_REGION_BIT;
+    }
+    VkDependencyFlags RHIVulkanConverter::TransformToVkDependencyFlagsFromPipelineStageFlags(RHIDependencyFlags flagsDependency)
+    {   
+        static std::map<RHIDependencyBitsType, VkDependencyFlags> s_Rules = 
+        {
+            { RHIDependencyBitsType::RHI_DependencyBits_ByRegion,         VK_DEPENDENCY_BY_REGION_BIT },
+            { RHIDependencyBitsType::RHI_DependencyBits_ViewLocal,        VK_DEPENDENCY_VIEW_LOCAL_BIT },
+            { RHIDependencyBitsType::RHI_DependencyBits_DeviceGroup,      VK_DEPENDENCY_DEVICE_GROUP_BIT },
+        };
+
+        VkDependencyFlags vkResult = {};
+        for (std::map<RHIDependencyBitsType, VkDependencyFlags>::iterator it = s_Rules.begin();
+             it != s_Rules.end(); ++it)
+        {
+            if (flagsDependency & it->first) 
             {
                 vkResult |= it->second;
             }
@@ -1587,7 +1855,7 @@ namespace LostPeterPluginRHIVulkan
                                                              basePipelineIndex);
     }
 
-    //10> VkComputePipelineCreateInfo
+    //11> VkComputePipelineCreateInfo
     VkComputePipelineCreateInfo RHIVulkanConverter::TransformToVkComputePipelineCreateInfo(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
                                                                                            VkPipelineLayout vkPipelineLayout, 
                                                                                            VkPipelineCreateFlags flags)
@@ -1608,6 +1876,192 @@ namespace LostPeterPluginRHIVulkan
         createInfo = TransformToVkComputePipelineCreateInfo(shaderStageCreateInfo,
                                                             vkPipelineLayout,
                                                             flags);
+    }
+
+    //12> VkRenderPassCreateInfo
+    VkRenderPassCreateInfo RHIVulkanConverter::TransformToVkRenderPassCreateInfo(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                                                 const VkSubpassDescriptionVector& aSubpassDescription,
+                                                                                 const VkSubpassDependencyVector& aSubpassDependency,
+                                                                                 VkRenderPassMultiviewCreateInfo* pMultiviewCI)
+    {
+        VkRenderPassCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        createInfo.attachmentCount = static_cast<uint32_t>(aAttachmentDescription.size());
+        createInfo.pAttachments = aAttachmentDescription.data();
+        createInfo.subpassCount = static_cast<uint32_t>(aSubpassDescription.size());
+        createInfo.pSubpasses = aSubpassDescription.data();
+        createInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
+        createInfo.pDependencies = aSubpassDependency.data();
+        if (pMultiviewCI != nullptr)
+        {
+            createInfo.pNext = pMultiviewCI;
+        }
+
+        return createInfo;
+    }
+    void RHIVulkanConverter::TransformToVkRenderPassCreateInfo(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                               const VkSubpassDescriptionVector& aSubpassDescription,
+                                                               const VkSubpassDependencyVector& aSubpassDependency,
+                                                               VkRenderPassMultiviewCreateInfo* pMultiviewCI,
+                                                               VkRenderPassCreateInfo& createInfo)
+    {
+        createInfo = TransformToVkRenderPassCreateInfo(aAttachmentDescription,
+                                                       aSubpassDescription,
+                                                       aSubpassDependency,
+                                                       pMultiviewCI);
+    }
+    VkAttachmentDescription RHIVulkanConverter::TransformToVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
+                                                                                   VkFormat typeFormat,
+                                                                                   VkSampleCountFlagBits samples,
+                                                                                   VkAttachmentLoadOp loadOp,
+                                                                                   VkAttachmentStoreOp storeOp,
+                                                                                   VkAttachmentLoadOp stencilLoadOp,
+                                                                                   VkAttachmentStoreOp stencilStoreOp,
+                                                                                   VkImageLayout initialLayout,
+                                                                                   VkImageLayout finalLayout)
+    {
+        VkAttachmentDescription desci = {};
+        desci.format = typeFormat;
+        desci.samples = samples;
+        desci.loadOp = loadOp;
+        desci.storeOp = storeOp;
+        desci.stencilLoadOp = stencilLoadOp;
+        desci.stencilStoreOp = stencilStoreOp;
+        desci.initialLayout = initialLayout;
+        desci.finalLayout = finalLayout;
+
+        return desci;
+    }
+    VkAttachmentDescription RHIVulkanConverter::TransformToVkAttachmentDescriptionFromColorAttachment(const RHIGraphicsPassColorAttachment& colorAttachment)
+    {
+        F_Assert(colorAttachment.pView && "HIVulkanConverter::TransformToVkAttachmentDescriptionFromColorAttachment")
+        RHIVulkanTextureView* pVulkanTextureView = (RHIVulkanTextureView*)colorAttachment.pView;
+        RHIVulkanTexture* pVulkanTexture = pVulkanTextureView->GetVulkanTexture();
+        return TransformToVkAttachmentDescription(0,
+                                                  pVulkanTexture->GetVkFormat(),
+                                                  pVulkanTexture->GetVkSampleCountFlagBits(),
+                                                  TransformToVkAttachmentLoadOp(colorAttachment.eLoadOp),
+                                                  TransformToVkAttachmentStoreOp(colorAttachment.eStoreOp),
+                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                  TransformToVkImageLayout(colorAttachment.eStateInitial),
+                                                  TransformToVkImageLayout(colorAttachment.eStateFinal));
+    }
+    VkAttachmentDescription RHIVulkanConverter::TransformToVkAttachmentDescriptionFromDepthStencilAttachment(const RHIGraphicsPassDepthStencilAttachment& depthStencilAttachment)
+    {
+        F_Assert(depthStencilAttachment.pView && "HIVulkanConverter::TransformToVkAttachmentDescriptionFromDepthStencilAttachment")
+        RHIVulkanTextureView* pVulkanTextureView = (RHIVulkanTextureView*)depthStencilAttachment.pView;
+        RHIVulkanTexture* pVulkanTexture = pVulkanTextureView->GetVulkanTexture();
+        return TransformToVkAttachmentDescription(0,
+                                                  pVulkanTexture->GetVkFormat(),
+                                                  pVulkanTexture->GetVkSampleCountFlagBits(),
+                                                  TransformToVkAttachmentLoadOp(depthStencilAttachment.eDepthLoadOp),
+                                                  TransformToVkAttachmentStoreOp(depthStencilAttachment.eDepthStoreOp),
+                                                  TransformToVkAttachmentLoadOp(depthStencilAttachment.eStencilLoadOp),
+                                                  TransformToVkAttachmentStoreOp(depthStencilAttachment.eStencilStoreOp),
+                                                  TransformToVkImageLayout(depthStencilAttachment.eStateInitial),
+                                                  TransformToVkImageLayout(depthStencilAttachment.eStateFinal));
+    }
+    void RHIVulkanConverter::TransformToVkAttachmentDescription(VkAttachmentDescriptionVector& aAttachmentDescription,   
+                                                                const RHIGraphicsPassColorAttachmentVector& aColorAttachment,
+                                                                const RHIGraphicsPassDepthStencilAttachmentVector& aDepthStencilAttachment)
+    {
+        size_t count_color = aColorAttachment.size();
+        size_t count_depthstencil = aDepthStencilAttachment.size();
+        aAttachmentDescription.resize(count_color + count_depthstencil);
+        for (size_t i = 0; i < count_color; i++)
+        {
+            const RHIGraphicsPassColorAttachment& attachment = aColorAttachment[i];
+            VkAttachmentDescription desc = TransformToVkAttachmentDescriptionFromColorAttachment(attachment);
+            aAttachmentDescription[attachment.nIndex] = desc;
+        }
+        for (size_t i = 0; i < count_depthstencil; i++)
+        {
+            const RHIGraphicsPassDepthStencilAttachment& attachment = aDepthStencilAttachment[i];
+            VkAttachmentDescription desc = TransformToVkAttachmentDescriptionFromDepthStencilAttachment(attachment);
+            aAttachmentDescription[attachment.nIndex] = desc;
+        }
+    }
+
+    VkSubpassDescription RHIVulkanConverter::TransformToVkSubpassDescription(VkSubpassDescriptionFlags flags,
+                                                                             VkPipelineBindPoint pipelineBindPoint,
+                                                                             uint32_t inputAttachmentCount,
+                                                                             const VkAttachmentReference* pInputAttachments,
+                                                                             uint32_t colorAttachmentCount,
+                                                                             const VkAttachmentReference* pColorAttachments,
+                                                                             const VkAttachmentReference* pResolveAttachments,
+                                                                             const VkAttachmentReference* pDepthStencilAttachment,
+                                                                             uint32_t preserveAttachmentCount,
+                                                                             const uint32_t* pPreserveAttachments)
+    {
+        VkSubpassDescription desc = {};
+        desc.flags = flags;
+        desc.pipelineBindPoint = pipelineBindPoint;
+        desc.inputAttachmentCount = inputAttachmentCount;
+        desc.pInputAttachments = pInputAttachments;
+        desc.colorAttachmentCount = colorAttachmentCount;
+        desc.pColorAttachments = pColorAttachments;
+        desc.pResolveAttachments = pResolveAttachments;
+        desc.pDepthStencilAttachment = pDepthStencilAttachment;
+        desc.preserveAttachmentCount = preserveAttachmentCount;
+        desc.pPreserveAttachments = pPreserveAttachments;
+
+        return desc;
+    }                                                   
+    VkSubpassDescription RHIVulkanConverter::TransformToVkSubpassDescription(const RHIGraphicsSubpassDescription& desc)
+    {
+        VkSubpassDescription vkSubpassDependency = {};
+        return vkSubpassDependency;
+    }   
+    void RHIVulkanConverter::TransformToVkSubpassDescription(VkSubpassDescriptionVector& aVkDesc,
+                                                             const RHIGraphicsSubpassDescriptionVector& aDesc)
+    {
+        size_t count = aDesc.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkSubpassDescription vkSubpassDescription = TransformToVkSubpassDescription(aDesc[i]);
+            aVkDesc.push_back(vkSubpassDescription);
+        }
+    }                                 
+
+    VkSubpassDependency RHIVulkanConverter::TransformToVkSubpassDependency(uint32_t srcSubpass,
+                                                                           uint32_t dstSubpass,
+                                                                           VkPipelineStageFlags srcStageMask,
+                                                                           VkPipelineStageFlags dstStageMask,
+                                                                           VkAccessFlags srcAccessMask,
+                                                                           VkAccessFlags dstAccessMask,
+                                                                           VkDependencyFlags dependencyFlags)
+    {
+        VkSubpassDependency vkSubpassDependency = {};
+        vkSubpassDependency.srcSubpass = srcSubpass;
+        vkSubpassDependency.dstSubpass = dstSubpass;
+        vkSubpassDependency.srcStageMask = srcStageMask;
+        vkSubpassDependency.dstStageMask = dstStageMask;
+        vkSubpassDependency.srcAccessMask = srcAccessMask;
+        vkSubpassDependency.dstAccessMask = dstAccessMask;
+        vkSubpassDependency.dependencyFlags = dependencyFlags;
+
+        return vkSubpassDependency;
+    }                                                  
+    VkSubpassDependency RHIVulkanConverter::TransformToVkSubpassDependency(const RHIGraphicsSubpassDependency& dependency)
+    {
+        return TransformToVkSubpassDependency(dependency.nSrcSubpass,
+                                              dependency.nDstSubpass,
+                                              TransformToVkPipelineStageFlagsFromPipelineStageFlags(dependency.nSrcStageMask),
+                                              TransformToVkPipelineStageFlagsFromPipelineStageFlags(dependency.nDstStageMask),
+                                              TransformToVkAccessFlagsFromAccessFlags(dependency.nSrcAccessMask),
+                                              TransformToVkAccessFlagsFromAccessFlags(dependency.nDstAccessMask),
+                                              TransformToVkDependencyFlagsFromPipelineStageFlags(dependency.nDependencyMask));
+    }
+    void RHIVulkanConverter::TransformToVkSubpassDependency(VkSubpassDependencyVector& aVkDependency,
+                                                            const RHIGraphicsSubpassDependencyVector& aDependency)
+    {
+        size_t count = aDependency.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkSubpassDependency vkSubpassDependency = TransformToVkSubpassDependency(aDependency[i]);
+            aVkDependency.push_back(vkSubpassDependency);
+        }
     }
 
 }; //LostPeterPluginRHIVulkan

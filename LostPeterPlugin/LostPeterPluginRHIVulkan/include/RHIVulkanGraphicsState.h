@@ -13,12 +13,32 @@
 #define _RHI_VULKAN_GRAPHICS_STATE_H_
 
 #include "RHIVulkanPreDefine.h"
+#include "RHIVulkanObject.h"
 
 namespace LostPeterPluginRHIVulkan
 {
-    
-    
+    class rhiVulkanExport RHIVulkanGraphicsState : public RHIGraphicsState
+                                                 , public RHIVulkanObject
+    {   
+        friend class RHIVulkanDevice;
 
+    protected:
+        RHIVulkanGraphicsState(RHIVulkanDevice* pVulkanDevice);
+    public:
+        virtual ~RHIVulkanGraphicsState();
+
+    public:
+    protected:
+
+
+    public:
+        
+
+    public:
+        virtual void Destroy();
+
+    };
+    
 }; //LostPeterPluginRHIVulkan
 
 #endif

@@ -12,14 +12,14 @@
 #ifndef _RHI_GRAPHICS_STATE_H_
 #define _RHI_GRAPHICS_STATE_H_
 
-#include "RHIPreDefine.h"
+#include "RHIObject.h"
 
 namespace LostPeterRHI
 {
-    class rhiExport RHIGraphicsState
+    class rhiExport RHIGraphicsState : public RHIObject
     {
     public:
-        RHIGraphicsState();
+        RHIGraphicsState(RHIDevice* pDevice);
         virtual ~RHIGraphicsState();
 
     public:

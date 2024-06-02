@@ -44,11 +44,16 @@ namespace LostPeterPluginRHIVulkan
         static RHIPresentType TransformFromVkPresentModeKHR(VkPresentModeKHR vkPresentModeKHR);
         static RHIBindingType TransformFromVkDescriptorType(VkDescriptorType vkDescriptorType);
         static RHITextureStateType TransformFromVkImageLayout(VkImageLayout vkImageLayout); 
+        static RHILoadOpType TransformFromVkAttachmentLoadOp(VkAttachmentLoadOp vkAttachmentLoadOp); 
+        static RHIStoreOpType TransformFromVkAttachmentStoreOp(VkAttachmentStoreOp vkAttachmentStoreOp);
 
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
         static RHITextureUsageBitsType TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags);
         static RHIShaderStageBitsType TransformFromVkShaderStageFlags(VkShaderStageFlags vkShaderStageFlags);
         static RHIColorWriteBitsType TransformFromVkColorComponentFlags(VkColorComponentFlags vkColorComponentFlags);
+        static RHIPipelineStageBitsType TransformFromVkPipelineStageFlags(VkPipelineStageFlags vkPipelineStageFlags);
+        static RHIAccessBitsType TransformFromVkAccessFlags(VkAccessFlags vkAccessFlags);
+        static RHIDependencyBitsType TransformFromVkDependencyFlags(VkDependencyFlags vkDependencyFlags);
 
     public:
         ////////////////////// TransformToXXXX ////////////////////////
@@ -77,7 +82,9 @@ namespace LostPeterPluginRHIVulkan
         static VkPresentModeKHR TransformToVkPresentModeKHR(RHIPresentType ePresent);
         static VkDescriptorType TransformToVkDescriptorType(RHIBindingType eBinding);
         static VkImageLayout TransformToVkImageLayout(RHITextureStateType eTextureState); 
-
+        static VkAttachmentLoadOp TransformToVkAttachmentLoadOp(RHILoadOpType eLoadOp); 
+        static VkAttachmentStoreOp TransformToVkAttachmentStoreOp(RHIStoreOpType eStoreOp);
+        
         static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
         static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);
         static VkImageUsageFlags TransformToVkImageUsageFlags(RHITextureUsageBitsType eTextureUsageBits);
@@ -87,6 +94,12 @@ namespace LostPeterPluginRHIVulkan
         static VkShaderStageFlags TransformToVkShaderStageFlagsFromShaderStagelags(RHIShaderStageFlags flagsShaderStages);
         static VkColorComponentFlags TransformToVkColorComponentFlags(RHIColorWriteBitsType eColorWriteBits);
         static VkColorComponentFlags TransformToVkColorComponentFlagsFromColorWriteFlags(RHIColorWriteFlags flagsColorWrite);
+        static VkPipelineStageFlags TransformToVkPipelineStageFlags(RHIPipelineStageBitsType ePipelineStageBits);
+        static VkPipelineStageFlags TransformToVkPipelineStageFlagsFromPipelineStageFlags(RHIPipelineStageFlags flagsPipelineStage);
+        static VkAccessFlags TransformToVkAccessFlags(RHIAccessBitsType eAccessBits);
+        static VkAccessFlags TransformToVkAccessFlagsFromAccessFlags(RHIAccessFlags flagsAccess);
+        static VkDependencyFlags TransformToVkDependencyFlags(RHIDependencyBitsType eDependencyBits);
+        static VkDependencyFlags TransformToVkDependencyFlagsFromPipelineStageFlags(RHIDependencyFlags flagsDependency);
 
         //0> VkPipelineShaderStageCreateInfo
         static VkPipelineShaderStageCreateInfo TransformToVkPipelineShaderStageCreateInfo(VkShaderStageFlagBits stage,
@@ -269,6 +282,55 @@ namespace LostPeterPluginRHIVulkan
                                                            VkPipelineCreateFlags flags,
                                                            VkComputePipelineCreateInfo& createInfo); 
         
+        //12> VkRenderPassCreateInfo/VkAttachmentDescription/
+        static VkRenderPassCreateInfo TransformToVkRenderPassCreateInfo(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                                        const VkSubpassDescriptionVector& aSubpassDescription,
+                                                                        const VkSubpassDependencyVector& aSubpassDependency,
+                                                                        VkRenderPassMultiviewCreateInfo* pMultiviewCI);
+        static void TransformToVkRenderPassCreateInfo(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                      const VkSubpassDescriptionVector& aSubpassDescription,
+                                                      const VkSubpassDependencyVector& aSubpassDependency,
+                                                      VkRenderPassMultiviewCreateInfo* pMultiviewCI,
+                                                      VkRenderPassCreateInfo& createInfo);
+        static VkAttachmentDescription TransformToVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
+                                                                          VkFormat typeFormat,
+                                                                          VkSampleCountFlagBits samples,
+                                                                          VkAttachmentLoadOp loadOp,
+                                                                          VkAttachmentStoreOp storeOp,
+                                                                          VkAttachmentLoadOp stencilLoadOp,
+                                                                          VkAttachmentStoreOp stencilStoreOp,
+                                                                          VkImageLayout initialLayout,
+                                                                          VkImageLayout finalLayout);
+        static VkAttachmentDescription TransformToVkAttachmentDescriptionFromColorAttachment(const RHIGraphicsPassColorAttachment& colorAttachment);
+        static VkAttachmentDescription TransformToVkAttachmentDescriptionFromDepthStencilAttachment(const RHIGraphicsPassDepthStencilAttachment& depthStencilAttachment);
+        static void TransformToVkAttachmentDescription(VkAttachmentDescriptionVector& aAttachmentDescription,   
+                                                       const RHIGraphicsPassColorAttachmentVector& aColorAttachment,
+                                                       const RHIGraphicsPassDepthStencilAttachmentVector& aDepthStencilAttachment);
+
+        static VkSubpassDescription TransformToVkSubpassDescription(VkSubpassDescriptionFlags flags,
+                                                                    VkPipelineBindPoint pipelineBindPoint,
+                                                                    uint32_t inputAttachmentCount,
+                                                                    const VkAttachmentReference* pInputAttachments,
+                                                                    uint32_t colorAttachmentCount,
+                                                                    const VkAttachmentReference* pColorAttachments,
+                                                                    const VkAttachmentReference* pResolveAttachments,
+                                                                    const VkAttachmentReference* pDepthStencilAttachment,
+                                                                    uint32_t preserveAttachmentCount,
+                                                                    const uint32_t* pPreserveAttachments);
+        static VkSubpassDescription TransformToVkSubpassDescription(const RHIGraphicsSubpassDescription& desc);
+        static void TransformToVkSubpassDescription(VkSubpassDescriptionVector& aVkDesc,
+                                                    const RHIGraphicsSubpassDescriptionVector& aDesc);
+
+        static VkSubpassDependency TransformToVkSubpassDependency(uint32_t srcSubpass,
+                                                                  uint32_t dstSubpass,
+                                                                  VkPipelineStageFlags srcStageMask,
+                                                                  VkPipelineStageFlags dstStageMask,
+                                                                  VkAccessFlags srcAccessMask,
+                                                                  VkAccessFlags dstAccessMask,
+                                                                  VkDependencyFlags dependencyFlags);
+        static VkSubpassDependency TransformToVkSubpassDependency(const RHIGraphicsSubpassDependency& dependency);
+        static void TransformToVkSubpassDependency(VkSubpassDependencyVector& aVkDependency,
+                                                   const RHIGraphicsSubpassDependencyVector& aDependency);
     };
 
 }; //LostPeterPluginRHIVulkan
