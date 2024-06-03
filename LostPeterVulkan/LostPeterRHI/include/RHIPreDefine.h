@@ -531,6 +531,15 @@ namespace LostPeterRHI
         RHI_ColorSpace_Count,
     };
 
+    //RHIPipelineBindPointType
+    enum class RHIPipelineBindPointType : RHIEnumType 
+    {
+        RHI_PipelineBindPoint_Graphics = 0,             //0: Graphics
+        RHI_PipelineBindPoint_Compute,                  //1: Compute
+
+        RHI_PipelineBindPoint_Count,
+    };
+
 	//RHIPixelFormatType
 	enum class RHIPixelFormatType : RHIEnumType 
 	{
@@ -2005,10 +2014,15 @@ namespace LostPeterRHI
     struct rhiExport RHIGraphicsSubpassDescription
     {
         uint64 nStreamPosition;
-        RHIGraphicsAttachmentReferenceVector aAttachmentReference;
+        RHIPipelineBindPointType ePipelineBindPoint;
+        RHIGraphicsAttachmentReferenceVector aAttachmentReferenceInput;
+        RHIGraphicsAttachmentReferenceVector aAttachmentReferenceColor;
+        RHIGraphicsAttachmentReferenceVector aAttachmentReferenceResolve;
+        RHIGraphicsAttachmentReferenceVector aAttachmentReferenceDepthStencil;
 
         RHIGraphicsSubpassDescription()
             : nStreamPosition(0)
+            , ePipelineBindPoint(RHIPipelineBindPointType::RHI_PipelineBindPoint_Graphics)
         {
 
         }
@@ -2047,7 +2061,6 @@ namespace LostPeterRHI
     {
         const void* pNext;
         uint64 nStreamPosition;
-        RHIFrameBuffer* pFrameBuffer;
 
         RHIGraphicsPassColorAttachmentVector aColorAttachment;
         RHIGraphicsPassDepthStencilAttachmentVector aDepthStencilAttachment;
@@ -2059,7 +2072,6 @@ namespace LostPeterRHI
         RHIRenderPassCreateInfo()
             : pNext(nullptr)
             , nStreamPosition(0)
-            , pFrameBuffer(nullptr)
 
             , strDebugName("")
         {

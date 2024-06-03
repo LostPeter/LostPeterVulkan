@@ -31,7 +31,6 @@ namespace LostPeterPluginRHIVulkan
     protected:
         VkRenderPass m_vkRenderPass;
 
-        RHIVulkanFrameBuffer* m_pVulkanFrameBuffer;
         RHIGraphicsPassColorAttachmentVector m_aColorAttachment;
         RHIGraphicsPassDepthStencilAttachmentVector m_aDepthStencilAttachment;
         RHIGraphicsSubpassDescriptionVector m_aSubpassDescription;
@@ -41,7 +40,6 @@ namespace LostPeterPluginRHIVulkan
     public:
         F_FORCEINLINE VkRenderPass& GetVkRenderPass() { return m_vkRenderPass; }
 
-        F_FORCEINLINE RHIVulkanFrameBuffer* GetVulkanFrameBuffer() const { return m_pVulkanFrameBuffer; }
         F_FORCEINLINE const RHIGraphicsPassColorAttachmentVector& GetColorAttachmentVector() const { return m_aColorAttachment; }
         F_FORCEINLINE const RHIGraphicsPassDepthStencilAttachmentVector& GetDepthStencilAttachmentVector() const { return m_aDepthStencilAttachment; }
         F_FORCEINLINE const RHIGraphicsSubpassDescriptionVector& GetSubpassDescriptionVector() const { return m_aSubpassDescription; }

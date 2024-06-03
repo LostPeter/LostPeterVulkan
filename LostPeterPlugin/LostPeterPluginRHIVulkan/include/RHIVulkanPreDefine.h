@@ -131,6 +131,8 @@ namespace LostPeterPluginRHIVulkan
 
     typedef std::vector<VkDynamicState> VkDynamicStateVector;
 
+    typedef std::vector<VkAttachmentReference> VkAttachmentReferenceVector;
+
 	////////////////////////////// Class ///////////////////////////////
     class RHIVulkanBarrier;
 	class RHIVulkanBindGroup;

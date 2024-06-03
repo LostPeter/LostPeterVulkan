@@ -416,6 +416,19 @@ namespace LostPeterPluginRHIVulkan
         return RHIStoreOpType::RHI_StoreOp_DoNotCare;
     }
 
+    RHIPipelineBindPointType RHIVulkanConverter::TransformFromVkPipelineBindPoint(VkPipelineBindPoint vkPipelineBindPoint)
+    {
+        switch ((int32)vkPipelineBindPoint)
+        {
+        case VK_PIPELINE_BIND_POINT_GRAPHICS:           return RHIPipelineBindPointType::RHI_PipelineBindPoint_Graphics;
+        case VK_PIPELINE_BIND_POINT_COMPUTE:            return RHIPipelineBindPointType::RHI_PipelineBindPoint_Compute;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkPipelineBindPoint: Wrong VkPipelineBindPoint type !")
+        }
+        return RHIPipelineBindPointType::RHI_PipelineBindPoint_Graphics;
+    }
+
+
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
         switch ((int32)vkBufferUsageFlags)
@@ -1000,6 +1013,18 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformToVkAttachmentStoreOp: Wrong RHIStoreOpType type !")
         }
         return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    }
+
+    VkPipelineBindPoint RHIVulkanConverter::TransformToVkPipelineBindPoint(RHIPipelineBindPointType ePipelineBindPoint)
+    {
+        switch (ePipelineBindPoint)
+        {
+        case RHIPipelineBindPointType::RHI_PipelineBindPoint_Graphics:           return VK_PIPELINE_BIND_POINT_GRAPHICS;
+        case RHIPipelineBindPointType::RHI_PipelineBindPoint_Compute:            return VK_PIPELINE_BIND_POINT_COMPUTE;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkPipelineBindPoint: Wrong RHIPipelineBindPointType type !")
+        }
+        return VK_PIPELINE_BIND_POINT_GRAPHICS;
     }
 
 
@@ -2007,11 +2032,46 @@ namespace LostPeterPluginRHIVulkan
         desc.pPreserveAttachments = pPreserveAttachments;
 
         return desc;
-    }                                                   
+    }                              
+    VkAttachmentReference RHIVulkanConverter::TransformToVkAttachmentReference(const RHIGraphicsAttachmentReference& reference)
+    {   
+        VkAttachmentReference vkAttachmentReference = {};
+        vkAttachmentReference.attachment = reference.nAttachment;
+        vkAttachmentReference.layout = TransformToVkImageLayout(reference.eState);
+
+        return vkAttachmentReference;
+    }
+    void RHIVulkanConverter::TransformToVkAttachmentReferenceVector(VkAttachmentReferenceVector& aVkReference,
+                                                                    const RHIGraphicsAttachmentReferenceVector& aAttachmentReference)   
+    {
+        size_t count = aAttachmentReference.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkAttachmentReference vkAttachmentReference = TransformToVkAttachmentReference(aAttachmentReference[i]);
+            aVkReference.push_back(vkAttachmentReference);
+        }
+    }                  
     VkSubpassDescription RHIVulkanConverter::TransformToVkSubpassDescription(const RHIGraphicsSubpassDescription& desc)
     {
-        VkSubpassDescription vkSubpassDependency = {};
-        return vkSubpassDependency;
+        VkAttachmentReferenceVector aVkReferenceInput;
+        TransformToVkAttachmentReferenceVector(aVkReferenceInput, desc.aAttachmentReferenceInput);
+        VkAttachmentReferenceVector aVkReferenceColor;
+        TransformToVkAttachmentReferenceVector(aVkReferenceColor, desc.aAttachmentReferenceColor);
+        VkAttachmentReferenceVector aVkReferenceResolve;
+        TransformToVkAttachmentReferenceVector(aVkReferenceResolve, desc.aAttachmentReferenceResolve);
+        VkAttachmentReferenceVector aVkReferenceDepthStencil;
+        TransformToVkAttachmentReferenceVector(aVkReferenceDepthStencil, desc.aAttachmentReferenceDepthStencil);
+
+        return TransformToVkSubpassDescription(0,
+                                               TransformToVkPipelineBindPoint(desc.ePipelineBindPoint),
+                                               (uint32_t)aVkReferenceInput.size(),
+                                               aVkReferenceInput.data(),
+                                               (uint32_t)aVkReferenceColor.size(),
+                                               aVkReferenceColor.data(),
+                                               aVkReferenceResolve.data(),
+                                               aVkReferenceDepthStencil.data(),
+                                               0,
+                                               nullptr);
     }   
     void RHIVulkanConverter::TransformToVkSubpassDescription(VkSubpassDescriptionVector& aVkDesc,
                                                              const RHIGraphicsSubpassDescriptionVector& aDesc)

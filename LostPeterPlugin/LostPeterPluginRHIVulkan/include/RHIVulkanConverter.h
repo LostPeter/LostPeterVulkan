@@ -46,6 +46,7 @@ namespace LostPeterPluginRHIVulkan
         static RHITextureStateType TransformFromVkImageLayout(VkImageLayout vkImageLayout); 
         static RHILoadOpType TransformFromVkAttachmentLoadOp(VkAttachmentLoadOp vkAttachmentLoadOp); 
         static RHIStoreOpType TransformFromVkAttachmentStoreOp(VkAttachmentStoreOp vkAttachmentStoreOp);
+        static RHIPipelineBindPointType TransformFromVkPipelineBindPoint(VkPipelineBindPoint vkPipelineBindPoint);
 
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
         static RHITextureUsageBitsType TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags);
@@ -84,6 +85,7 @@ namespace LostPeterPluginRHIVulkan
         static VkImageLayout TransformToVkImageLayout(RHITextureStateType eTextureState); 
         static VkAttachmentLoadOp TransformToVkAttachmentLoadOp(RHILoadOpType eLoadOp); 
         static VkAttachmentStoreOp TransformToVkAttachmentStoreOp(RHIStoreOpType eStoreOp);
+        static VkPipelineBindPoint TransformToVkPipelineBindPoint(RHIPipelineBindPointType ePipelineBindPoint);
         
         static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
         static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);
@@ -317,6 +319,9 @@ namespace LostPeterPluginRHIVulkan
                                                                     const VkAttachmentReference* pDepthStencilAttachment,
                                                                     uint32_t preserveAttachmentCount,
                                                                     const uint32_t* pPreserveAttachments);
+        static VkAttachmentReference TransformToVkAttachmentReference(const RHIGraphicsAttachmentReference& reference);
+        static void TransformToVkAttachmentReferenceVector(VkAttachmentReferenceVector& aVkReference,
+                                                           const RHIGraphicsAttachmentReferenceVector& aAttachmentReference);                                                                   
         static VkSubpassDescription TransformToVkSubpassDescription(const RHIGraphicsSubpassDescription& desc);
         static void TransformToVkSubpassDescription(VkSubpassDescriptionVector& aVkDesc,
                                                     const RHIGraphicsSubpassDescriptionVector& aDesc);

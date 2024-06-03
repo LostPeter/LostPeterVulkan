@@ -11,7 +11,6 @@
 
 #include "../include/RHIVulkanRenderPass.h"
 #include "../include/RHIVulkanDevice.h"
-#include "../include/RHIVulkanFrameBuffer.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -19,6 +18,10 @@ namespace LostPeterPluginRHIVulkan
         : RHIRenderPass(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
         , m_vkRenderPass(VK_NULL_HANDLE)
+        , m_aColorAttachment(createInfo.aColorAttachment)
+        , m_aDepthStencilAttachment(createInfo.aDepthStencilAttachment)
+        , m_aSubpassDescription(createInfo.aSubpassDescription)
+        , m_aSubpassDependency(createInfo.aSubpassDependency)
         , m_strDebugName(createInfo.strDebugName)
     {
         F_Assert(m_pVulkanDevice && "RHIVulkanRenderPass::RHIVulkanRenderPass")
