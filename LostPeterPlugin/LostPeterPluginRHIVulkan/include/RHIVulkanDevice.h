@@ -274,6 +274,11 @@ namespace LostPeterPluginRHIVulkan
                                  uint32_t nHeight,
                                  uint32_t layers,
                                  VkFramebuffer& vkFramebuffer);
+        bool CreateVkFramebuffer(const String& nameFramebuffer,
+                                 const RHIVulkanTextureViewPtrVector& aTextureView,
+                                 RHIVulkanRenderPass* pVulkanRenderPass,
+                                 const RHIExtent<3> sExtent,
+                                 VkFramebuffer& vkFramebuffer);
         void DestroyVkFramebuffer(const VkFramebuffer& vkFramebuffer);
 
         //////////////////// VkBuffer ///////////////////////

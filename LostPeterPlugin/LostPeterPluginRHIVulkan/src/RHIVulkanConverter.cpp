@@ -2124,4 +2124,42 @@ namespace LostPeterPluginRHIVulkan
         }
     }
 
+    VkFramebufferCreateInfo RHIVulkanConverter::TransformToVkFramebufferCreateInfo(VkFramebufferCreateFlags flags,
+                                                                                   VkRenderPass renderPass,
+                                                                                   uint32_t attachmentCount,
+                                                                                   const VkImageView* pAttachments,
+                                                                                   uint32_t width,
+                                                                                   uint32_t height,
+                                                                                   uint32_t layers)
+    {
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.flags = flags;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = attachmentCount;
+        framebufferInfo.pAttachments = pAttachments;
+        framebufferInfo.width = width;
+        framebufferInfo.height = height;
+        framebufferInfo.layers = layers;
+
+        return framebufferInfo;
+    }
+    void RHIVulkanConverter::TransformToVkFramebufferCreateInfo(VkFramebufferCreateFlags flags,
+                                                                VkRenderPass renderPass,
+                                                                uint32_t attachmentCount,
+                                                                const VkImageView* pAttachments,
+                                                                uint32_t width,
+                                                                uint32_t height,
+                                                                uint32_t layers,
+                                                                VkFramebufferCreateInfo& createInfo)
+    {
+        createInfo = TransformToVkFramebufferCreateInfo(flags,
+                                                        renderPass,
+                                                        attachmentCount,
+                                                        pAttachments,
+                                                        width,
+                                                        height,
+                                                        layers);
+    }                                                 
+
 }; //LostPeterPluginRHIVulkan

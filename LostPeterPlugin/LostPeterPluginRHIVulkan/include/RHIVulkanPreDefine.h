@@ -186,11 +186,10 @@ namespace LostPeterPluginRHIVulkan
     typedef std::map<RHIQueueType, RHIVulkanQueue*> RHIVulkanQueuePtrMap;
 
     typedef std::vector<RHIVulkanCommandPool*> RHIVulkanCommandPoolPtrVector;
-     typedef std::map<RHIQueueType, RHIVulkanCommandPool*> RHIVulkanCommandPoolPtrMap;
+    typedef std::map<RHIQueueType, RHIVulkanCommandPool*> RHIVulkanCommandPoolPtrMap;
     
-
 	typedef std::vector<RHIVulkanTexture*> RHIVulkanTexturePtrVector;
-    
+    typedef std::vector<RHIVulkanTextureView*> RHIVulkanTextureViewPtrVector;
 
 }; //LostPeterPluginRHIVulkan
 

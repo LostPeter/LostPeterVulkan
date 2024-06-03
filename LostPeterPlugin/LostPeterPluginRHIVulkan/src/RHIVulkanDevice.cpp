@@ -17,6 +17,7 @@
 #include "../include/RHIVulkanSwapChain.h"
 #include "../include/RHIVulkanBuffer.h"
 #include "../include/RHIVulkanTexture.h"
+#include "../include/RHIVulkanTextureView.h"
 #include "../include/RHIVulkanSampler.h"
 #include "../include/RHIVulkanBindGroupLayoutCache.h"
 #include "../include/RHIVulkanBindGroupLayout.h"
@@ -1181,14 +1182,13 @@ namespace LostPeterPluginRHIVulkan
                                               uint32_t layers,
                                               VkFramebuffer& vkFramebuffer)
     {
-        VkFramebufferCreateInfo framebufferInfo = {};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = vkRenderPass;
-        framebufferInfo.attachmentCount = static_cast<uint32_t>(aImageView.size());
-        framebufferInfo.pAttachments = &aImageView[0];
-        framebufferInfo.width = nWidth;
-        framebufferInfo.height = nHeight;
-        framebufferInfo.layers = layers;
+        VkFramebufferCreateInfo framebufferInfo = RHIVulkanConverter::TransformToVkFramebufferCreateInfo(0,
+                                                                                                         vkRenderPass,
+                                                                                                         static_cast<uint32_t>(aImageView.size()),
+                                                                                                         &aImageView[0],
+                                                                                                         nWidth,
+                                                                                                         nHeight,
+                                                                                                         layers);
 
         if (vkCreateFramebuffer(this->m_vkDevice, &framebufferInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) 
         {
@@ -1198,6 +1198,29 @@ namespace LostPeterPluginRHIVulkan
 
         F_LogInfo("RHIVulkanDevice::CreateVkFramebuffer: Success to create VkFramebuffer: [%s] !", nameFramebuffer.c_str());
         return true;
+    }
+    bool RHIVulkanDevice::CreateVkFramebuffer(const String& nameFramebuffer,
+                                              const RHIVulkanTextureViewPtrVector& aTextureView,
+                                              RHIVulkanRenderPass* pVulkanRenderPass,
+                                              const RHIExtent<3> sExtent,
+                                              VkFramebuffer& vkFramebuffer)
+    {
+        VkImageViewVector aImageView;
+        size_t count = aTextureView.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanTextureView* pTextureView = aTextureView[i];
+            aImageView.push_back(pTextureView->GetVkImageView());
+        }
+
+        return CreateVkFramebuffer(nameFramebuffer,
+                                   aImageView,
+                                   pVulkanRenderPass->GetVkRenderPass(),
+                                   0,
+                                   sExtent.x,
+                                   sExtent.y,
+                                   sExtent.z,
+                                   vkFramebuffer);
     }
     void RHIVulkanDevice::DestroyVkFramebuffer(const VkFramebuffer& vkFramebuffer)
     {

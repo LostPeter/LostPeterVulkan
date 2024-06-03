@@ -1925,10 +1925,14 @@ namespace LostPeterRHI
     //RHIFrameBufferCreateInfo
     struct rhiExport RHIFrameBufferCreateInfo
     {
+        RHIRenderPass* pRenderPass;
+        RHITextureViewPtrVector aTextureView;
+        RHIExtent<3> sExtent;
         String strDebugName;
 
         RHIFrameBufferCreateInfo()
-            : strDebugName("")
+            : pRenderPass(nullptr)
+            , strDebugName("")
         {
 
         }

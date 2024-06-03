@@ -336,6 +336,24 @@ namespace LostPeterPluginRHIVulkan
         static VkSubpassDependency TransformToVkSubpassDependency(const RHIGraphicsSubpassDependency& dependency);
         static void TransformToVkSubpassDependency(VkSubpassDependencyVector& aVkDependency,
                                                    const RHIGraphicsSubpassDependencyVector& aDependency);
+
+
+        static VkFramebufferCreateInfo TransformToVkFramebufferCreateInfo(VkFramebufferCreateFlags flags,
+                                                                          VkRenderPass renderPass,
+                                                                          uint32_t attachmentCount,
+                                                                          const VkImageView* pAttachments,
+                                                                          uint32_t width,
+                                                                          uint32_t height,
+                                                                          uint32_t layers);
+        static void TransformToVkFramebufferCreateInfo(VkFramebufferCreateFlags flags,
+                                                       VkRenderPass renderPass,
+                                                       uint32_t attachmentCount,
+                                                       const VkImageView* pAttachments,
+                                                       uint32_t width,
+                                                       uint32_t height,
+                                                       uint32_t layers,
+                                                       VkFramebufferCreateInfo& createInfo);
+
     };
 
 }; //LostPeterPluginRHIVulkan

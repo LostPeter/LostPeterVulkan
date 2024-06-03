@@ -11,6 +11,8 @@
 
 #include "../include/RHIVulkanFrameBuffer.h"
 #include "../include/RHIVulkanDevice.h"
+#include "../include/RHIVulkanTextureView.h"
+#include "../include/RHIVulkanRenderPass.h"
 
 namespace LostPeterPluginRHIVulkan
 {
@@ -18,9 +20,12 @@ namespace LostPeterPluginRHIVulkan
         : RHIFrameBuffer(pVulkanDevice, createInfo)
         , RHIVulkanObject(pVulkanDevice)
         , m_vkFramebuffer(VK_NULL_HANDLE)
+        , m_pVulkanRenderPass((RHIVulkanRenderPass*)createInfo.pRenderPass)
+        , m_sExtent(createInfo.sExtent)
     {
-        F_Assert(m_pVulkanDevice && "RHIVulkanFrameBuffer::RHIVulkanFrameBuffer")
+        F_Assert(m_pVulkanDevice && m_pVulkanRenderPass&& "RHIVulkanFrameBuffer::RHIVulkanFrameBuffer")
 
+        refreshParam(createInfo);
         createVkFramebuffer();
     }   
 
@@ -38,9 +43,27 @@ namespace LostPeterPluginRHIVulkan
         m_vkFramebuffer = VK_NULL_HANDLE;
     }
     
+    void RHIVulkanFrameBuffer::refreshParam(const RHIFrameBufferCreateInfo& createInfo)
+    {
+        size_t count = createInfo.aTextureView.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            RHIVulkanTextureView* pTextureView = (RHIVulkanTextureView*)createInfo.aTextureView[i];
+            m_aVulkanTextureView.push_back(pTextureView);
+        }
+    }
     void RHIVulkanFrameBuffer::createVkFramebuffer()
     {
-        
+        if (!m_pVulkanDevice->CreateVkFramebuffer(m_strName,
+                                                  m_aVulkanTextureView,
+                                                  m_pVulkanRenderPass,
+                                                  m_sExtent,
+                                                  m_vkFramebuffer))
+        {
+            setIsError(true);
+            F_LogError("*********************** RHIVulkanFrameBuffer::createVkFramebuffer: CreateVkFramebuffer failed, Name: [%s] !", m_strName.c_str());
+            return;
+        }
 
         if (RHI_IsDebug())
         {

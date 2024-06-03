@@ -31,19 +31,24 @@ namespace LostPeterPluginRHIVulkan
     protected:
         VkFramebuffer m_vkFramebuffer;
 
-
+        RHIVulkanRenderPass* m_pVulkanRenderPass;
+        RHIVulkanTextureViewPtrVector m_aVulkanTextureView;
+        RHIExtent<3> m_sExtent;
         String m_strDebugName;
         
     public:
         F_FORCEINLINE VkFramebuffer& GetVkFramebuffer() { return m_vkFramebuffer; }
 
-
+        F_FORCEINLINE RHIVulkanRenderPass* GetVulkanRenderPass() const { return m_pVulkanRenderPass; }
+        F_FORCEINLINE const RHIVulkanTextureViewPtrVector& GetVulkanTextureViewPtrVector() const { return m_aVulkanTextureView; }
+        F_FORCEINLINE const RHIExtent<3>& GetExtent() const { return m_sExtent; }
         F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();
 
     protected:
+        void refreshParam(const RHIFrameBufferCreateInfo& createInfo);
         void createVkFramebuffer();
     };
     
