@@ -181,7 +181,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIBindGroupLayoutCache* RHIVulkanDevice::CreateBindGroupLayoutCache(const RHIBindGroupLayoutCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanBindGroupLayoutCache(this, createInfo);
+        if (m_pVulkanBindGroupLayoutCache == nullptr)
+        {
+            m_pVulkanBindGroupLayoutCache = new RHIVulkanBindGroupLayoutCache(this, createInfo);
+        }
+        return m_pVulkanBindGroupLayoutCache;
     }
 
     RHIBindGroupLayout* RHIVulkanDevice::CreateBindGroupLayout(const RHIBindGroupLayoutCreateInfo& createInfo)
@@ -196,7 +200,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIBindGroupCache* RHIVulkanDevice::CreateBindGroupCache(const RHIBindGroupCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanBindGroupCache(this, createInfo);
+        if (m_pVulkanBindGroupCache == nullptr)
+        {
+            m_pVulkanBindGroupCache = new RHIVulkanBindGroupCache(this, createInfo);
+        }
+        return m_pVulkanBindGroupCache;
     }
 
     RHIBindGroup* RHIVulkanDevice::CreateBindGroup(const RHIBindGroupCreateInfo& createInfo)
@@ -206,7 +214,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIShaderModuleCache* RHIVulkanDevice::CreateShaderModuleCache(const RHIShaderModuleCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanShaderModuleCache(this, createInfo);
+        if (m_pVulkanShaderModuleCache == nullptr)
+        {
+            m_pVulkanShaderModuleCache = new RHIVulkanShaderModuleCache(this, createInfo);
+        }
+        return m_pVulkanShaderModuleCache;
     }
 
     RHIShaderModule* RHIVulkanDevice::CreateShaderModule(const RHIShaderModuleCreateInfo& createInfo)
@@ -216,7 +228,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIPipelineLayoutCache* RHIVulkanDevice::CreatePipelineLayoutCache(const RHIPipelineLayoutCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanPipelineLayoutCache(this, createInfo);
+        if (m_pVulkanPipelineLayoutCache == nullptr)
+        {
+            m_pVulkanPipelineLayoutCache = new RHIVulkanPipelineLayoutCache(this, createInfo);
+        }
+        return m_pVulkanPipelineLayoutCache;
     }
 
     RHIPipelineLayout* RHIVulkanDevice::CreatePipelineLayout(const RHIPipelineLayoutCreateInfo& createInfo)
@@ -226,7 +242,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIPipelineCache* RHIVulkanDevice::CreatePipelineCache(const RHIPipelineCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanPipelineCache(this, createInfo);
+        if (m_pVulkanPipelineCache == nullptr)
+        {
+            m_pVulkanPipelineCache = new RHIVulkanPipelineCache(this, createInfo);
+        }
+        return m_pVulkanPipelineCache;
     }
 
     RHIPipelineCompute* RHIVulkanDevice::CreatePipelineCompute(const RHIPipelineComputeCreateInfo& createInfo)
@@ -241,7 +261,11 @@ namespace LostPeterPluginRHIVulkan
 
     RHIRenderPassCache* RHIVulkanDevice::CreateRenderPassCache(const RHIRenderPassCacheCreateInfo& createInfo)
     {
-        return new RHIVulkanRenderPassCache(this, createInfo);
+        if (m_pVulkanRenderPassCache == nullptr)
+        {
+            m_pVulkanRenderPassCache = new RHIVulkanRenderPassCache(this, createInfo);
+        }
+        return m_pVulkanRenderPassCache;
     }
 
     RHIRenderPass* RHIVulkanDevice::CreateRenderPass(const RHIRenderPassCreateInfo& createInfo)
@@ -398,14 +422,22 @@ namespace LostPeterPluginRHIVulkan
             return false;
         }
         F_LogInfo("RHIVulkanDevice::init: 2> createVmaAllocator success !");    
-        
-        //3> checkPixelFormats
-        if (!checkPixelFormats())
+
+        //3> createCache
+        if (!createCache())
         {
-            F_LogError("*********************** RHIVulkanDevice::init: 3> checkPixelFormats failed !");
+            F_LogError("*********************** RHIVulkanDevice::init: 3> createCache failed !");
             return false;
         }
-        F_LogInfo("RHIVulkanDevice::init: 3> checkPixelFormats success !");
+        F_LogInfo("RHIVulkanDevice::init: 3> createCache success !");   
+        
+        //4> checkPixelFormats
+        if (!checkPixelFormats())
+        {
+            F_LogError("*********************** RHIVulkanDevice::init: 4> checkPixelFormats failed !");
+            return false;
+        }
+        F_LogInfo("RHIVulkanDevice::init: 4> checkPixelFormats success !");
 
         if (RHI_IsDebug())
         {
@@ -620,6 +652,47 @@ namespace LostPeterPluginRHIVulkan
             F_LogError("*********************** RHIVulkanDevice::createVmaAllocator: vmaCreateAllocator failed !");
             return false;
         }
+        return true;
+    }
+    bool RHIVulkanDevice::createCache()
+    {
+        //1> RHIVulkanBindGroupLayoutCache
+        {
+            RHIBindGroupLayoutCacheCreateInfo createInfo;
+            createInfo.strDebugName = "BindGroupLayout_Cache";
+            CreateBindGroupLayoutCache(createInfo);
+        }
+        //2> RHIVulkanBindGroupCache
+        {
+            RHIBindGroupCacheCreateInfo createInfo;
+            createInfo.strDebugName = "BindGroup_Cache";
+            CreateBindGroupCache(createInfo);
+        }
+        //3> RHIVulkanShaderModuleCache
+        {
+            RHIShaderModuleCacheCreateInfo createInfo;
+            createInfo.strDebugName = "ShaderModule_Cache";
+            CreateShaderModuleCache(createInfo);
+        }
+        //4> RHIVulkanPipelineLayoutCache
+        {
+            RHIPipelineLayoutCacheCreateInfo createInfo;
+            createInfo.strDebugName = "PipelineLayout_Cache";
+            CreatePipelineLayoutCache(createInfo);
+        }
+        //5> RHIVulkanPipelineCache
+        {
+            RHIPipelineCacheCreateInfo createInfo;
+            createInfo.strDebugName = "Pipeline_Cache";
+            CreatePipelineCache(createInfo);
+        }
+        //6> RHIVulkanRenderPassCache
+        {
+            RHIRenderPassCacheCreateInfo createInfo;
+            createInfo.strDebugName = "RenderPass_Cache";
+            CreateRenderPassCache(createInfo);
+        }
+
         return true;
     }
     bool RHIVulkanDevice::checkPixelFormats()

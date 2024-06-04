@@ -135,6 +135,7 @@ namespace LostPeterPluginRHIVulkan
         bool init(bool bIsEnableValidationLayers);
         bool createDevice(bool bIsEnableValidationLayers);
         bool createVmaAllocator();
+        bool createCache();
         bool checkPixelFormats();
 
     private:
