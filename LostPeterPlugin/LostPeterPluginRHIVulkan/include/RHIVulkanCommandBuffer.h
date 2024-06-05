@@ -31,13 +31,20 @@ namespace LostPeterPluginRHIVulkan
     protected:
         RHIVulkanCommandPool* m_pVulkanCommandPool;
         VkCommandBuffer m_vkCommandBuffer;
+        VkCommandBufferLevel m_vkCommandBufferLevel;
 
-
+        RHIQueueType m_eQueue;
+        RHICommandBufferLevelType m_eCommandBufferLevel;
+        String m_strDebugName;
 
     public:
         F_FORCEINLINE RHIVulkanCommandPool* GetVulkanCommandPool() const { return m_pVulkanCommandPool; }
         F_FORCEINLINE VkCommandBuffer& GetVkCommandBuffer() { return m_vkCommandBuffer; }
+        F_FORCEINLINE VkCommandBufferLevel& GetVkCommandBufferLevel() { return m_vkCommandBufferLevel; }
 
+        F_FORCEINLINE RHIQueueType GetQueueType() const { return m_eQueue; }
+        F_FORCEINLINE RHICommandBufferLevelType GetCommandBufferLevelType() const { return m_eCommandBufferLevel; }
+        F_FORCEINLINE const String& GetDebugName() const { return m_strDebugName; }
 
     public:
         virtual void Destroy();

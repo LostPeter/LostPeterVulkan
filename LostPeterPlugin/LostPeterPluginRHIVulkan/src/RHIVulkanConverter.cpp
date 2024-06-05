@@ -428,6 +428,18 @@ namespace LostPeterPluginRHIVulkan
         return RHIPipelineBindPointType::RHI_PipelineBindPoint_Graphics;
     }
 
+    RHICommandBufferLevelType RHIVulkanConverter::TransformFromVkCommandBufferLevel(VkCommandBufferLevel vkCommandBufferLevel)
+    {
+        switch ((int32)vkCommandBufferLevel)
+        {
+        case VK_COMMAND_BUFFER_LEVEL_PRIMARY:           return RHICommandBufferLevelType::RHI_CommandBufferLevel_Primary;
+        case VK_COMMAND_BUFFER_LEVEL_SECONDARY:         return RHICommandBufferLevelType::RHI_CommandBufferLevel_Secondary;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformFromVkCommandBufferLevel: Wrong VkCommandBufferLevel type !")
+        }
+        return RHICommandBufferLevelType::RHI_CommandBufferLevel_Primary;
+    }
+
 
     RHIBufferUsageBitsType RHIVulkanConverter::TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags)
     {   
@@ -1025,6 +1037,18 @@ namespace LostPeterPluginRHIVulkan
             F_Assert(false && "RHIVulkanConverter::TransformToVkPipelineBindPoint: Wrong RHIPipelineBindPointType type !")
         }
         return VK_PIPELINE_BIND_POINT_GRAPHICS;
+    }
+
+    VkCommandBufferLevel RHIVulkanConverter::TransformToVkCommandBufferLevel(RHICommandBufferLevelType eCommandBufferLevel)
+    {
+        switch (eCommandBufferLevel)
+        {
+        case RHICommandBufferLevelType::RHI_CommandBufferLevel_Primary:           return VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        case RHICommandBufferLevelType::RHI_CommandBufferLevel_Secondary:         return VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+        default:
+            F_Assert(false && "RHIVulkanConverter::TransformToVkCommandBufferLevel: Wrong RHICommandBufferLevelType type !")
+        }
+        return VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     }
 
 

@@ -540,6 +540,15 @@ namespace LostPeterRHI
         RHI_PipelineBindPoint_Count,
     };
 
+    //RHICommandBufferLevelType
+    enum class RHICommandBufferLevelType : RHIEnumType 
+    {
+        RHI_CommandBufferLevel_Primary = 0,             //0: Primary
+        RHI_CommandBufferLevel_Secondary,               //1: Secondary
+
+        RHI_CommandBufferLevel_Count,
+    };
+
 	//RHIPixelFormatType
 	enum class RHIPixelFormatType : RHIEnumType 
 	{
@@ -1592,10 +1601,12 @@ namespace LostPeterRHI
     struct rhiExport RHICommandBufferCreateInfo
     {
         RHIQueueType eQueue;
+        RHICommandBufferLevelType eCommandBufferLevel;
         String strDebugName;
 
         RHICommandBufferCreateInfo()
             : eQueue(RHIQueueType::RHI_Queue_Graphics)
+            , eCommandBufferLevel(RHICommandBufferLevelType::RHI_CommandBufferLevel_Primary)
             , strDebugName("")
         {
 

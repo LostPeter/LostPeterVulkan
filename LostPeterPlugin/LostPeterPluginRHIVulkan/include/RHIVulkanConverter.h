@@ -47,6 +47,7 @@ namespace LostPeterPluginRHIVulkan
         static RHILoadOpType TransformFromVkAttachmentLoadOp(VkAttachmentLoadOp vkAttachmentLoadOp); 
         static RHIStoreOpType TransformFromVkAttachmentStoreOp(VkAttachmentStoreOp vkAttachmentStoreOp);
         static RHIPipelineBindPointType TransformFromVkPipelineBindPoint(VkPipelineBindPoint vkPipelineBindPoint);
+        static RHICommandBufferLevelType TransformFromVkCommandBufferLevel(VkCommandBufferLevel vkCommandBufferLevel);
 
         static RHIBufferUsageBitsType TransformFromVkBufferUsageFlags(VkBufferUsageFlags vkBufferUsageFlags);
         static RHITextureUsageBitsType TransformFromVkImageUsageFlags(VkImageUsageFlags vkImageUsageFlags);
@@ -86,6 +87,7 @@ namespace LostPeterPluginRHIVulkan
         static VkAttachmentLoadOp TransformToVkAttachmentLoadOp(RHILoadOpType eLoadOp); 
         static VkAttachmentStoreOp TransformToVkAttachmentStoreOp(RHIStoreOpType eStoreOp);
         static VkPipelineBindPoint TransformToVkPipelineBindPoint(RHIPipelineBindPointType ePipelineBindPoint);
+        static VkCommandBufferLevel TransformToVkCommandBufferLevel(RHICommandBufferLevelType eCommandBufferLevel);
         
         static VkBufferUsageFlags TransformToVkBufferUsageFlags(RHIBufferUsageBitsType eBufferUsageBits);
         static VkBufferUsageFlags TransformToVkBufferUsageFlagsFromBufferUsageFlags(RHIBufferUsageFlags flagsBufferUsages);
