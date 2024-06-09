@@ -31,4 +31,3 @@ rebuild=${2}
 ./Build_MacOS_Sample.sh vulkan_016_geometry $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_017_collision $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_018_subpass $debug $rebuild
-./Build_MacOS_Sample.sh vulkan_200_engine $debug $rebuild
