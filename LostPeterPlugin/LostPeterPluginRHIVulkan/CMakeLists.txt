@@ -59,6 +59,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spirv-cross-vulkan-sdk-1.3.283"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../LostPeterVulkan/LostPeterRHI/include")
 
@@ -72,6 +73,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spirv-cross-vulkan-sdk-1.3.283"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../LostPeterVulkan/LostPeterRHI/include")
 
@@ -138,6 +140,13 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-core_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-cpp_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-glsl_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-hlsl_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-msl_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-reflect_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-util_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterRHI_d.lib)
         
@@ -147,6 +156,13 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-core.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-cpp.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-glsl.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-hlsl.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-msl.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-reflect.lib
+                       ${LIB_DEPENDENCIES_DIR}/spirv-cross-util.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
                        ${LIB_PLUGINS_DIR}/LostPeterRHI.lib)
         
@@ -169,12 +185,26 @@ elseif (APPLE)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-core_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-cpp_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-glsl_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-hlsl_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-msl_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-reflect_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-util_d.a
                        ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
                        ${LIB_PLUGINS_DIR}/libLostPeterRHI_d.dylib)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-core.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-cpp.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-glsl.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-hlsl.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-msl.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-reflect.a
+                       ${LIB_DEPENDENCIES_DIR}/libspirv-cross-util.a
                        ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
                        ${LIB_PLUGINS_DIR}/libLostPeterRHI.dylib)
     endif()

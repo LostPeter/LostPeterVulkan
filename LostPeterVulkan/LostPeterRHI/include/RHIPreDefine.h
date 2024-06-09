@@ -1647,20 +1647,31 @@ namespace LostPeterRHI
 
         }
     };
+    typedef std::vector<RHIVertexAttribute> RHIVertexAttributeVector;
 
     //RHIVertexBufferLayout
     struct rhiExport RHIVertexBufferLayout
     {
         uint32 nStride;
         RHIVertexStepType eVertexStep;
-        uint32 nAttributeCount;
-        const RHIVertexAttribute* pAttributes;
+        RHIVertexAttributeVector aVertexAttribute;
 
         RHIVertexBufferLayout()
             : nStride(0)
             , eVertexStep(RHIVertexStepType::RHI_VertexStep_PerInstance)
-            , nAttributeCount(0)
-            , pAttributes(nullptr)
+        {
+
+        }
+    };
+    typedef std::vector<RHIVertexBufferLayout> RHIVertexBufferLayoutVector;
+
+    //RHIViewportState
+    struct rhiExport RHIViewportState
+    {
+        uint32 nViewportCount;
+
+        RHIViewportState()
+            : nViewportCount(1)
         {
 
         }
@@ -1669,12 +1680,9 @@ namespace LostPeterRHI
     //RHIVertexState
     struct rhiExport RHIVertexState
     {
-        uint32 nBufferLayoutCount;
-        const RHIVertexBufferLayout* pVertexBufferLayouts;
+        RHIVertexBufferLayoutVector aVertexBufferLayout;
 
         RHIVertexState()
-            : nBufferLayoutCount(0)
-            , pVertexBufferLayouts(nullptr)
         {
 
         }
