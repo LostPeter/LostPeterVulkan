@@ -48,7 +48,7 @@ cd ..
 cd Compile
 
 
-cp -rf "../Build/MacOS/"$name_project"/libcpuid/libcpuid.a" "../Lib/MacOS/"$name_lib
+cp -rfp "../Build/MacOS/"$name_project"/libcpuid/libcpuid.a" "../Lib/MacOS/"$name_lib
 
 
 folderSrc="../Sources/"$name"/libcpuid"
@@ -58,5 +58,5 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/libcpuid*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done

@@ -52,11 +52,11 @@ cd Compile
 
 
 if [ "$debug" == "debug" ]; then
-    cp -rf "../Build/MacOS/"$name_project"/zzip/libzzip.a" "../Lib/MacOS/"$name_lib
-    cp -rf "../Build/MacOS/"$name_project"/zzipwrap/libzzipwrap.a" "../Lib/MacOS/"$name_lib_wrap
+    cp -rfp "../Build/MacOS/"$name_project"/zzip/libzzip.a" "../Lib/MacOS/"$name_lib
+    cp -rfp "../Build/MacOS/"$name_project"/zzipwrap/libzzipwrap.a" "../Lib/MacOS/"$name_lib_wrap
 else
-    cp -rf "../Build/MacOS/"$name_project"/zzip/libzzip-0.a" "../Lib/MacOS/"$name_lib
-    cp -rf "../Build/MacOS/"$name_project"/zzipwrap/libzzipwrap-0.a" "../Lib/MacOS/"$name_lib_wrap
+    cp -rfp "../Build/MacOS/"$name_project"/zzip/libzzip-0.a" "../Lib/MacOS/"$name_lib
+    cp -rfp "../Build/MacOS/"$name_project"/zzipwrap/libzzipwrap-0.a" "../Lib/MacOS/"$name_lib_wrap
 fi
 
 
@@ -67,9 +67,9 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done
-cp -rf "../Build/MacOS/"$name_project"/zzip/_config.h" $folderDst
+cp -rfp "../Build/MacOS/"$name_project"/zzip/_config.h" $folderDst
 
 
 folderSrcWrap="../Sources/"$name"/zzipwrap"
@@ -79,5 +79,5 @@ mkdir -p $folderDstWrap
 
 for file in ${folderSrcWrap}/*.h
 do 
-    cp -rf $file $folderDstWrap
+    cp -rfp $file $folderDstWrap
 done

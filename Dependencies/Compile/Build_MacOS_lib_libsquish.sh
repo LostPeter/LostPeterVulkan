@@ -48,9 +48,9 @@ cd ..
 cd Compile
 
 if [ "$debug" == "debug" ]; then
-    cp -rf "../Build/MacOS/"$name_project"/libsquishd.a" "../Lib/MacOS/"$name_lib
+    cp -rfp "../Build/MacOS/"$name_project"/libsquishd.a" "../Lib/MacOS/"$name_lib
 else
-    cp -rf "../Build/MacOS/"$name_project"/libsquish.a" "../Lib/MacOS/"$name_lib
+    cp -rfp "../Build/MacOS/"$name_project"/libsquish.a" "../Lib/MacOS/"$name_lib
 fi
 
 folderSrc="../Sources/"$name
@@ -60,5 +60,5 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done

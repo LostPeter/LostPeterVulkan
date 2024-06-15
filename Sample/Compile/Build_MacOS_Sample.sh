@@ -49,4 +49,4 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/$name_project/$name_project" "../../Bin/MacOS"
+cp -rfp "../Build/MacOS/$name_project/$name_project" "../../Bin/MacOS"

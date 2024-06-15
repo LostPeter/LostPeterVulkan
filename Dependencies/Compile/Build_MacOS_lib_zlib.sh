@@ -47,7 +47,7 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project"/libz.a" "../Lib/MacOS/"$name_lib
+cp -rfp "../Build/MacOS/"$name_project"/libz.a" "../Lib/MacOS/"$name_lib
 
 
 folderSrc="../Sources/$name"
@@ -57,7 +57,7 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done
-cp -rf "../Build/MacOS/"$name_project"/zconf.h" $folderDst
+cp -rfp "../Build/MacOS/"$name_project"/zconf.h" $folderDst
 

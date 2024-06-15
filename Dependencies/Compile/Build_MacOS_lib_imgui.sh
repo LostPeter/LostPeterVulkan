@@ -68,7 +68,7 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project/$name_dylib "../Lib/MacOS/"$name_dylib
+cp -rfp "../Build/MacOS/"$name_project/$name_dylib "../Lib/MacOS/"$name_dylib
 
 folderSrc="../Sources/$name/$name_base"
 folderDstRoot="../Include/MacOS/"$name"_"$mode
@@ -79,7 +79,7 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done
 
 if [ "$mode" == "$m_gl3" ]; then 
@@ -103,12 +103,12 @@ elif [ "$mode" == "$m_glfw_vulkan" ]; then
 
     for file in ${folderSrc_Glfw}/*.h
     do 
-        cp -rf $file $folderDst_Glfw
+        cp -rfp $file $folderDst_Glfw
     done
 
     for file in ${floderSrc_Vulkan}/*.h
     do 
-        cp -rf $file $folderDst_Vulkan
+        cp -rfp $file $folderDst_Vulkan
     done
 
 elif [ "$mode" == "$m_metal" ]; then 

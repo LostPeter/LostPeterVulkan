@@ -47,7 +47,7 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project"/libtinyxml.a" "../Lib/MacOS/"$name_lib
+cp -rfp "../Build/MacOS/"$name_project"/libtinyxml.a" "../Lib/MacOS/"$name_lib
 
 
 folderSrc="../Sources/$name"
@@ -55,5 +55,5 @@ folderDst="../Include/MacOS/"$name
 rm -rf $folderDst
 mkdir -p $folderDst
 
-cp -rf $folderSrc"/tinystr.h" $folderDst
-cp -rf $folderSrc"/tinyxml.h" $folderDst
+cp -rfp $folderSrc"/tinystr.h" $folderDst
+cp -rfp $folderSrc"/tinyxml.h" $folderDst

@@ -47,4 +47,4 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project/$name_dylib "../Lib/MacOS/"$name_dylib
+cp -rfp "../Build/MacOS/"$name_project/$name_dylib "../Lib/MacOS/"$name_dylib

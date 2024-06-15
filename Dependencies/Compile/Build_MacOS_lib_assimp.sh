@@ -49,12 +49,12 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project"/lib/"$name_lib_src "../Lib/MacOS/"$name_lib
+cp -rfp "../Build/MacOS/"$name_project"/lib/"$name_lib_src "../Lib/MacOS/"$name_lib
 
 folderSrc="../Sources/$name/include/assimp"
 folderDst="../Include/MacOS/"$name
 rm -rf $folderDst
 mkdir -p $folderDst
 
-cp -rf $folderSrc $folderDst
-cp -rf "../Build/MacOS/"$name_project"/include/assimp/config.h" $folderDst"/assimp"
+cp -rfp $folderSrc $folderDst
+cp -rfp "../Build/MacOS/"$name_project"/include/assimp/config.h" $folderDst"/assimp"

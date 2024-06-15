@@ -49,8 +49,8 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project"/src/libnoise.a" "../Lib/MacOS/"$name_lib
-cp -rf "../Build/MacOS/"$name_project"/noiseutils/libnoiseutils-static.a" "../Lib/MacOS/"$nameutil_lib
+cp -rfp "../Build/MacOS/"$name_project"/src/libnoise.a" "../Lib/MacOS/"$name_lib
+cp -rfp "../Build/MacOS/"$name_project"/noiseutils/libnoiseutils-static.a" "../Lib/MacOS/"$nameutil_lib
 
 folderSrc="../Sources/"$name
 folderDst="../Include/MacOS/"$name
@@ -58,9 +58,9 @@ rm -rf $folderDst
 mkdir -p $folderDst
 mkdir -p $folderDst"/noiseutils"
 
-cp -rf $folderSrc"/src/noise" $folderDst
+cp -rfp $folderSrc"/src/noise" $folderDst
 
 for file in ${folderSrc}/noiseutils/*.h
 do 
-    cp -rf $file $folderDst"/noiseutils"
+    cp -rfp $file $folderDst"/noiseutils"
 done

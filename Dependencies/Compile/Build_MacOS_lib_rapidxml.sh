@@ -18,5 +18,5 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.hpp
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done

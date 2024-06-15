@@ -82,15 +82,15 @@ cd ..
 cd ..
 cd Compile
 
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_core".a" "../Lib/MacOS/"$name_lib_core_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_c".a" "../Lib/MacOS/"$name_lib_c_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_cpp".a" "../Lib/MacOS/"$name_lib_cpp_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_glsl".a" "../Lib/MacOS/"$name_lib_glsl_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_hlsl".a" "../Lib/MacOS/"$name_lib_hlsl_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_msl".a" "../Lib/MacOS/"$name_lib_msl_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_reflect".a" "../Lib/MacOS/"$name_lib_reflect_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_lib_util".a" "../Lib/MacOS/"$name_lib_util_final
-cp -rf "../Build/MacOS/"$name_project"/"$name_exe "../../Bin/MacOS/"$name_exe_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_core".a" "../Lib/MacOS/"$name_lib_core_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_c".a" "../Lib/MacOS/"$name_lib_c_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_cpp".a" "../Lib/MacOS/"$name_lib_cpp_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_glsl".a" "../Lib/MacOS/"$name_lib_glsl_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_hlsl".a" "../Lib/MacOS/"$name_lib_hlsl_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_msl".a" "../Lib/MacOS/"$name_lib_msl_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_reflect".a" "../Lib/MacOS/"$name_lib_reflect_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_lib_util".a" "../Lib/MacOS/"$name_lib_util_final
+cp -rfp "../Build/MacOS/"$name_project"/"$name_exe "../../Bin/MacOS/"$name_exe_final
 
 folderSrc="../Sources/$name"
 folderDst="../Include/MacOS/"$name
@@ -99,9 +99,9 @@ mkdir -p $folderDst
 
 for file in ${folderSrc}/*.h
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done
 for file in ${folderSrc}/*.hpp
 do 
-    cp -rf $file $folderDst
+    cp -rfp $file $folderDst
 done
