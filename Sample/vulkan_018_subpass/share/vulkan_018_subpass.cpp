@@ -250,6 +250,37 @@ void Vulkan_018_SubPass::createDescriptorSetLayout_Custom()
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
+void Vulkan_018_SubPass::createDepthResources()
+{
+    VkFormat depthFormat = this->poDepthImageFormat;
+
+    createVkImage(this->poSwapChainExtent.width, 
+                  this->poSwapChainExtent.height, 
+                  1, 
+                  1,
+                  1,
+                  VK_IMAGE_TYPE_2D, 
+                  false,
+                  this->poMSAASamples, 
+                  depthFormat, 
+                  VK_IMAGE_TILING_OPTIMAL, 
+                  VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,  
+                  VK_SHARING_MODE_EXCLUSIVE,
+                  false,
+                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                  this->poDepthImage, 
+                  this->poDepthImageMemory);
+
+    createVkImageView(this->poDepthImage, 
+                      VK_IMAGE_VIEW_TYPE_2D,
+                      depthFormat, 
+                      VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 
+                      1,
+                      1,
+                      this->poDepthImageView);
+
+    F_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
+}
 void Vulkan_018_SubPass::createColorResourceLists()
 {
     int count = 4;
@@ -269,7 +300,7 @@ void Vulkan_018_SubPass::createColorResourceLists()
                       this->poMSAASamples, 
                       this->poSwapChainImageFormat, 
                       VK_IMAGE_TILING_OPTIMAL, 
-                      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, //VK_IMAGE_USAGE_TRANSFER_SRC_BIT | 
+                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
                       VK_SHARING_MODE_EXCLUSIVE,
                       false,
                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -372,9 +403,14 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
 
     VkSubpassDescription subpass0_SceneRender = {};
     subpass0_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass0_SceneRender.inputAttachmentCount = 0;
+    subpass0_SceneRender.pInputAttachments = nullptr;
     subpass0_SceneRender.colorAttachmentCount = (uint32_t)aAttachmentReference_Colors.size();
     subpass0_SceneRender.pColorAttachments = aAttachmentReference_Colors.data();
+    subpass0_SceneRender.pResolveAttachments = nullptr;
     subpass0_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+    subpass0_SceneRender.preserveAttachmentCount = 0;
+    subpass0_SceneRender.pPreserveAttachments = nullptr;
     aSubpassDescription.push_back(subpass0_SceneRender);
 
     //5> Subpass 1 - SceneRender 
@@ -386,7 +422,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     for (size_t i = 0; i < aAttachmentDescription_Inputs.size(); i++)
     {
         VkAttachmentReference attachRefInput = {};
-        attachRefInput.attachment = (uint32_t)i; //(i + 1);
+        attachRefInput.attachment = (uint32_t)(i + 1);
         attachRefInput.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         aAttachmentReference_Inputs.push_back(attachRefInput);
     }
@@ -430,14 +466,24 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_SceneRender1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_SceneRender1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_SceneRender1.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+    subpassDependency_SceneRender1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_SceneRender1);
 
+    VkSubpassDependency subpassDependency_SceneRender2 = {};
+    subpassDependency_SceneRender2.srcSubpass = 1;
+    subpassDependency_SceneRender2.dstSubpass = 2;
+    subpassDependency_SceneRender2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency_SceneRender2.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    subpassDependency_SceneRender2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    subpassDependency_SceneRender2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    subpassDependency_SceneRender2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+    aSubpassDependency.push_back(subpassDependency_SceneRender2);
+
     //9> Subpass Dependency Imgui
     VkSubpassDependency subpassDependency_Imgui = {};
-    subpassDependency_Imgui.srcSubpass = 1;
-    subpassDependency_Imgui.dstSubpass = 2;
+    subpassDependency_Imgui.srcSubpass = 2;
+    subpassDependency_Imgui.dstSubpass = VK_SUBPASS_EXTERNAL;
     subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -713,8 +759,8 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_ObjectRend_Tranforms[3 * i + 1],
-                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }

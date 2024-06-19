@@ -383,7 +383,8 @@ protected:
         //DescriptorSetLayout
         virtual void createDescriptorSetLayout_Custom();
 
-
+        //Depth
+        virtual void createDepthResources();
         //Color 
         virtual void createColorResourceLists();
 
