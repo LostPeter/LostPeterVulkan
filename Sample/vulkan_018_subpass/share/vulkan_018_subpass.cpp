@@ -346,7 +346,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
                                     VK_ATTACHMENT_STORE_OP_STORE,
                                     VK_ATTACHMENT_LOAD_OP_DONT_CARE,
                                     VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         aAttachmentDescription.push_back(attachmentColor);
         aAttachmentDescription_Colors.push_back(attachmentColor);
@@ -366,8 +366,8 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
                                 VK_ATTACHMENT_LOAD_OP_CLEAR,
                                 VK_ATTACHMENT_STORE_OP_STORE,
                                 VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                VK_IMAGE_LAYOUT_UNDEFINED,
+                                VK_ATTACHMENT_STORE_OP_STORE,
+                                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                                 VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     aAttachmentDescription.push_back(attachmentSR_Depth);
     uint32_t indexDepth = (uint32_t)aAttachmentDescription.size() - 1;
@@ -452,7 +452,7 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     VkSubpassDependency subpassDependency_SceneRender0 = {};
     subpassDependency_SceneRender0.srcSubpass = VK_SUBPASS_EXTERNAL;
     subpassDependency_SceneRender0.dstSubpass = 0;
-    subpassDependency_SceneRender0.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    subpassDependency_SceneRender0.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
     subpassDependency_SceneRender0.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_SceneRender0.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
     subpassDependency_SceneRender0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -470,20 +470,10 @@ void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPa
     subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     aSubpassDependency.push_back(subpassDependency_SceneRender1);
 
-    VkSubpassDependency subpassDependency_SceneRender2 = {};
-    subpassDependency_SceneRender2.srcSubpass = 1;
-    subpassDependency_SceneRender2.dstSubpass = 2;
-    subpassDependency_SceneRender2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency_SceneRender2.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    subpassDependency_SceneRender2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_SceneRender2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    subpassDependency_SceneRender2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-    aSubpassDependency.push_back(subpassDependency_SceneRender2);
-
     //9> Subpass Dependency Imgui
     VkSubpassDependency subpassDependency_Imgui = {};
-    subpassDependency_Imgui.srcSubpass = 2;
-    subpassDependency_Imgui.dstSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependency_Imgui.srcSubpass = 1;
+    subpassDependency_Imgui.dstSubpass = 2;
     subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
