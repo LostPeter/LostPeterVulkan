@@ -221,15 +221,265 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 /////////////////////////// ModelObject /////////////////////////
 
 
+/////////////////////////// SubPassRenderPass ///////////////////
+Vulkan_018_SubPass::SubPassRenderPass::SubPassRenderPass(const String& _nameRenderPass)
+    : Base(_nameRenderPass)
+{
+
+}
+
+Vulkan_018_SubPass::SubPassRenderPass::~SubPassRenderPass()
+{
+
+}
+
+void Vulkan_018_SubPass::SubPassRenderPass::Destroy()
+{
+    //RenderPass
+    if (this->poRenderPass_SubPass != VK_NULL_HANDLE)
+    {
+        Base::GetWindowPtr()->destroyVkRenderPass(this->poRenderPass_SubPass);
+    }
+    this->poRenderPass_SubPass = VK_NULL_HANDLE;
+
+    //FrameBuffer
+    size_t count = this->aColorImageLists.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        Base::GetWindowPtr()->destroyVkImage(this->aColorImageLists[i], this->aColorImageMemoryLists[i], this->aColorImageViewLists[i]);
+    }
+    this->aColorImageLists.clear();
+    this->aColorImageMemoryLists.clear();
+    this->aColorImageViewLists.clear();
+    
+    Base::GetWindowPtr()->destroyVkImageSampler(this->sampler);
+    this->sampler = VK_NULL_HANDLE;
+
+    Base::GetWindowPtr()->destroyVkFramebuffer(this->poFrameBuffer_SubPass);
+    this->poFrameBuffer_SubPass = VK_NULL_HANDLE;
+
+    this->imageInfo.imageView = VK_NULL_HANDLE;
+    this->imageInfo.sampler = VK_NULL_HANDLE;
+}
+
+void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width, uint32_t height, int countColorAttachment)
+{
+    //1> Attachment
+    for (int i = 0; i < countColorAttachment; i++)
+    {
+        VkImage vkColorImage;
+        VkDeviceMemory vkColorImageMemory;
+        VkImageView vkColorImageView;
+
+        Base::GetWindowPtr()->createVkImage(width, 
+                                            height, 
+                                            1,
+                                            1,
+                                            1,
+                                            VK_IMAGE_TYPE_2D, 
+                                            false,
+                                            Base::GetWindowPtr()->poMSAASamples, 
+                                            Base::GetWindowPtr()->poSwapChainImageFormat, 
+                                            VK_IMAGE_TILING_OPTIMAL, 
+                                            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+                                            VK_SHARING_MODE_EXCLUSIVE,
+                                            false,
+                                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                                            vkColorImage, 
+                                            vkColorImageMemory);
+        this->aColorImageLists.push_back(vkColorImage);
+        this->aColorImageMemoryLists.push_back(vkColorImageMemory);
+
+        Base::GetWindowPtr()->createVkImageView(vkColorImage, 
+                                                VK_IMAGE_VIEW_TYPE_2D,
+                                                Base::GetWindowPtr()->poSwapChainImageFormat, 
+                                                VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                1, 
+                                                1,
+                                                vkColorImageView);
+        this->aColorImageViewLists.push_back(vkColorImageView);
+    }
+    
+    //2> RenderPass
+    {
+        std::vector<VkAttachmentDescription> aAttachmentDescription;
+        std::vector<VkAttachmentDescription> aAttachmentDescription_Colors;
+        std::vector<VkAttachmentDescription> aAttachmentDescription_Inputs;
+        std::vector<VkSubpassDescription> aSubpassDescription;
+        std::vector<VkSubpassDependency> aSubpassDependency;
+
+        VkFormat formatColor = Base::GetWindowPtr()->poSwapChainImageFormat;
+        VkFormat formatDepth = Base::GetWindowPtr()->poDepthImageFormat;
+        VkFormat formatSwapChain = Base::GetWindowPtr()->poSwapChainImageFormat;
+        
+        //1> Attachment SceneRender Color 
+        int count = (int)aColorImageViewLists.size();
+        for (int i = 0; i < count; i++)
+        {
+            VkAttachmentDescription attachmentColor = {};
+            Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
+                                                              0,
+                                                              formatColor,
+                                                              VK_SAMPLE_COUNT_1_BIT,
+                                                              VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                              VK_ATTACHMENT_STORE_OP_STORE,
+                                                              VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                                              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+            aAttachmentDescription.push_back(attachmentColor);
+            aAttachmentDescription_Colors.push_back(attachmentColor);
+            if (i > 0)
+            {
+                aAttachmentDescription_Inputs.push_back(attachmentColor);
+            }
+        }
+
+        //2> Attachment SceneRender Depth
+        VkAttachmentDescription attachmentSR_Depth = {};
+        Base::GetWindowPtr()->createAttachmentDescription(attachmentSR_Depth,
+                                                          0,
+                                                          formatDepth,
+                                                          VK_SAMPLE_COUNT_1_BIT,
+                                                          VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                          VK_ATTACHMENT_STORE_OP_STORE,
+                                                          VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                          VK_ATTACHMENT_STORE_OP_STORE,
+                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+        aAttachmentDescription.push_back(attachmentSR_Depth);
+        uint32_t indexDepth = (uint32_t)aAttachmentDescription.size() - 1;
+            
+        //3> Subpass 0 - SceneRender
+        std::vector<VkAttachmentReference> aAttachmentReference_Colors;
+        for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
+        {
+            VkAttachmentReference attachRefColor = {};
+            attachRefColor.attachment = (uint32_t)i;
+            attachRefColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            aAttachmentReference_Colors.push_back(attachRefColor);
+        }
+
+        VkAttachmentReference attachRef_Depth = {};
+        attachRef_Depth.attachment = indexDepth;
+        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass0_SceneRender = {};
+        subpass0_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass0_SceneRender.inputAttachmentCount = 0;
+        subpass0_SceneRender.pInputAttachments = nullptr;
+        subpass0_SceneRender.colorAttachmentCount = (uint32_t)aAttachmentReference_Colors.size();
+        subpass0_SceneRender.pColorAttachments = aAttachmentReference_Colors.data();
+        subpass0_SceneRender.pResolveAttachments = nullptr;
+        subpass0_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        subpass0_SceneRender.preserveAttachmentCount = 0;
+        subpass0_SceneRender.pPreserveAttachments = nullptr;
+        aSubpassDescription.push_back(subpass0_SceneRender);
+
+        //4> Subpass 1 - SceneRender 
+        VkAttachmentReference attachRef_Color = {};
+        attachRef_Color.attachment = 0;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        std::vector<VkAttachmentReference> aAttachmentReference_Inputs;
+        for (size_t i = 0; i < aAttachmentDescription_Inputs.size(); i++)
+        {
+            VkAttachmentReference attachRefInput = {};
+            attachRefInput.attachment = (uint32_t)(i + 1);
+            attachRefInput.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            aAttachmentReference_Inputs.push_back(attachRefInput);
+        }
+
+        VkSubpassDescription subpass1_SceneRender = {};
+        subpass1_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass1_SceneRender.colorAttachmentCount = 1;
+        subpass1_SceneRender.pColorAttachments = &attachRef_Color;
+        subpass1_SceneRender.inputAttachmentCount = (uint32_t)aAttachmentReference_Inputs.size();
+        subpass1_SceneRender.pInputAttachments = aAttachmentReference_Inputs.data();
+        subpass1_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        aSubpassDescription.push_back(subpass1_SceneRender);
+
+        //5> Subpass Dependency SceneRender 0
+        VkSubpassDependency subpassDependency_SceneRender0 = {};
+        subpassDependency_SceneRender0.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency_SceneRender0.dstSubpass = 0;
+        subpassDependency_SceneRender0.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        subpassDependency_SceneRender0.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender0.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender0);
+
+        //6> Subpass Dependency SceneRender 1
+        VkSubpassDependency subpassDependency_SceneRender1 = {};
+        subpassDependency_SceneRender1.srcSubpass = 0;
+        subpassDependency_SceneRender1.dstSubpass = 1;
+        subpassDependency_SceneRender1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender1.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+        subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender1);
+
+        //10> createVkRenderPass
+        if (!Base::GetWindowPtr()->createVkRenderPass("RenderPass_Default_Custom",
+                                                      aAttachmentDescription,
+                                                      aSubpassDescription,
+                                                      aSubpassDependency,
+                                                      nullptr,
+                                                      this->poRenderPass_SubPass))
+        {
+            String msg = "*********************** Vulkan_018_SubPass::SubPassRenderPass::Init: Failed to create RenderPass_Default_Custom !";
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+
+    //3> Framebuffer
+    {
+        VkImageViewVector aImageViews;
+        size_t count = this->aColorImageViewLists.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            aImageViews.push_back(this->aColorImageViewLists[i]);
+        }
+        aImageViews.push_back(Base::GetWindowPtr()->poDepthImageView);
+        if (!Base::GetWindowPtr()->createVkFramebuffer(GetName(),
+                                                       this->aColorImageViewLists,
+                                                       this->poRenderPass_SubPass,
+                                                       0,
+                                                       width,
+                                                       height,
+                                                       1,
+                                                       this->poFrameBuffer_SubPass))
+        {
+            String msg = "*********************** Vulkan_018_SubPass::SubPassRenderPass::Init: Failed to create framebuffer: " + GetName();
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+
+}
+
+void Vulkan_018_SubPass::SubPassRenderPass::CleanupSwapChain()
+{
+    Destroy();
+}
+void Vulkan_018_SubPass::SubPassRenderPass::RecreateSwapChain()
+{
+
+}
+
+
 
 Vulkan_018_SubPass::Vulkan_018_SubPass(int width, int height, String name)
     : VulkanWindow(width, height, name)
+    , m_pSubPassRenderPass(nullptr)
 {
-    this->cfg_isRenderPassDefaultCustom = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
-    this->cfg_isEditorGridShow = false;
+    this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 
@@ -245,287 +495,12 @@ void Vulkan_018_SubPass::setUpEnabledFeatures()
 
 }
 
-void Vulkan_018_SubPass::createDescriptorSetLayout_Custom()
+void Vulkan_018_SubPass::createRenderPass_Custom()
 {
-    VulkanWindow::createDescriptorSetLayout_Custom();
-}
-
-void Vulkan_018_SubPass::createDepthResources()
-{
-    VkFormat depthFormat = this->poDepthImageFormat;
-
-    createVkImage(this->poSwapChainExtent.width, 
-                  this->poSwapChainExtent.height, 
-                  1, 
-                  1,
-                  1,
-                  VK_IMAGE_TYPE_2D, 
-                  false,
-                  this->poMSAASamples, 
-                  depthFormat, 
-                  VK_IMAGE_TILING_OPTIMAL, 
-                  VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,  
-                  VK_SHARING_MODE_EXCLUSIVE,
-                  false,
-                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                  this->poDepthImage, 
-                  this->poDepthImageMemory);
-
-    createVkImageView(this->poDepthImage, 
-                      VK_IMAGE_VIEW_TYPE_2D,
-                      depthFormat, 
-                      VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 
-                      1,
-                      1,
-                      this->poDepthImageView);
-
-    F_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
-}
-void Vulkan_018_SubPass::createColorResourceLists()
-{
-    int count = 4;
-    for (int i = 0; i < count; i++)
-    {
-        VkImage vkColorImage;
-        VkDeviceMemory vkColorImageMemory;
-        VkImageView vkColorImageView;
-
-        createVkImage(this->poSwapChainExtent.width, 
-                      this->poSwapChainExtent.height, 
-                      1,
-                      1,
-                      1,
-                      VK_IMAGE_TYPE_2D, 
-                      false,
-                      this->poMSAASamples, 
-                      this->poSwapChainImageFormat, 
-                      VK_IMAGE_TILING_OPTIMAL, 
-                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-                      VK_SHARING_MODE_EXCLUSIVE,
-                      false,
-                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                      vkColorImage, 
-                      vkColorImageMemory);
-        this->poColorImageLists.push_back(vkColorImage);
-        this->poColorImageMemoryLists.push_back(vkColorImageMemory);
-
-        createVkImageView(vkColorImage, 
-                          VK_IMAGE_VIEW_TYPE_2D,
-                          this->poSwapChainImageFormat, 
-                          VK_IMAGE_ASPECT_COLOR_BIT, 
-                          1, 
-                          1,
-                          vkColorImageView);
-        this->poColorImageViewLists.push_back(vkColorImageView);
-    }
-}
-
-void Vulkan_018_SubPass::createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass)
-{
-    this->cfg_colorValues.clear();
-    std::vector<VkAttachmentDescription> aAttachmentDescription;
-    std::vector<VkAttachmentDescription> aAttachmentDescription_Colors;
-    std::vector<VkAttachmentDescription> aAttachmentDescription_Inputs;
-    std::vector<VkSubpassDescription> aSubpassDescription;
-    std::vector<VkSubpassDependency> aSubpassDependency;
-
-    VkFormat formatColor = this->poSwapChainImageFormat;
-    VkFormat formatDepth = this->poDepthImageFormat;
-    VkFormat formatSwapChain = this->poSwapChainImageFormat;
-
-    //1> Attachment SceneRender Color 
-    int count = 4;
-    for (int i = 0; i < count; i++)
-    {
-        VkAttachmentDescription attachmentColor = {};
-        createAttachmentDescription(attachmentColor,
-                                    0,
-                                    formatColor,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        aAttachmentDescription.push_back(attachmentColor);
-        aAttachmentDescription_Colors.push_back(attachmentColor);
-        if (i > 0)
-        {
-            aAttachmentDescription_Inputs.push_back(attachmentColor);
-            this->cfg_colorValues.push_back(FVector4(0.0f, 0.0f, 0.0f, 0.0f));
-        }
-    }
-
-    //2> Attachment SceneRender Depth
-    VkAttachmentDescription attachmentSR_Depth = {};
-    createAttachmentDescription(attachmentSR_Depth,
-                                0,
-                                formatDepth,
-                                VK_SAMPLE_COUNT_1_BIT,
-                                VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                VK_ATTACHMENT_STORE_OP_STORE,
-                                VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                VK_ATTACHMENT_STORE_OP_STORE,
-                                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    aAttachmentDescription.push_back(attachmentSR_Depth);
-    uint32_t indexDepth = (uint32_t)aAttachmentDescription.size() - 1;
-        
-    //3> Attachment Imgui Color
-    VkAttachmentDescription attachmentImgui_Color = {};
-    createAttachmentDescription(attachmentImgui_Color,
-                                0,
-                                formatSwapChain,
-                                VK_SAMPLE_COUNT_1_BIT,
-                                VK_ATTACHMENT_LOAD_OP_LOAD,
-                                VK_ATTACHMENT_STORE_OP_STORE,
-                                VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                VK_IMAGE_LAYOUT_UNDEFINED,
-                                VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    aAttachmentDescription.push_back(attachmentImgui_Color);
-    uint32_t indexImgui = (uint32_t)aAttachmentDescription.size() - 1;
-    
-    //4> Subpass 0 - SceneRender
-    std::vector<VkAttachmentReference> aAttachmentReference_Colors;
-    for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
-    {
-        VkAttachmentReference attachRefColor = {};
-        attachRefColor.attachment = (uint32_t)i;
-        attachRefColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        aAttachmentReference_Colors.push_back(attachRefColor);
-    }
-
-    VkAttachmentReference attachRef_Depth = {};
-    attachRef_Depth.attachment = indexDepth;
-    attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpass0_SceneRender = {};
-    subpass0_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass0_SceneRender.inputAttachmentCount = 0;
-    subpass0_SceneRender.pInputAttachments = nullptr;
-    subpass0_SceneRender.colorAttachmentCount = (uint32_t)aAttachmentReference_Colors.size();
-    subpass0_SceneRender.pColorAttachments = aAttachmentReference_Colors.data();
-    subpass0_SceneRender.pResolveAttachments = nullptr;
-    subpass0_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-    subpass0_SceneRender.preserveAttachmentCount = 0;
-    subpass0_SceneRender.pPreserveAttachments = nullptr;
-    aSubpassDescription.push_back(subpass0_SceneRender);
-
-    //5> Subpass 1 - SceneRender 
-    VkAttachmentReference attachRef_Color = {};
-    attachRef_Color.attachment = 0;
-    attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    std::vector<VkAttachmentReference> aAttachmentReference_Inputs;
-    for (size_t i = 0; i < aAttachmentDescription_Inputs.size(); i++)
-    {
-        VkAttachmentReference attachRefInput = {};
-        attachRefInput.attachment = (uint32_t)(i + 1);
-        attachRefInput.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        aAttachmentReference_Inputs.push_back(attachRefInput);
-    }
-
-    VkSubpassDescription subpass1_SceneRender = {};
-    subpass1_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass1_SceneRender.colorAttachmentCount = 1;
-    subpass1_SceneRender.pColorAttachments = &attachRef_Color;
-    subpass1_SceneRender.inputAttachmentCount = (uint32_t)aAttachmentReference_Inputs.size();
-    subpass1_SceneRender.pInputAttachments = aAttachmentReference_Inputs.data();
-    subpass1_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-    aSubpassDescription.push_back(subpass1_SceneRender);
-    
-    //6> Subpass 2 - Imgui
-    VkAttachmentReference attachRef_ImguiColor = {};
-    attachRef_ImguiColor.attachment = 0;
-    attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpass_Imgui = {};
-    subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass_Imgui.colorAttachmentCount = 1;
-    subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
-    subpass_Imgui.pDepthStencilAttachment = &attachRef_Depth;
-    aSubpassDescription.push_back(subpass_Imgui);
-    
-    //7> Subpass Dependency SceneRender 0
-    VkSubpassDependency subpassDependency_SceneRender0 = {};
-    subpassDependency_SceneRender0.srcSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependency_SceneRender0.dstSubpass = 0;
-    subpassDependency_SceneRender0.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    subpassDependency_SceneRender0.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency_SceneRender0.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-    subpassDependency_SceneRender0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_SceneRender0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-    aSubpassDependency.push_back(subpassDependency_SceneRender0);
-
-    //8> Subpass Dependency SceneRender 1
-    VkSubpassDependency subpassDependency_SceneRender1 = {};
-    subpassDependency_SceneRender1.srcSubpass = 0;
-    subpassDependency_SceneRender1.dstSubpass = 1;
-    subpassDependency_SceneRender1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency_SceneRender1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    subpassDependency_SceneRender1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_SceneRender1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    subpassDependency_SceneRender1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-    aSubpassDependency.push_back(subpassDependency_SceneRender1);
-
-    //9> Subpass Dependency Imgui
-    VkSubpassDependency subpassDependency_Imgui = {};
-    subpassDependency_Imgui.srcSubpass = 1;
-    subpassDependency_Imgui.dstSubpass = 2;
-    subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-    aSubpassDependency.push_back(subpassDependency_Imgui);
-
-    //10> createVkRenderPass
-    if (!createVkRenderPass("RenderPass_Default_Custom",
-                            aAttachmentDescription,
-                            aSubpassDescription,
-                            aSubpassDependency,
-                            nullptr,
-                            vkRenderPass))
-    {
-        String msg = "*********************** Vulkan_018_SubPass::createRenderPass_DefaultCustom: Failed to create RenderPass_Default_Custom !";
-        F_LogError(msg.c_str());
-        throw std::runtime_error(msg);
-    }
-
-    F_LogInfo("Vulkan_018_SubPass::createRenderPass_DefaultCustom: Success to create RenderPass_Default_Custom !");
-}
-void Vulkan_018_SubPass::createFramebuffer_DefaultCustom()
-{
-    size_t count = this->poSwapChainImageViews.size();
-    this->poSwapChainFrameBuffers.resize(count);
-    for (size_t i = 0; i < count; i++)
-    {
-        VkImageViewVector aImageViews;
-
-        aImageViews.push_back(this->poSwapChainImageViews[i]);
-        aImageViews.push_back(this->poColorImageViewLists[1]);
-        aImageViews.push_back(this->poColorImageViewLists[2]);
-        aImageViews.push_back(this->poColorImageViewLists[3]);
-        aImageViews.push_back(this->poDepthImageView);
-        aImageViews.push_back(this->poSwapChainImageViews[i]);
-
-        String nameFramebuffer = "Framebuffer-" + FUtilString::SaveSizeT(i);
-        if (!createVkFramebuffer(nameFramebuffer,
-                                 aImageViews,
-                                 this->poRenderPass,
-                                 0,
-                                 this->poSwapChainExtent.width,
-                                 this->poSwapChainExtent.height,
-                                 1,
-                                 this->poSwapChainFrameBuffers[i]))
-        {
-            String msg = "*********************** Vulkan_018_SubPass::createFramebuffer_DefaultCustom: Failed to create framebuffer: " + nameFramebuffer;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-    }
+    m_pSubPassRenderPass = new SubPassRenderPass("RenderPass-SubPass");
+    m_pSubPassRenderPass->Init(this->poSwapChainExtent.width, 
+                               this->poSwapChainExtent.height, 
+                               4);
 }
 
 void Vulkan_018_SubPass::createCamera()
@@ -936,7 +911,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                      this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                       pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -970,7 +945,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                            this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                             pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1019,7 +994,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                           this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
+                                                                                           this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
                                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                                            pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1054,7 +1029,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
+                                                                                 this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors,
                                                                                  pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                                  isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                                  pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1509,7 +1484,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
             {
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = this->poColorImageViewLists[nIndexInputAttach];
+                imageInfo.imageView = this->m_pSubPassRenderPass->aColorImageViewLists[nIndexInputAttach];
                 nIndexInputAttach ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           listDescriptorSets[j],
@@ -1531,11 +1506,6 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
     }
 
     //2> 
-}
-
-void Vulkan_018_SubPass::updateCompute_Custom(VkCommandBuffer& commandBuffer)
-{
-
 }
 
 void Vulkan_018_SubPass::updateCBs_Custom()
@@ -1594,10 +1564,126 @@ void Vulkan_018_SubPass::updateCBs_Custom()
     }
 }
 
-void Vulkan_018_SubPass::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
 {
-    
+    return;
+
+    beginRenderPass(commandBuffer,
+                    this->m_pSubPassRenderPass->poRenderPass_SubPass,
+                    this->m_pSubPassRenderPass->poFrameBuffer_SubPass,
+                    this->poOffset,
+                    this->poExtent,
+                    this->cfg_colorBackground,
+                    1.0f,
+                    0);
+    {
+        //1> Viewport
+        bindViewport(commandBuffer, this->poViewport, this->poScissor);
+
+        //2> Custom Render Pass
+        drawCustomBeforeDefault(commandBuffer);
+    }
+    endRenderPass(commandBuffer);
 }
+    void Vulkan_018_SubPass::drawCustomBeforeDefault(VkCommandBuffer& commandBuffer)
+    {   
+        //1> Opaque
+        {
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
+        }
+        //2> Transparent
+        {
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+        }
+    }
+        void Vulkan_018_SubPass::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+        {
+            size_t count_rend = aRends.size();
+            for (size_t i = 0; i < count_rend; i++)
+            {
+                ModelObjectRend* pRend = aRends[i];
+                if (!pRend->isShow)
+                    continue;
+                drawModelObjectRend(commandBuffer, pRend);
+            }
+        }
+        void Vulkan_018_SubPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+        {
+            ModelObject* pModelObject = pRend->pModelObject;
+            MeshSub* pMeshSub = pRend->pMeshSub;
+
+            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            }
+
+            drawModelObjectRendPipeline(commandBuffer, 
+                                        pRend, 
+                                        pMeshSub, 
+                                        pRend->pPipelineGraphics->poPipelineLayout,
+                                        pRend->pPipelineGraphics->poDescriptorSets,
+                                        pRend->pPipelineGraphics->poPipeline, 
+                                        pRend->pPipelineGraphics->poPipeline_WireFrame);
+            if (pRend->pPipelineGraphics->hasNextSubpass)
+            {
+                vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+                drawModelObjectRendPipeline(commandBuffer, 
+                                            pRend, 
+                                            pMeshSub, 
+                                            pRend->pPipelineGraphics->poPipelineLayout2,
+                                            pRend->pPipelineGraphics->poDescriptorSets2,
+                                            pRend->pPipelineGraphics->poPipeline2, 
+                                            pRend->pPipelineGraphics->poPipeline_WireFrame2);
+            }
+        }
+        void Vulkan_018_SubPass::drawModelObjectRendPipeline(VkCommandBuffer& commandBuffer, 
+                                                            ModelObjectRend* pRend, 
+                                                            MeshSub* pMeshSub, 
+                                                            VkPipelineLayout pipelineLayout,
+                                                            VkDescriptorSetVector& descriptorSets,
+                                                            VkPipeline pipeline, 
+                                                            VkPipeline pipeline_WireFrame)
+        {
+            ModelObject* pModelObject = pRend->pModelObject;
+            if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
+            {
+                if (pipeline_WireFrame != VK_NULL_HANDLE)
+                    bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_WireFrame);
+                else
+                    bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+                if (descriptorSets.size() > 0)
+                {
+                    bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                }
+                if (pMeshSub->poIndexBuffer != nullptr)
+                {
+                    drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+                }
+                else
+                {
+                    draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+                }
+            }
+            else
+            {
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+                if (descriptorSets.size() > 0)
+                {
+                    bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                }
+                if (pMeshSub->poIndexBuffer != nullptr)
+                {
+                    drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+                }
+                else
+                {
+                    draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+                }
+            }
+        }
 
 bool Vulkan_018_SubPass::beginRenderImgui()
 {
@@ -2011,107 +2097,6 @@ void Vulkan_018_SubPass::endRenderImgui()
 
 }
 
-void Vulkan_018_SubPass::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
-{   
-    //1> Opaque
-    {
-        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
-    }
-    //2> Transparent
-    {
-        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
-    }
-}
-
-void Vulkan_018_SubPass::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
-{
-    size_t count_rend = aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pRend = aRends[i];
-        if (!pRend->isShow)
-            continue;
-        drawModelObjectRend(commandBuffer, pRend);
-    }
-}
-void Vulkan_018_SubPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
-{
-    ModelObject* pModelObject = pRend->pModelObject;
-    MeshSub* pMeshSub = pRend->pMeshSub;
-
-    VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pMeshSub->poIndexBuffer != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-    }
-
-    drawModelObjectRendPipeline(commandBuffer, 
-                                pRend, 
-                                pMeshSub, 
-                                pRend->pPipelineGraphics->poPipelineLayout,
-                                pRend->pPipelineGraphics->poDescriptorSets,
-                                pRend->pPipelineGraphics->poPipeline, 
-                                pRend->pPipelineGraphics->poPipeline_WireFrame);
-    if (pRend->pPipelineGraphics->hasNextSubpass)
-    {
-        vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
-        drawModelObjectRendPipeline(commandBuffer, 
-                                    pRend, 
-                                    pMeshSub, 
-                                    pRend->pPipelineGraphics->poPipelineLayout2,
-                                    pRend->pPipelineGraphics->poDescriptorSets2,
-                                    pRend->pPipelineGraphics->poPipeline2, 
-                                    pRend->pPipelineGraphics->poPipeline_WireFrame2);
-    }
-}
-void Vulkan_018_SubPass::drawModelObjectRendPipeline(VkCommandBuffer& commandBuffer, 
-                                                     ModelObjectRend* pRend, 
-                                                     MeshSub* pMeshSub, 
-                                                     VkPipelineLayout pipelineLayout,
-                                                     VkDescriptorSetVector& descriptorSets,
-                                                     VkPipeline pipeline, 
-                                                     VkPipeline pipeline_WireFrame)
-{
-    ModelObject* pModelObject = pRend->pModelObject;
-    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-    {
-        if (pipeline_WireFrame != VK_NULL_HANDLE)
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_WireFrame);
-        else
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        if (descriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-        if (pMeshSub->poIndexBuffer != nullptr)
-        {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-        }
-        else
-        {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-        }
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        if (descriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-        if (pMeshSub->poIndexBuffer != nullptr)
-        {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-        }
-        else
-        {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-        }
-    }
-}
-
 void Vulkan_018_SubPass::cleanupCustom()
 {   
     destroyTextures();
@@ -2132,6 +2117,7 @@ void Vulkan_018_SubPass::cleanupCustom()
 
 void Vulkan_018_SubPass::cleanupSwapChain_Custom()
 {
+    F_DELETE(m_pSubPassRenderPass)
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
