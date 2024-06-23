@@ -1081,6 +1081,8 @@ namespace LostPeterVulkan
         FVector4 diffuse;   // diffuse
         FVector4 specular;  // specular
 
+        FMatrix4 depthMVP;  // depthMVP
+
         LightConstants()
             : common(0, 0, 0, 64)
             , position(0.0f, 100.0f, 0.0f)
@@ -1090,6 +1092,8 @@ namespace LostPeterVulkan
             , ambient(1.0f, 1.0f, 1.0f, 1.0f)
             , diffuse(1.0f, 1.0f, 1.0f, 1.0f)
             , specular(1.0f, 1.0f, 1.0f, 1.0f)
+            
+            , depthMVP(FMath::Identity4x4())
         {
 
         }

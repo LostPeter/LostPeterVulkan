@@ -43,6 +43,8 @@ struct LightConstants
     vec4 ambient;     // ambient
     vec4 diffuse;     // diffuse
     vec4 specular;    // specular
+
+    float4x4 depthMVP;  // depthMVP
 };
 //PassConstants
 layout(binding = 0) uniform PassConstants 

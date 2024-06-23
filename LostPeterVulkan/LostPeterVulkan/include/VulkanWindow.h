@@ -108,6 +108,8 @@ namespace LostPeterVulkan
         VkImageViewVector poColorImageViewLists;
 
         VkRenderPass poRenderPass;
+        VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
+
         VkDescriptorSetLayout poDescriptorSetLayout;
         
         VkCommandPool poCommandPoolGraphics;
@@ -174,6 +176,7 @@ namespace LostPeterVulkan
         FVector4 cfg_colorBackground;
         FVector4Vector cfg_colorValues;
         bool cfg_isRenderPassDefaultCustom;
+        bool cfg_isRenderPassShadowMap;
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
@@ -330,6 +333,13 @@ namespace LostPeterVulkan
         //Light
         LightConstants mainLight; //common.x == Vulkan_Light_Directional, can not change
         LightConstants aAdditionalLights[MAX_LIGHT_COUNT];
+
+        float mainLight_FOV; //For mainLight ShadowMap's depthMVP
+        float mainLight_zNear; //For mainLight ShadowMap's depthMVP
+	    float mainLight_zFar; //For mainLight ShadowMap's depthMVP
+        VkFormat mainLight_Format; //For mainLight ShadowMap's depth format
+	    float mainLight_DepthBiasConstant; //For mainLight ShadowMap's constant depth bias factor
+	    float mainLight_DepthBiasSlope; //For mainLight ShadowMap's slope depth bias factor
 
         //Mouse
         FVector2 mousePosLast;
@@ -524,6 +534,7 @@ namespace LostPeterVulkan
 
             virtual void createPipelineObjects();
                 virtual void createRenderPasses();
+                    virtual void createRenderPass_ShadowMap(); 
                     virtual void createRenderPass_Default();
                     virtual void createRenderPass_Custom();
                         virtual void createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass);
@@ -1144,6 +1155,8 @@ namespace LostPeterVulkan
                 virtual void updateRenderCommandBuffers_CustomBeforeDefault();
                 virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_ShadowMap(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshShadowMap(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_EditorCameraAxis(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
@@ -1170,6 +1183,7 @@ namespace LostPeterVulkan
                                                      float depth,
                                                      uint32_t stencil);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);
+                            virtual void SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
                             virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
                             virtual void bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);

@@ -42,6 +42,8 @@ struct LightConstants
     float4 ambient;     // ambient
     float4 diffuse;     // diffuse
     float4 specular;    // specular
+
+    float4x4 depthMVP;  // depthMVP
 };
 //PassConstants
 struct PassConstants

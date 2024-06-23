@@ -25,6 +25,7 @@
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"
 #include "VKPipelineGraphics.h"
+#include "VKShadowMapRenderPass.h"
 
 #include "Base.h"
 #include "EditorBase.h"

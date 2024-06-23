@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-06-18
+* Time:     2024-06-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -13,7 +13,8 @@ struct VSInput
 {
     [[vk::location(0)]]float3 inPosition    : POSITION0;
     [[vk::location(1)]]float4 inColor       : COLOR0;
-    [[vk::location(2)]]float2 inTexCoord    : TEXCOORD0;
+    [[vk::location(2)]]float3 inNormal      : NORMAL0;
+    [[vk::location(3)]]float2 inTexCoord    : TEXCOORD0;
 };
 
 
@@ -78,46 +79,102 @@ struct PassConstants
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
-[[vk::binding(0)]]cbuffer passConsts                : register(b0) 
+[[vk::binding(0)]]cbuffer passConsts               : register(b0) 
 {
     PassConstants passConsts;
 }
 
 
-//GridObjectConstants
-struct GridObjectConstants
+//ObjectConstants
+#define MAX_OBJECT_COUNT 1024
+struct ObjectConstants
 {
     float4x4 g_MatWorld;
-    float4 color;
 };
 
-[[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
+[[vk::binding(1)]]cbuffer objectConsts            : register(b1) 
 {
-    GridObjectConstants gridObjectConsts;
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+}
+
+
+//TextureConstants
+#define MAX_TEXTURE_COUNT 16
+struct TextureConstants
+{
+    float texWidth;
+    float texHeight;
+    float texDepth;
+    float reserve0;
+
+    float texSpeedU;
+    float texSpeedV;
+    float texSpeedW;
+    float reserve1;
+
+    float texChunkMaxX;
+    float texChunkMaxY;
+    float texChunkIndexX;
+    float texChunkIndexY;
+};
+//MaterialConstants
+#define MAX_MATERIAL_COUNT 64
+struct MaterialConstants
+{
+    float4 factorAmbient;
+    float4 factorDiffuse;
+    float4 factorSpecular;
+
+    float shininess;
+    float alpha;
+    float lighting;
+    float indexTextureArray;
+
+    TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
+};
+
+[[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
+{
+    MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
+}
+
+
+//InstanceConstants
+#define MAX_INSTANCE_COUNT 1024
+struct InstanceConstants
+{
+    int offsetObject;
+    int indexObject;
+    int offsetMaterial;
+    int indexMaterial;
+};
+
+[[vk::binding(3)]]cbuffer instanceConsts          : register(b3) 
+{
+    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
 }
 
 
 struct VSOutput
 {
-	float4 outPosition                          : SV_POSITION;
-    [[vk::location(0)]] float3 outWorldPos      : POSITION0;
-    [[vk::location(1)]] float4 outColor         : COLOR0;
-    [[vk::location(2)]] float2 outTexCoord      : TEXCOORD0;
+	float4 outPosition                      : SV_POSITION;
+    [[vk::location(0)]] float4 outColor     : COLOR0;
+    [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
 };
 
 
 VSOutput main(VSInput input, 
-              uint viewIndex : SV_ViewID)
+              uint viewIndex : SV_ViewID,
+              uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
+    ObjectConstants obj = objectConsts[instanceIndex];
 
-    float4 outWorldPos = mul(gridObjectConsts.g_MatWorld, float4(input.inPosition, 1.0));
-    output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, outWorldPos));
-    output.outWorldPos = outWorldPos.xyz / outWorldPos.w;
+    output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, mul(obj.g_MatWorld, float4(input.inPosition, 1.0))));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
-    
+
     return output;
 }

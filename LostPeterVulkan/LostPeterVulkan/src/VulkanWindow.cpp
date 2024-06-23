@@ -393,6 +393,7 @@ namespace LostPeterVulkan
         , poDepthImageMemory(VK_NULL_HANDLE)
         , poDepthImageView(VK_NULL_HANDLE)
         , poRenderPass(VK_NULL_HANDLE)
+        , m_pVKShadowMapRenderPass(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poCommandPoolGraphics(VK_NULL_HANDLE) 
         , poCommandPoolCompute(VK_NULL_HANDLE)
@@ -436,6 +437,7 @@ namespace LostPeterVulkan
 
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
         , cfg_isRenderPassDefaultCustom(false)
+        , cfg_isRenderPassShadowMap(false)
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
@@ -546,6 +548,13 @@ namespace LostPeterVulkan
 
         , pCamera(nullptr)
         , pCameraRight(nullptr)
+
+        , mainLight_FOV(45.0f)
+        , mainLight_zNear(1.0f)
+        , mainLight_zFar(96.0f)
+        , mainLight_Format(VK_FORMAT_D16_UNORM)
+        , mainLight_DepthBiasConstant(1.25f)
+        , mainLight_DepthBiasSlope(1.75f)
 
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
@@ -2187,12 +2196,22 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::createRenderPasses()
     {
-        //1> createRenderPass_Default
+        //1> createRenderPass_ShadowMap
+        createRenderPass_ShadowMap();
+
+        //2> createRenderPass_Default
         createRenderPass_Default();
 
-        //2> createRenderPass_Custom
+        //3> createRenderPass_Custom
         createRenderPass_Custom();
     }
+        void VulkanWindow::createRenderPass_ShadowMap()
+        {
+            m_pVKShadowMapRenderPass = new VKShadowMapRenderPass("RenderPass_ShadowMap");
+            m_pVKShadowMapRenderPass->Init(this->poSwapChainExtent.width, 
+                                           this->poSwapChainExtent.height, 
+                                           this->mainLight_Format);
+        }
         void VulkanWindow::createRenderPass_Default()
         {
             if (HasConfig_RenderPassDefaultCustom())
@@ -6940,6 +6959,14 @@ namespace LostPeterVulkan
                     this->passCB.g_RenderTargetSize_Inv = FVector2(1.0f / this->poViewport.width, 1.0f / this->poViewport.height);
 
                     //Light Settings
+                    if (this->cfg_isRenderPassShadowMap)
+                    {
+                        glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(this->mainLight_FOV), 1.0f, this->mainLight_zNear, this->mainLight_zFar);
+                        glm::mat4 depthViewMatrix = glm::lookAt(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+                        glm::mat4 depthModelMatrix = glm::mat4(1.0f);
+
+                        this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+                    }
                     memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
                     for (int i = 0; i < MAX_LIGHT_COUNT; i++)
                     {
@@ -7665,6 +7692,7 @@ namespace LostPeterVulkan
                     updateRenderPass_SyncComputeGraphics(commandBuffer);
                     updateRenderPass_EditorCameraAxis(commandBuffer);
 
+                    updateRenderPass_ShadowMap(commandBuffer);
                     updateRenderPass_CustomBeforeDefault(commandBuffer);
                     {
                         updateRenderPass_Default(commandBuffer);
@@ -7682,7 +7710,7 @@ namespace LostPeterVulkan
                 {
 
                 }
-                void  VulkanWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
+                void VulkanWindow::updateRenderPass_ShadowMap(VkCommandBuffer& commandBuffer)
                 {
 
                 }
@@ -7715,6 +7743,38 @@ namespace LostPeterVulkan
                     } 
                     endRenderPass(commandBuffer);
                 }
+                void  VulkanWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
+                {
+                    if (this->m_pVKShadowMapRenderPass == nullptr ||
+                        !this->cfg_isRenderPassShadowMap)
+                    {
+                        return;
+                    }
+
+                    beginRenderPass(commandBuffer,
+                                    this->m_pVKShadowMapRenderPass->poRenderPass,
+                                    this->m_pVKShadowMapRenderPass->poFrameBuffer,
+                                    this->poOffset,
+                                    this->poExtent,
+                                    this->cfg_colorBackground,
+                                    1.0f,
+                                    0);
+                     {
+                        //1> Viewport
+                        bindViewport(commandBuffer, this->poViewport, this->poScissor);
+                        
+                        //2> DepthBias
+                        SetDepthBias(commandBuffer, this->mainLight_DepthBiasConstant, 0.0f, this->mainLight_DepthBiasSlope);
+
+                        //3> Showmap Render
+                        drawMeshShadowMap(commandBuffer);
+                    } 
+                    endRenderPass(commandBuffer);
+                }
+                    void VulkanWindow::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
                 void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
                     beginRenderPass(commandBuffer,
@@ -7880,6 +7940,10 @@ namespace LostPeterVulkan
                             }   
                             vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
                             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+                        }
+                        void VulkanWindow::SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
+                        {
+                            vkCmdSetDepthBias(commandBuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);
                         }
                         void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
                         {
@@ -8170,6 +8234,7 @@ namespace LostPeterVulkan
                 //4> RenderPass
                 destroyVkRenderPass(this->poRenderPass);
                 this->poRenderPass = VK_NULL_HANDLE;
+                F_DELETE(m_pVKShadowMapRenderPass)
 
                 //5> SwapChainImageViews
                 count = this->poSwapChainImageViews.size();
