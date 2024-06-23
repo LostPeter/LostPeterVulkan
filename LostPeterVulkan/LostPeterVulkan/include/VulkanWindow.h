@@ -23,7 +23,52 @@ namespace LostPeterVulkan
         VulkanWindow(int width, int height, String name);
         virtual ~VulkanWindow();
 
+    ///////////////////////// Internal /////////////////////////
     public:
+        //RenderPass
+        VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
+
+        //DescriptorSetLayouts
+        VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts_Internal;
+        VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout_Internal;
+        std::map<String, StringVector> m_mapName2Layouts_Internal;
+
+        //ShaderModule
+        VkShaderModuleVector m_aVkShaderModules_Internal;
+        VkShaderModuleMap m_mapVkShaderModules_Internal;
+
+        //PipelineLayout
+        VkPipelineLayoutVector m_aVkPipelineLayouts_Internal;
+        VkPipelineLayoutMap m_mapVkPipelineLayouts_Internal;
+
+    public:
+        //DescriptorSetLayouts
+        virtual VkDescriptorSetLayout FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
+        virtual StringVector* FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout);
+
+        //ShaderModule
+        virtual VkShaderModule FindShaderModule_Internal(const String& nameShaderModule);
+
+        //PipelineLayout
+        virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
+
+    protected:
+        virtual void createResourceInternal();
+        virtual void destroyResourceInternal();
+
+        //DescriptorSetLayouts
+        virtual void destroyDescriptorSetLayouts_Internal();
+        virtual void createDescriptorSetLayouts_Internal();
+
+        //ShaderModule
+        virtual void destroyShaderModules_Internal();
+        virtual void createShaderModules_Internal();
+
+        //PipelineLayout
+        virtual void destroyPipelineLayouts_Internal();
+        virtual void createPipelineLayouts_Internal();
+    ///////////////////////// Internal /////////////////////////
+
     public:
         //Mesh
         virtual Mesh* CreateMesh(const MeshInfo* pMI);
@@ -108,8 +153,6 @@ namespace LostPeterVulkan
         VkImageViewVector poColorImageViewLists;
 
         VkRenderPass poRenderPass;
-        VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
-
         VkDescriptorSetLayout poDescriptorSetLayout;
         
         VkCommandPool poCommandPoolGraphics;
@@ -144,7 +187,6 @@ namespace LostPeterVulkan
 
         VkDescriptorPool poDescriptorPool;
         VkDescriptorSetVector poDescriptorSets;
-
 
         //Synchronization Objects
         VkSemaphoreVector poPresentCompleteSemaphores;

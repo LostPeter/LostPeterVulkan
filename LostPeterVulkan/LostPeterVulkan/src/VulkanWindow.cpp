@@ -26,6 +26,183 @@ namespace LostPeterVulkan
     int VulkanWindow::s_maxFramesInFight = 2;
     
     
+    /////////////////////////// VulkanWindow Internal /////////////
+    void VulkanWindow::createResourceInternal()
+    {
+        createDescriptorSetLayouts_Internal();
+        createPipelineLayouts_Internal();
+        createShaderModules_Internal();
+    }
+    void VulkanWindow::destroyResourceInternal()
+    {
+        destroyDescriptorSetLayouts_Internal();
+        destroyPipelineLayouts_Internal();
+        destroyShaderModules_Internal();
+    }
+
+    //DescriptorSetLayouts
+    static const int g_DescriptorSetLayoutCount_Internal = 1;
+    static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
+    {
+        "Pass",
+    };
+    void VulkanWindow::destroyDescriptorSetLayouts_Internal()
+    {
+        size_t count = this->m_aVkDescriptorSetLayouts_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts_Internal[i]);
+        }
+        this->m_aVkDescriptorSetLayouts_Internal.clear();
+        this->m_mapVkDescriptorSetLayout_Internal.clear();
+        this->m_mapName2Layouts_Internal.clear();
+    }   
+    void VulkanWindow::createDescriptorSetLayouts_Internal()
+    {
+        for (int i = 0; i < g_DescriptorSetLayoutCount_Internal; i++)
+        {
+            String nameLayout(g_DescriptorSetLayoutNames_Internal[i]);
+            StringVector aLayouts = FUtilString::Split(nameLayout, "-");
+            VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
+            if (vkDescriptorSetLayout == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** VulkanWindow::createDescriptorSetLayouts_Internal: Failed to create descriptor set layout: " + nameLayout;
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            this->m_aVkDescriptorSetLayouts_Internal.push_back(vkDescriptorSetLayout);
+            this->m_mapVkDescriptorSetLayout_Internal[nameLayout] = vkDescriptorSetLayout;
+            this->m_mapName2Layouts_Internal[nameLayout] = aLayouts;
+
+            F_LogInfo("VulkanWindow::createDescriptorSetLayouts_Internal: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        }
+    }
+    VkDescriptorSetLayout VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
+    {
+        VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout_Internal.find(nameDescriptorSetLayout);
+        if (itFind == this->m_mapVkDescriptorSetLayout_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+    StringVector* VulkanWindow::FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout)
+    {
+        std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts_Internal.find(nameDescriptorSetLayout);
+        if (itFind == this->m_mapName2Layouts_Internal.end())
+        {
+            return nullptr;
+        }
+        return &(itFind->second);
+    }
+
+    //ShaderModule
+    static const int g_ShaderCount_Internal = 2;
+    static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
+    {
+        //name                                                     //type               //path
+        ///////////////////////////////////////// vert /////////////////////////////////////////
+        "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
+
+        ///////////////////////////////////////// tesc /////////////////////////////////////////
+    
+
+        ///////////////////////////////////////// tese /////////////////////////////////////////
+    
+
+        ///////////////////////////////////////// geom /////////////////////////////////////////
+
+        ///////////////////////////////////////// frag /////////////////////////////////////////
+        "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
+
+        
+        ///////////////////////////////////////// comp /////////////////////////////////////////
+        
+
+    };
+    void VulkanWindow::destroyShaderModules_Internal()
+    {
+        size_t count = this->m_aVkShaderModules_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkShaderModule& vkShaderModule= this->m_aVkShaderModules_Internal[i];
+            destroyVkShaderModule(vkShaderModule);
+        }
+        this->m_aVkShaderModules_Internal.clear();
+        this->m_mapVkShaderModules_Internal.clear();
+    }
+    void VulkanWindow::createShaderModules_Internal()
+    {
+        for (int i = 0; i < g_ShaderCount_Internal; i++)
+        {
+            String shaderName = g_ShaderModulePaths_Internal[3 * i + 0];
+            String shaderType = g_ShaderModulePaths_Internal[3 * i + 1];
+            String shaderPath = g_ShaderModulePaths_Internal[3 * i + 2];
+
+            VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
+            this->m_aVkShaderModules_Internal.push_back(shaderModule);
+            this->m_mapVkShaderModules_Internal[shaderName] = shaderModule;
+            F_LogInfo("VulkanWindow::createShaderModules_Internal: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
+        }
+    }
+    VkShaderModule VulkanWindow::FindShaderModule_Internal(const String& nameShaderModule)
+    {
+        VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules_Internal.find(nameShaderModule);
+        if (itFind == this->m_mapVkShaderModules_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
+    //PipelineLayout
+    void VulkanWindow::destroyPipelineLayouts_Internal()
+    {
+        size_t count = this->m_aVkPipelineLayouts_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            destroyVkPipelineLayout(this->m_aVkPipelineLayouts_Internal[i]);
+        }
+        this->m_aVkPipelineLayouts_Internal.clear();
+        this->m_mapVkPipelineLayouts_Internal.clear();
+    }
+    void VulkanWindow::createPipelineLayouts_Internal()
+    {   
+        for (int i = 0; i < g_DescriptorSetLayoutCount_Internal; i++)
+        {
+            String nameDSL(g_DescriptorSetLayoutNames_Internal[i]);
+            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(nameDSL);
+            if (vkDescriptorSetLayout == VK_NULL_HANDLE)
+            {
+                F_LogError("*********************** VulkanWindow::createPipelineLayouts_Internal: Can not find DescriptorSetLayout by name: [%s]", nameDSL.c_str());
+                return;
+            }
+
+            VkDescriptorSetLayoutVector aDescriptorSetLayout;
+            aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
+            VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+            if (vkPipelineLayout == VK_NULL_HANDLE)
+            {
+                F_LogError("*********************** VulkanWindow::createPipelineLayouts_Internal: createVkPipelineLayout failed !");
+                return;
+            }
+
+            this->m_aVkPipelineLayouts_Internal.push_back(vkPipelineLayout);
+            this->m_mapVkPipelineLayouts_Internal[nameDSL] = vkPipelineLayout;
+        }
+    }
+    VkPipelineLayout VulkanWindow::FindPipelineLayout_Internal(const String& namePipelineLayout)
+    {
+        VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts_Internal.find(namePipelineLayout);
+        if (itFind == this->m_mapVkPipelineLayouts_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
+
     /////////////////////////// VulkanWindow //////////////////////
     Mesh* VulkanWindow::CreateMesh(const MeshInfo* pMI)
     {
@@ -393,7 +570,6 @@ namespace LostPeterVulkan
         , poDepthImageMemory(VK_NULL_HANDLE)
         , poDepthImageView(VK_NULL_HANDLE)
         , poRenderPass(VK_NULL_HANDLE)
-        , m_pVKShadowMapRenderPass(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poCommandPoolGraphics(VK_NULL_HANDLE) 
         , poCommandPoolCompute(VK_NULL_HANDLE)
@@ -490,6 +666,9 @@ namespace LostPeterVulkan
         , imgui_DescriptorPool(VK_NULL_HANDLE)
         , imgui_PathIni("")
         , imgui_PathLog("")
+
+        //Internal
+        , m_pVKShadowMapRenderPass(nullptr)
 
         , poTerrainHeightMapData(nullptr)
         , poTerrainHeightMapDataFloat(nullptr)
@@ -5066,7 +5245,10 @@ namespace LostPeterVulkan
             //1> createVkPipelineCache
             createVkPipelineCache();
 
-            //2> createCustomBeforePipeline
+            //2> createResourceInternal
+            createResourceInternal();
+
+            //3> createCustomBeforePipeline
             createCustomBeforePipeline();
         }
         F_LogInfo("**<2-2-4> VulkanWindow::preparePipeline end **");
@@ -8197,6 +8379,7 @@ namespace LostPeterVulkan
                 cleanupSwapChain_Editor();
                 cleanupSwapChain_Terrain();
                 cleanupSwapChain_Default();
+                destroyResourceInternal();
 
                 //1> DepthImage/ColorImage
                 destroyVkImage(this->poDepthImage, this->poDepthImageMemory, this->poDepthImageView);
