@@ -362,10 +362,11 @@ public:
         virtual ~SubPassRenderPass();
 
     public:
-        //Attachment
+        //Attachment Color
         VkImageVector aColorImageLists;
         VkDeviceMemoryVector aColorImageMemoryLists;
         VkImageViewVector aColorImageViewLists;
+        FVector4Vector aColors;
 
         VkSampler sampler;
         VkDescriptorImageInfo imageInfo;
@@ -380,7 +381,9 @@ public:
     public:
         void Destroy();
 
-        virtual void Init(uint32_t width, uint32_t height, int countColorAttachment);
+        virtual void Init(uint32_t width, 
+                          uint32_t height, 
+                          int countColorAttachment);
     
     public:
         void CleanupSwapChain();

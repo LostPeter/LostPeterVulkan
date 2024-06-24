@@ -733,7 +733,13 @@ namespace LostPeterVulkan
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();
     }
 
-
+    VkPipelineColorBlendAttachmentState Util_PipelineColorBlendAttachmentState(VkColorComponentFlags colorWriteMask, VkBool32 blendEnable)
+    {
+        VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = {};
+        pipelineColorBlendAttachmentState.colorWriteMask = colorWriteMask;
+        pipelineColorBlendAttachmentState.blendEnable = blendEnable;
+        return pipelineColorBlendAttachmentState;
+    }
 
     ////////////////////////////// Class ///////////////////////////////
     MeshInfo::MeshInfo()

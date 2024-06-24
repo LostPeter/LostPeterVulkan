@@ -344,6 +344,8 @@ namespace LostPeterVulkan
     typedef std::vector<VkFormat> VkFormatVector;
     typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
     typedef std::vector<VkClearValue> VkClearValueVector;
+
+    typedef std::vector<VkPipelineColorBlendAttachmentState> VkPipelineColorBlendAttachmentStateVector;
     
     typedef std::vector<VkQueueFamilyProperties> VkQueueFamilyPropertiesVector;
 
@@ -392,6 +394,8 @@ namespace LostPeterVulkan
     vulkanExport VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
     vulkanExport VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type);
 
+    vulkanExport VkPipelineColorBlendAttachmentState Util_PipelineColorBlendAttachmentState(VkColorComponentFlags colorWriteMask, VkBool32 blendEnable);
+    
 
 ////////////////////////////// Class ///////////////////////////////
     struct LightConstants;
