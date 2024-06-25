@@ -24,13 +24,10 @@ struct VSOutput
 
 float4 main(VSOutput input) : SV_TARGET
 {
-    //return float4(1.0, 1.0, 1.0, 1.0);
-
     float4 colorRed = colorAttach_Red.SubpassLoad();
     float4 colorGreen = colorAttach_Green.SubpassLoad();
     float4 colorBlue = colorAttach_Blue.SubpassLoad();
     
-    //float3 outColor = colorRed.xyz;
     float3 outColor = colorRed.xyz + colorGreen.xyz + colorBlue.xyz;            
     return float4(outColor, 1.0);
 }

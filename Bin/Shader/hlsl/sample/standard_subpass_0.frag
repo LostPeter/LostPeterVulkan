@@ -28,7 +28,6 @@ struct PSOutput {
 PSOutput main(VSOutput input)
 {
     float3 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
-    //outColor.xyz *= input.inColor.rgb;
     
     PSOutput ret = (PSOutput)0;
     ret.oColor0 = float4(0.0f, 0.0f, 0.0f, 0.0f);
