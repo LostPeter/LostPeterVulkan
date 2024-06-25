@@ -366,10 +366,9 @@ public:
         VkImageVector aColorImageLists;
         VkDeviceMemoryVector aColorImageMemoryLists;
         VkImageViewVector aColorImageViewLists;
-        FVector4Vector aColors;
-
         VkSampler sampler;
-        VkDescriptorImageInfo imageInfo;
+        FVector4Vector aColors;
+        VkDescriptorImageInfoVector aImageInfos;
 
         //RenderPass
         VkRenderPass poRenderPass_SubPass;
@@ -461,6 +460,7 @@ protected:
                                                 VkPipeline pipeline, 
                                                 VkPipeline pipeline_WireFrame);
 
+            virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
 
         virtual bool beginRenderImgui();
             virtual void cameraReset();

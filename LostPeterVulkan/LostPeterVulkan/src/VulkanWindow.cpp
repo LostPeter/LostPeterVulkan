@@ -32,19 +32,249 @@ namespace LostPeterVulkan
         createDescriptorSetLayouts_Internal();
         createPipelineLayouts_Internal();
         createShaderModules_Internal();
+
+        createPipelineGraphics_Internal();
     }
     void VulkanWindow::destroyResourceInternal()
     {
+        destroyPipelineGraphics_Internal();
+
         destroyDescriptorSetLayouts_Internal();
         destroyPipelineLayouts_Internal();
         destroyShaderModules_Internal();
     }
 
+    void VulkanWindow::loadInternal()
+    {
+        createMeshes_Internal();
+        createTextures_Internal();
+    }
+    void VulkanWindow::cleanupInternal()
+    {
+        destroyTextures_Internal();
+        destroyMeshes_Internal();
+    }
+
+    //Mesh
+    static const int g_MeshCount_Internal = 4;
+    static const char* g_MeshPaths_Internal[5 * g_MeshCount_Internal] =
+    {
+        //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+        "quad",             "Pos3Color4Tex2",                       "geometry",         "EntityQuad",               "", //plane
+        "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
+        "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
+        "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+
+    };
+    static bool g_MeshIsFlipYs_Internal[g_MeshCount_Internal] = 
+    {
+        true, //quad
+        true, //plane
+        false, //cube
+        false, //sphere
+
+    };
+    static bool g_MeshIsTranformLocals_Internal[g_MeshCount_Internal] = 
+    {
+        false, //quad
+        false, //plane  
+        false, //cube
+        false, //sphere
+
+    };
+    static FMatrix4 g_MeshTranformLocals_Internal[g_MeshCount_Internal] = 
+    {
+        FMath::ms_mat4Unit, //plane
+        FMath::ms_mat4Unit, //plane
+        FMath::ms_mat4Unit, //cube
+        FMath::ms_mat4Unit, //sphere
+
+    };
+    void VulkanWindow::destroyMeshes_Internal()
+    {
+        size_t count = this->m_aMeshes_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Mesh* pMesh = this->m_aMeshes_Internal[i];
+            delete pMesh;
+        }
+        this->m_aMeshes_Internal.clear();
+        this->m_mapMeshes_Internal.clear();
+    }
+    void VulkanWindow::createMeshes_Internal()
+    {
+        for (int i = 0; i < g_MeshCount_Internal; i++)
+        {
+            String nameMesh = g_MeshPaths_Internal[5 * i + 0];
+            String nameVertexType = g_MeshPaths_Internal[5 * i + 1];
+            String nameMeshType = g_MeshPaths_Internal[5 * i + 2];
+            String nameGeometryType = g_MeshPaths_Internal[5 * i + 3];
+            String pathMesh = g_MeshPaths_Internal[5 * i + 4];
+            
+            FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
+            FMeshType typeMesh = F_ParseMeshType(nameMeshType);
+            FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
+            if (!nameGeometryType.empty())
+            {
+                typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
+            }
+
+            Mesh* pMesh = new Mesh(0,
+                                   nameMesh,
+                                   pathMesh,
+                                   typeMesh,
+                                   typeVertex,
+                                   typeGeometryType,
+                                   nullptr);
+            bool isFlipY = g_MeshIsFlipYs_Internal[i];
+            bool isTransformLocal = g_MeshIsTranformLocals_Internal[i];
+            if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals_Internal[i]))
+            {
+                String msg = "*********************** VulkanWindow::createMeshes_Internal: create mesh: [" + nameMesh + "] failed !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            this->m_aMeshes_Internal.push_back(pMesh);
+            this->m_mapMeshes_Internal[nameMesh] = pMesh;
+
+            F_LogInfo("VulkanWindow::createMeshes_Internal: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+                      nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
+        }
+    }
+    Mesh* VulkanWindow::FindMesh_Internal(const String& nameMesh)
+    {
+        MeshPtrMap::iterator itFind = this->m_mapMeshes_Internal.find(nameMesh);
+        if (itFind == this->m_mapMeshes_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
+    //Texture
+    static const int g_TextureCount_Internal = 1;
+    static const char* g_TexturePaths_Internal[5 * g_TextureCount_Internal] = 
+    {
+        //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
+        "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
+        
+    };
+    static FTexturePixelFormatType g_TextureFormats_Internal[g_TextureCount_Internal] = 
+    {
+        F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
+
+
+    };
+    static FTextureFilterType g_TextureFilters_Internal[g_TextureCount_Internal] = 
+    {
+        F_TextureFilter_Bilinear, //texture2d
+
+
+    };
+    static FTextureAddressingType g_TextureAddressings_Internal[g_TextureCount_Internal] = 
+    {
+        F_TextureAddressing_Clamp, //texture2d
+
+
+    };
+    static FTextureBorderColorType g_TextureBorderColors_Internal[g_TextureCount_Internal] = 
+    {
+        F_TextureBorderColor_OpaqueBlack, //texture2d
+
+    
+
+    };
+    static int g_TextureSizes_Internal[3 * g_TextureCount_Internal] = 
+    {
+        512,    512,    1, //texture2d
+
+    
+
+    };
+    static float g_TextureAnimChunks_Internal[2 * g_TextureCount_Internal] = 
+    {
+        0,    0, //texture2d
+
+
+    };
+    void VulkanWindow::destroyTextures_Internal()
+    {
+        size_t count = this->m_aTextures_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Texture* pTexture = this->m_aTextures_Internal[i];
+            delete pTexture;
+        }
+        this->m_aTextures_Internal.clear();
+        this->m_mapTextures_Internal.clear();
+    }
+    void VulkanWindow::createTextures_Internal()
+    {
+        for (int i = 0; i < g_TextureCount_Internal; i++)
+        {
+            String nameTexture = g_TexturePaths_Internal[5 * i + 0];
+            String nameType = g_TexturePaths_Internal[5 * i + 1];
+            FTextureType typeTexture = F_ParseTextureType(nameType);
+            String nameIsRenderTarget = g_TexturePaths_Internal[5 * i + 2];
+            bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
+            String nameIsGraphicsComputeShared = g_TexturePaths_Internal[5 * i + 3];
+            bool isGraphicsComputeShared = FUtilString::ParserBool(nameIsGraphicsComputeShared);
+            String pathTextures = g_TexturePaths_Internal[5 * i + 4];
+
+            StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
+            Texture* pTexture = new Texture(0,
+                                            nameTexture,
+                                            aPathTexture,
+                                            typeTexture,
+                                            g_TextureFormats_Internal[i],
+                                            g_TextureFilters_Internal[i],
+                                            g_TextureAddressings_Internal[i],
+                                            g_TextureBorderColors_Internal[i],
+                                            isRenderTarget,
+                                            isGraphicsComputeShared);
+            pTexture->texChunkMaxX = g_TextureAnimChunks_Internal[i * 2 + 0];
+            pTexture->texChunkMaxY = g_TextureAnimChunks_Internal[i * 2 + 1];
+            if (pTexture->texChunkMaxX > 0 && 
+                pTexture->texChunkMaxY > 0)
+            {
+                pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
+            }
+            pTexture->AddRef();
+
+            int width = g_TextureSizes_Internal[3 * i + 0];
+            int height = g_TextureSizes_Internal[3 * i + 1];
+            int depth = g_TextureSizes_Internal[3 * i + 1];
+            pTexture->LoadTexture(width, 
+                                  height,
+                                  depth);
+
+            this->m_aTextures_Internal.push_back(pTexture);
+            this->m_mapTextures_Internal[nameTexture] = pTexture;
+
+            F_LogInfo("VulkanWindow::createTextures_Internal: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+                      nameTexture.c_str(), 
+                      nameType.c_str(), 
+                      isRenderTarget ? "true" : "false",
+                      pathTextures.c_str());
+        }
+    }
+    Texture* VulkanWindow::FindTexture_Internal(const String& nameTexture)
+    {
+        TexturePtrMap::iterator itFind = this->m_mapTextures_Internal.find(nameTexture);
+        if (itFind == this->m_mapTextures_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 1;
+    static const int g_DescriptorSetLayoutCount_Internal = 2;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
+        "ObjectCopyBlit-TextureFrameColor",
     };
     void VulkanWindow::destroyDescriptorSetLayouts_Internal()
     {
@@ -54,7 +284,7 @@ namespace LostPeterVulkan
             destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts_Internal[i]);
         }
         this->m_aVkDescriptorSetLayouts_Internal.clear();
-        this->m_mapVkDescriptorSetLayout_Internal.clear();
+        this->m_mapVkDescriptorSetLayouts_Internal.clear();
         this->m_mapName2Layouts_Internal.clear();
     }   
     void VulkanWindow::createDescriptorSetLayouts_Internal()
@@ -71,7 +301,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg);
             }
             this->m_aVkDescriptorSetLayouts_Internal.push_back(vkDescriptorSetLayout);
-            this->m_mapVkDescriptorSetLayout_Internal[nameLayout] = vkDescriptorSetLayout;
+            this->m_mapVkDescriptorSetLayouts_Internal[nameLayout] = vkDescriptorSetLayout;
             this->m_mapName2Layouts_Internal[nameLayout] = aLayouts;
 
             F_LogInfo("VulkanWindow::createDescriptorSetLayouts_Internal: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
@@ -79,8 +309,8 @@ namespace LostPeterVulkan
     }
     VkDescriptorSetLayout VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
     {
-        VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout_Internal.find(nameDescriptorSetLayout);
-        if (itFind == this->m_mapVkDescriptorSetLayout_Internal.end())
+        VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayouts_Internal.find(nameDescriptorSetLayout);
+        if (itFind == this->m_mapVkDescriptorSetLayouts_Internal.end())
         {
             return nullptr;
         }
@@ -97,11 +327,12 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 2;
+    static const int g_ShaderCount_Internal = 4;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
         ///////////////////////////////////////// vert /////////////////////////////////////////
+        "vert_standard_copy_blit",                                "vert",              "Assets/Shader/standard_copy_blit.vert.spv", //standard_copy_blit vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
@@ -113,8 +344,8 @@ namespace LostPeterVulkan
         ///////////////////////////////////////// geom /////////////////////////////////////////
 
         ///////////////////////////////////////// frag /////////////////////////////////////////
+        "frag_standard_copy_blit",                                "frag",              "Assets/Shader/standard_copy_blit.frag.spv", //standard_copy_blit frag
         "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
-
         
         ///////////////////////////////////////// comp /////////////////////////////////////////
         
@@ -200,6 +431,194 @@ namespace LostPeterVulkan
             return nullptr;
         }
         return itFind->second;
+    }
+
+    //PipelineGraphics
+    void VulkanWindow::destroyPipelineGraphics_Internal()
+    {
+        //1> PipelineGraphics_CopyBlit
+        destroyPipelineGraphics_CopyBlit();
+
+    }
+        void VulkanWindow::destroyPipelineGraphics_CopyBlit()
+        {
+            F_DELETE(m_pPipelineGraphics_CopyBlit)
+            if (this->m_vkBuffer_CopyBlit != VK_NULL_HANDLE)
+            {
+                destroyVkBuffer(this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
+            }
+            this->m_vkBuffer_CopyBlit = VK_NULL_HANDLE;
+            this->m_vkBuffersMemory_CopyBlit = VK_NULL_HANDLE;
+        }
+    void VulkanWindow::createPipelineGraphics_Internal()
+    {
+        //1> PipelineGraphics_CopyBlit
+        createPipelineGraphics_CopyBlit();
+
+    }
+        void VulkanWindow::createPipelineGraphics_CopyBlit()
+        {
+            this->m_pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineGraphics-QuadBlit");
+            String nameDescriptorSetLayout = "ObjectCopyBlit-TextureFrameColor";
+            this->m_pPipelineGraphics_CopyBlit->nameDescriptorSetLayout = nameDescriptorSetLayout;
+            this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(nameDescriptorSetLayout);
+            this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayout = FindDescriptorSetLayout_Internal(nameDescriptorSetLayout);
+            this->m_pPipelineGraphics_CopyBlit->poPipelineLayout = FindPipelineLayout_Internal(nameDescriptorSetLayout);
+
+            F_Assert(this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames != nullptr &&
+                     this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayout != nullptr &&
+                     this->m_pPipelineGraphics_CopyBlit->poPipelineLayout != nullptr &&
+                     "VulkanWindow::createPipelineGraphics_CopyBlit")
+
+            //VkBuffer
+            {
+                float width = (float)this->poSwapChainExtent.width;
+                float height = (float)this->poSwapChainExtent.height;
+                this->m_objectCB_CopyBlit.offsetX = 0.0f;
+                this->m_objectCB_CopyBlit.offsetY = 0.0f;
+                this->m_objectCB_CopyBlit.scaleX = 2.0f;
+                this->m_objectCB_CopyBlit.scaleY = 2.0f;
+                VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
+                UpdateBuffer_Graphics_CopyBlit(this->m_objectCB_CopyBlit);
+            }
+            //VkDescriptorSets
+            {
+                createVkDescriptorSets(this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->m_pPipelineGraphics_CopyBlit->poDescriptorSets);
+            }
+            //VkPipeline
+            {
+                VkStencilOpState stencilOpFront; 
+                VkStencilOpState stencilOpBack;
+
+                VkViewportVector aViewports;
+                aViewports.push_back(this->poViewport);
+                VkRect2DVector aScissors;
+                aScissors.push_back(this->poScissor);
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
+                String nameShaderVert = "vert_standard_copy_blit";
+                String nameShaderFrag = "frag_standard_copy_blit";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          nameShaderFrag,
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_Graphics))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlit: Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                //m_pPipelineGraphics_CopyBlit->poPipeline
+                this->m_pPipelineGraphics_CopyBlit->poPipeline = createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                          false, 0, 3,
+                                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                          this->poRenderPass, this->m_pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                          VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                          VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                          VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                          VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                if (this->m_pPipelineGraphics_CopyBlit->poPipeline == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlit: Failed to create pipeline graphics for [PipelineGraphics_CopyBlit] !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlit: [PipelineGraphics_CopyBlit] Create pipeline graphics success !");
+
+                //m_pPipelineGraphics_CopyBlit->poPipeline_WireFrame
+                this->m_pPipelineGraphics_CopyBlit->poPipeline_WireFrame = createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                    false, 0, 3,
+                                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                    this->poRenderPass, this->m_pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                    VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                    VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                    VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                    VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                    VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                if (this->m_pPipelineGraphics_CopyBlit->poPipeline_WireFrame == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlit: Failed to create pipeline graphics wire frame for [PipelineGraphics_CopyBlit] !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlit: [PipelineGraphics_CopyBlit] Create pipeline graphics wire frame success !");
+            }
+        }
+
+    void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo)
+    {
+        StringVector* pDescriptorSetLayoutNames = this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames;
+        F_Assert(pDescriptorSetLayoutNames != nullptr && "VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlit")
+        size_t count_ds = this->m_pPipelineGraphics_CopyBlit->poDescriptorSets.size();
+        for (size_t i = 0; i < count_ds; i++)
+        {
+            VkWriteDescriptorSetVector descriptorWrites;
+
+            size_t count_names = pDescriptorSetLayoutNames->size();
+            for (size_t j = 0; j < count_names; j++)
+            {
+                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
+                {
+                    VkDescriptorBufferInfo bufferInfo_ObjectCopyBlit = {};
+                    bufferInfo_ObjectCopyBlit.buffer = this->m_vkBuffer_CopyBlit;
+                    bufferInfo_ObjectCopyBlit.offset = 0;
+                    bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
+                    pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                this->m_pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                                j,
+                                                0,
+                                                1,
+                                                bufferInfo_ObjectCopyBlit);
+                }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
+                {
+                    pushVkDescriptorSet_Image(descriptorWrites,
+                                              this->m_pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                              j,
+                                              0,
+                                              1,
+                                              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                              const_cast<VkDescriptorImageInfo&>(imageInfo));
+                }
+                else
+                {
+                    String msg = "*********************** VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlit: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+            }
+            updateVkDescriptorSets(descriptorWrites);
+        }
+    }
+    void VulkanWindow::UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object)
+    {
+        m_objectCB_CopyBlit = object;
+        updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->m_objectCB_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
+    }
+    void VulkanWindow::Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer)
+    {
+        Mesh* pMesh = this->m_aMeshes_Internal[0];
+        MeshSub* pMeshSub = pMesh->aMeshSubs[0];
+        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        if (this->cfg_isWireFrame)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
+        else
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlit->poPipeline);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_CopyBlit->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
 
 
@@ -669,6 +1088,9 @@ namespace LostPeterVulkan
 
         //Internal
         , m_pVKShadowMapRenderPass(nullptr)
+        , m_pPipelineGraphics_CopyBlit(nullptr)
+        , m_vkBuffer_CopyBlit(VK_NULL_HANDLE)
+        , m_vkBuffersMemory_CopyBlit(VK_NULL_HANDLE)
 
         , poTerrainHeightMapData(nullptr)
         , poTerrainHeightMapDataFloat(nullptr)
@@ -3156,6 +3578,9 @@ namespace LostPeterVulkan
         {
             F_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
             {
+                //0> loadInternal
+                loadInternal();
+
                 //1> loadVertexIndexBuffer
                 loadVertexIndexBuffer();
 
@@ -8110,6 +8535,7 @@ namespace LostPeterVulkan
                         drawMeshDefault(commandBuffer);
                         drawMeshDefault_Custom(commandBuffer);
                         drawMeshDefault_Editor(commandBuffer);
+                        drawMeshDefault_CustomBeforeImgui(commandBuffer);
 
                         //3> ImGui Pass
                         drawMeshDefault_Imgui(commandBuffer);
@@ -8172,6 +8598,10 @@ namespace LostPeterVulkan
                                 this->pEditorCoordinateAxis->Draw(commandBuffer);
                             }
                         }
+                    }
+                    void VulkanWindow::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
+                    {
+
                     }
                     void VulkanWindow::drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer)
                     {
@@ -8394,6 +8824,7 @@ namespace LostPeterVulkan
             cleanupSwapChain();
 
             //1> cleanupCustom/cleanupEditor/cleanupTerrain/cleanupDefault
+            cleanupInternal();
             cleanupCustom();
             cleanupEditor();
             cleanupImGUI();

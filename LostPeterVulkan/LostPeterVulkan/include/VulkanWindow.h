@@ -28,9 +28,24 @@ namespace LostPeterVulkan
         //RenderPass
         VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
 
+        //PipelineGraphics
+        //PipelineGraphics_CopyBlit
+        VKPipelineGraphics* m_pPipelineGraphics_CopyBlit;
+        CopyBlitObjectConstants m_objectCB_CopyBlit;
+        VkBuffer m_vkBuffer_CopyBlit;
+        VkDeviceMemory m_vkBuffersMemory_CopyBlit;
+
+        //Mesh
+        MeshPtrVector m_aMeshes_Internal;
+        MeshPtrMap m_mapMeshes_Internal;    
+
+        //Texture
+        TexturePtrVector m_aTextures_Internal;
+        TexturePtrMap m_mapTextures_Internal;
+
         //DescriptorSetLayouts
         VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts_Internal;
-        VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout_Internal;
+        VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayouts_Internal;
         std::map<String, StringVector> m_mapName2Layouts_Internal;
 
         //ShaderModule
@@ -42,6 +57,12 @@ namespace LostPeterVulkan
         VkPipelineLayoutMap m_mapVkPipelineLayouts_Internal;
 
     public:
+        //Mesh
+        virtual Mesh* FindMesh_Internal(const String& nameMesh);
+
+        //Texture
+        virtual Texture* FindTexture_Internal(const String& nameTexture);
+
         //DescriptorSetLayouts
         virtual VkDescriptorSetLayout FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
         virtual StringVector* FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout);
@@ -52,9 +73,26 @@ namespace LostPeterVulkan
         //PipelineLayout
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
 
+        //PipelineGraphics
+        //PipelineGraphics_CopyBlit
+        virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
+        virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
+        virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
+
     protected:
         virtual void createResourceInternal();
         virtual void destroyResourceInternal();
+
+        virtual void loadInternal();
+        virtual void cleanupInternal();
+
+        //Mesh
+        virtual void destroyMeshes_Internal();
+        virtual void createMeshes_Internal();
+
+        //Texture
+        virtual void destroyTextures_Internal();
+        virtual void createTextures_Internal();
 
         //DescriptorSetLayouts
         virtual void destroyDescriptorSetLayouts_Internal();
@@ -67,6 +105,12 @@ namespace LostPeterVulkan
         //PipelineLayout
         virtual void destroyPipelineLayouts_Internal();
         virtual void createPipelineLayouts_Internal();
+
+        //PipelineGraphics
+        virtual void destroyPipelineGraphics_Internal();
+            virtual void destroyPipelineGraphics_CopyBlit();
+        virtual void createPipelineGraphics_Internal();
+            virtual void createPipelineGraphics_CopyBlit();
     ///////////////////////// Internal /////////////////////////
 
     public:
@@ -1214,6 +1258,7 @@ namespace LostPeterVulkan
                         virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
 

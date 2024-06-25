@@ -361,6 +361,7 @@ namespace LostPeterVulkan
 
     typedef std::vector<VkImage> VkImageVector;
     typedef std::vector<VkImageView> VkImageViewVector;
+    typedef std::vector<VkDescriptorImageInfo> VkDescriptorImageInfoVector;
     typedef std::vector<VkFramebuffer> VkFramebufferVector;
 
     typedef std::vector<VkViewport> VkViewportVector;

@@ -233,6 +233,9 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 /////////////////////////// SubPassRenderPass ///////////////////
 Vulkan_018_SubPass::SubPassRenderPass::SubPassRenderPass(const String& _nameRenderPass)
     : Base(_nameRenderPass)
+    , sampler(VK_NULL_HANDLE)
+    , poRenderPass_SubPass(VK_NULL_HANDLE)
+    , poFrameBuffer_SubPass(VK_NULL_HANDLE)
 {
 
 }
@@ -261,15 +264,19 @@ void Vulkan_018_SubPass::SubPassRenderPass::Destroy()
     this->aColorImageMemoryLists.clear();
     this->aColorImageViewLists.clear();
     this->aColors.clear();
-    
-    Base::GetWindowPtr()->destroyVkImageSampler(this->sampler);
+    this->aImageInfos.clear();
+
+    if (this->sampler != VK_NULL_HANDLE)
+    {
+        Base::GetWindowPtr()->destroyVkImageSampler(this->sampler);
+    }
     this->sampler = VK_NULL_HANDLE;
-
-    Base::GetWindowPtr()->destroyVkFramebuffer(this->poFrameBuffer_SubPass);
+    
+    if (this->poFrameBuffer_SubPass != VK_NULL_HANDLE)
+    {
+        Base::GetWindowPtr()->destroyVkFramebuffer(this->poFrameBuffer_SubPass);
+    }
     this->poFrameBuffer_SubPass = VK_NULL_HANDLE;
-
-    this->imageInfo.imageView = VK_NULL_HANDLE;
-    this->imageInfo.sampler = VK_NULL_HANDLE;
 }
 
 void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width, 
@@ -277,6 +284,15 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
                                                  int countColorAttachment)
 {
     //1> Attachment
+    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                                          F_TextureAddressing_Clamp,
+                                          F_TextureBorderColor_OpaqueWhite,
+                                          false,
+                                          1.0f,
+                                          0.0f,
+                                          1.0f,
+                                          0.0f,
+                                          this->sampler);
     for (int i = 0; i < countColorAttachment; i++)
     {
         VkImage vkColorImage;
@@ -301,7 +317,10 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
                                             vkColorImageMemory);
         this->aColorImageLists.push_back(vkColorImage);
         this->aColorImageMemoryLists.push_back(vkColorImageMemory);
-        this->aColors.push_back(FVector4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (i == 0)
+            this->aColors.push_back(FVector4(0.0f, 0.0f, 0.0f, 0.0f));
+        else
+            this->aColors.push_back(FVector4(0.0f, 0.0f, 0.0f, 1.0f));
 
         Base::GetWindowPtr()->createVkImageView(vkColorImage, 
                                                 VK_IMAGE_VIEW_TYPE_2D,
@@ -311,8 +330,14 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
                                                 1,
                                                 vkColorImageView);
         this->aColorImageViewLists.push_back(vkColorImageView);
+
+        VkDescriptorImageInfo imageInfo = {};
+        imageInfo.sampler = this->sampler;
+        imageInfo.imageView = vkColorImageView;
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        this->aImageInfos.push_back(imageInfo);
     }
-    
+
     //2> RenderPass
     {
         std::vector<VkAttachmentDescription> aAttachmentDescription;
@@ -450,25 +475,15 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         aSubpassDependency.push_back(subpassDependency1);
 
-        // VkSubpassDependency subpassDependency2 = {};
-        // subpassDependency2.srcSubpass = 1;
-        // subpassDependency2.dstSubpass = 2;
-        // subpassDependency2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        // subpassDependency2.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        // subpassDependency2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        // subpassDependency2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        // subpassDependency2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        // aSubpassDependency.push_back(subpassDependency2);
-
-        VkSubpassDependency subpassDependency3 = {};
-        subpassDependency3.srcSubpass = 1;
-        subpassDependency3.dstSubpass = VK_SUBPASS_EXTERNAL;
-        subpassDependency3.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency3.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency3.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency3.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        subpassDependency3.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        aSubpassDependency.push_back(subpassDependency3);
+        VkSubpassDependency subpassDependency2 = {};
+        subpassDependency2.srcSubpass = 1;
+        subpassDependency2.dstSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency2.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency2.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency2);
 
         //6> createVkRenderPass
         if (!Base::GetWindowPtr()->createVkRenderPass("RenderPass_Default_Custom",
@@ -871,6 +886,9 @@ void Vulkan_018_SubPass::createCustomBeforePipeline()
 
     //3> Shader
     createShaderModules();
+
+    //4> Graphics_CopyBlit
+    UpdateDescriptorSets_Graphics_CopyBlit(this->m_pSubPassRenderPass->aImageInfos[0]);
 }   
 void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 {
@@ -1525,17 +1543,14 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                      nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachGreen) || //InputAttachGreen
                      nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachBlue))  //InputAttachBlue
             {
-                VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = this->m_pSubPassRenderPass->aColorImageViewLists[nIndexInputAttach];
-                nIndexInputAttach ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           listDescriptorSets[j],
                                           p,
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
-                                          imageInfo);
+                                          this->m_pSubPassRenderPass->aImageInfos[nIndexInputAttach]);
+                nIndexInputAttach ++;
             }
             else
             {
@@ -1725,6 +1740,11 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
                 }
             }
         }
+
+    void Vulkan_018_SubPass::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
+    {
+        Draw_Graphics_CopyBlit(commandBuffer);
+    }
 
 bool Vulkan_018_SubPass::beginRenderImgui()
 {
