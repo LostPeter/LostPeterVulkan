@@ -355,32 +355,16 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         for (int i = 0; i < count; i++)
         {
             VkAttachmentDescription attachmentColor = {};
-            if (i == 0)
-            {
-                Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
-                                                                  0,
-                                                                  formatColor,
-                                                                  VK_SAMPLE_COUNT_1_BIT,
-                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                                  VK_ATTACHMENT_STORE_OP_STORE,
-                                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
-                                                                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-            }
-            else
-            {
-                Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
-                                                                  0,
-                                                                  formatColor,
-                                                                  VK_SAMPLE_COUNT_1_BIT,
-                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
-                                                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-            }
+            Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
+                                                              0,
+                                                              formatColor,
+                                                              VK_SAMPLE_COUNT_1_BIT,
+                                                              VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                              VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                              VK_IMAGE_LAYOUT_UNDEFINED,
+                                                              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
             
             aAttachmentDescription.push_back(attachmentColor);
             aAttachmentDescription_Colors.push_back(attachmentColor);
@@ -465,23 +449,23 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         aSubpassDependency.push_back(subpassDependency0);
 
-        VkSubpassDependency subpassDependency1 = {};
-        subpassDependency1.srcSubpass = 0;
-        subpassDependency1.dstSubpass = 1;
-        subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        aSubpassDependency.push_back(subpassDependency1);
+        // VkSubpassDependency subpassDependency1 = {};
+        // subpassDependency1.srcSubpass = 0;
+        // subpassDependency1.dstSubpass = 1;
+        // subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        // subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        // subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        // subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        // subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        // aSubpassDependency.push_back(subpassDependency1);
 
         VkSubpassDependency subpassDependency2 = {};
-        subpassDependency2.srcSubpass = 1;
-        subpassDependency2.dstSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency2.srcSubpass = 0;
+        subpassDependency2.dstSubpass = 1; //VK_SUBPASS_EXTERNAL;
         subpassDependency2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         subpassDependency2.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
         subpassDependency2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency2.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
         subpassDependency2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         aSubpassDependency.push_back(subpassDependency2);
 
@@ -983,7 +967,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                      aColorBlendAttachmentState);
+                                                                                      aColorBlendAttachmentState, 0);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
@@ -1015,7 +999,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                            aColorBlendAttachmentState);
+                                                                            aColorBlendAttachmentState, 0);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
@@ -1063,7 +1047,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                                            pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                           aColorBlendAttachmentStateNextSubpass);
+                                                                                           aColorBlendAttachmentStateNextSubpass, 1);
                 if (pRend->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline2 graphics wire frame: " + pRend->nameObjectRend;
@@ -1096,7 +1080,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                                                  pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                                  isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                                  pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                 aColorBlendAttachmentStateNextSubpass);
+                                                                                 aColorBlendAttachmentStateNextSubpass, 1);
                 if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline2 graphics: " + pRend->nameObjectRend;

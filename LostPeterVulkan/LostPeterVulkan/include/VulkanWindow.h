@@ -1071,7 +1071,7 @@ namespace LostPeterVulkan
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                                    VkColorComponentFlags colorWriteMask);
+                                                                    VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
                         virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule tescShaderModule, const String& tescMain,
                                                                     VkShaderModule teseShaderModule, const String& teseMain,
@@ -1085,7 +1085,7 @@ namespace LostPeterVulkan
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                                    VkColorComponentFlags colorWriteMask);
+                                                                    VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
                         virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                                                     bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
@@ -1096,7 +1096,7 @@ namespace LostPeterVulkan
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                                    VkColorComponentFlags colorWriteMask);
+                                                                    VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
                         virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                                                     bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
@@ -1105,7 +1105,7 @@ namespace LostPeterVulkan
                                                                     VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
-                                                                    const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState);
+                                                                    const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass = 0);
 
                 virtual void createComputePipeline();
                     virtual void createComputePipeline_Default();

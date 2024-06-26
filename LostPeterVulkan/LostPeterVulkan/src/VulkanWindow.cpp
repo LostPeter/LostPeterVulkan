@@ -5801,7 +5801,7 @@ namespace LostPeterVulkan
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                               VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                              VkColorComponentFlags colorWriteMask)
+                                                              VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
             {
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
                 //1> Pipeline Shader Stage
@@ -5831,7 +5831,7 @@ namespace LostPeterVulkan
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
                                                 blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
-                                                colorWriteMask);
+                                                colorWriteMask, subpass);
             }
             VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
                                                               VkShaderModule tescShaderModule, const String& tescMain,
@@ -5846,7 +5846,7 @@ namespace LostPeterVulkan
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                               VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                              VkColorComponentFlags colorWriteMask)
+                                                              VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
             {
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
                 //1> Pipeline Shader Stage
@@ -5892,7 +5892,7 @@ namespace LostPeterVulkan
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
                                                 blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
-                                                colorWriteMask);
+                                                colorWriteMask, subpass);
             }
             VkPipeline VulkanWindow::createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                                               bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
@@ -5904,7 +5904,7 @@ namespace LostPeterVulkan
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                               VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                              VkColorComponentFlags colorWriteMask)
+                                                              VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
             {
                 //1> Pipeline VertexInput State
                 VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
@@ -6032,7 +6032,7 @@ namespace LostPeterVulkan
                 pipelineInfo.pDynamicState = &dynamicStateInfo;
                 pipelineInfo.layout = pipelineLayout;
                 pipelineInfo.renderPass = renderPass;
-                pipelineInfo.subpass = 0;
+                pipelineInfo.subpass = subpass;
                 pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
                 pipelineInfo.basePipelineIndex = 0;
 
@@ -6052,7 +6052,7 @@ namespace LostPeterVulkan
                                                               VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
-                                                              const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState)
+                                                              const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass /*= 0*/)
             {
                 //1> Pipeline VertexInput State
                 VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
@@ -6167,7 +6167,7 @@ namespace LostPeterVulkan
                 pipelineInfo.pDynamicState = &dynamicStateInfo;
                 pipelineInfo.layout = pipelineLayout;
                 pipelineInfo.renderPass = renderPass;
-                pipelineInfo.subpass = 0;
+                pipelineInfo.subpass = subpass;
                 pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
                 pipelineInfo.basePipelineIndex = 0;
 
