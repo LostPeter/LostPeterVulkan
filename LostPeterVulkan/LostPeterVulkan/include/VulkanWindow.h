@@ -80,11 +80,11 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
 
     protected:
+        virtual void createInternal();
+        virtual void cleanupInternal();
+
         virtual void createResourceInternal();
         virtual void destroyResourceInternal();
-
-        virtual void loadInternal();
-        virtual void cleanupInternal();
 
         //Mesh
         virtual void destroyMeshes_Internal();
@@ -1054,9 +1054,8 @@ namespace LostPeterVulkan
                 virtual void createVkPipelineCache();
                 virtual void destroyVkPipelineCache(VkPipelineCache vkPipelineCache);
 
-                virtual void preparePipeline();
-                    virtual void createCustomBeforePipeline();
 
+                virtual void createCustomBeforePipeline();
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
                     virtual void createGraphicsPipeline_Terrain();

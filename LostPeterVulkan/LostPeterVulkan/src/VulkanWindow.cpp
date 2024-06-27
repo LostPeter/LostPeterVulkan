@@ -27,32 +27,44 @@ namespace LostPeterVulkan
     
     
     /////////////////////////// VulkanWindow Internal /////////////
-    void VulkanWindow::createResourceInternal()
+    void VulkanWindow::createInternal()
     {
-        createDescriptorSetLayouts_Internal();
-        createPipelineLayouts_Internal();
-        createShaderModules_Internal();
-
-        createPipelineGraphics_Internal();
-    }
-    void VulkanWindow::destroyResourceInternal()
-    {
-        destroyPipelineGraphics_Internal();
-
-        destroyDescriptorSetLayouts_Internal();
-        destroyPipelineLayouts_Internal();
-        destroyShaderModules_Internal();
-    }
-
-    void VulkanWindow::loadInternal()
-    {
+        //Mesh
         createMeshes_Internal();
+        //Texture
         createTextures_Internal();
     }
     void VulkanWindow::cleanupInternal()
     {
+        //Texture
         destroyTextures_Internal();
+        //Mesh
         destroyMeshes_Internal();
+    }
+
+    void VulkanWindow::createResourceInternal()
+    {
+        //DescriptorSetLayout
+        createDescriptorSetLayouts_Internal();
+        //PipelineLayout
+        createPipelineLayouts_Internal();
+        //ShaderModule
+        createShaderModules_Internal();
+
+        //PipelineGraphics
+        createPipelineGraphics_Internal();
+    }
+    void VulkanWindow::destroyResourceInternal()
+    {
+        //PipelineGraphics
+        destroyPipelineGraphics_Internal();
+
+        //ShaderModule
+        destroyShaderModules_Internal();
+        //PipelineLayout
+        destroyPipelineLayouts_Internal();
+        //DescriptorSetLayout
+        destroyDescriptorSetLayouts_Internal();
     }
 
     //Mesh
@@ -1579,16 +1591,24 @@ namespace LostPeterVulkan
             //6> createDescriptorPool
             createDescriptorPool();
 
-            //7> createDescriptorSetLayouts
-            createDescriptorSetLayouts();
-            
+            //7> createVkPipelineCache
+            createVkPipelineCache();
+
             //8> Create Pipeline Objects
             createPipelineObjects();
 
             //9> Create Sync Objects
             createSyncObjects();
 
-            //10> isCreateDevice
+            //10> createInternal
+            createInternal();
+            //11> createResourceInternal
+            createResourceInternal();
+
+            //12> createDescriptorSetLayouts
+            createDescriptorSetLayouts();
+
+            //13> isCreateDevice
             this->isCreateDevice = true;
         }
         F_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
@@ -2738,17 +2758,17 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createDescriptorSetLayouts()
     {
-        F_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts start *****");
+        F_LogInfo("*****<1-12> VulkanWindow::createDescriptorSetLayouts start *****");
         {
             //1> createDescriptorSetLayout_Default
             createDescriptorSetLayout_Default();
-            F_LogInfo("<1-7-1> VulkanWindow::createDescriptorSetLayouts finish !");
+            F_LogInfo("<1-12-1> VulkanWindow::createDescriptorSetLayouts: createDescriptorSetLayout_Default finish !");
 
             //3> createDescriptorSetLayout_Custom
             createDescriptorSetLayout_Custom();
-            F_LogInfo("<1-7-2> VulkanWindow::createDescriptorSetLayouts finish !");
+            F_LogInfo("<1-12-2> VulkanWindow::createDescriptorSetLayouts: createDescriptorSetLayout_Custom finish !");
         }
-        F_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts finish *****");
+        F_LogInfo("*****<1-12> VulkanWindow::createDescriptorSetLayouts finish *****");
     }
     void VulkanWindow::createDescriptorSetLayout_Default()
     {   
@@ -3578,9 +3598,6 @@ namespace LostPeterVulkan
         {
             F_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
             {
-                //0> loadInternal
-                loadInternal();
-
                 //1> loadVertexIndexBuffer
                 loadVertexIndexBuffer();
 
@@ -3590,8 +3607,8 @@ namespace LostPeterVulkan
                 //3> createConstBuffers
                 createConstBuffers();
 
-                //4> preparePipeline
-                preparePipeline();
+                //4> createCustomBeforePipeline
+                createCustomBeforePipeline();
 
                 //5> createGraphicsPipeline
                 createGraphicsPipeline();
@@ -5663,26 +5680,10 @@ namespace LostPeterVulkan
             }
         }
 
-    void VulkanWindow::preparePipeline()
+    void VulkanWindow::createCustomBeforePipeline()
     {
-        F_LogInfo("**<2-2-4> VulkanWindow::preparePipeline start **");
-        {
-            //1> createVkPipelineCache
-            createVkPipelineCache();
-
-            //2> createResourceInternal
-            createResourceInternal();
-
-            //3> createCustomBeforePipeline
-            createCustomBeforePipeline();
-        }
-        F_LogInfo("**<2-2-4> VulkanWindow::preparePipeline end **");
+        F_LogInfo("**<2-2-4> VulkanWindow::createCustomBeforePipeline finish **");
     }
-        void VulkanWindow::createCustomBeforePipeline()
-        {
-            
-        }
-
     void VulkanWindow::createGraphicsPipeline()
     {
         F_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline start **");
@@ -8824,12 +8825,12 @@ namespace LostPeterVulkan
             cleanupSwapChain();
 
             //1> cleanupCustom/cleanupEditor/cleanupTerrain/cleanupDefault
-            cleanupInternal();
             cleanupCustom();
             cleanupEditor();
             cleanupImGUI();
             cleanupTerrain();
             cleanupDefault();
+            cleanupInternal();
 
             //2> VkPipelineCache
             destroyVkPipelineCache(this->poPipelineCache);
@@ -8998,6 +8999,10 @@ namespace LostPeterVulkan
                 //6> DescriptorPool
                 destroyVkDescriptorPool(this->poDescriptorPool);
                 this->poDescriptorPool = VK_NULL_HANDLE;
+
+                //7> VkPipelineCache
+                destroyVkPipelineCache(this->poPipelineCache);
+                this->poPipelineCache = VK_NULL_HANDLE;
             }
             F_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
         }
@@ -9106,9 +9111,13 @@ namespace LostPeterVulkan
             createDepthResources();
             createRenderPasses();
             createFramebuffers();
+
+            createVkPipelineCache();
+            createResourceInternal();
             
             createConstBuffers();
-            preparePipeline();
+            
+            createCustomBeforePipeline();
             createGraphicsPipeline();
             createComputePipeline();
             createDescriptorSets();

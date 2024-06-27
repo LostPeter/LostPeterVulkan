@@ -23,11 +23,6 @@ public:
 public:
 
 protected:
-    //Create Pipeline
-    virtual void createPipeline();
-
-    //Load Assets
-    virtual void loadAssets();
 
 public:
     

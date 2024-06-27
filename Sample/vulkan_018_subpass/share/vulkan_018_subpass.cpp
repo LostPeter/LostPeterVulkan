@@ -309,7 +309,7 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
                                             Base::GetWindowPtr()->poMSAASamples, 
                                             Base::GetWindowPtr()->poSwapChainImageFormat, 
                                             VK_IMAGE_TILING_OPTIMAL, 
-                                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+                                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                                             VK_SHARING_MODE_EXCLUSIVE,
                                             false,
                                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -332,7 +332,8 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         this->aColorImageViewLists.push_back(vkColorImageView);
 
         VkDescriptorImageInfo imageInfo = {};
-        imageInfo.sampler = this->sampler;
+        if (i == 0)
+            imageInfo.sampler = this->sampler;
         imageInfo.imageView = vkColorImageView;
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         this->aImageInfos.push_back(imageInfo);
@@ -348,23 +349,38 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
 
         VkFormat formatColor = Base::GetWindowPtr()->poSwapChainImageFormat;
         VkFormat formatDepth = Base::GetWindowPtr()->poDepthImageFormat;
-        VkFormat formatSwapChain = Base::GetWindowPtr()->poSwapChainImageFormat;
         
         //1> Attachment SceneRender Color 
         int count = (int)aColorImageViewLists.size();
         for (int i = 0; i < count; i++)
         {
             VkAttachmentDescription attachmentColor = {};
-            Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
-                                                              0,
-                                                              formatColor,
-                                                              VK_SAMPLE_COUNT_1_BIT,
-                                                              VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                              VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                              VK_IMAGE_LAYOUT_UNDEFINED,
-                                                              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+            if (i == 0)
+            {
+                Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
+                                                                  0,
+                                                                  formatColor,
+                                                                  VK_SAMPLE_COUNT_1_BIT,
+                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                                  VK_ATTACHMENT_STORE_OP_STORE,
+                                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
+            else
+            {
+                Base::GetWindowPtr()->createAttachmentDescription(attachmentColor,
+                                                                  0,
+                                                                  formatColor,
+                                                                  VK_SAMPLE_COUNT_1_BIT,
+                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+            }
             
             aAttachmentDescription.push_back(attachmentColor);
             aAttachmentDescription_Colors.push_back(attachmentColor);
@@ -389,7 +405,7 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         aAttachmentDescription.push_back(attachmentSR_Depth);
         uint32_t indexDepth = (uint32_t)aAttachmentDescription.size() - 1;
             
-        //3> Subpass 0 - SceneRender
+        //3> Subpass 0
         std::vector<VkAttachmentReference> aAttachmentReference_Colors;
         for (size_t i = 0; i < aAttachmentDescription_Colors.size(); i++)
         {
@@ -415,7 +431,7 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         subpass0_SceneRender.pPreserveAttachments = nullptr;
         aSubpassDescription.push_back(subpass0_SceneRender);
 
-        //4> Subpass 1 - SceneRender 
+        //4> Subpass 1 
         VkAttachmentReference attachRef_Color = {};
         attachRef_Color.attachment = 0;
         attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -449,25 +465,15 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         aSubpassDependency.push_back(subpassDependency0);
 
-        // VkSubpassDependency subpassDependency1 = {};
-        // subpassDependency1.srcSubpass = 0;
-        // subpassDependency1.dstSubpass = 1;
-        // subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        // subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        // subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        // subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        // subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        // aSubpassDependency.push_back(subpassDependency1);
-
-        VkSubpassDependency subpassDependency2 = {};
-        subpassDependency2.srcSubpass = 0;
-        subpassDependency2.dstSubpass = 1; //VK_SUBPASS_EXTERNAL;
-        subpassDependency2.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency2.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        subpassDependency2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        aSubpassDependency.push_back(subpassDependency2);
+        VkSubpassDependency subpassDependency1 = {};
+        subpassDependency1.srcSubpass = 0; 
+        subpassDependency1.dstSubpass = 1; 
+        subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency1.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency1);
 
         //6> createVkRenderPass
         if (!Base::GetWindowPtr()->createVkRenderPass("RenderPass_Default_Custom",
@@ -1546,8 +1552,6 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
 
         updateVkDescriptorSets(descriptorWrites);
     }
-
-    //2> 
 }
 
 void Vulkan_018_SubPass::updateCBs_Custom()

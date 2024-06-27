@@ -18,13 +18,3 @@ Vulkan_000_Window::Vulkan_000_Window(int width, int height, String name)
 {
     
 }
-
-void Vulkan_000_Window::createPipeline()
-{
-
-}
-
-void Vulkan_000_Window::loadAssets()
-{
-
-}

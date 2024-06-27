@@ -95,7 +95,7 @@ namespace LostPeterVulkan
             Base::GetWindowPtr()->createVkImageView(this->poDepthImage, 
                                                     VK_IMAGE_VIEW_TYPE_2D,
                                                     format, 
-                                                    VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                    VK_IMAGE_ASPECT_DEPTH_BIT,
                                                     1, 
                                                     1,
                                                     this->poDepthImageView);
