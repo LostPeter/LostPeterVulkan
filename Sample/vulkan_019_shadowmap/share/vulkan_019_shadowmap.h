@@ -34,6 +34,7 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isCastShadow;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -99,6 +100,7 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isCastShadow(false)
 
             //Uniform
             , countInstance(1)
@@ -254,6 +256,7 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isCastShadow;
 
         //Vertex
         std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
@@ -305,6 +308,7 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isCastShadow(false)
 
             //Vertex
             , poVertexCount(0)

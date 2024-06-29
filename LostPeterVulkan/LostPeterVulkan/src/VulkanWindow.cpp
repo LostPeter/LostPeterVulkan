@@ -51,11 +51,15 @@ namespace LostPeterVulkan
         //ShaderModule
         createShaderModules_Internal();
 
+        //Uniform ConstantBuffer
+        createUniformCB_Internal();
         //PipelineGraphics
         createPipelineGraphics_Internal();
     }
     void VulkanWindow::destroyResourceInternal()
     {
+        //Uniform ConstantBuffer
+        destroyUniformCB_Internal();
         //PipelineGraphics
         destroyPipelineGraphics_Internal();
 
@@ -445,6 +449,47 @@ namespace LostPeterVulkan
         return itFind->second;
     }
 
+    //UniformConstantBuffer
+    void VulkanWindow::destroyUniformCB_Internal()
+    {
+        //1> PassCB
+        destroyUniform_PassCB();
+
+    }
+        void VulkanWindow::destroyUniform_PassCB()
+        {
+            size_t count = this->poBuffers_PassCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                destroyVkBuffer(this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
+            }
+            this->poBuffers_PassCB.clear();
+            this->poBuffersMemory_PassCB.clear();
+        }
+    void VulkanWindow::createUniformCB_Internal()
+    {
+        //1> PassCB
+        createUniform_PassCB();
+
+    }
+        void VulkanWindow::createUniform_PassCB()
+        {
+            VkDeviceSize bufferSize = sizeof(PassConstants);
+            size_t count = this->poSwapChainImages.size();
+            this->poBuffers_PassCB.resize(count);
+            this->poBuffersMemory_PassCB.resize(count);
+
+            for (size_t i = 0; i < count; i++) 
+            {
+                createVkBuffer(bufferSize, 
+                            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            this->poBuffers_PassCB[i], 
+                            this->poBuffersMemory_PassCB[i]);
+            }
+            F_LogInfo("VulkanWindow::createUniform_PassCB: Create Uniform Pass constant buffer success !");
+        }
+
     //PipelineGraphics
     void VulkanWindow::destroyPipelineGraphics_Internal()
     {
@@ -493,6 +538,7 @@ namespace LostPeterVulkan
             //VkDescriptorSets
             {
                 createVkDescriptorSets(this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayout, this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets);
+                UpdateDescriptorSets_Graphics_DepthShadowMap();
             }
             //VkPipeline
             {
@@ -543,6 +589,10 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap()
         {
+            if (this->m_pPipelineGraphics_DepthShadowMap == nullptr ||
+                !this->cfg_isRenderPassShadowMap)
+                return;
+
             StringVector* pDescriptorSetLayoutNames = this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap")
             size_t count_ds = this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets.size();
@@ -577,10 +627,40 @@ namespace LostPeterVulkan
                 updateVkDescriptorSets(descriptorWrites);
             }
         }
-        void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer)
+        bool VulkanWindow::Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer)
+        {
+            if (this->m_pPipelineGraphics_DepthShadowMap == nullptr ||
+                !this->cfg_isRenderPassShadowMap)
+                return false;
+
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            
+            return true;
+        }
+        void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub)
+        {   
+            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            }
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+            }
+            else
+            {
+                draw(commandBuffer, pMeshSub->poVertexCount, pMeshSub->instanceCount, 0, 0);
+            }
+        }
+        void VulkanWindow::Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer)
         {
 
         }
+
 
         void VulkanWindow::createPipelineGraphics_CopyBlit()
         {
@@ -5552,47 +5632,20 @@ namespace LostPeterVulkan
     {
         F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers start **");
         {
-            //1> createPassCB
-            createPassCB();
-
-            //2> createObjectCB
+            //1> createObjectCB
             createObjectCB();
 
-            //3> createMaterialCB
+            //2> createMaterialCB
             createMaterialCB();
 
-            //4> createInstanceCB
+            //3> createInstanceCB
             createInstanceCB();
 
-            //5> createCustomCB
+            //4> createCustomCB
             createCustomCB();
         }
         F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
     }
-    void VulkanWindow::createPassCB()
-    {
-        buildPassCB();
-        VkDeviceSize bufferSize = sizeof(PassConstants);
-
-        size_t count = this->poSwapChainImages.size();
-        this->poBuffers_PassCB.resize(count);
-        this->poBuffersMemory_PassCB.resize(count);
-
-        for (size_t i = 0; i < count; i++) 
-        {
-            createVkBuffer(bufferSize, 
-                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                           this->poBuffers_PassCB[i], 
-                           this->poBuffersMemory_PassCB[i]);
-        }
-
-        F_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
-    }
-        void VulkanWindow::buildPassCB()
-        {
-            
-        }
     void VulkanWindow::createObjectCB()
     {
         buildObjectCB();
@@ -5610,8 +5663,7 @@ namespace LostPeterVulkan
                            this->poBuffers_ObjectCB[i], 
                            this->poBuffersMemory_ObjectCB[i]);
         }
-
-        F_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
+        F_LogInfo("<2-2-3-1> VulkanWindow::createObjectCB finish !");
     }
         void VulkanWindow::buildObjectCB()
         {
@@ -5635,8 +5687,7 @@ namespace LostPeterVulkan
                            this->poBuffers_MaterialCB[i], 
                            this->poBuffersMemory_MaterialCB[i]);
         }
-
-        F_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
+        F_LogInfo("<2-2-3-2> VulkanWindow::createMaterialCB finish !");
     }
         void VulkanWindow::buildMaterialCB()
         {
@@ -5660,8 +5711,7 @@ namespace LostPeterVulkan
                            this->poBuffers_InstanceCB[i], 
                            this->poBuffersMemory_InstanceCB[i]);
         }
-
-        F_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");
+        F_LogInfo("<2-2-3-3> VulkanWindow::createInstanceCB finish !");
     }
         void VulkanWindow::buildInstanceCB()
         {
@@ -5671,7 +5721,7 @@ namespace LostPeterVulkan
     void VulkanWindow::createCustomCB()
     {
         
-        F_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
+        F_LogInfo("<2-2-3-4> VulkanWindow::createCustomCB finish !");
     }
 
     VkShaderModule VulkanWindow::createVkShaderModule(FShaderType typeShader, const String& pathFile)
@@ -9125,14 +9175,6 @@ namespace LostPeterVulkan
                 size_t count = 0;
 
                 //1> ConstBuffers
-                count = this->poBuffers_PassCB.size();
-                for (size_t i = 0; i < count; i++) 
-                {
-                    destroyVkBuffer(this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
-                }
-                this->poBuffers_PassCB.clear();
-                this->poBuffersMemory_PassCB.clear();
-
                 count = this->poBuffers_ObjectCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {

@@ -653,6 +653,33 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_flower-8
 
 };
+static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
+{
+    false, //object_skybox-1
+    false, //object_mountain-1
+
+    false, //object_rock-1
+    false, //object_cliff-1
+
+    false, //object_tree-1
+    false, //object_tree-2
+    false, //object_tree_spruce-1
+    false, //object_tree_spruce-2
+
+    false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
+    false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
+
+};
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //object_skybox-1
@@ -917,6 +944,7 @@ Vulkan_019_ShadowMap::Vulkan_019_ShadowMap(int width, int height, String name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
+    this->cfg_isRenderPassShadowMap = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
@@ -1140,6 +1168,7 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
+                pRend->isCastShadow = g_ObjectRend_IsCastShadows[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -2207,7 +2236,18 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
 
     void Vulkan_019_ShadowMap::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
     {
-        
+        if (Draw_Graphics_DepthShadowMapBegin(commandBuffer))
+        {
+            size_t count_rend = m_aModelObjectRends_All.size();
+            for (size_t i = 0; i < count_rend; i++)
+            {
+                ModelObjectRend* pRend = m_aModelObjectRends_All[i];
+                if (!pRend->isShow)
+                    continue;
+                Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub);
+            }
+            Draw_Graphics_DepthShadowMapEnd(commandBuffer);
+        }
     }
 
 bool Vulkan_019_ShadowMap::beginRenderImgui()
@@ -2243,15 +2283,15 @@ void Vulkan_019_ShadowMap::modelConfig()
     if (ImGui::CollapsingHeader("Model Settings"))
     {
         //m_isDrawIndirect
-        if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
-        {
+        // if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
+        // {
             
-        }
+        // }
         //m_isDrawIndirectMulti
-        if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
-        {
+        // if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
+        // {
             
-        }
+        // }
 
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
@@ -2379,6 +2419,11 @@ void Vulkan_019_ShadowMap::modelConfig()
                         bool isTransparent = pRendIndirect->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
+                        //isCastShadow
+                        String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRendIndirect;
+                        bool isCastShadow = pRendIndirect->isCastShadow;
+                        ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
+
                         //countIndirectDraw
                         String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
                         int countIndirectDraw = (int)pRendIndirect->countIndirectDraw;
@@ -2452,6 +2497,11 @@ void Vulkan_019_ShadowMap::modelConfig()
                             String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
                             bool isTransparent = pRend->isTransparent;
                             ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+
+                            //isCastShadow
+                            String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRend;
+                            bool isCastShadow = pRend->isCastShadow;
+                            ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
 
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))

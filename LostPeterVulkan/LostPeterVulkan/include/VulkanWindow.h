@@ -25,16 +25,19 @@ namespace LostPeterVulkan
 
     ///////////////////////// Internal /////////////////////////
     public:
-        
-
         //RenderPass
         VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
 
-        //PipelineGraphics
-        //PipelineGraphics_DepthShadowMap
-        VKPipelineGraphics* m_pPipelineGraphics_DepthShadowMap;
+        //Uniform ConstantBuffer
+        //1> PassCB
+        PassConstants passCB;
+        std::vector<VkBuffer> poBuffers_PassCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_PassCB;
 
-        //PipelineGraphics_CopyBlit
+        //PipelineGraphics
+        //1> PipelineGraphics_DepthShadowMap
+        VKPipelineGraphics* m_pPipelineGraphics_DepthShadowMap;
+        //2> PipelineGraphics_CopyBlit
         VKPipelineGraphics* m_pPipelineGraphics_CopyBlit;
         CopyBlitObjectConstants m_objectCB_CopyBlit;
         VkBuffer m_vkBuffer_CopyBlit;
@@ -81,7 +84,9 @@ namespace LostPeterVulkan
         //PipelineGraphics
         //PipelineGraphics_DepthShadowMap
         virtual void UpdateDescriptorSets_Graphics_DepthShadowMap();
-        virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer);
+        virtual bool Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer);
+            virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub);
+        virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_CopyBlit
         virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
@@ -115,6 +120,12 @@ namespace LostPeterVulkan
         virtual void destroyPipelineLayouts_Internal();
         virtual void createPipelineLayouts_Internal();
 
+        //Uniform ConstantBuffer
+        virtual void destroyUniformCB_Internal();
+            virtual void destroyUniform_PassCB();
+        virtual void createUniformCB_Internal();
+            virtual void createUniform_PassCB();
+
         //PipelineGraphics
         virtual void destroyPipelineGraphics_Internal();
             virtual void destroyPipelineGraphics_DepthShadowMap();
@@ -122,6 +133,8 @@ namespace LostPeterVulkan
         virtual void createPipelineGraphics_Internal();
             virtual void createPipelineGraphics_DepthShadowMap();
             virtual void createPipelineGraphics_CopyBlit();
+
+        
     ///////////////////////// Internal /////////////////////////
 
     public:
@@ -334,10 +347,6 @@ namespace LostPeterVulkan
         String imgui_PathLog;
 
         //Constants Buffer
-        PassConstants passCB;
-        std::vector<VkBuffer> poBuffers_PassCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_PassCB;
-
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
@@ -1038,11 +1047,8 @@ namespace LostPeterVulkan
                                                      uint32_t mipMapCount,
                                                      uint32_t numArray,
                                                      bool autoMipMap);
-                    
-                
+
                 virtual void createConstBuffers();
-                    virtual void createPassCB();
-                        virtual void buildPassCB();
                     virtual void createObjectCB();
                         virtual void buildObjectCB();
                     virtual void createMaterialCB();
