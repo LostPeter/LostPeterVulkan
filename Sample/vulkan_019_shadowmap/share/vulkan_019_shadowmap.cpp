@@ -2205,6 +2205,11 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
     }
 }
 
+    void Vulkan_019_ShadowMap::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
+    {
+        
+    }
+
 bool Vulkan_019_ShadowMap::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();

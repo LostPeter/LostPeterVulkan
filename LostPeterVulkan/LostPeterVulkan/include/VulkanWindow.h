@@ -25,10 +25,15 @@ namespace LostPeterVulkan
 
     ///////////////////////// Internal /////////////////////////
     public:
+        
+
         //RenderPass
         VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
 
         //PipelineGraphics
+        //PipelineGraphics_DepthShadowMap
+        VKPipelineGraphics* m_pPipelineGraphics_DepthShadowMap;
+
         //PipelineGraphics_CopyBlit
         VKPipelineGraphics* m_pPipelineGraphics_CopyBlit;
         CopyBlitObjectConstants m_objectCB_CopyBlit;
@@ -74,6 +79,10 @@ namespace LostPeterVulkan
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
 
         //PipelineGraphics
+        //PipelineGraphics_DepthShadowMap
+        virtual void UpdateDescriptorSets_Graphics_DepthShadowMap();
+        virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer);
+
         //PipelineGraphics_CopyBlit
         virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
         virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
@@ -108,8 +117,10 @@ namespace LostPeterVulkan
 
         //PipelineGraphics
         virtual void destroyPipelineGraphics_Internal();
+            virtual void destroyPipelineGraphics_DepthShadowMap();
             virtual void destroyPipelineGraphics_CopyBlit();
         virtual void createPipelineGraphics_Internal();
+            virtual void createPipelineGraphics_DepthShadowMap();
             virtual void createPipelineGraphics_CopyBlit();
     ///////////////////////// Internal /////////////////////////
 
@@ -1249,10 +1260,10 @@ namespace LostPeterVulkan
                 virtual void updateRenderCommandBuffers_CustomBeforeDefault();
                 virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_EditorCameraAxis(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_ShadowMap(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshShadowMap(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
-                    virtual void updateRenderPass_EditorCameraAxis(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);

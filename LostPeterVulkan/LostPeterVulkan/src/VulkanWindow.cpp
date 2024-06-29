@@ -448,10 +448,16 @@ namespace LostPeterVulkan
     //PipelineGraphics
     void VulkanWindow::destroyPipelineGraphics_Internal()
     {
-        //1> PipelineGraphics_CopyBlit
+        //1> PipelineGraphics_DepthShadowMap
+        destroyPipelineGraphics_DepthShadowMap();
+        //2> PipelineGraphics_CopyBlit
         destroyPipelineGraphics_CopyBlit();
-
+        
     }
+        void VulkanWindow::destroyPipelineGraphics_DepthShadowMap()
+        {
+            F_DELETE(m_pPipelineGraphics_DepthShadowMap)
+        }
         void VulkanWindow::destroyPipelineGraphics_CopyBlit()
         {
             F_DELETE(m_pPipelineGraphics_CopyBlit)
@@ -464,10 +470,118 @@ namespace LostPeterVulkan
         }
     void VulkanWindow::createPipelineGraphics_Internal()
     {
-        //1> PipelineGraphics_CopyBlit
+        //1> PipelineGraphics_DepthShadowMap
+        createPipelineGraphics_DepthShadowMap();
+        //2> PipelineGraphics_CopyBlit
         createPipelineGraphics_CopyBlit();
 
     }
+        void VulkanWindow::createPipelineGraphics_DepthShadowMap()
+        {
+            this->m_pPipelineGraphics_DepthShadowMap = new VKPipelineGraphics("PipelineGraphics-DepthShadowMap");
+            String nameDescriptorSetLayout = "Pass";
+            this->m_pPipelineGraphics_DepthShadowMap->nameDescriptorSetLayout = nameDescriptorSetLayout;
+            this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(nameDescriptorSetLayout);
+            this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayout = FindDescriptorSetLayout_Internal(nameDescriptorSetLayout);
+            this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout = FindPipelineLayout_Internal(nameDescriptorSetLayout);
+
+            F_Assert(this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayoutNames != nullptr &&
+                     this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayout != nullptr &&
+                     this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout != nullptr &&
+                     "VulkanWindow::createPipelineGraphics_DepthShadowMap")
+
+            //VkDescriptorSets
+            {
+                createVkDescriptorSets(this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayout, this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets);
+            }
+            //VkPipeline
+            {
+                VkStencilOpState stencilOpFront; 
+                VkStencilOpState stencilOpBack;
+
+                VkViewportVector aViewports;
+                aViewports.push_back(this->poViewport);
+                VkRect2DVector aScissors;
+                aScissors.push_back(this->poScissor);
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
+                String nameShaderVert = "vert_standard_renderpass_shadowmap";
+                String nameShaderFrag = "frag_standard_renderpass_shadowmap";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          nameShaderFrag,
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_Graphics))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                //m_pPipelineGraphics_DepthShadowMap->poPipeline
+                this->m_pPipelineGraphics_DepthShadowMap->poPipeline = createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                false, 0, 3,
+                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
+                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
+                                                                                                this->poRenderPass, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, aViewports, aScissors,
+                                                                                                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                                VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                VK_FALSE, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                if (this->m_pPipelineGraphics_DepthShadowMap->poPipeline == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: Failed to create pipeline graphics for [PipelineGraphics_DepthShadowMap] !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics_DepthShadowMap] Create pipeline graphics success !");
+            }
+        }
+        void VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap()
+        {
+            StringVector* pDescriptorSetLayoutNames = this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSetLayoutNames;
+            F_Assert(pDescriptorSetLayoutNames != nullptr && "VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap")
+            size_t count_ds = this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets.size();
+            for (size_t i = 0; i < count_ds; i++)
+            {
+                VkWriteDescriptorSetVector descriptorWrites;
+
+                size_t count_names = pDescriptorSetLayoutNames->size();
+                for (size_t j = 0; j < count_names; j++)
+                {
+                    String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                    if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Pass = {};
+                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                        bufferInfo_Pass.offset = 0;
+                        bufferInfo_Pass.range = sizeof(PassConstants);
+                        pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                    this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[i],
+                                                    j,
+                                                    0,
+                                                    1,
+                                                    bufferInfo_Pass);
+                    }
+                    else
+                    {
+                        String msg = "*********************** VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        F_LogError(msg.c_str());
+                        throw std::runtime_error(msg.c_str());
+                    }
+                }
+                updateVkDescriptorSets(descriptorWrites);
+            }
+        }
+        void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer)
+        {
+
+        }
+
         void VulkanWindow::createPipelineGraphics_CopyBlit()
         {
             this->m_pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineGraphics-QuadBlit");
@@ -531,7 +645,7 @@ namespace LostPeterVulkan
                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                           this->poRenderPass, this->m_pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
-                                                                                          VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                          VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
@@ -551,7 +665,7 @@ namespace LostPeterVulkan
                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                     this->poRenderPass, this->m_pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
                                                                                                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                    VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                    VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
@@ -565,7 +679,6 @@ namespace LostPeterVulkan
                 F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlit: [PipelineGraphics_CopyBlit] Create pipeline graphics wire frame success !");
             }
         }
-
     void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo)
     {
         StringVector* pDescriptorSetLayoutNames = this->m_pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames;
@@ -1100,6 +1213,7 @@ namespace LostPeterVulkan
 
         //Internal
         , m_pVKShadowMapRenderPass(nullptr)
+        , m_pPipelineGraphics_DepthShadowMap(nullptr)
         , m_pPipelineGraphics_CopyBlit(nullptr)
         , m_vkBuffer_CopyBlit(VK_NULL_HANDLE)
         , m_vkBuffersMemory_CopyBlit(VK_NULL_HANDLE)
@@ -8453,10 +8567,6 @@ namespace LostPeterVulkan
                 {
 
                 }
-                void VulkanWindow::updateRenderPass_ShadowMap(VkCommandBuffer& commandBuffer)
-                {
-
-                }
                 void VulkanWindow::updateRenderPass_EditorCameraAxis(VkCommandBuffer& commandBuffer)
                 {
                     if (this->pEditorCameraAxis == nullptr ||
@@ -8486,7 +8596,7 @@ namespace LostPeterVulkan
                     } 
                     endRenderPass(commandBuffer);
                 }
-                void  VulkanWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
+                void VulkanWindow::updateRenderPass_ShadowMap(VkCommandBuffer& commandBuffer)
                 {
                     if (this->m_pVKShadowMapRenderPass == nullptr ||
                         !this->cfg_isRenderPassShadowMap)
@@ -8518,6 +8628,10 @@ namespace LostPeterVulkan
                     {
 
                     }
+                void  VulkanWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
+                {
+                    
+                }
                 void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
                     beginRenderPass(commandBuffer,
