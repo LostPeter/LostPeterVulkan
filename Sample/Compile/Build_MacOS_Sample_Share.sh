@@ -13,7 +13,7 @@ name_sample=${1}
 debug=${2}
 rebuild=${3}
 
-if [ "$debug" == "debug" ]; then
+if [ $debug == "debug" ]; then
     name_project="share_"$name_sample"_d"
     name_dylib="libshare_"$name_sample"_d.dylib"
 else
@@ -21,7 +21,7 @@ else
     name_dylib="libshare_"$name_sample".dylib"
 fi
 
-if [ "$rebuild" == "rebuild" ]; then
+if [ $rebuild == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -35,7 +35,7 @@ cd MacOS
 cd $name_project
 
 #dylib
-if [ "$debug" == "debug" ]; then
+if [ $debug == "debug" ]; then
     cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../$name_sample/share/
 else
     cmake ../../../$name_sample/share/

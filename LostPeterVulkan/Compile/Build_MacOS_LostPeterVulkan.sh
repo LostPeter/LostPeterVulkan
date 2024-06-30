@@ -12,7 +12,7 @@
 debug=${1}
 rebuild=${2}
 
-if [ "$debug" == "debug" ]; then
+if [ $debug == "debug" ]; then
     name_project="LostPeterVulkan_d"
     name_dylib="libLostPeterVulkan_d.dylib"
 else
@@ -26,7 +26,7 @@ sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
 
 
 #2> Build LostPeterVulkan
-if [ "$rebuild" == "rebuild" ]; then
+if [ $rebuild == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -40,7 +40,7 @@ cd MacOS
 cd $name_project
 
 #dylib
-if [ "$debug" == "debug" ]; then
+if [ $debug == "debug" ]; then
     cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../LostPeterVulkan/
 else
     cmake ../../../LostPeterVulkan/
