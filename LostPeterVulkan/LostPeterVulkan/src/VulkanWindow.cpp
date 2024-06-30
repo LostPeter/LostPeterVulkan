@@ -1371,7 +1371,7 @@ namespace LostPeterVulkan
         , cfg_isEditorGridShow(false)
         , cfg_isEditorCameraAxisShow(false)
         , cfg_isEditorCoordinateAxisShow(false)
-        , cfg_editorGrid_Color(0.5f, 0.5f, 0.5f, 1.0f)
+        , cfg_editorGrid_Color(0.5f, 0.5f, 0.5f, 0.5f)
         , cfg_editorCoordinateAxis_MoveSpeed(0.01f)
         , cfg_editorCoordinateAxis_RotateSpeed(0.01f)
         , cfg_editorCoordinateAxis_ScaleSpeed(0.01f)
