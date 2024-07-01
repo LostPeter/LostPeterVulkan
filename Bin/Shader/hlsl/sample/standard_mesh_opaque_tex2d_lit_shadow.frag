@@ -15,6 +15,7 @@ struct VSOutput
     [[vk::location(1)]] float4 inColor          : COLOR0;
     [[vk::location(2)]] float3 inWorldNormal    : NORMAL0;
     [[vk::location(3)]] float2 inTexCoord       : TEXCOORD0;
+    [[vk::location(4)]] float4 inShadowCoord    : TEXCOORD1;
 };
 
 
@@ -126,8 +127,11 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texture2D              : register(t1);
-[[vk::binding(4)]] SamplerState texture2DSampler    : register(s1);
+[[vk::binding(4)]] Texture2D textureDiffuse             : register(t1);
+[[vk::binding(4)]] SamplerState textureDiffuseSampler   : register(s1);
+
+[[vk::binding(5)]] Texture2D textureDepth               : register(t2);
+[[vk::binding(5)]] SamplerState textureDepthSampler     : register(s2);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -255,6 +259,48 @@ float3 calculate_Light(float3 ambientGlobal,
 }
 
 
+[[vk::constant_id(0)]] const int enablePCF = 0;
+#define ambient 0.1
+
+float calculate_Depth(float4 shadowCoord, float2 off)
+{
+	float shadow = 1.0;
+	if (shadowCoord.z > -1.0 && shadowCoord.z < 1.0)
+	{
+		float dist = textureDepth.Sample(textureDepthSampler, shadowCoord.xy + off).r;
+		if (shadowCoord.w > 0.0 && dist < shadowCoord.z)
+		{
+			shadow = ambient;
+		}
+	}
+	return shadow;
+}
+
+float filterPCF(float4 sc)
+{
+	int2 texDim;
+	textureDepth.GetDimensions(texDim.x, texDim.y);
+	float scale = 1.5;
+	float dx = scale * 1.0 / float(texDim.x);
+	float dy = scale * 1.0 / float(texDim.y);
+
+	float shadowFactor = 0.0;
+	int count = 0;
+	int range = 1;
+
+	for (int x = -range; x <= range; x++)
+	{
+		for (int y = -range; y <= range; y++)
+		{
+			shadowFactor += calculate_Depth(sc, float2(dx*x, dy*y));
+			count++;
+		}
+
+	}
+	return shadowFactor / count;
+}
+
+
 float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float3 outColor;
@@ -275,15 +321,16 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 
     //Additional Light
 
-
+    //Shadow
+    float shadow = (enablePCF == 1) ? filterPCF(input.inShadowCoord / input.inShadowCoord.w) : calculate_Depth(input.inShadowCoord / input.inShadowCoord.w, float2(0.0, 0.0));
 
     //Texture
-    float3 colorTexture = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
+    float3 colorTexture = textureDiffuse.Sample(textureDiffuseSampler, input.inTexCoord).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
     outColor = colorLight * colorTexture * colorVertex;
-
-    return float4(outColor, 1.0);
+    
+    return float4(outColor * shadow, 1.0);
 }

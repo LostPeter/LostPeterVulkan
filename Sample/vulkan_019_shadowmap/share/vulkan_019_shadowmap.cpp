@@ -328,7 +328,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 18;
+static const int g_ShaderCount = 20;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -345,6 +345,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
 
+    "vert_standard_mesh_opaque_tex2d_lit_shadow",              "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.vert.spv", //standard_mesh_opaque_tex2d_lit_shadow vert
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
 
@@ -366,6 +367,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
+    "frag_standard_mesh_opaque_tex2d_lit_shadow",              "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.frag.spv", //standard_mesh_opaque_tex2d_lit_shadow frag
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
 

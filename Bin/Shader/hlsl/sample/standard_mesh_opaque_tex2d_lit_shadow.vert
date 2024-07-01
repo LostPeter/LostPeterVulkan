@@ -162,7 +162,13 @@ struct VSOutput
     [[vk::location(1)]] float4 outColor           : COLOR0;
     [[vk::location(2)]] float3 outWorldNormal     : NORMAL0;
     [[vk::location(3)]] float2 outTexCoord        : TEXCOORD0;
+    [[vk::location(4)]] float4 outShadowCoord     : TEXCOORD1;
 };
+
+static const float4x4 c_mat4Bias = float4x4(0.5, 0.0, 0.0, 0.5,
+                                            0.0, 0.5, 0.0, 0.5,
+                                            0.0, 0.0, 1.0, 0.0,
+                                            0.0, 0.0, 0.0, 1.0);
 
 
 VSOutput main(VSInput input, 
@@ -181,6 +187,7 @@ VSOutput main(VSInput input,
     output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)obj.g_MatWorld, input.inNormal);
     output.outTexCoord = input.inTexCoord;
+    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, float4(output.outWorldPos.xyz, 1.0)));
 
     return output;
 }
