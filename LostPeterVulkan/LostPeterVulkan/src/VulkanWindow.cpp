@@ -571,7 +571,7 @@ namespace LostPeterVulkan
                                                                                                 false, 0, 3,
                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                                                this->poRenderPass, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, aViewports, aScissors,
+                                                                                                this->m_pVKShadowMapRenderPass->poRenderPass, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, aViewports, aScissors,
                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
                                                                                                 VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -1140,6 +1140,10 @@ namespace LostPeterVulkan
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachRed)) //InputAttachRed
             {

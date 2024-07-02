@@ -317,13 +317,14 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 3;
+static const int g_DescriptorSetLayoutCount = 4;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
 
+    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
 };
 
 
@@ -519,7 +520,7 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_terrain-1
+    "vert_standard_mesh_opaque_tex2d_lit_shadow",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit_shadow",           "", //object_terrain-1
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
     
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
@@ -547,7 +548,7 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_terrain-1
+    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",       "", //object_terrain-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
@@ -631,13 +632,13 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     false, //object_terrain-1
     false, //object_skybox-1
 
-    false, //object_rock-1
-    false, //object_cliff-1
+    true, //object_rock-1
+    true, //object_cliff-1
 
-    false, //object_tree-1
-    false, //object_tree-2
-    false, //object_tree_spruce-1
-    false, //object_tree_spruce-2
+    true, //object_tree-1
+    true, //object_tree-2
+    true, //object_tree_spruce-1
+    true, //object_tree_spruce-2
 
     false, //object_grass-1
     false, //object_grass-2
@@ -1940,6 +1941,17 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
+            {
+                F_Assert(m_pVKShadowMapRenderPass && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          m_pVKShadowMapRenderPass->imageInfo);
+            }
             else
             {
                 String msg = "*********************** Vulkan_019_ShadowMap::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
@@ -2216,7 +2228,8 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
             for (size_t i = 0; i < count_rend; i++)
             {
                 ModelObjectRend* pRend = m_aModelObjectRends_All[i];
-                if (!pRend->isShow)
+                if (!pRend->isShow ||
+                    !pRend->isCastShadow)
                     continue;
                 Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub);
             }

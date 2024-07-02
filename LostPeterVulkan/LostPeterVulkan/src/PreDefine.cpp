@@ -453,9 +453,10 @@ namespace LostPeterVulkan
         "TextureFrameColor",        //18:  TextureFrameColor
         "TextureCSR",               //19:  TextureCSR
         "TextureCSRW",              //20:  TextureCSRW
-        "InputAttachRed",           //21:  InputAttachRed
-        "InputAttachGreen",         //22:  InputAttachGreen
-        "InputAttachBlue",          //23:  InputAttachBlue
+        "TextureDepthShadow",       //21:  TextureDepthShadow
+        "InputAttachRed",           //22:  InputAttachRed
+        "InputAttachGreen",         //23:  InputAttachGreen
+        "InputAttachBlue",          //24:  InputAttachBlue
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {
