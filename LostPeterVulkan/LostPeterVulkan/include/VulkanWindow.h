@@ -443,6 +443,7 @@ namespace LostPeterVulkan
         float mainLight_FOV; //For mainLight ShadowMap's depthMVP
         float mainLight_zNear; //For mainLight ShadowMap's depthMVP
 	    float mainLight_zFar; //For mainLight ShadowMap's depthMVP
+        uint32_t mainLight_DepthSize; //For mainLight ShadowMap's depth size
         VkFormat mainLight_Format; //For mainLight ShadowMap's depth format
 	    float mainLight_DepthBiasConstant; //For mainLight ShadowMap's constant depth bias factor
 	    float mainLight_DepthBiasSlope; //For mainLight ShadowMap's slope depth bias factor
@@ -1294,6 +1295,12 @@ namespace LostPeterVulkan
                                                      const FVector4Vector& aColors,
                                                      float depth,
                                                      uint32_t stencil);
+                        virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                     const VkRenderPass& renderPass, 
+                                                     const VkFramebuffer& frameBuffer,
+                                                     const VkOffset2D& offset,
+                                                     const VkExtent2D& extent,
+                                                     const VkClearValueVector& aClearValue);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);
                             virtual void SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);

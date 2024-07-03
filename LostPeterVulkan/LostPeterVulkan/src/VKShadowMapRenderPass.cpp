@@ -73,6 +73,29 @@ namespace LostPeterVulkan
                                      uint32_t height,
                                      VkFormat format)
     {
+        //0> Common
+        {
+            this->offset.x = 0;
+            this->offset.y = 0;
+            this->extent.width = width;
+            this->extent.height = height;
+            this->aClearValue.clear();
+            VkClearValue clearValue = {};
+            clearValue.depthStencil = { 1.0f, 0 };
+            this->aClearValue.push_back(clearValue);
+
+            this->viewPort.x = 0.0f;
+            this->viewPort.y = 0.0f;
+            this->viewPort.width = width;
+            this->viewPort.height = height;
+            this->viewPort.minDepth = 0.0f;
+            this->viewPort.maxDepth = 1.0f;
+            this->rtScissor.offset.x = 0.0f;
+            this->rtScissor.offset.y = 0.0f;
+            this->rtScissor.extent.width = width;
+            this->rtScissor.extent.height = height;
+        }
+
         //1> Depth
         {
             Base::GetWindowPtr()->createVkImage(width, 
@@ -112,7 +135,7 @@ namespace LostPeterVulkan
             
             this->imageInfo.sampler = this->sampler;
             this->imageInfo.imageView = this->poDepthImageView;
-            this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
         }
 
         //2> RenderPass

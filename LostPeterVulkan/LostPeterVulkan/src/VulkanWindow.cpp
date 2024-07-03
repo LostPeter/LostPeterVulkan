@@ -569,10 +569,10 @@ namespace LostPeterVulkan
                 //m_pPipelineGraphics_DepthShadowMap->poPipeline
                 this->m_pPipelineGraphics_DepthShadowMap->poPipeline = createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
                                                                                                 false, 0, 3,
-                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
-                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
+                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2), 
+                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2),
                                                                                                 this->m_pVKShadowMapRenderPass->poRenderPass, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, aViewports, aScissors,
-                                                                                                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, 1.0f,
                                                                                                 VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                 VK_FALSE, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
@@ -1363,6 +1363,11 @@ namespace LostPeterVulkan
         , mainLight_FOV(45.0f)
         , mainLight_zNear(1.0f)
         , mainLight_zFar(96.0f)
+    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC 
+        , mainLight_DepthSize(2048)
+    #else
+        , mainLight_DepthSize(1024)
+    #endif
         , mainLight_Format(VK_FORMAT_D16_UNORM)
         , mainLight_DepthBiasConstant(1.25f)
         , mainLight_DepthBiasSlope(1.75f)
@@ -3027,8 +3032,8 @@ namespace LostPeterVulkan
         void VulkanWindow::createRenderPass_ShadowMap()
         {
             m_pVKShadowMapRenderPass = new VKShadowMapRenderPass("RenderPass_ShadowMap");
-            m_pVKShadowMapRenderPass->Init(this->poSwapChainExtent.width, 
-                                           this->poSwapChainExtent.height, 
+            m_pVKShadowMapRenderPass->Init(this->mainLight_DepthSize,
+                                           this->mainLight_DepthSize,
                                            this->mainLight_Format);
         }
         void VulkanWindow::createRenderPass_Default()
@@ -8661,14 +8666,12 @@ namespace LostPeterVulkan
                     beginRenderPass(commandBuffer,
                                     this->m_pVKShadowMapRenderPass->poRenderPass,
                                     this->m_pVKShadowMapRenderPass->poFrameBuffer,
-                                    this->poOffset,
-                                    this->poExtent,
-                                    this->cfg_colorBackground,
-                                    1.0f,
-                                    0);
+                                    this->m_pVKShadowMapRenderPass->offset,
+                                    this->m_pVKShadowMapRenderPass->extent,
+                                    this->m_pVKShadowMapRenderPass->aClearValue);
                      {
                         //1> Viewport
-                        bindViewport(commandBuffer, this->poViewport, this->poScissor);
+                        bindViewport(commandBuffer, this->m_pVKShadowMapRenderPass->viewPort, this->m_pVKShadowMapRenderPass->rtScissor);
                         
                         //2> DepthBias
                         SetDepthBias(commandBuffer, this->mainLight_DepthBiasConstant, 0.0f, this->mainLight_DepthBiasSlope);
@@ -8821,13 +8824,6 @@ namespace LostPeterVulkan
                                                        float depth,
                                                        uint32_t stencil)
                     {
-                        VkRenderPassBeginInfo renderPassInfo = {};
-                        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                        renderPassInfo.renderPass = renderPass;
-                        renderPassInfo.framebuffer = frameBuffer;
-                        renderPassInfo.renderArea.offset = offset;
-                        renderPassInfo.renderArea.extent = extent;
-
                         size_t count = aColors.size();
                         std::vector<VkClearValue> clearValues;
                         clearValues.resize(count + 1);
@@ -8841,8 +8837,29 @@ namespace LostPeterVulkan
                         depthStencilValue.depth = depth;
                         depthStencilValue.stencil = stencil;
                         clearValues[count].depthStencil = depthStencilValue;
-                        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                        renderPassInfo.pClearValues = clearValues.data();
+
+                        beginRenderPass(commandBuffer,
+                                        renderPass,
+                                        frameBuffer,
+                                        offset,
+                                        extent,
+                                        clearValues);
+                    }
+                    void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                       const VkRenderPass& renderPass, 
+                                                       const VkFramebuffer& frameBuffer,
+                                                       const VkOffset2D& offset,
+                                                       const VkExtent2D& extent,
+                                                       const VkClearValueVector& aClearValue)
+                    {
+                        VkRenderPassBeginInfo renderPassInfo = {};
+                        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                        renderPassInfo.renderPass = renderPass;
+                        renderPassInfo.framebuffer = frameBuffer;
+                        renderPassInfo.renderArea.offset = offset;
+                        renderPassInfo.renderArea.extent = extent;
+                        renderPassInfo.clearValueCount = static_cast<uint32_t>(aClearValue.size());
+                        renderPassInfo.pClearValues = aClearValue.data();
 
                         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                     }

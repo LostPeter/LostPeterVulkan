@@ -14,7 +14,8 @@ struct VSInput
     [[vk::location(0)]]float3 inPosition    : POSITION0;
     [[vk::location(1)]]float4 inColor       : COLOR0;
     [[vk::location(2)]]float3 inNormal      : NORMAL0;
-    [[vk::location(3)]]float2 inTexCoord    : TEXCOORD0;
+    [[vk::location(3)]]float3 inTangent     : TANGENT0;
+    [[vk::location(4)]]float2 inTexCoord    : TEXCOORD0;
 };
 
 

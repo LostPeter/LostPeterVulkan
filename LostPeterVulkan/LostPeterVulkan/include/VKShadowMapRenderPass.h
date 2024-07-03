@@ -24,6 +24,13 @@ namespace LostPeterVulkan
         virtual ~VKShadowMapRenderPass();
 
     public:
+        //Common
+        VkOffset2D offset;
+        VkExtent2D extent;
+        VkClearValueVector aClearValue;
+        VkViewport viewPort;
+        VkRect2D rtScissor;
+
         //Depth
         VkImage poDepthImage;
         VkDeviceMemory poDepthImageMemory;
