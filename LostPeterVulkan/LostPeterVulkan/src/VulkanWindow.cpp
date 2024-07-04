@@ -3768,8 +3768,9 @@ namespace LostPeterVulkan
     {
         F_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
         {
-            //1> Camera
+            //1> Camera/LightMain
             createCamera();
+            createLightMain();
 
             //2> loadGeometry
             loadGeometry();
@@ -3794,6 +3795,10 @@ namespace LostPeterVulkan
         F_LogInfo("**********<2> VulkanWindow::loadAssets finish **********");
     }
         void VulkanWindow::createCamera()
+        {
+
+        }
+        void VulkanWindow::createLightMain()
         {
 
         }
@@ -7878,7 +7883,7 @@ namespace LostPeterVulkan
                     if (this->cfg_isRenderPassShadowMap)
                     {
                         glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(this->mainLight_FOV), 1.0f, this->mainLight_zNear, this->mainLight_zFar);
-                        glm::mat4 depthViewMatrix = glm::lookAt(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+                        glm::mat4 depthViewMatrix = FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction);
                         glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
                         this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
@@ -8536,6 +8541,10 @@ namespace LostPeterVulkan
                                 }
                                 
                             }
+                        }
+                        void VulkanWindow::lightMainReset()
+                        {
+
                         }
                     void VulkanWindow::passConstantsConfig()
                     {

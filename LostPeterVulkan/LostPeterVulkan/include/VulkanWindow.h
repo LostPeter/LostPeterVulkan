@@ -694,6 +694,8 @@ namespace LostPeterVulkan
         virtual void loadAssets();
             //Camera
             virtual void createCamera();
+            //Light
+            virtual void createLightMain();
 
             //Geometry
             virtual void loadGeometry();
@@ -1255,6 +1257,7 @@ namespace LostPeterVulkan
                         //Light
                         virtual void lightConfig();
                             virtual void lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType);
+                            virtual void lightMainReset();
                         //PassConstants
                         virtual void passConstantsConfig();
                         //Model

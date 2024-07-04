@@ -558,6 +558,11 @@ namespace LostPeterFoundation
                         mat3[2][0], mat3[2][1], mat3[2][2], 0.0f,
                               0.0f,       0.0f,       0.0f, 1.0f);
     }
+    FMatrix4 FMath::ToMatrix4(const FVector3& vPos, const FVector3& vDir)
+    {
+        FVector3 vEulerAngles = ToEulerAngles(vDir);
+        return FromTRS(vPos, vEulerAngles, FMath::ms_v3One);
+    }
 
     FVector3 FMath::ToEulerAngles(const FQuaternion& qRot)
     {

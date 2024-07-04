@@ -518,6 +518,8 @@ protected:
     //Load Assets
         //Camera
         virtual void createCamera();
+        //Light
+        virtual void createLightMain();
 
         //Geometry/Texture
         virtual void loadModel_Custom();
@@ -551,6 +553,7 @@ protected:
 
         virtual bool beginRenderImgui();
             virtual void cameraReset();
+            virtual void lightMainReset();
             virtual void modelConfig();
 
         virtual void endRenderImgui();

@@ -583,11 +583,6 @@ Vulkan_019_ShadowMap::Vulkan_019_ShadowMap(int width, int height, String name)
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
     this->cfg_editorGrid_Color.a = 0.2f;
-
-    this->mainLight.common.x = 0; //Directional Type
-    this->mainLight.common.y = 1.0f; //Enable
-    this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
 void Vulkan_019_ShadowMap::setUpEnabledFeatures()
@@ -615,14 +610,28 @@ void Vulkan_019_ShadowMap::createCamera()
     this->pCamera = new FCamera();
     cameraReset();
 }
-void Vulkan_019_ShadowMap::cameraReset()
-{
-    VulkanWindow::cameraReset();
+    void Vulkan_019_ShadowMap::cameraReset()
+    {
+        VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(FVector3(-7.0f, 8.0f, 0.0f));
-    this->pCamera->SetEulerAngles(FVector3(40.0f, 90.0f, 0.0f));
-    this->pCamera->SetFarZ(100000.0f);
+        this->pCamera->SetPos(FVector3(-7.0f, 8.0f, 0.0f));
+        this->pCamera->SetEulerAngles(FVector3(40.0f, 90.0f, 0.0f));
+        this->pCamera->SetFarZ(100000.0f);
+    }
+void Vulkan_019_ShadowMap::createLightMain()
+{
+    lightMainReset();
 }
+    void Vulkan_019_ShadowMap::lightMainReset()
+    {
+        VulkanWindow::lightMainReset();
+
+        this->mainLight.common.x = 0; //Directional Type
+        this->mainLight.common.y = 1.0f; //Enable
+        this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
+        this->mainLight.position = FVector3(0.0f, 50.0f, 0.0f);
+        this->mainLight.direction = FVector3(0.0f, -1.0f, 0.0f); //FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f));
+    }
 
 void Vulkan_019_ShadowMap::loadModel_Custom()
 {

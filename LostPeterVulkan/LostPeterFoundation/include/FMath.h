@@ -700,6 +700,7 @@ namespace LostPeterFoundation
         static FMatrix4 ToMatrix4(const FQuaternion& qRot);
         static FMatrix4 ToMatrix4(const FVector3& vPos, const FVector3& vScale, const FQuaternion& qRot);
         static FMatrix4 ToMatrix4(const FMatrix3& mat3);
+        static FMatrix4 ToMatrix4(const FVector3& vPos, const FVector3& vDir);
 
         static FVector3 ToEulerAngles(const FQuaternion& qRot);
         static FVector3 ToEulerAngles(const FVector3& vDir);
