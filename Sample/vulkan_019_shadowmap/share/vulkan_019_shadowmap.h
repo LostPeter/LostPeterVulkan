@@ -516,10 +516,10 @@ protected:
         virtual void createDescriptorSetLayout_Custom();
 
     //Load Assets
-        //Camera
+        //Camera/Light/Shadow
         virtual void createCamera();
-        //Light
         virtual void createLightMain();
+        virtual void createShadowLightMain();
 
         //Geometry/Texture
         virtual void loadModel_Custom();

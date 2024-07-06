@@ -135,16 +135,17 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 2;
+static const int g_DescriptorSetLayoutCount = 3;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
+    "Pass-Object-Material-Instance-TextureDepthShadow",
     "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 6;
+static const int g_ShaderCount = 8;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -153,6 +154,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2d_lit_shadow",              "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.vert.spv", //standard_mesh_opaque_tex2d_lit_shadow vert
     
+    "vert_standard_debug_shadow_depth",                        "vert",              "Assets/Shader/standard_debug_shadow_depth.vert.spv", //standard_debug_shadow_depth vert
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
 
@@ -166,14 +168,15 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
     "frag_standard_mesh_opaque_tex2d_lit_shadow",              "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.frag.spv", //standard_mesh_opaque_tex2d_lit_shadow frag
-   
+    
+    "frag_standard_debug_shadow_depth",                        "frag",              "Assets/Shader/standard_debug_shadow_depth.frag.spv", //standard_debug_shadow_depth frag
     ///////////////////////////////////////// comp /////////////////////////////////////////
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 6;
+static const int g_Object_Count = 7;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name          
@@ -185,6 +188,7 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_viking_room",                  "viking_room", //object_viking_room    
     "object_bunny",                        "bunny", //object_bunny  
 
+    "object_depth",                        "plane", //object_depth
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
@@ -196,6 +200,7 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0", //object_viking_room      
     "0", //object_bunny       
 
+    "0", //object_depth
 };  
 
 static float g_Object_InstanceGap = 3.0f;
@@ -209,6 +214,7 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     0, //object_viking_room 
     0, //object_bunny 
 
+    0, //object_depth
 };
 static bool g_Object_IsShows[] = 
 {
@@ -220,6 +226,7 @@ static bool g_Object_IsShows[] =
     true, //object_viking_room
     true, //object_bunny
 
+    true, //object_depth
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
@@ -231,6 +238,7 @@ static bool g_Object_IsRotates[g_Object_Count] =
     true, //object_viking_room
     true, //object_bunny
 
+    false, //object_depth
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
@@ -242,6 +250,7 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_viking_room
     true, //object_bunny
 
+    false, //object_depth
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
@@ -253,11 +262,12 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_viking_room
     false, //object_bunny
 
+    false, //object_depth
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 6;
+static const int g_ObjectRend_Count = 7;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -269,6 +279,7 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_viking_room-1",                "",                     "",                              "",                         "",                    "viking_room",                                                                  "", //object_viking_room-1
     "object_bunny-1",                      "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_bunny-1
     
+    "object_depth-1",                      "",                     "",                              "",                         "",                    "",                                                                             "", //object_depth-1
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
@@ -281,6 +292,7 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_viking_room-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_bunny-1
 
+    "vert_standard_debug_shadow_depth",                     "",                                             "",                                         "",                         "frag_standard_debug_shadow_depth",                     "", //object_depth-1
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
@@ -293,6 +305,7 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_viking_room-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_bunny-1
 
+    "Pass-Object-Material-Instance-TextureDepthShadow",                 "", //object_depth-1
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
@@ -304,6 +317,7 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(  -1,   2,   -1),      FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
     FVector3(   1,   2,   -1),      FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
 
+    FVector3(   0,   2,   -4),      FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -315,6 +329,7 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_viking_room-1
     false, //object_bunny-1
 
+    false, //object_depth-1
 };
 static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
 {
@@ -326,6 +341,7 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     true, //object_viking_room-1
     true, //object_bunny-1
 
+    false, //object_depth-1
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
@@ -337,6 +353,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_viking_room-1
     false, //object_bunny-1
 
+    false, //object_depth-1
 };
 
 
@@ -607,7 +624,8 @@ void Vulkan_019_ShadowMap::createDescriptorSetLayout_Custom()
 
 void Vulkan_019_ShadowMap::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
     void Vulkan_019_ShadowMap::cameraReset()
@@ -629,9 +647,14 @@ void Vulkan_019_ShadowMap::createLightMain()
         this->mainLight.common.x = 0; //Directional Type
         this->mainLight.common.y = 1.0f; //Enable
         this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(0.0f, 80.0f, 0.0f);
+        this->mainLight.position = FVector3(-7.0f, 8.0f, 0.0f);
         this->mainLight.direction = FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f)); //FVector3(0.0f, -1.0f, 0.0f); //
     }
+void Vulkan_019_ShadowMap::createShadowLightMain()
+{
+
+}
+
 
 void Vulkan_019_ShadowMap::loadModel_Custom()
 {
@@ -1920,10 +1943,13 @@ bool Vulkan_019_ShadowMap::beginRenderImgui()
         //2> Light
         lightConfig();
 
-        //3> PassConstants
+        //3> Shadow
+        shadowConfig();
+
+        //4> PassConstants
         passConstantsConfig();
 
-        //4> Model
+        //5> Model
         modelConfig();
 
     }

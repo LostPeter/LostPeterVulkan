@@ -1099,6 +1099,34 @@ namespace LostPeterVulkan
         }
     };
 
+    //////////////////////////////// ShadowConstants ////////////////////////////////
+    struct vulkanExport ShadowConstants
+    {
+        float fov; //For Light ShadowMap's depthMVP
+        float zNear; //For Light ShadowMap's depthMVP
+	    float zFar; //For Light ShadowMap's depthMVP
+        uint32_t depthSize; //For Light ShadowMap's depth size
+        VkFormat format; //For Light ShadowMap's depth format
+	    float depthBiasConstant; //For Light ShadowMap's constant depth bias factor
+	    float depthBiasSlope; //For Light ShadowMap's slope depth bias factor
+
+        ShadowConstants()
+            : fov(45.0f)
+            , zNear(1.0f)
+            , zFar(200.0f)
+#if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC 
+            , depthSize(2048)
+#else
+            , depthSize(1024)
+#endif
+            , format(VK_FORMAT_D16_UNORM)
+            , depthBiasConstant(1.25f)
+            , depthBiasSlope(1.75f)
+        {
+            
+        }
+    };
+
     //////////////////////////////// PassConstants //////////////////////////////////
     struct vulkanExport PassConstants
     {

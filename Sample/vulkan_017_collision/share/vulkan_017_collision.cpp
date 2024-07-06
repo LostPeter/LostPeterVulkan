@@ -2933,7 +2933,8 @@ void Vulkan_017_Collision::createDescriptorSetLayout_Custom()
 
 void Vulkan_017_Collision::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_017_Collision::cameraReset()

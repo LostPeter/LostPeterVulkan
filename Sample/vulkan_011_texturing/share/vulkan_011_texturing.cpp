@@ -817,7 +817,8 @@ void Vulkan_011_Texturing::createDescriptorSetLayout_Custom()
 
 void Vulkan_011_Texturing::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_011_Texturing::cameraReset()

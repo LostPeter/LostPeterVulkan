@@ -32,3 +32,4 @@ call ./Build_Windows_Sample.bat vulkan_016_geometry %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_017_collision %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_018_subpass %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_019_shadowmap %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_020_terrain %debug% %rebuild%

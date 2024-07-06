@@ -668,7 +668,8 @@ void Vulkan_012_Shadering::createDescriptorSetLayout_Custom()
 
 void Vulkan_012_Shadering::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_012_Shadering::cameraReset()

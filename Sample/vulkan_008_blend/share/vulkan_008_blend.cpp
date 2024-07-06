@@ -114,7 +114,8 @@ Vulkan_008_Blend::Vulkan_008_Blend(int width, int height, String name)
 
 void Vulkan_008_Blend::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

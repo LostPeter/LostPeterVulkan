@@ -1055,7 +1055,8 @@ void Vulkan_015_MultiView::createRenderPass_Custom()
 
 void Vulkan_015_MultiView::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_015_MultiView::cameraReset()

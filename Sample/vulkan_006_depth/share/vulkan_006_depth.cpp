@@ -85,7 +85,8 @@ Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, String name)
 
 void Vulkan_006_Depth::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

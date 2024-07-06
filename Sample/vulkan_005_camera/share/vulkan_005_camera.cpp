@@ -155,7 +155,8 @@ void Vulkan_005_Camera::changeModel(int index)
 
 void Vulkan_005_Camera::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

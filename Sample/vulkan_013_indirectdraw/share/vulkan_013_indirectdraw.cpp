@@ -952,7 +952,8 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayout_Custom()
 
 void Vulkan_013_IndirectDraw::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_013_IndirectDraw::cameraReset()

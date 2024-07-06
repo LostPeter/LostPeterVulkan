@@ -116,7 +116,8 @@ Vulkan_009_Instancing::Vulkan_009_Instancing(int width, int height, String name)
 
 void Vulkan_009_Instancing::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

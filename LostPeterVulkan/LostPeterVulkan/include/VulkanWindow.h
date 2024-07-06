@@ -440,14 +440,10 @@ namespace LostPeterVulkan
         LightConstants mainLight; //common.x == Vulkan_Light_Directional, can not change
         LightConstants aAdditionalLights[MAX_LIGHT_COUNT];
 
-        float mainLight_FOV; //For mainLight ShadowMap's depthMVP
-        float mainLight_zNear; //For mainLight ShadowMap's depthMVP
-	    float mainLight_zFar; //For mainLight ShadowMap's depthMVP
-        uint32_t mainLight_DepthSize; //For mainLight ShadowMap's depth size
-        VkFormat mainLight_Format; //For mainLight ShadowMap's depth format
-	    float mainLight_DepthBiasConstant; //For mainLight ShadowMap's constant depth bias factor
-	    float mainLight_DepthBiasSlope; //For mainLight ShadowMap's slope depth bias factor
-
+        //Shadow
+        ShadowConstants shadowMainLight; //mainLight's shadow
+        ShadowConstants shadowMainLight_Cfg; //mainLight's shadow cfg
+        
         //Mouse
         FVector2 mousePosLast;
         bool mouseButtonDownLeft;
@@ -600,6 +596,11 @@ namespace LostPeterVulkan
 
             virtual void createFeatureSupport();
 
+            //Camera/Light
+            virtual void createCamera();
+            virtual void createLightMain();
+            virtual void createShadowLightMain();
+
             virtual void createCommandObjects();
                 virtual void createCommandPool();
                     virtual void createCommandPool_Graphics();
@@ -692,10 +693,6 @@ namespace LostPeterVulkan
 
         //Load Assets
         virtual void loadAssets();
-            //Camera
-            virtual void createCamera();
-            //Light
-            virtual void createLightMain();
 
             //Geometry
             virtual void loadGeometry();
@@ -1258,6 +1255,10 @@ namespace LostPeterVulkan
                         virtual void lightConfig();
                             virtual void lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType);
                             virtual void lightMainReset();
+                        //Shadow
+                        virtual void shadowConfig();
+                            virtual void shadowConfigItem(ShadowConstants& sc, const String& name);
+                            virtual void shadowReset();
                         //PassConstants
                         virtual void passConstantsConfig();
                         //Model

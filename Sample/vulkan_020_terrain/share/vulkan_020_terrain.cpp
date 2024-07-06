@@ -954,7 +954,8 @@ void Vulkan_020_Terrain::createDescriptorSetLayout_Custom()
 
 void Vulkan_020_Terrain::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_020_Terrain::cameraReset()

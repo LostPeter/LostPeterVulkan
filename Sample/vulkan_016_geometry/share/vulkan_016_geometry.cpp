@@ -714,7 +714,8 @@ void Vulkan_016_Geometry::createDescriptorSetLayout_Custom()
 
 void Vulkan_016_Geometry::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_016_Geometry::cameraReset()

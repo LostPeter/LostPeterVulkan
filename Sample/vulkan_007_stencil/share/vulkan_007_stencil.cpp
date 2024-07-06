@@ -87,7 +87,8 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, String name)
 
 void Vulkan_007_Stencil::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

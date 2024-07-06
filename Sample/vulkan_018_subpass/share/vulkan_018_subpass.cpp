@@ -559,7 +559,8 @@ void Vulkan_018_SubPass::createRenderPass_Custom()
 
 void Vulkan_018_SubPass::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 void Vulkan_018_SubPass::cameraReset()

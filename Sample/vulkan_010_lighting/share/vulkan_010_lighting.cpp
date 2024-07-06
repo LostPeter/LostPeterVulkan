@@ -120,7 +120,8 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
 
 void Vulkan_010_Lighting::createCamera()
 {
-    this->pCamera = new FCamera();
+    VulkanWindow::createCamera();
+    
     cameraReset();
 }
 

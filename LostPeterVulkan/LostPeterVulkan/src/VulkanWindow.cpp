@@ -1360,18 +1360,6 @@ namespace LostPeterVulkan
         , pCamera(nullptr)
         , pCameraRight(nullptr)
 
-        , mainLight_FOV(45.0f)
-        , mainLight_zNear(1.0f)
-        , mainLight_zFar(96.0f)
-    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC 
-        , mainLight_DepthSize(2048)
-    #else
-        , mainLight_DepthSize(1024)
-    #endif
-        , mainLight_Format(VK_FORMAT_D16_UNORM)
-        , mainLight_DepthBiasConstant(1.25f)
-        , mainLight_DepthBiasSlope(1.75f)
-
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
         , mouseButtonDownMiddle(false)
@@ -1803,9 +1791,13 @@ namespace LostPeterVulkan
             //9> Create Sync Objects
             createSyncObjects();
 
-            //10> createInternal
+            //10> Camera/Light/Shadow
+            createCamera();
+            createLightMain();
+            createShadowLightMain();
+
+            //11> createInternal/createResourceInternal
             createInternal();
-            //11> createResourceInternal
             createResourceInternal();
 
             //12> createDescriptorSetLayouts
@@ -2003,7 +1995,7 @@ namespace LostPeterVulkan
             }
         }
         
-        F_LogInfo("<1-2-2> VulkanWindow::setUpDebugMessenger finish !");
+        F_LogInfo("<1-1-2> VulkanWindow::setUpDebugMessenger finish !");
     }
 
     void VulkanWindow::createSurface()
@@ -2485,7 +2477,21 @@ namespace LostPeterVulkan
     void VulkanWindow::createFeatureSupport()
     {
 
-        F_LogInfo("*****<1-3> VulkanWindow::createFeatureSupport finish *****");
+    }
+    void VulkanWindow::createCamera()
+    {
+        if (this->pCamera == nullptr)
+        {
+            this->pCamera = new FCamera();
+        }
+    }
+    void VulkanWindow::createLightMain()
+    {
+
+    }
+    void VulkanWindow::createShadowLightMain()
+    {
+
     }
 
     void VulkanWindow::createCommandObjects()
@@ -3032,9 +3038,9 @@ namespace LostPeterVulkan
         void VulkanWindow::createRenderPass_ShadowMap()
         {
             m_pVKShadowMapRenderPass = new VKShadowMapRenderPass("RenderPass_ShadowMap");
-            m_pVKShadowMapRenderPass->Init(this->mainLight_DepthSize,
-                                           this->mainLight_DepthSize,
-                                           this->mainLight_Format);
+            m_pVKShadowMapRenderPass->Init(this->shadowMainLight.depthSize,
+                                           this->shadowMainLight.depthSize,
+                                           this->shadowMainLight.format);
         }
         void VulkanWindow::createRenderPass_Default()
         {
@@ -3768,23 +3774,24 @@ namespace LostPeterVulkan
     {
         F_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
         {
-            //1> Camera/LightMain
-            createCamera();
-            createLightMain();
+            //0> Camera/Light/Shadow
+            cameraReset();
+            lightMainReset();
+            shadowReset();
 
-            //2> loadGeometry
+            //1> loadGeometry
             loadGeometry();
 
-            //3> Imgui
+            //2> Imgui
             if (HasConfig_Imgui())
             {
                 createImgui();
             }
 
-            //4> Terrain
+            //3> Terrain
             createTerrain();
 
-            //5> Editor
+            //4> Editor
             if (this->cfg_isEditorCreate)
             {
                 createEditor();
@@ -3794,17 +3801,9 @@ namespace LostPeterVulkan
         }
         F_LogInfo("**********<2> VulkanWindow::loadAssets finish **********");
     }
-        void VulkanWindow::createCamera()
-        {
-
-        }
-        void VulkanWindow::createLightMain()
-        {
-
-        }
         void VulkanWindow::loadGeometry()
         {
-            F_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
+            F_LogInfo("*****<2-1> VulkanWindow::loadGeometry start *****");
             {
                 //1> loadVertexIndexBuffer
                 loadVertexIndexBuffer();
@@ -3830,11 +3829,11 @@ namespace LostPeterVulkan
                 //8> createCommandBuffers
                 createCommandBuffers();    
             }
-            F_LogInfo("*****<2-2> VulkanWindow::loadGeometry finish *****");
+            F_LogInfo("*****<2-1> VulkanWindow::loadGeometry finish *****");
         }
     void VulkanWindow::loadVertexIndexBuffer()
     {
-        F_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer start **");
+        F_LogInfo("**<2-1-1> VulkanWindow::loadVertexIndexBuffer start **");
         {
             //1> loadModel
             loadModel();
@@ -3859,11 +3858,11 @@ namespace LostPeterVulkan
                                   this->poIndexBufferMemory);
             }
         }
-        F_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **");
+        F_LogInfo("**<2-1-1> VulkanWindow::loadVertexIndexBuffer finish **");
     }
     void VulkanWindow::loadModel()
     {
-        F_LogInfo("**<2-2-1-1> VulkanWindow::loadModel start **");
+        F_LogInfo("**<2-1-1-1> VulkanWindow::loadModel start **");
         {
             //1> model 
             if (!this->cfg_model_Path.empty())
@@ -3876,7 +3875,7 @@ namespace LostPeterVulkan
                 loadModel_Custom();
             }
         }
-        F_LogInfo("**<2-2-1-1> VulkanWindow::loadModel finish **");
+        F_LogInfo("**<2-1-1-1> VulkanWindow::loadModel finish **");
     }
         void VulkanWindow::loadModel_Default()
         {
@@ -4051,7 +4050,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::loadTexture()
     {
-        F_LogInfo("**<2-2-2> VulkanWindow::loadTexture start **");
+        F_LogInfo("**<2-1-2> VulkanWindow::loadTexture start **");
         {
             //1> Texture Default 
             loadTexture_Default();
@@ -4059,7 +4058,7 @@ namespace LostPeterVulkan
             //2> Texture Custom
             loadTexture_Custom();
         }
-        F_LogInfo("**<2-2-2> VulkanWindow::loadTexture finish **");
+        F_LogInfo("**<2-1-2> VulkanWindow::loadTexture finish **");
     }
         void VulkanWindow::loadTexture_Default()
         {
@@ -4069,7 +4068,7 @@ namespace LostPeterVulkan
                 createVkImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
                 createVkSampler(this->poMipMapCount, this->poTextureSampler);
 
-                F_LogInfo("<2-2-2-1> VulkanWindow::loadTexture_Default finish !");
+                F_LogInfo("<2-1-2-1> VulkanWindow::loadTexture_Default finish !");
             }
         }
         void VulkanWindow::loadTexture_Custom()
@@ -5644,7 +5643,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createConstBuffers()
     {
-        F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers start **");
+        F_LogInfo("**<2-1-3> VulkanWindow::createConstBuffers start **");
         {
             //1> createObjectCB
             createObjectCB();
@@ -5658,7 +5657,7 @@ namespace LostPeterVulkan
             //4> createCustomCB
             createCustomCB();
         }
-        F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
+        F_LogInfo("**<2-1-3> VulkanWindow::createConstBuffers finish **");
     }
     void VulkanWindow::createObjectCB()
     {
@@ -5677,7 +5676,7 @@ namespace LostPeterVulkan
                            this->poBuffers_ObjectCB[i], 
                            this->poBuffersMemory_ObjectCB[i]);
         }
-        F_LogInfo("<2-2-3-1> VulkanWindow::createObjectCB finish !");
+        F_LogInfo("<2-1-3-1> VulkanWindow::createObjectCB finish !");
     }
         void VulkanWindow::buildObjectCB()
         {
@@ -5701,7 +5700,7 @@ namespace LostPeterVulkan
                            this->poBuffers_MaterialCB[i], 
                            this->poBuffersMemory_MaterialCB[i]);
         }
-        F_LogInfo("<2-2-3-2> VulkanWindow::createMaterialCB finish !");
+        F_LogInfo("<2-1-3-2> VulkanWindow::createMaterialCB finish !");
     }
         void VulkanWindow::buildMaterialCB()
         {
@@ -5725,7 +5724,7 @@ namespace LostPeterVulkan
                            this->poBuffers_InstanceCB[i], 
                            this->poBuffersMemory_InstanceCB[i]);
         }
-        F_LogInfo("<2-2-3-3> VulkanWindow::createInstanceCB finish !");
+        F_LogInfo("<2-1-3-3> VulkanWindow::createInstanceCB finish !");
     }
         void VulkanWindow::buildInstanceCB()
         {
@@ -5735,7 +5734,7 @@ namespace LostPeterVulkan
     void VulkanWindow::createCustomCB()
     {
         
-        F_LogInfo("<2-2-3-4> VulkanWindow::createCustomCB finish !");
+        F_LogInfo("<2-1-3-4> VulkanWindow::createCustomCB finish !");
     }
 
     VkShaderModule VulkanWindow::createVkShaderModule(FShaderType typeShader, const String& pathFile)
@@ -5860,25 +5859,25 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createCustomBeforePipeline()
     {
-        F_LogInfo("**<2-2-4> VulkanWindow::createCustomBeforePipeline finish **");
+        F_LogInfo("**<2-1-4> VulkanWindow::createCustomBeforePipeline finish **");
     }
     void VulkanWindow::createGraphicsPipeline()
     {
-        F_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline start **");
+        F_LogInfo("**<2-1-5> VulkanWindow::createGraphicsPipeline start **");
         {
             //1> createGraphicsPipeline_Default
             createGraphicsPipeline_Default();
-            F_LogInfo("<2-2-5-1> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Default finish !");
+            F_LogInfo("<2-1-5-1> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Default finish !");
 
             //2> createGraphicsPipeline_Terrain
             createGraphicsPipeline_Terrain();
-            F_LogInfo("<2-2-5-2> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Terrain finish !");
+            F_LogInfo("<2-1-5-2> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Terrain finish !");
 
             //3> createGraphicsPipeline_Custom
             createGraphicsPipeline_Custom();
-            F_LogInfo("<2-2-5-3> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Custom finish !");
+            F_LogInfo("<2-1-5-3> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Custom finish !");
         }
-        F_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline finish **");
+        F_LogInfo("**<2-1-5> VulkanWindow::createGraphicsPipeline finish **");
     }
         void VulkanWindow::createGraphicsPipeline_Default()
         {
@@ -6361,7 +6360,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createComputePipeline()
     {
-        F_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline start **");
+        F_LogInfo("**<2-1-6> VulkanWindow::createComputePipeline start **");
         {
             //1> createComputePipeline_Default
             createComputePipeline_Default();
@@ -6369,7 +6368,7 @@ namespace LostPeterVulkan
             //2> createComputePipeline_Custom
             createComputePipeline_Custom();
         }
-        F_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline finish **");
+        F_LogInfo("**<2-1-6> VulkanWindow::createComputePipeline finish **");
     }
         void VulkanWindow::createComputePipeline_Default()
         {
@@ -6417,21 +6416,21 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createDescriptorSets()
     {
-        F_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets start **");
+        F_LogInfo("**<2-1-7> VulkanWindow::createDescriptorSets start **");
         {
             //1> createDescriptorSets_Default
             createDescriptorSets_Default();
-            F_LogInfo("<2-2-7-1> VulkanWindow::createDescriptorSets: createDescriptorSets_Default finish !");
+            F_LogInfo("<2-1-7-1> VulkanWindow::createDescriptorSets: createDescriptorSets_Default finish !");
 
             //2> createDescriptorSets_Terrain
             createDescriptorSets_Terrain();
-            F_LogInfo("<2-2-7-2> VulkanWindow::createDescriptorSets: createDescriptorSets_Terrain finish !");
+            F_LogInfo("<2-1-7-2> VulkanWindow::createDescriptorSets: createDescriptorSets_Terrain finish !");
 
             //3> createDescriptorSets_Custom
             createDescriptorSets_Custom();
-            F_LogInfo("<2-2-7-3> VulkanWindow::createDescriptorSets: createDescriptorSets_Custom finish !");
+            F_LogInfo("<2-1-7-3> VulkanWindow::createDescriptorSets: createDescriptorSets_Custom finish !");
         }
-        F_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets finish **");
+        F_LogInfo("**<2-1-7> VulkanWindow::createDescriptorSets finish **");
     }
         void VulkanWindow::createDescriptorSets_Default()
         {
@@ -6659,7 +6658,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createCommandBuffers()
     {
-        F_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers start **");
+        F_LogInfo("**<2-1-8> VulkanWindow::createCommandBuffers start **");
         {
             //1> createCommandBuffer_Graphics
             createCommandBuffer_Graphics();
@@ -6668,9 +6667,9 @@ namespace LostPeterVulkan
             createCommandBuffer_Compute();
 
 
-            F_LogInfo("<2-2-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
+            F_LogInfo("<2-1-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
         }
-        F_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers finish **");
+        F_LogInfo("**<2-1-8> VulkanWindow::createCommandBuffers finish **");
     }
         void VulkanWindow::createCommandBuffer_Graphics()
         {
@@ -6686,7 +6685,7 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            F_LogInfo("<2-2-8-1> VulkanWindow::createCommandBuffer_Graphics: Create CommandBuffersGraphics success !");
+            F_LogInfo("<2-1-8-1> VulkanWindow::createCommandBuffer_Graphics: Create CommandBuffersGraphics success !");
         }
         void VulkanWindow::createCommandBuffer_Compute()
         {
@@ -6703,13 +6702,13 @@ namespace LostPeterVulkan
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                F_LogInfo("<2-2-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferCompute success !");
+                F_LogInfo("<2-1-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferCompute success !");
             }
         }
 
     void VulkanWindow::createImgui()
     {
-        F_LogInfo("**********<2-3> VulkanWindow::createImgui start **********");
+        F_LogInfo("**********<2-2> VulkanWindow::createImgui start **********");
         {
             //1> createImgui_DescriptorPool
             createImgui_DescriptorPool();
@@ -6717,7 +6716,7 @@ namespace LostPeterVulkan
             //2> createImgui_Init
             createImgui_Init();
         }
-        F_LogInfo("**********<2-3> VulkanWindow::createImgui finish **********");
+        F_LogInfo("**********<2-2> VulkanWindow::createImgui finish **********");
     }
         void VulkanWindow::createImgui_DescriptorPool()
         {   
@@ -6750,7 +6749,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg);
             }
 
-            F_LogInfo("<2-3-1> VulkanWindow::createImgui_DescriptorPool finish !");
+            F_LogInfo("<2-2-1> VulkanWindow::createImgui_DescriptorPool finish !");
         }
         void checkImguiError(VkResult err)
         {
@@ -6795,13 +6794,13 @@ namespace LostPeterVulkan
             endSingleTimeCommands(commandBuffer);
             ImGui_ImplVulkan_DestroyFontUploadObjects();
 
-            F_LogInfo("<2-3-2> VulkanWindow::createImgui_Init finish !");
+            F_LogInfo("<2-2-2> VulkanWindow::createImgui_Init finish !");
         }
 
 
     void VulkanWindow::createTerrain()
     {
-         F_LogInfo("*****<4-1> VulkanWindow::createTerrain start *****");
+         F_LogInfo("*****<2-3> VulkanWindow::createTerrain start *****");
         {
             //1> loadTerrainData
             if (loadTerrainData())
@@ -6816,7 +6815,7 @@ namespace LostPeterVulkan
                 setupTerrainGraphicsPipeline();
             }
         }
-        F_LogInfo("*****<4-1> VulkanWindow::createTerrain finish *****");
+        F_LogInfo("*****<2-3> VulkanWindow::createTerrain finish *****");
     }
         bool VulkanWindow::loadTerrainData()
         {
@@ -7622,7 +7621,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createEditor()
     {
-        F_LogInfo("**********<2-5> VulkanWindow::createEditor start **********");
+        F_LogInfo("**********<2-4> VulkanWindow::createEditor start **********");
         {
             //1> createEditor_Grid
             createEditor_Grid();
@@ -7639,42 +7638,42 @@ namespace LostPeterVulkan
             //5> createEditor_LineFlat3DCollector
             createEditor_LineFlat3DCollector();
         }
-        F_LogInfo("**********<2-5> VulkanWindow::createEditor finish **********");
+        F_LogInfo("**********<2-4> VulkanWindow::createEditor finish **********");
     }
         void VulkanWindow::createEditor_Grid()
         {
             this->pEditorGrid = new EditorGrid();
             this->pEditorGrid->Init();
 
-            F_LogInfo("<2-5-1> VulkanWindow::createEditor_Grid finish !");
+            F_LogInfo("<2-4-1> VulkanWindow::createEditor_Grid finish !");
         }
         void VulkanWindow::createEditor_CameraAxis()
         {
             this->pEditorCameraAxis = new EditorCameraAxis();
             this->pEditorCameraAxis->Init();
 
-            F_LogInfo("<2-5-2> VulkanWindow::createEditor_CameraAxis finish !");
+            F_LogInfo("<2-4-2> VulkanWindow::createEditor_CameraAxis finish !");
         }
         void VulkanWindow::createEditor_CoordinateAxis()
         {
             this->pEditorCoordinateAxis = new EditorCoordinateAxis();
             this->pEditorCoordinateAxis->Init();
 
-            F_LogInfo("<2-5-3> VulkanWindow::createEditor_CoordinateAxis finish !");
+            F_LogInfo("<2-4-3> VulkanWindow::createEditor_CoordinateAxis finish !");
         }
         void VulkanWindow::createEditor_LineFlat2DCollector()
         {
             this->pEditorLineFlat2DCollector = new EditorLineFlat2DCollector();
             this->pEditorLineFlat2DCollector->Init();
 
-            F_LogInfo("<2-5-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
+            F_LogInfo("<2-4-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
         }
         void VulkanWindow::createEditor_LineFlat3DCollector()
         {
             this->pEditorLineFlat3DCollector = new EditorLineFlat3DCollector();
             this->pEditorLineFlat3DCollector->Init();
 
-            F_LogInfo("<2-5-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");
+            F_LogInfo("<2-4-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");
         }
     void VulkanWindow::destroyEditor()
     {
@@ -7882,7 +7881,7 @@ namespace LostPeterVulkan
                     //Light Settings
                     if (this->cfg_isRenderPassShadowMap)
                     {
-                        glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->mainLight_FOV), 1.0f, this->mainLight_zNear, this->mainLight_zFar);
+                        glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->shadowMainLight.fov), 1.0f, this->shadowMainLight.zNear, this->shadowMainLight.zFar);
                         glm::mat4 depthViewMatrix = glm::lookAtLH(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0)); //FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction);
                         glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
@@ -8546,6 +8545,70 @@ namespace LostPeterVulkan
                         {
 
                         }
+                    void VulkanWindow::shadowConfig()
+                    {
+                        if (ImGui::CollapsingHeader("Shadow Settings"))
+                        {
+                            //Shadow MainLight
+                            shadowConfigItem(this->shadowMainLight, "Shadow MainLight");
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                        void VulkanWindow::shadowConfigItem(ShadowConstants& sc, const String& name)
+                        {
+                            if (ImGui::CollapsingHeader(name.c_str()))
+                            {
+                                //fov
+                                float fFov = sc.fov;
+                                String nameFov = "Fov - " + name;
+                                if (ImGui::DragFloat(nameFov.c_str(), &fFov, 0.001f, 20.0f, 90.0f))
+                                {
+                                    sc.fov = fFov;
+                                }
+                                ImGui::Spacing();
+
+                                //zNear
+                                float fZNear = sc.zNear;
+                                String nameZNear = "ZNear - " + name;
+                                if (ImGui::DragFloat(nameZNear.c_str(), &fZNear, 0.05f, 0.5f, 10.0f))
+                                {
+                                    sc.zNear = fZNear;
+                                }
+                                ImGui::Spacing();
+
+                                //zFar
+                                float fZFar = sc.zFar;
+                                String nameZFar = "ZFar - " + name;
+                                if (ImGui::DragFloat(nameZFar.c_str(), &fZFar, 0.05f, 20.0f, 1000.0f))
+                                {
+                                    sc.zFar = fZFar;
+                                }
+                                ImGui::Spacing();
+
+                                //depthBiasConstant
+                                float fDepthBiasConstant = sc.depthBiasConstant;
+                                String nameDepthBiasConstant = "DepthBiasConstant - " + name;
+                                if (ImGui::DragFloat(nameDepthBiasConstant.c_str(), &fDepthBiasConstant, 0.01f, 0.5f, 5.0f))
+                                {
+                                    sc.depthBiasConstant = fDepthBiasConstant;
+                                }
+                                ImGui::Spacing();
+
+                                //depthBiasSlope
+                                float fDepthBiasSlope = sc.depthBiasSlope;
+                                String nameDepthBiasSlope = "DepthBiasSlope - " + name;
+                                if (ImGui::DragFloat(nameDepthBiasSlope.c_str(), &fDepthBiasSlope, 0.01f, 1.0f, 10.0f))
+                                {
+                                    sc.depthBiasSlope = fDepthBiasSlope;
+                                }
+                                ImGui::Spacing();
+                            }
+                        }
+                        void VulkanWindow::shadowReset()
+                        {
+
+                        }
                     void VulkanWindow::passConstantsConfig()
                     {
                         if (ImGui::CollapsingHeader("PassConstants Settings"))
@@ -8683,7 +8746,7 @@ namespace LostPeterVulkan
                         bindViewport(commandBuffer, this->m_pVKShadowMapRenderPass->viewPort, this->m_pVKShadowMapRenderPass->rtScissor);
                         
                         //2> DepthBias
-                        SetDepthBias(commandBuffer, this->mainLight_DepthBiasConstant, 0.0f, this->mainLight_DepthBiasSlope);
+                        SetDepthBias(commandBuffer, this->shadowMainLight.depthBiasConstant, 0.0f, this->shadowMainLight.depthBiasSlope);
 
                         //3> Showmap Render
                         drawMeshShadowMap(commandBuffer);
