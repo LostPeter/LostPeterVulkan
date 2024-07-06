@@ -569,8 +569,8 @@ namespace LostPeterVulkan
                 //m_pPipelineGraphics_DepthShadowMap->poPipeline
                 this->m_pPipelineGraphics_DepthShadowMap->poPipeline = createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
                                                                                                 false, 0, 3,
-                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2), 
-                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2),
+                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
+                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                                                 this->m_pVKShadowMapRenderPass->poRenderPass, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, aViewports, aScissors,
                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, 1.0f,
                                                                                                 VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
@@ -7882,8 +7882,8 @@ namespace LostPeterVulkan
                     //Light Settings
                     if (this->cfg_isRenderPassShadowMap)
                     {
-                        glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(this->mainLight_FOV), 1.0f, this->mainLight_zNear, this->mainLight_zFar);
-                        glm::mat4 depthViewMatrix = FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction);
+                        glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->mainLight_FOV), 1.0f, this->mainLight_zNear, this->mainLight_zFar);
+                        glm::mat4 depthViewMatrix = glm::lookAtLH(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0)); //FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction);
                         glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
                         this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-02-26
+* Time:     2024-07-06
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_019_shadowmap.h"
+#include "vulkan_020_terrain.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -19,15 +19,24 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 5;
+static const int g_MeshCount = 10;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
-    "viking_room",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/viking_room/viking_room.obj", //viking_room
-    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/bunny/bunny.obj", //bunny
+
+    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/mountain/mountain.obj", //mountain
+
+    "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/rock/rock.fbx", //rock
+    "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/cliff/cliff.obj", //cliff
+
+    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/tree_spruce/tree_spruce.fbx", //tree_spruce
+
+    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/grass/grass.fbx", //grass
+    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/flower/flower.fbx", //flower
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -35,8 +44,17 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     true, //plane
     false, //cube
     false, //sphere
-    false, //viking_room
-    false, //bunny
+
+    false, //mountain
+
+    false, //rock
+    false, //cliff
+
+    false, //tree
+    false, //tree_spruce
+
+    false, //grass
+    false, //flower
 
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
@@ -44,8 +62,17 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //plane  
     false, //cube
     false, //sphere
-    true, //viking_room
-    false, //bunny
+
+    false, //mountain
+
+    false, //rock
+    false, //cliff
+
+    false, //tree
+    false, //tree_spruce
+
+    false, //grass
+    false, //flower
 
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
@@ -53,106 +80,300 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //cube
     FMath::ms_mat4Unit, //sphere
-    FMath::RotateX(-90.0f), //viking_room
-    FMath::ms_mat4Unit, //bunny
+
+    FMath::ms_mat4Unit, //mountain
+
+    FMath::ms_mat4Unit, //rock
+    FMath::ms_mat4Unit, //cliff
+
+    FMath::ms_mat4Unit, //tree
+    FMath::ms_mat4Unit, //tree_spruce
+
+    FMath::ms_mat4Unit, //grass
+    FMath::ms_mat4Unit, //flower
 
 };
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 5;
+static const int g_TextureCount = 24;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
+    "default_blackwhite",               "2D",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
+    "bricks_diffuse",                   "2D",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
     "terrain",                          "2D",            "false",                  "false",                           "Assets/Texture/Common/terrain.png", //terrain
+    "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
+    
     "texturecubemap",                   "CubeMap",       "false",                  "false",                           "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
 
-    "default_white",                    "2D",            "false",                  "false",                           "Assets/Texture/Common/default_white.bmp", //default_white
-    "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
-    "viking_room",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/viking_room/viking_room.png", //viking_room
+    "texture_terrain_diffuse",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
+    "texture_terrain_normal",           "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
+    "texture_terrain_control",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
+
+    "mountain_diffuse",                 "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_diffuse.png", //mountain_diffuse
+    "mountain_normal",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_normal.png", //mountain_normal
+
+    "rock_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
+    "rock_normal",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
+    "cliff_diffuse",                    "2D",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_diffuse.png", //cliff_diffuse
+    "cliff_normal",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_normal.png", //cliff_normal
+
+    "tree_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/tree/tree_diffuse.png", //tree_diffuse
+    "tree_spruce_diffuse",              "2D",            "false",                  "false",                           "Assets/Texture/Model/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
+
+    "grass_alien",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_alien.png", //grass_alien
+    "grass_field",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_field.png", //grass_field
+    "grass_pixelated",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_pixelated.png", //grass_pixelated
+    "grass_tall",                       "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_tall.png", //grass_tall
+    "grass_thick",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thick.png", //grass_thick
+    "grass_thin",                       "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thin.png", //grass_thin
+    "grass_wheat",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_wheat.png", //grass_wheat
     
+    "flower_atlas",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/flower/flower_atlas.png", //flower_atlas
+
 };
 static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
+
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
 
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //viking_room
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_control
+
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_normal
+
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_normal
+
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //tree_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //tree_spruce_diffuse
+
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_alien
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_field
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_pixelated
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_tall
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_thick
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_thin
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_wheat
+
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //flower_atlas
 
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
+    F_TextureFilter_Bilinear, //default_blackwhite
+    F_TextureFilter_Bilinear, //bricks_diffuse
     F_TextureFilter_Bilinear, //terrain
+    F_TextureFilter_Bilinear, //texture2d
+
     F_TextureFilter_Bilinear, //texturecubemap
 
-    F_TextureFilter_Bilinear, //default_white
-    F_TextureFilter_Bilinear, //texture2d
-    F_TextureFilter_Bilinear, //viking_room    
+    F_TextureFilter_Bilinear, //texture_terrain_diffuse
+    F_TextureFilter_Bilinear, //texture_terrain_normal
+    F_TextureFilter_Bilinear, //texture_terrain_control
+
+    F_TextureFilter_Bilinear, //mountain_diffuse
+    F_TextureFilter_Bilinear, //mountain_normal
+
+    F_TextureFilter_Bilinear, //rock_diffuse
+    F_TextureFilter_Bilinear, //rock_normal
+    F_TextureFilter_Bilinear, //cliff_diffuse
+    F_TextureFilter_Bilinear, //cliff_normal
+
+    F_TextureFilter_Bilinear, //tree_diffuse
+    F_TextureFilter_Bilinear, //tree_spruce_diffuse
+
+    F_TextureFilter_Bilinear, //grass_alien
+    F_TextureFilter_Bilinear, //grass_field
+    F_TextureFilter_Bilinear, //grass_pixelated
+    F_TextureFilter_Bilinear, //grass_tall
+    F_TextureFilter_Bilinear, //grass_thick
+    F_TextureFilter_Bilinear, //grass_thin
+    F_TextureFilter_Bilinear, //grass_wheat
+
+    F_TextureFilter_Bilinear, //flower_atlas
 
 };
 static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
+    F_TextureAddressing_Clamp, //default_blackwhite
+    F_TextureAddressing_Clamp, //bricks_diffuse
     F_TextureAddressing_Clamp, //terrain
+    F_TextureAddressing_Clamp, //texture2d
+
     F_TextureAddressing_Wrap, //texturecubemap
 
-    F_TextureAddressing_Clamp, //default_white
-    F_TextureAddressing_Clamp, //texture2d
-    F_TextureAddressing_Clamp, //viking_room
-        
+    F_TextureAddressing_Clamp, //texture_terrain_diffuse
+    F_TextureAddressing_Clamp, //texture_terrain_normal
+    F_TextureAddressing_Clamp, //texture_terrain_control
+
+    F_TextureAddressing_Clamp, //mountain_diffuse
+    F_TextureAddressing_Clamp, //mountain_normal
+
+    F_TextureAddressing_Clamp, //rock_diffuse
+    F_TextureAddressing_Clamp, //rock_normal
+    F_TextureAddressing_Clamp, //cliff_diffuse
+    F_TextureAddressing_Clamp, //cliff_normal
+
+    F_TextureAddressing_Clamp, //tree_diffuse
+    F_TextureAddressing_Clamp, //tree_spruce_diffuse
+
+    F_TextureAddressing_Clamp, //grass_alien
+    F_TextureAddressing_Clamp, //grass_field
+    F_TextureAddressing_Clamp, //grass_pixelated
+    F_TextureAddressing_Clamp, //grass_tall
+    F_TextureAddressing_Clamp, //grass_thick
+    F_TextureAddressing_Clamp, //grass_thin
+    F_TextureAddressing_Clamp, //grass_wheat
+
+    F_TextureAddressing_Clamp, //flower_atlas
+
 };
 static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
+    F_TextureBorderColor_OpaqueBlack, //default_blackwhite
+    F_TextureBorderColor_OpaqueBlack, //bricks_diffuse
     F_TextureBorderColor_OpaqueBlack, //terrain
+    F_TextureBorderColor_OpaqueBlack, //texture2d
+
     F_TextureBorderColor_OpaqueBlack, //texturecubemap
 
-    F_TextureBorderColor_OpaqueBlack, //default_white
-    F_TextureBorderColor_OpaqueBlack, //texture2d
-    F_TextureBorderColor_OpaqueBlack, //viking_room
-    
+    F_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
+    F_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
+    F_TextureBorderColor_OpaqueBlack, //texture_terrain_control
+
+    F_TextureBorderColor_OpaqueBlack, //mountain_diffuse
+    F_TextureBorderColor_OpaqueBlack, //mountain_normal
+
+    F_TextureBorderColor_OpaqueBlack, //rock_diffuse
+    F_TextureBorderColor_OpaqueBlack, //rock_normal
+    F_TextureBorderColor_OpaqueBlack, //cliff_diffuse
+    F_TextureBorderColor_OpaqueBlack, //cliff_normal
+
+    F_TextureBorderColor_OpaqueBlack, //tree_diffuse
+    F_TextureBorderColor_OpaqueBlack, //tree_spruce_diffuse
+
+    F_TextureBorderColor_OpaqueBlack, //grass_alien
+    F_TextureBorderColor_OpaqueBlack, //grass_field
+    F_TextureBorderColor_OpaqueBlack, //grass_pixelated
+    F_TextureBorderColor_OpaqueBlack, //grass_tall
+    F_TextureBorderColor_OpaqueBlack, //grass_thick
+    F_TextureBorderColor_OpaqueBlack, //grass_thin
+    F_TextureBorderColor_OpaqueBlack, //grass_wheat
+
+    F_TextureBorderColor_OpaqueBlack, //flower_atlas
+
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
+    512,    512,    1, //default_blackwhite
+    512,    512,    1, //bricks_diffuse
     512,    512,    1, //terrain
+    512,    512,    1, //texture2d
+
     512,    512,    1, //texturecubemap
 
-     64,     64,    1, //default_white
-    512,    512,    1, //texture2d
-   1024,   1024,    1, //viking_room
-    
+   1024,   1024,    1, //texture_terrain_diffuse
+   1024,   1024,    1, //texture_terrain_normal
+    512,    512,    1, //texture_terrain_control
+
+   1024,   1024,    1, //mountain_diffuse
+   1024,   1024,    1, //mountain_normal
+
+    512,    512,    1, //rock_diffuse
+    512,    512,    1, //rock_normal
+    512,    512,    1, //cliff_diffuse
+   1024,   1024,    1, //cliff_normal
+
+   1024,   1024,    1, //tree_diffuse
+   1024,   1024,    1, //tree_spruce_diffuse
+
+   1024,   1024,    1, //grass_alien
+   1024,   1024,    1, //grass_field
+    128,    128,    1, //grass_pixelated
+   1024,   1024,    1, //grass_tall
+   1024,   1024,    1, //grass_thick
+   1024,   1024,    1, //grass_thin
+    128,    512,    1, //grass_wheat
+
+   1024,   1024,    1, //flower_atlas
+
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
+    0,    0, //default_blackwhite
+    0,    0, //bricks_diffuse
     0,    0, //terrain
+    0,    0, //texture2d
+
     0,    0, //texturecubemap
 
-    0,    0, //default_white
-    0,    0, //texture2d
-    0,    0, //viking_room
+    0,    0, //texture_terrain_diffuse
+    0,    0, //texture_terrain_normal
+    0,    0, //texture_terrain_control
+
+    0,    0, //mountain_diffuse
+    0,    0, //mountain_normal
+
+    0,    0, //rock_diffuse
+    0,    0, //rock_normal
+    0,    0, //cliff_diffuse
+    0,    0, //cliff_normal
+
+    0,    0, //tree_diffuse
+    0,    0, //tree_spruce_diffuse
+
+    0,    0, //grass_alien
+    0,    0, //grass_field
+    0,    0, //grass_pixelated
+    0,    0, //grass_tall
+    0,    0, //grass_thick
+    0,    0, //grass_thin
+    0,    0, //grass_wheat
+
+    0,    0, //flower_atlas
 
 };
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 2;
+static const int g_DescriptorSetLayoutCount = 3;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",
+    "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
+
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 6;
+static const int g_ShaderCount = 18;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
     "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_transparent_lit",                      "vert",              "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_tex2d_lit_shadow",              "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.vert.spv", //standard_mesh_opaque_tex2d_lit_shadow vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
     
+    "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
+
+    "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
+    "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
+    "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
+    "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
+
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
 
@@ -161,181 +382,302 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
-
     ///////////////////////////////////////// frag /////////////////////////////////////////
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_standard_mesh_transparent_lit",                      "frag",              "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit frag
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_tex2d_lit_shadow",              "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.frag.spv", //standard_mesh_opaque_tex2d_lit_shadow frag
-   
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+
+    "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
+
+    "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
+    "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
+    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
+    "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
+
     ///////////////////////////////////////// comp /////////////////////////////////////////
+    
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 6;
+static const int g_Object_Count = 8;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
-    //Object Name                          //Mesh Name          
-    "object_terrain",                      "plane", //object_terrain
+    //Object Name                          //Mesh Name                                                                    
     "object_skybox",                       "cube", //object_skybox
+    "object_mountain",                     "mountain", //object_mountain   
 
-    "object_cube",                         "cube", //object_cube   
-    "object_sphere",                       "sphere", //object_sphere
-    "object_viking_room",                  "viking_room", //object_viking_room    
-    "object_bunny",                        "bunny", //object_bunny  
+    "object_rock",                         "rock", //object_rock   
+    "object_cliff",                        "cliff", //object_cliff   
+
+    "object_tree",                         "tree", //object_tree        
+    "object_tree_spruce",                  "tree_spruce", //object_tree_spruce
+    
+    "object_grass",                        "grass", //object_grass        
+    "object_flower",                       "flower", //object_flower
 
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
-    "0", //object_terrain
     "0", //object_skybox
+    "0", //object_mountain
 
-    "0", //object_cube
-    "0", //object_sphere
-    "0", //object_viking_room      
-    "0", //object_bunny       
+    "0", //object_rock
+    "0", //object_cliff
+
+    "0;1", //object_tree        
+    "0;1", //object_tree_spruce
+
+    "1;4;6;9", //object_grass
+    "0;2;4;6;8;9;10;11", //object_flower
 
 };  
 
 static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
-    0, //object_terrain
     0, //object_skybox
+    0, //object_mountain 
 
-    0, //object_cube 
-    0, //object_sphere 
-    0, //object_viking_room 
-    0, //object_bunny 
+    4, //object_rock 
+    4, //object_cliff 
+
+    4, //object_tree 
+    4, //object_tree_spruce 
+
+    4, //object_grass 
+    4, //object_flower 
 
 };
 static bool g_Object_IsShows[] = 
 {
-    true, //object_terrain
     true, //object_skybox
+    true, //object_mountain
 
-    true, //object_cube
-    true, //object_sphere
-    true, //object_viking_room
-    true, //object_bunny
+    true, //object_rock
+    true, //object_cliff
+
+    true, //object_tree
+    true, //object_tree_spruce
+
+    true, //object_grass
+    true, //object_flower
 
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
-    false, //object_terrain
     false, //object_skybox
+    false, //object_mountain
 
-    true, //object_cube
-    true, //object_sphere
-    true, //object_viking_room
-    true, //object_bunny
+    false, //object_rock
+    false, //object_cliff
+
+    false, //object_tree
+    false, //object_tree_spruce
+
+    false, //object_grass
+    false, //object_flower
 
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
-    true, //object_terrain
     true, //object_skybox
+    true, //object_mountain
 
-    true, //object_cube
-    true, //object_sphere
-    true, //object_viking_room
-    true, //object_bunny
+    true, //object_rock
+    true, //object_cliff
+
+    true, //object_tree
+    true, //object_tree_spruce
+
+    true, //object_grass
+    true, //object_flower
 
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
-    false, //object_terrain
     false, //object_skybox
+    false, //object_mountain
 
-    false, //object_cube
-    false, //object_sphere
-    false, //object_viking_room
-    false, //object_bunny
+    false, //object_rock
+    false, //object_cliff
+
+    false, //object_tree
+    false, //object_tree_spruce
+
+    false, //object_grass
+    true, //object_flower
 
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 6;
+static const int g_ObjectRend_Count = 20;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "object_terrain-1",                    "",                     "",                              "",                         "",                    "terrain",                                                                      "", //object_terrain-1
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
 
-    "object_cube-1",                       "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_cube-1
-    "object_sphere-1",                     "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_sphere-1
-    "object_viking_room-1",                "",                     "",                              "",                         "",                    "viking_room",                                                                  "", //object_viking_room-1
-    "object_bunny-1",                      "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_bunny-1
-    
+    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
+    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
+
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
+    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
+    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
+    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
+
+    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
+    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
+    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
+    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
+    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
+    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
+    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-4
+    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-5
+    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
+    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
+    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
+
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_standard_mesh_opaque_tex2d_lit_shadow",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit_shadow",           "", //object_terrain-1
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_mountain-1
     
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_cube-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_sphere-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_viking_room-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_bunny-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
+
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree-2
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree_spruce-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree_spruce-2
+
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-2
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-3
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-4
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-2
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-3
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-4
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-5
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-6
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",       "", //object_terrain-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_mountain-1
 
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_cube-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_sphere-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_viking_room-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_bunny-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
+
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-2
+
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-3
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-4
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-3
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-4
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-5
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-6
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_terrain-1
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
  
-    FVector3(   1,   2,    1),      FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
-    FVector3(  -1,   2,    1),      FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
-    FVector3(  -1,   2,   -1),      FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
-    FVector3(   1,   2,   -1),      FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
+    FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
+
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-1
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-2
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
+
+    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-1
+    FVector3(   0,  0.0,   2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-2
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-3
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-4
+    FVector3(   0,  0.0,  -1.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-1
+    FVector3(   0,  0.0,  -1.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-2
+    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-3
+    FVector3(   0,  0.0,  -2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-4
+    FVector3(   0,  0.0,  -3.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-5
+    FVector3(   0,  0.0,  -3.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-6
+    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-7
+    FVector3(   0,  0.0,  -4.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
-    false, //object_terrain-1
     false, //object_skybox-1
+    false, //object_mountain-1
 
-    false, //object_cube-1
-    false, //object_sphere-1
-    false, //object_viking_room-1
-    false, //object_bunny-1
+    false, //object_rock-1
+    false, //object_cliff-1
 
-};
-static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
-{
-    false, //object_terrain-1
-    false, //object_skybox-1
+    false, //object_tree-1
+    false, //object_tree-2
+    false, //object_tree_spruce-1
+    false, //object_tree_spruce-2
 
-    true, //object_cube-1
-    true, //object_sphere-1
-    true, //object_viking_room-1
-    true, //object_bunny-1
+    false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
+    false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
 
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
-    false, //object_terrain-1
     false, //object_skybox-1
+    false, //object_mountain-1
     
-    false, //object_cube-1
-    false, //object_sphere-1
-    false, //object_viking_room-1
-    false, //object_bunny-1
+    false, //object_rock-1
+    false, //object_cliff-1
+
+    false, //object_tree-1
+    false, //object_tree-2
+    false, //object_tree_spruce-1
+    false, //object_tree_spruce-2
+
+    false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
+    false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
 
 };
 
@@ -345,7 +687,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::Destroy()
+void Vulkan_020_Terrain::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -364,7 +706,7 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_020_Terrain::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -409,9 +751,9 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    F_Assert(_aRends.size() > 0 && "Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupVertexIndexBuffer")
+    F_Assert(_aRends.size() > 0 && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -454,7 +796,7 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     }
     else
     {
-        F_Assert(false && "Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
+        F_Assert(false && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -471,7 +813,7 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     }
 }
 
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -516,7 +858,7 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandB
     }
 }
 
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -537,7 +879,7 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_019_ShadowMap::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -570,22 +912,27 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
 
 
 
-Vulkan_019_ShadowMap::Vulkan_019_ShadowMap(int width, int height, String name)
+Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
-    this->cfg_isRenderPassShadowMap = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
-    this->cfg_editorGrid_Color.a = 0.2f;
+
+    this->mainLight.common.x = 0; //Directional Type
+    this->mainLight.common.y = 1.0f; //Enable
+    this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
+    this->mainLight.direction = FVector3(0, -1, 0); //y-
+
+    //this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
-void Vulkan_019_ShadowMap::setUpEnabledFeatures()
+void Vulkan_020_Terrain::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -596,44 +943,30 @@ void Vulkan_019_ShadowMap::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_019_ShadowMap::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        F_LogError("*********************** Vulkan_020_Terrain::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_019_ShadowMap::createDescriptorSetLayout_Custom()
+void Vulkan_020_Terrain::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_019_ShadowMap::createCamera()
+void Vulkan_020_Terrain::createCamera()
 {
     this->pCamera = new FCamera();
     cameraReset();
 }
-    void Vulkan_019_ShadowMap::cameraReset()
-    {
-        VulkanWindow::cameraReset();
-
-        this->pCamera->SetPos(FVector3(-7.0f, 8.0f, 0.0f));
-        this->pCamera->SetEulerAngles(FVector3(40.0f, 90.0f, 0.0f));
-        this->pCamera->SetFarZ(100000.0f);
-    }
-void Vulkan_019_ShadowMap::createLightMain()
+void Vulkan_020_Terrain::cameraReset()
 {
-    lightMainReset();
+    VulkanWindow::cameraReset();
+
+    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
+    this->pCamera->SetFarZ(100000.0f);
 }
-    void Vulkan_019_ShadowMap::lightMainReset()
-    {
-        VulkanWindow::lightMainReset();
 
-        this->mainLight.common.x = 0; //Directional Type
-        this->mainLight.common.y = 1.0f; //Enable
-        this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(0.0f, 80.0f, 0.0f);
-        this->mainLight.direction = FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f)); //FVector3(0.0f, -1.0f, 0.0f); //
-    }
-
-void Vulkan_019_ShadowMap::loadModel_Custom()
+void Vulkan_020_Terrain::loadModel_Custom()
 {
     createMeshes();
     createTextures();
@@ -651,7 +984,7 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
             //Mesh
             {
                 Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
-                F_Assert(pMesh != nullptr && "Vulkan_019_ShadowMap::loadModel_Custom")
+                F_Assert(pMesh != nullptr && "Vulkan_020_Terrain::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -681,7 +1014,7 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_019_ShadowMap::loadModel_Custom")
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_020_Terrain::loadModel_Custom")
 
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -809,7 +1142,6 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
-                pRend->isCastShadow = g_ObjectRend_IsCastShadows[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -840,16 +1172,16 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
 
     }
 }
-void Vulkan_019_ShadowMap::createIndirectCommands()
+void Vulkan_020_Terrain::createIndirectCommands()
 {
 
 }
 
-void Vulkan_019_ShadowMap::createCustomCB()
+void Vulkan_020_Terrain::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -872,8 +1204,8 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                            g_ObjectRend_Tranforms[3 * i + 1],
-                                                            g_ObjectRend_Tranforms[3 * i + 2]);
+                                                                 g_ObjectRend_Tranforms[3 * i + 1],
+                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
@@ -979,7 +1311,7 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_019_ShadowMap::createCustomBeforePipeline()
+void Vulkan_020_Terrain::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -990,7 +1322,7 @@ void Vulkan_019_ShadowMap::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
+void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1018,7 +1350,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1028,21 +1360,21 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1061,11 +1393,11 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1095,15 +1427,15 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_019_ShadowMap::createComputePipeline_Custom()
+void Vulkan_020_Terrain::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1120,7 +1452,7 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1128,7 +1460,7 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1140,21 +1472,21 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1162,7 +1494,7 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1170,7 +1502,7 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_019_ShadowMap::destroyMeshes()
+void Vulkan_020_Terrain::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1181,7 +1513,7 @@ void Vulkan_019_ShadowMap::destroyMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_019_ShadowMap::createMeshes()
+void Vulkan_020_Terrain::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1210,7 +1542,7 @@ void Vulkan_019_ShadowMap::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_020_Terrain::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1218,11 +1550,11 @@ void Vulkan_019_ShadowMap::createMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_019_ShadowMap::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Terrain::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Mesh* Vulkan_019_ShadowMap::findMesh(const String& nameMesh)
+Mesh* Vulkan_020_Terrain::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1233,7 +1565,7 @@ Mesh* Vulkan_019_ShadowMap::findMesh(const String& nameMesh)
 }
 
 
-void Vulkan_019_ShadowMap::destroyTextures()
+void Vulkan_020_Terrain::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1244,7 +1576,7 @@ void Vulkan_019_ShadowMap::destroyTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_019_ShadowMap::createTextures()
+void Vulkan_020_Terrain::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1287,14 +1619,14 @@ void Vulkan_019_ShadowMap::createTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_019_ShadowMap::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Terrain::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Texture* Vulkan_019_ShadowMap::findTexture(const String& nameTexture)
+Texture* Vulkan_020_Terrain::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -1305,7 +1637,7 @@ Texture* Vulkan_019_ShadowMap::findTexture(const String& nameTexture)
 }
 
 
-void Vulkan_019_ShadowMap::destroyDescriptorSetLayouts()
+void Vulkan_020_Terrain::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1316,7 +1648,7 @@ void Vulkan_019_ShadowMap::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_019_ShadowMap::createDescriptorSetLayouts()
+void Vulkan_020_Terrain::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1325,7 +1657,7 @@ void Vulkan_019_ShadowMap::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1333,10 +1665,10 @@ void Vulkan_019_ShadowMap::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        F_LogInfo("Vulkan_019_ShadowMap::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_020_Terrain::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_019_ShadowMap::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_020_Terrain::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -1345,7 +1677,7 @@ VkDescriptorSetLayout Vulkan_019_ShadowMap::findDescriptorSetLayout(const String
     }
     return itFind->second;
 }
-StringVector* Vulkan_019_ShadowMap::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_020_Terrain::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -1356,7 +1688,7 @@ StringVector* Vulkan_019_ShadowMap::findDescriptorSetLayoutNames(const String& n
 }
 
 
-void Vulkan_019_ShadowMap::destroyShaderModules()
+void Vulkan_020_Terrain::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -1367,7 +1699,7 @@ void Vulkan_019_ShadowMap::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_019_ShadowMap::createShaderModules()
+void Vulkan_020_Terrain::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1378,11 +1710,11 @@ void Vulkan_019_ShadowMap::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_019_ShadowMap::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Terrain::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_019_ShadowMap::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_020_Terrain::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -1390,10 +1722,10 @@ VkShaderModule Vulkan_019_ShadowMap::findShaderModule(const String& nameShaderMo
         return nullptr;
     }
     return itFind->second;
-}   
+}
 
 
-void Vulkan_019_ShadowMap::destroyPipelineLayouts()
+void Vulkan_020_Terrain::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1403,7 +1735,7 @@ void Vulkan_019_ShadowMap::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_019_ShadowMap::createPipelineLayouts()
+void Vulkan_020_Terrain::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1411,7 +1743,7 @@ void Vulkan_019_ShadowMap::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_019_ShadowMap::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1420,7 +1752,7 @@ void Vulkan_019_ShadowMap::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_019_ShadowMap::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1428,7 +1760,7 @@ void Vulkan_019_ShadowMap::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_019_ShadowMap::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_020_Terrain::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -1440,7 +1772,7 @@ VkPipelineLayout Vulkan_019_ShadowMap::findPipelineLayout(const String& namePipe
 
 
 
-void Vulkan_019_ShadowMap::createDescriptorSets_Custom()
+void Vulkan_020_Terrain::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -1475,12 +1807,12 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                            ModelObjectRend* pRend, 
-                                                            ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+                                                       ModelObjectRend* pRend, 
+                                                       ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1607,20 +1939,9 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
-            {
-                F_Assert(m_pVKShadowMapRenderPass && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
-                pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
-                                          p,
-                                          0,
-                                          1,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          m_pVKShadowMapRenderPass->imageInfo);
-            }
             else
             {
-                String msg = "*********************** Vulkan_019_ShadowMap::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1628,11 +1949,11 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_019_ShadowMap::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
+void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_019_ShadowMap::createDescriptorSets_Compute")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -1684,7 +2005,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Compute(VKPipelineCompute* pPipe
         }
         else
         {
-            String msg = "*********************** Vulkan_019_ShadowMap::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1692,7 +2013,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Compute(VKPipelineCompute* pPipe
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_019_ShadowMap::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -1751,7 +2072,7 @@ void Vulkan_019_ShadowMap::updateCompute_Custom(VkCommandBuffer& commandBuffer)
     }
 }
 
-void Vulkan_019_ShadowMap::updateCBs_Custom()
+void Vulkan_020_Terrain::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -1845,7 +2166,7 @@ void Vulkan_019_ShadowMap::updateCBs_Custom()
     }
 }
 
-void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Terrain::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -1886,30 +2207,13 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
     }
 }
 
-    void Vulkan_019_ShadowMap::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
-    {
-        if (Draw_Graphics_DepthShadowMapBegin(commandBuffer))
-        {
-            size_t count_rend = m_aModelObjectRends_All.size();
-            for (size_t i = 0; i < count_rend; i++)
-            {
-                ModelObjectRend* pRend = m_aModelObjectRends_All[i];
-                if (!pRend->isShow ||
-                    !pRend->isCastShadow)
-                    continue;
-                Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub);
-            }
-            Draw_Graphics_DepthShadowMapEnd(commandBuffer);
-        }
-    }
-
-bool Vulkan_019_ShadowMap::beginRenderImgui()
+bool Vulkan_020_Terrain::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_019_ShadowMap", &windowOpened, 0);
+    ImGui::Begin("Vulkan_020_Terrain", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -1931,20 +2235,20 @@ bool Vulkan_019_ShadowMap::beginRenderImgui()
 
     return true;
 }
-void Vulkan_019_ShadowMap::modelConfig()
+void Vulkan_020_Terrain::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
         //m_isDrawIndirect
-        // if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
-        // {
+        if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
+        {
             
-        // }
+        }
         //m_isDrawIndirectMulti
-        // if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
-        // {
+        if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
+        {
             
-        // }
+        }
 
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
@@ -2072,11 +2376,6 @@ void Vulkan_019_ShadowMap::modelConfig()
                         bool isTransparent = pRendIndirect->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
-                        //isCastShadow
-                        String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRendIndirect;
-                        bool isCastShadow = pRendIndirect->isCastShadow;
-                        ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
-
                         //countIndirectDraw
                         String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
                         int countIndirectDraw = (int)pRendIndirect->countIndirectDraw;
@@ -2150,11 +2449,6 @@ void Vulkan_019_ShadowMap::modelConfig()
                             String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
                             bool isTransparent = pRend->isTransparent;
                             ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
-
-                            //isCastShadow
-                            String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRend;
-                            bool isCastShadow = pRend->isCastShadow;
-                            ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
 
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))
@@ -2406,13 +2700,13 @@ void Vulkan_019_ShadowMap::modelConfig()
     }
 }
 
-void Vulkan_019_ShadowMap::endRenderImgui()
+void Vulkan_020_Terrain::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_019_ShadowMap::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -2437,7 +2731,7 @@ void Vulkan_019_ShadowMap::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         }
     }
 }
-void Vulkan_019_ShadowMap::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_020_Terrain::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -2465,7 +2759,7 @@ void Vulkan_019_ShadowMap::drawModelObjectRendIndirects(VkCommandBuffer& command
         }
     }
 }   
-void Vulkan_019_ShadowMap::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_020_Terrain::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -2509,7 +2803,7 @@ void Vulkan_019_ShadowMap::drawModelObjectRendIndirect(VkCommandBuffer& commandB
     }
 }
 
-void Vulkan_019_ShadowMap::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_020_Terrain::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2520,7 +2814,7 @@ void Vulkan_019_ShadowMap::drawModelObjectRends(VkCommandBuffer& commandBuffer, 
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_019_ShadowMap::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_020_Terrain::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
@@ -2567,7 +2861,7 @@ void Vulkan_019_ShadowMap::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
     }
 }
 
-void Vulkan_019_ShadowMap::cleanupCustom()
+void Vulkan_020_Terrain::cleanupCustom()
 {   
     destroyTextures();
     destroyMeshes();
@@ -2585,7 +2879,7 @@ void Vulkan_019_ShadowMap::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_019_ShadowMap::cleanupSwapChain_Custom()
+void Vulkan_020_Terrain::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2600,7 +2894,7 @@ void Vulkan_019_ShadowMap::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_019_ShadowMap::recreateSwapChain_Custom()
+void Vulkan_020_Terrain::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

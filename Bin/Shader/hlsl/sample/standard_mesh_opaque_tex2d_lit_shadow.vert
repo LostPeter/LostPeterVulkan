@@ -187,7 +187,7 @@ VSOutput main(VSInput input,
     output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)obj.g_MatWorld, input.inNormal);
     output.outTexCoord = input.inTexCoord;
-    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, float4(output.outWorldPos.xyz, 1.0)));
+    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, mul(obj.g_MatWorld, float4(input.inPosition, 1.0))));
 
     return output;
 }
