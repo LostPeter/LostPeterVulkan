@@ -26,7 +26,8 @@ namespace LostPeterVulkan
     ///////////////////////// Internal /////////////////////////
     public:
         //RenderPass
-        VKShadowMapRenderPass* m_pVKShadowMapRenderPass; 
+        VKRenderPassShadowMap* m_pVKRenderPassShadowMap; 
+        VKRenderPassTerrain* m_pVKRenderPassTerrain;
 
         //Uniform ConstantBuffer
         //1> PassCB
@@ -34,14 +35,17 @@ namespace LostPeterVulkan
         std::vector<VkBuffer> poBuffers_PassCB;
         std::vector<VkDeviceMemory> poBuffersMemory_PassCB;
 
+        //PipelineCompute
+        //1> PipelineCompute_Terrain
+        VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
+
         //PipelineGraphics
-        //1> PipelineGraphics_DepthShadowMap
-        VKPipelineGraphics* m_pPipelineGraphics_DepthShadowMap;
-        //2> PipelineGraphics_CopyBlit
-        VKPipelineGraphics* m_pPipelineGraphics_CopyBlit;
-        CopyBlitObjectConstants m_objectCB_CopyBlit;
-        VkBuffer m_vkBuffer_CopyBlit;
-        VkDeviceMemory m_vkBuffersMemory_CopyBlit;
+        //1> PipelineGraphics_CopyBlit
+        VKPipelineGraphicsCopyBlit* m_pPipelineGraphics_CopyBlit;
+        //2> PipelineGraphics_DepthShadowMap
+        VKPipelineGraphicsDepthShadowMap* m_pPipelineGraphics_DepthShadowMap;
+        //3> PipelineGraphics_Terrain
+        VKPipelineGraphicsTerrain* m_pPipelineGraphics_Terrain;
 
         //Mesh
         MeshPtrVector m_aMeshes_Internal;
@@ -81,17 +85,26 @@ namespace LostPeterVulkan
         //PipelineLayout
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
 
+        //PipelineCompute
+        //PipelineCompute_Terrain
+        virtual void UpdateDescriptorSets_Compute_Terrain();
+        virtual void Draw_Compute_Terrain(VkCommandBuffer& commandBuffer);
+
         //PipelineGraphics
+        //PipelineGraphics_CopyBlit
+        virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
+        virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
+        virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
+
         //PipelineGraphics_DepthShadowMap
         virtual void UpdateDescriptorSets_Graphics_DepthShadowMap();
         virtual bool Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub);
         virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
 
-        //PipelineGraphics_CopyBlit
-        virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
-        virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
-        virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
+        //PipelineGraphics_Terrain
+        virtual void UpdateDescriptorSets_Graphics_Terrain();
+
 
     protected:
         virtual void createInternal();
@@ -126,14 +139,21 @@ namespace LostPeterVulkan
         virtual void createUniformCB_Internal();
             virtual void createUniform_PassCB();
 
+        //PipelineCompute
+        virtual void destroyPipelineCompute_Internal();
+            virtual void destroyPipelineCompute_Terrain();
+        virtual void createPipelineCompute_Internal();
+            virtual void createPipelineCompute_Terrain();
+
         //PipelineGraphics
         virtual void destroyPipelineGraphics_Internal();
-            virtual void destroyPipelineGraphics_DepthShadowMap();
             virtual void destroyPipelineGraphics_CopyBlit();
+            virtual void destroyPipelineGraphics_DepthShadowMap();
+            virtual void destroyPipelineGraphics_Terrain();
         virtual void createPipelineGraphics_Internal();
-            virtual void createPipelineGraphics_DepthShadowMap();
             virtual void createPipelineGraphics_CopyBlit();
-
+            virtual void createPipelineGraphics_DepthShadowMap();
+            virtual void createPipelineGraphics_Terrain();
         
     ///////////////////////// Internal /////////////////////////
 
@@ -287,6 +307,7 @@ namespace LostPeterVulkan
         FVector4Vector cfg_colorValues;
         bool cfg_isRenderPassDefaultCustom;
         bool cfg_isRenderPassShadowMap;
+        bool cfg_isRenderPassTerrain;
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
@@ -331,13 +352,6 @@ namespace LostPeterVulkan
         String cfg_shaderVertex_Path;
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
-        String cfg_terrain_Path;
-        String cfg_terrainShaderNormalMapGen_Path;
-        String cfg_terrainShaderVertex_Path;
-        String cfg_terrainShaderFragment_Path;
-        String cfg_terrainTextureDiffuse_Path;
-        String cfg_terrainTextureNormal_Path;
-        String cfg_terrainTextureControl_Path;
 
         //Imgui
         bool imgui_IsEnable;
@@ -359,79 +373,6 @@ namespace LostPeterVulkan
         std::vector<VkBuffer> poBuffers_InstanceCB;
         std::vector<VkDeviceMemory> poBuffersMemory_InstanceCB;
 
-        //Terrain
-        uint8* poTerrainHeightMapData;
-        float* poTerrainHeightMapDataFloat;
-        int32 poTerrainHeightMapDataSize;
-        int32 poTerrainHeightMapSize;
-        int32 poTerrainGridVertexCount;
-        int32 poTerrainGridInstanceVertexCount;
-        int32 poTerrainGridInstanceCount;
-        bool poTerrainIsDrawInstance;
-
-        std::vector<FVertex_Pos3Normal3Tex2> poTerrain_Pos3Normal3Tex2;
-        uint32_t poTerrainVertexCount;
-        size_t poTerrainVertexBuffer_Size;
-        void* poTerrainVertexBuffer_Data;
-        VkBuffer poTerrainVertexBuffer;
-        VkDeviceMemory poTerrainVertexBufferMemory;
-        std::vector<uint32_t> poTerrain_Indices;
-        uint32_t poTerrainIndexCount;
-        size_t poTerrainIndexBuffer_Size;
-        void* poTerrainIndexBuffer_Data;
-        VkBuffer poTerrainIndexBuffer;
-        VkDeviceMemory poTerrainIndexBufferMemory;
-
-        VkImage poTerrainHeightMapImage;
-        VkDeviceMemory poTerrainHeightMapImageMemory;
-        VkImageView poTerrainHeightMapImageView;
-        VkDescriptorImageInfo poTerrainHeightMapImageInfo;
-        VkImage poTerrainNormalMapImage;
-        VkDeviceMemory poTerrainNormalMapImageMemory;
-        VkImageView poTerrainNormalMapImageView;
-        VkDescriptorImageInfo poTerrainNormalMapImageInfo;
-        VkSampler poTerrainImageSampler;
-
-        VkShaderModule poTerrainComputeShaderModuleNormalGen;
-
-        TextureCopyConstants poTerrainTextureCopy;
-        VkBuffer poBuffer_TerrainTextureCopy;
-        VkDeviceMemory poBufferMemory_TerrainTextureCopy;
-
-        VkDescriptorSetLayout poTerrainComputeDescriptorSetLayout;
-        VkPipelineLayout poTerrainComputePipelineLayout;
-        VkPipeline poTerrainComputePipeline;
-        VkDescriptorSet poTerrainComputeDescriptorSet;
-        
-        VkImage poTerrainDiffuseImage;
-        VkDeviceMemory poTerrainDiffuseImageMemory;
-        VkImageView poTerrainDiffuseImageView;
-        VkSampler poTerrainDiffuseImageSampler;
-        VkDescriptorImageInfo poTerrainDiffuseImageInfo;
-        VkImage poTerrainNormalImage;
-        VkDeviceMemory poTerrainNormalImageMemory;
-        VkImageView poTerrainNormalImageView;
-        VkSampler poTerrainNormalImageSampler;
-        VkDescriptorImageInfo poTerrainNormalImageInfo;
-        VkImage poTerrainControlImage;
-        VkDeviceMemory poTerrainControlImageMemory;
-        VkImageView poTerrainControlImageView;
-        VkSampler poTerrainControlImageSampler;
-        VkDescriptorImageInfo poTerrainControlImageInfo;
-
-        
-        std::vector<TerrainObjectConstants> terrainObjectCBs;
-        VkBuffer poBuffer_TerrainObjectCB;
-        VkDeviceMemory poBufferMemory_TerrainObjectCB;
-
-        VkDescriptorSetLayout poTerrainGraphicsDescriptorSetLayout;
-        VkPipelineLayout poTerrainGraphicsPipelineLayout;
-        VkShaderModule poTerrainGraphicsShaderModuleVertex;
-        VkShaderModule poTerrainGraphicsShaderModuleFragment;
-        VkPipeline poTerrainGraphicsPipeline;
-        VkPipeline poTerrainGraphicsPipeline_WireFrame;
-        VkDescriptorSetVector poTerrainGraphicsDescriptorSets; 
-        
         //Camera
         FCamera* pCamera; //Eye Left
         FCamera* pCameraRight; //Eye Right
@@ -600,6 +541,7 @@ namespace LostPeterVulkan
             virtual void createCamera();
             virtual void createLightMain();
             virtual void createShadowLightMain();
+            virtual void createTerrain();
 
             virtual void createCommandObjects();
                 virtual void createCommandPool();
@@ -642,8 +584,9 @@ namespace LostPeterVulkan
 
             virtual void createPipelineObjects();
                 virtual void createRenderPasses();
-                    virtual void createRenderPass_ShadowMap(); 
+                    virtual void createRenderPass_ShadowMap();
                     virtual void createRenderPass_Default();
+                    virtual void createRenderPass_Terrain();
                     virtual void createRenderPass_Custom();
                         virtual void createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass);
                         virtual void createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass);
@@ -1075,7 +1018,6 @@ namespace LostPeterVulkan
                 virtual void createCustomBeforePipeline();
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
-                    virtual void createGraphicsPipeline_Terrain();
                     virtual void createGraphicsPipeline_Custom();
                         virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule fragShaderModule, const String& fragMain,
@@ -1190,23 +1132,6 @@ namespace LostPeterVulkan
                 virtual void createImgui_DescriptorPool();
                 virtual void createImgui_Init();
 
-            //Terrain
-            virtual void createTerrain();
-                virtual bool loadTerrainData();
-                virtual void setupTerrainGeometry();
-                virtual void setupTerrainTexture();
-                virtual void setupTerrainShader();
-                virtual void setupTerrainComputePipeline();
-                    virtual void createTerrainComputeDescriptorSet();
-                    virtual void destroyTerrainComputeDescriptorSet();
-
-                virtual void setupTerrainGraphicsPipeline();
-                    virtual void createTerrainGraphicsDescriptorSet();
-                    virtual void destroyTerrainGraphicsDescriptorSet();
-                    virtual void createTerrainGraphicsPipeline();
-                    virtual void destroyTerrainGraphicsPipeline();
-            virtual void destroyTerrain();
-
             //Editor
             virtual void createEditor();
                 virtual void createEditor_Grid();
@@ -1259,6 +1184,9 @@ namespace LostPeterVulkan
                         virtual void shadowConfig();
                             virtual void shadowConfigItem(ShadowConstants& sc, const String& name);
                             virtual void shadowReset();
+                        //Terrain
+                        virtual void terrainConfig();
+                            virtual void terrainReset();
                         //PassConstants
                         virtual void passConstantsConfig();
                         //Model
@@ -1281,6 +1209,8 @@ namespace LostPeterVulkan
                         virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_Terrain(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
@@ -1330,18 +1260,15 @@ namespace LostPeterVulkan
             virtual void cleanupDefault();
                 virtual void cleanupTexture();
                 virtual void cleanupVertexIndexBuffer();
-            virtual void cleanupTerrain();
             virtual void cleanupImGUI();
             virtual void cleanupEditor();
             virtual void cleanupCustom();
 
             virtual void cleanupSwapChain();
                 virtual void cleanupSwapChain_Default();
-                virtual void cleanupSwapChain_Terrain();
                 virtual void cleanupSwapChain_Editor();
                 virtual void cleanupSwapChain_Custom();
             virtual void recreateSwapChain();
-                virtual void recreateSwapChain_Terrain();
                 virtual void recreateSwapChain_Editor();
                 virtual void recreateSwapChain_Custom();
 

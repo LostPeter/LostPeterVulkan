@@ -309,15 +309,15 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_terrain-1
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_terrain-1
+    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
  
-    FVector3(   1,   2,    1),      FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
-    FVector3(  -1,   2,    1),      FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
-    FVector3(  -1,   2,   -1),      FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
-    FVector3(   1,   2,   -1),      FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
+    FVector3( 2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
+    FVector3(-2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
+    FVector3(-2.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
+    FVector3( 2.0f,    2, -2.0f),    FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
 
-    FVector3(   0,   2,   -4),      FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
+    FVector3(    0,    2, -6.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -625,14 +625,14 @@ void Vulkan_019_ShadowMap::createDescriptorSetLayout_Custom()
 void Vulkan_019_ShadowMap::createCamera()
 {
     VulkanWindow::createCamera();
-    
+
     cameraReset();
 }
     void Vulkan_019_ShadowMap::cameraReset()
     {
         VulkanWindow::cameraReset();
 
-        this->pCamera->SetPos(FVector3(-7.0f, 8.0f, 0.0f));
+        this->pCamera->SetPos(FVector3(-12.0f, 13.0f, 0.0f));
         this->pCamera->SetEulerAngles(FVector3(40.0f, 90.0f, 0.0f));
         this->pCamera->SetFarZ(100000.0f);
     }
@@ -647,7 +647,7 @@ void Vulkan_019_ShadowMap::createLightMain()
         this->mainLight.common.x = 0; //Directional Type
         this->mainLight.common.y = 1.0f; //Enable
         this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(-7.0f, 8.0f, 0.0f);
+        this->mainLight.position = FVector3(-12.0f, 13.0f, 0.0f);
         this->mainLight.direction = FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f)); //FVector3(0.0f, -1.0f, 0.0f); //
     }
 void Vulkan_019_ShadowMap::createShadowLightMain()
@@ -1632,14 +1632,14 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
             {
-                F_Assert(m_pVKShadowMapRenderPass && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
+                F_Assert(m_pVKRenderPassShadowMap && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          m_pVKShadowMapRenderPass->imageInfo);
+                                          m_pVKRenderPassShadowMap->imageInfo);
             }
             else
             {

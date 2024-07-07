@@ -9,12 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/VKShadowMapRenderPass.h"
+#include "../include/VKRenderPassShadowMap.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeterVulkan
 {
-    VKShadowMapRenderPass::VKShadowMapRenderPass(const String& _nameRenderPass)
+    VKRenderPassShadowMap::VKRenderPassShadowMap(const String& _nameRenderPass)
         //Window
         : Base(_nameRenderPass)
 
@@ -32,11 +32,11 @@ namespace LostPeterVulkan
     {
 
     }
-    VKShadowMapRenderPass::~VKShadowMapRenderPass()
+    VKRenderPassShadowMap::~VKRenderPassShadowMap()
     {
         Destroy();
     }   
-    void VKShadowMapRenderPass::Destroy()
+    void VKRenderPassShadowMap::Destroy()
     {
         //RenderPass
         if (this->poRenderPass != VK_NULL_HANDLE)
@@ -69,7 +69,7 @@ namespace LostPeterVulkan
         this->imageInfo.imageView = VK_NULL_HANDLE;
         this->imageInfo.sampler = VK_NULL_HANDLE;
     } 
-    void VKShadowMapRenderPass::Init(uint32_t width, 
+    void VKRenderPassShadowMap::Init(uint32_t width, 
                                      uint32_t height,
                                      VkFormat format)
     {
@@ -199,7 +199,7 @@ namespace LostPeterVulkan
                                                           nullptr,
                                                           this->poRenderPass))
             {
-                String msg = "*********************** VKShadowMapRenderPass::Init: Failed to create renderpass: " + GetName();
+                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create renderpass: " + GetName();
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -218,17 +218,17 @@ namespace LostPeterVulkan
                                                            1,
                                                            this->poFrameBuffer))
             {
-                String msg = "*********************** VKShadowMapRenderPass::Init: Failed to create framebuffer: " + GetName();
+                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create framebuffer: " + GetName();
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
     }
-    void VKShadowMapRenderPass::CleanupSwapChain()
+    void VKRenderPassShadowMap::CleanupSwapChain()
     {
         Destroy();
     }
-    void VKShadowMapRenderPass::RecreateSwapChain()
+    void VKRenderPassShadowMap::RecreateSwapChain()
     {
 
     }

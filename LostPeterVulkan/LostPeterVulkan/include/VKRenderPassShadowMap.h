@@ -9,19 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VK_SHADOW_MAP_RENDER_PASS_H_
-#define _VK_SHADOW_MAP_RENDER_PASS_H_
+#ifndef _VK_RENDER_PASS_SHADOW_MAP_H_
+#define _VK_RENDER_PASS_SHADOW_MAP_H_
 
 #include "Base.h"
 #include "VKFrameBufferAttachment.h"
 
 namespace LostPeterVulkan
 {
-    class vulkanExport VKShadowMapRenderPass : public Base
+    class vulkanExport VKRenderPassShadowMap : public Base
     {
     public:
-        VKShadowMapRenderPass(const String& _nameRenderPass);
-        virtual ~VKShadowMapRenderPass();
+        VKRenderPassShadowMap(const String& _nameRenderPass);
+        virtual ~VKRenderPassShadowMap();
 
     public:
         //Common

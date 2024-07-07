@@ -460,8 +460,13 @@ namespace LostPeterVulkan
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineCompute;
+    class VKPipelineComputeTerrain;
     class VKPipelineGraphics;
-    class VKShadowMapRenderPass;
+    class VKPipelineGraphicsCopyBlit;
+    class VKPipelineGraphicsDepthShadowMap;
+    class VKPipelineGraphicsTerrain;
+    class VKRenderPassShadowMap;
+    class VKRenderPassTerrain;
 
     typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
     typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;

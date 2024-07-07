@@ -1123,7 +1123,7 @@ namespace LostPeterVulkan
             , depthBiasConstant(1.25f)
             , depthBiasSlope(1.75f)
         {
-            
+
         }
     };
 
@@ -1261,7 +1261,7 @@ namespace LostPeterVulkan
             
         }
     };
-
+    
     //////////////////////////////// TextureConstants ///////////////////////////////
     struct vulkanExport TextureConstants
     {
@@ -1401,6 +1401,18 @@ namespace LostPeterVulkan
 
         }
     };
+
+    //////////////////////////////// TerrainConstants ///////////////////////////////
+    struct vulkanExport TerrainConstants
+    {
+        
+
+        TerrainConstants()
+        {
+
+        }
+    };
+
 
 }; //LostPeterVulkan
 
