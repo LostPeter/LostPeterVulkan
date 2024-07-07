@@ -928,8 +928,6 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
-
-    //this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
 void Vulkan_020_Terrain::setUpEnabledFeatures()
@@ -958,14 +956,28 @@ void Vulkan_020_Terrain::createCamera()
     
     cameraReset();
 }
-void Vulkan_020_Terrain::cameraReset()
-{
-    VulkanWindow::cameraReset();
+    void Vulkan_020_Terrain::cameraReset()
+    {
+        VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
-    this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
-    this->pCamera->SetFarZ(100000.0f);
+        this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+        this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
+        this->pCamera->SetFarZ(100000.0f);
+    }
+
+void Vulkan_020_Terrain::createTerrain()
+{
+    VulkanWindow::createTerrain();
+
+    terrainReset();
 }
+    void Vulkan_020_Terrain::terrainReset()
+    {
+        VulkanWindow::terrainReset();
+
+        //this->cfg_isRenderPassTerrain = true;
+        //this->m_pVKRenderPassTerrain->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+    }
 
 void Vulkan_020_Terrain::loadModel_Custom()
 {

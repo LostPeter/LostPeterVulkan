@@ -26,9 +26,6 @@ namespace LostPeterVulkan
     public:
         //Common
         String cfg_terrain_Path;
-        String cfg_terrainShaderNormalMapGen_Path;
-        String cfg_terrainShaderVertex_Path;
-        String cfg_terrainShaderFragment_Path;
         String cfg_terrainTextureDiffuse_Path;
         String cfg_terrainTextureNormal_Path;
         String cfg_terrainTextureControl_Path;
@@ -91,11 +88,10 @@ namespace LostPeterVulkan
     public:
         void Destroy();
 
-        virtual void Init();
+        virtual bool Init();
 
     protected:
         
-
         virtual bool loadTerrainData(); 
         virtual void setupTerrainGeometry();
         virtual void setupTerrainTexture();

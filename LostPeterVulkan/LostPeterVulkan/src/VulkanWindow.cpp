@@ -36,6 +36,9 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::cleanupInternal()
     {
+        F_DELETE(m_pVKRenderPassTerrain)
+        F_DELETE(m_pVKRenderPassShadowMap)
+
         //Texture
         destroyTextures_Internal();
         //Mesh
@@ -69,6 +72,17 @@ namespace LostPeterVulkan
         destroyPipelineLayouts_Internal();
         //DescriptorSetLayout
         destroyDescriptorSetLayouts_Internal();
+
+        //RenderPassShadowMap
+        if (m_pVKRenderPassShadowMap != nullptr)
+        {
+            m_pVKRenderPassShadowMap->CleanupSwapChain();
+        }
+        //RenderPassTerrain
+        if (m_pVKRenderPassTerrain != nullptr)
+        {
+            m_pVKRenderPassTerrain->CleanupSwapChain();
+        }
     }
 
     //Mesh
@@ -1683,17 +1697,17 @@ namespace LostPeterVulkan
             //7> createVkPipelineCache
             createVkPipelineCache();
 
-            //8> Create Pipeline Objects
-            createPipelineObjects();
-
-            //9> Create Sync Objects
-            createSyncObjects();
-
-            //10> Camera/Light/Shadow
+            //8> Camera/Light/Shadow/Terrain
             createCamera();
             createLightMain();
             createShadowLightMain();
             createTerrain();
+
+            //9> Create Pipeline Objects
+            createPipelineObjects();
+
+            //10> Create Sync Objects
+            createSyncObjects();
 
             //11> createInternal/createResourceInternal
             createInternal();
@@ -2916,17 +2930,17 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createPipelineObjects()
     {
-        F_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects start *****");
+        F_LogInfo("*****<1-9> VulkanWindow::createPipelineObjects start *****");
         {
             //1> createRenderPasses
             createRenderPasses();
-            F_LogInfo("<1-8-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
+            F_LogInfo("<1-9-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
 
             //2> createFramebuffers
             createFramebuffers();
-            F_LogInfo("<1-8-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
+            F_LogInfo("<1-9-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
         }
-        F_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects finish *****");
+        F_LogInfo("*****<1-9> VulkanWindow::createPipelineObjects finish *****");
     }
     void VulkanWindow::createRenderPasses()
     {
@@ -2947,10 +2961,10 @@ namespace LostPeterVulkan
             if (m_pVKRenderPassShadowMap == nullptr)
             {
                 m_pVKRenderPassShadowMap = new VKRenderPassShadowMap("RenderPass_ShadowMap");
-                m_pVKRenderPassShadowMap->Init(this->shadowMainLight.depthSize,
-                                               this->shadowMainLight.depthSize,
-                                               this->shadowMainLight.format);
             }
+            m_pVKRenderPassShadowMap->Init(this->shadowMainLight.depthSize,
+                                           this->shadowMainLight.depthSize,
+                                           this->shadowMainLight.format);
         }
         void VulkanWindow::createRenderPass_Default()
         {
@@ -2988,10 +3002,17 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::createRenderPass_Terrain()
         {
-            if (m_pVKRenderPassTerrain == nullptr && this->cfg_isRenderPassTerrain)
+            if (!this->cfg_isRenderPassTerrain)
+                return;
+
+            if (m_pVKRenderPassTerrain == nullptr)
             {
                 m_pVKRenderPassTerrain = new VKRenderPassTerrain("RenderPass_Terrain");
                 m_pVKRenderPassTerrain->Init();
+            }
+            else
+            {
+                m_pVKRenderPassTerrain->RecreateSwapChain();
             }
         }
         void VulkanWindow::createRenderPass_Custom()
@@ -3612,7 +3633,7 @@ namespace LostPeterVulkan
             createRenderComputeSyncObjects();
         }
 
-        F_LogInfo("*****<1-9> VulkanWindow::createSyncObjects finish *****");
+        F_LogInfo("*****<1-10> VulkanWindow::createSyncObjects finish *****");
     }
         void VulkanWindow::createPresentRenderSyncObjects()
         {
@@ -3640,7 +3661,7 @@ namespace LostPeterVulkan
                 }
             }
             
-            F_LogInfo("<1-9-1> VulkanWindow::createPresentRenderSyncObjects finish !");
+            F_LogInfo("<1-10-1> VulkanWindow::createPresentRenderSyncObjects finish !");
         }
         void VulkanWindow::createRenderComputeSyncObjects()
         {
@@ -3670,7 +3691,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg);
             }
 
-            F_LogInfo("<1-9-2> VulkanWindow::createRenderComputeSyncObjects finish !");
+            F_LogInfo("<1-10-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
 
             void VulkanWindow::destroyVkFence(VkFence vkFence)
@@ -3696,6 +3717,7 @@ namespace LostPeterVulkan
             cameraReset();
             lightMainReset();
             shadowReset();
+            terrainReset();
 
             //1> loadGeometry
             loadGeometry();
@@ -3706,10 +3728,7 @@ namespace LostPeterVulkan
                 createImgui();
             }
 
-            //3> Terrain
-            createTerrain();
-
-            //4> Editor
+            //3> Editor
             if (this->cfg_isEditorCreate)
             {
                 createEditor();
@@ -6707,7 +6726,7 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createEditor()
     {
-        F_LogInfo("**********<2-4> VulkanWindow::createEditor start **********");
+        F_LogInfo("**********<2-3> VulkanWindow::createEditor start **********");
         {
             //1> createEditor_Grid
             createEditor_Grid();
@@ -6724,42 +6743,42 @@ namespace LostPeterVulkan
             //5> createEditor_LineFlat3DCollector
             createEditor_LineFlat3DCollector();
         }
-        F_LogInfo("**********<2-4> VulkanWindow::createEditor finish **********");
+        F_LogInfo("**********<2-3> VulkanWindow::createEditor finish **********");
     }
         void VulkanWindow::createEditor_Grid()
         {
             this->pEditorGrid = new EditorGrid();
             this->pEditorGrid->Init();
 
-            F_LogInfo("<2-4-1> VulkanWindow::createEditor_Grid finish !");
+            F_LogInfo("<2-3-1> VulkanWindow::createEditor_Grid finish !");
         }
         void VulkanWindow::createEditor_CameraAxis()
         {
             this->pEditorCameraAxis = new EditorCameraAxis();
             this->pEditorCameraAxis->Init();
 
-            F_LogInfo("<2-4-2> VulkanWindow::createEditor_CameraAxis finish !");
+            F_LogInfo("<2-3-2> VulkanWindow::createEditor_CameraAxis finish !");
         }
         void VulkanWindow::createEditor_CoordinateAxis()
         {
             this->pEditorCoordinateAxis = new EditorCoordinateAxis();
             this->pEditorCoordinateAxis->Init();
 
-            F_LogInfo("<2-4-3> VulkanWindow::createEditor_CoordinateAxis finish !");
+            F_LogInfo("<2-3-3> VulkanWindow::createEditor_CoordinateAxis finish !");
         }
         void VulkanWindow::createEditor_LineFlat2DCollector()
         {
             this->pEditorLineFlat2DCollector = new EditorLineFlat2DCollector();
             this->pEditorLineFlat2DCollector->Init();
 
-            F_LogInfo("<2-4-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
+            F_LogInfo("<2-3-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
         }
         void VulkanWindow::createEditor_LineFlat3DCollector()
         {
             this->pEditorLineFlat3DCollector = new EditorLineFlat3DCollector();
             this->pEditorLineFlat3DCollector->Init();
 
-            F_LogInfo("<2-4-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");
+            F_LogInfo("<2-3-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");
         }
     void VulkanWindow::destroyEditor()
     {
@@ -8345,7 +8364,6 @@ namespace LostPeterVulkan
                 //4> RenderPass
                 destroyVkRenderPass(this->poRenderPass);
                 this->poRenderPass = VK_NULL_HANDLE;
-                F_DELETE(m_pVKRenderPassShadowMap)
 
                 //5> SwapChainImageViews
                 count = this->poSwapChainImageViews.size();
