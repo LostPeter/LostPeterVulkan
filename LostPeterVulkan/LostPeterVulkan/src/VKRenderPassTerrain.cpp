@@ -18,12 +18,6 @@ namespace LostPeterVulkan
         //Window
         : Base(_nameRenderPass)
 
-        //Common
-        , cfg_terrain_Path("")
-        , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
-        , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")
-        , cfg_terrainTextureControl_Path("Assets/Texture/Terrain/terrain_control.png")
-
         //Terrain
         , poTerrainHeightMapData(nullptr)
         , poTerrainHeightMapDataFloat(nullptr)
@@ -109,6 +103,7 @@ namespace LostPeterVulkan
         this->poTerrainIndexBuffer_Data = nullptr;
 
         //Texture
+        //TerrainHeightMapImage
         if (this->poTerrainHeightMapImage != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkImage(this->poTerrainHeightMapImage, this->poTerrainHeightMapImageMemory, this->poTerrainHeightMapImageView);
@@ -116,6 +111,7 @@ namespace LostPeterVulkan
         this->poTerrainHeightMapImage = VK_NULL_HANDLE;
         this->poTerrainHeightMapImageMemory = VK_NULL_HANDLE;
         this->poTerrainHeightMapImageView = VK_NULL_HANDLE;
+        //TerrainNormalMapImage
         if (this->poTerrainNormalMapImage != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkImage(this->poTerrainNormalMapImage, this->poTerrainNormalMapImageMemory, this->poTerrainNormalMapImageView);
@@ -129,6 +125,47 @@ namespace LostPeterVulkan
         }
         this->poTerrainImageSampler = VK_NULL_HANDLE;
 
+        //TerrainDiffuseImage
+        if (this->poTerrainDiffuseImage != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImage(this->poTerrainDiffuseImage, this->poTerrainDiffuseImageMemory, this->poTerrainDiffuseImageView);
+        }
+        this->poTerrainDiffuseImage = VK_NULL_HANDLE;
+        this->poTerrainDiffuseImageMemory = VK_NULL_HANDLE;
+        this->poTerrainDiffuseImageView = VK_NULL_HANDLE;
+         if (this->poTerrainDiffuseImageSampler != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainDiffuseImageSampler);
+        }
+        this->poTerrainDiffuseImageSampler = VK_NULL_HANDLE;
+
+        //TerrainNormalImage
+        if (this->poTerrainNormalImage != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImage(this->poTerrainNormalImage, this->poTerrainNormalImageMemory, this->poTerrainNormalImageView);
+        }
+        this->poTerrainNormalImage = VK_NULL_HANDLE;
+        this->poTerrainNormalImageMemory = VK_NULL_HANDLE;
+        this->poTerrainNormalImageView = VK_NULL_HANDLE;
+         if (this->poTerrainNormalImageSampler != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainNormalImageSampler);
+        }
+        this->poTerrainNormalImageSampler = VK_NULL_HANDLE;
+
+        //TerrainControlImage
+        if (this->poTerrainControlImage != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImage(this->poTerrainControlImage, this->poTerrainControlImageMemory, this->poTerrainControlImageView);
+        }
+        this->poTerrainControlImage = VK_NULL_HANDLE;
+        this->poTerrainControlImageMemory = VK_NULL_HANDLE;
+        this->poTerrainControlImageView = VK_NULL_HANDLE;
+         if (this->poTerrainControlImageSampler != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainControlImageSampler);
+        }
+        this->poTerrainControlImageSampler = VK_NULL_HANDLE;
     } 
 
     bool VKRenderPassTerrain::Init()
@@ -144,16 +181,17 @@ namespace LostPeterVulkan
     }
         bool VKRenderPassTerrain::loadTerrainData()
         {
-            if (this->cfg_terrain_Path.empty())
+            const String& pathTerrain = Base::GetWindowPtr()->cfg_terrain_Path; 
+            if (pathTerrain.empty())
                 return false;
 
             this->poTerrainHeightMapData = nullptr;
             this->poTerrainHeightMapDataFloat = nullptr;
             this->poTerrainHeightMapDataSize = 0;
             this->poTerrainHeightMapSize = 0;
-            if (!FUtil::LoadAssetFileToBuffer(this->cfg_terrain_Path.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
+            if (!FUtil::LoadAssetFileToBuffer(pathTerrain.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
             {
-                F_LogError("*********************** VKRenderPassTerrain::loadTerrainData failed, path: [%s] !", this->cfg_terrain_Path.c_str());
+                F_LogError("*********************** VKRenderPassTerrain::loadTerrainData failed, path: [%s] !", pathTerrain.c_str());
                 return false;
             }
             this->poTerrainHeightMapSize = (int32)FMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
@@ -172,7 +210,7 @@ namespace LostPeterVulkan
             this->poTerrainGridInstanceCount = (nSize - 1) / (this->poTerrainGridInstanceVertexCount - 1);
 
             F_LogInfo("VKRenderPassTerrain::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
-                      this->cfg_terrain_Path.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
+                      pathTerrain.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
             return true;
         }
         void VKRenderPassTerrain::setupTerrainGeometry()
@@ -336,7 +374,7 @@ namespace LostPeterVulkan
                 uint32_t mipMapCount = 1;
                 //1> Terrain Diffuse
                 {
-                    StringVector aPathTextureDiffuse = FUtilString::Split(this->cfg_terrainTextureDiffuse_Path, ";");
+                    StringVector aPathTextureDiffuse = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureDiffuse_Path, ";");
                     Base::GetWindowPtr()->createTexture2DArray(aPathTextureDiffuse, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
@@ -368,11 +406,11 @@ namespace LostPeterVulkan
                     this->poTerrainDiffuseImageInfo.sampler = this->poTerrainDiffuseImageSampler;
 
                     F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
-                              this->cfg_terrainTextureDiffuse_Path.c_str());
+                              Base::GetWindowPtr()->cfg_terrainTextureDiffuse_Path.c_str());
                 }
                 //2> Terrain Normal
                 {
-                    StringVector aPathTextureNormal = FUtilString::Split(this->cfg_terrainTextureNormal_Path, ";");
+                    StringVector aPathTextureNormal = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureNormal_Path, ";");
                     Base::GetWindowPtr()->createTexture2DArray(aPathTextureNormal, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
@@ -404,11 +442,11 @@ namespace LostPeterVulkan
                     this->poTerrainNormalImageInfo.sampler = this->poTerrainNormalImageSampler;
 
                     F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
-                              this->cfg_terrainTextureNormal_Path.c_str());
+                              Base::GetWindowPtr()->cfg_terrainTextureNormal_Path.c_str());
                 }
                 //3> Terrain Control
                 {
-                    StringVector aPathTextureControl = FUtilString::Split(this->cfg_terrainTextureControl_Path, ";");
+                    StringVector aPathTextureControl = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureControl_Path, ";");
                     Base::GetWindowPtr()->createTexture2DArray(aPathTextureControl, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
@@ -440,7 +478,7 @@ namespace LostPeterVulkan
                     this->poTerrainControlImageInfo.sampler = this->poTerrainControlImageSampler;
 
                     F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
-                              this->cfg_terrainTextureControl_Path.c_str());
+                              Base::GetWindowPtr()->cfg_terrainTextureControl_Path.c_str());
                 }
             }
         }

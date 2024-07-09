@@ -1251,7 +1251,10 @@ namespace LostPeterVulkan
         , cfg_shaderVertex_Path("")
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
-        
+        , cfg_terrain_Path("")
+        , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
+        , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")
+        , cfg_terrainTextureControl_Path("Assets/Texture/Terrain/terrain_control.png")
 
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
@@ -2161,7 +2164,7 @@ namespace LostPeterVulkan
         F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceFeatures ****************");
 
         this->poPhysicalDeviceMultiViewFeaturesKHR = {};
-        this->poPhysicalDeviceMultiViewFeaturesKHR .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
+        this->poPhysicalDeviceMultiViewFeaturesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
         this->poPhysicalDeviceFeatures2KHR = {};
         this->poPhysicalDeviceFeatures2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
 		this->poPhysicalDeviceFeatures2KHR.pNext = &this->poPhysicalDeviceMultiViewFeaturesKHR;

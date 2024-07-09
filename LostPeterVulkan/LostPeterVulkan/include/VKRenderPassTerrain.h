@@ -24,12 +24,6 @@ namespace LostPeterVulkan
         virtual ~VKRenderPassTerrain();
 
     public:
-        //Common
-        String cfg_terrain_Path;
-        String cfg_terrainTextureDiffuse_Path;
-        String cfg_terrainTextureNormal_Path;
-        String cfg_terrainTextureControl_Path;
-
         //Terrain
         uint8* poTerrainHeightMapData;
         float* poTerrainHeightMapDataFloat;

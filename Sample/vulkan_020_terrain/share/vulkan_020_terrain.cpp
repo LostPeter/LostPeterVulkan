@@ -943,6 +943,11 @@ void Vulkan_020_Terrain::setUpEnabledFeatures()
         this->m_isDrawIndirectMulti = false;
         F_LogError("*********************** Vulkan_020_Terrain::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
+
+    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
+    {
+        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
+    }
 }
 
 void Vulkan_020_Terrain::createDescriptorSetLayout_Custom()
@@ -975,8 +980,8 @@ void Vulkan_020_Terrain::createTerrain()
     {
         VulkanWindow::terrainReset();
 
-        //this->cfg_isRenderPassTerrain = true;
-        //this->m_pVKRenderPassTerrain->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+        this->cfg_isRenderPassTerrain = true;
+        this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
     }
 
 void Vulkan_020_Terrain::loadModel_Custom()

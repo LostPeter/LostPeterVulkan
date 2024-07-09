@@ -352,6 +352,10 @@ namespace LostPeterVulkan
         String cfg_shaderVertex_Path;
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
+        String cfg_terrain_Path;
+        String cfg_terrainTextureDiffuse_Path;
+        String cfg_terrainTextureNormal_Path;
+        String cfg_terrainTextureControl_Path;
 
         //Imgui
         bool imgui_IsEnable;

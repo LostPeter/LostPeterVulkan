@@ -103,8 +103,8 @@ namespace LostPeterVulkan
 
             this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
                                                                               false, 0, 0,
-                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
-                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
+                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
+                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                               Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                               vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, lineWidth,
                                                                               isDepthTest, isDepthWrite, vkDepthCompareOp,
@@ -122,8 +122,8 @@ namespace LostPeterVulkan
             
             this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
                                                                                         false, 0, 0,
-                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
-                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
+                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
+                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                                         Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                                         vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits, lineWidth,
                                                                                         isDepthTest, isDepthWrite, vkDepthCompareOp,
