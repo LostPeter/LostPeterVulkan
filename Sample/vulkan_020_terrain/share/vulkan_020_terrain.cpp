@@ -19,15 +19,13 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 10;
+static const int g_MeshCount = 9;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
-
-    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/mountain/mountain.obj", //mountain
 
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/cliff/cliff.obj", //cliff
@@ -45,8 +43,6 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //cube
     false, //sphere
 
-    false, //mountain
-
     false, //rock
     false, //cliff
 
@@ -62,8 +58,6 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //plane  
     false, //cube
     false, //sphere
-
-    false, //mountain
 
     false, //rock
     false, //cliff
@@ -81,8 +75,6 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //cube
     FMath::ms_mat4Unit, //sphere
 
-    FMath::ms_mat4Unit, //mountain
-
     FMath::ms_mat4Unit, //rock
     FMath::ms_mat4Unit, //cliff
 
@@ -96,7 +88,7 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 24;
+static const int g_TextureCount = 22;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -110,9 +102,6 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_terrain_diffuse",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
     "texture_terrain_normal",           "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
     "texture_terrain_control",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
-
-    "mountain_diffuse",                 "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_diffuse.png", //mountain_diffuse
-    "mountain_normal",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_normal.png", //mountain_normal
 
     "rock_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
     "rock_normal",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
@@ -146,9 +135,6 @@ static FTexturePixelFormatType g_TextureFormats[g_TextureCount] =
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_normal
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_control
 
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_diffuse
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_normal
-
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_normal
     F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_diffuse
@@ -180,9 +166,6 @@ static FTextureFilterType g_TextureFilters[g_TextureCount] =
     F_TextureFilter_Bilinear, //texture_terrain_diffuse
     F_TextureFilter_Bilinear, //texture_terrain_normal
     F_TextureFilter_Bilinear, //texture_terrain_control
-
-    F_TextureFilter_Bilinear, //mountain_diffuse
-    F_TextureFilter_Bilinear, //mountain_normal
 
     F_TextureFilter_Bilinear, //rock_diffuse
     F_TextureFilter_Bilinear, //rock_normal
@@ -216,9 +199,6 @@ static FTextureAddressingType g_TextureAddressings[g_TextureCount] =
     F_TextureAddressing_Clamp, //texture_terrain_normal
     F_TextureAddressing_Clamp, //texture_terrain_control
 
-    F_TextureAddressing_Clamp, //mountain_diffuse
-    F_TextureAddressing_Clamp, //mountain_normal
-
     F_TextureAddressing_Clamp, //rock_diffuse
     F_TextureAddressing_Clamp, //rock_normal
     F_TextureAddressing_Clamp, //cliff_diffuse
@@ -250,9 +230,6 @@ static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_control
-
-    F_TextureBorderColor_OpaqueBlack, //mountain_diffuse
-    F_TextureBorderColor_OpaqueBlack, //mountain_normal
 
     F_TextureBorderColor_OpaqueBlack, //rock_diffuse
     F_TextureBorderColor_OpaqueBlack, //rock_normal
@@ -286,9 +263,6 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //texture_terrain_normal
     512,    512,    1, //texture_terrain_control
 
-   1024,   1024,    1, //mountain_diffuse
-   1024,   1024,    1, //mountain_normal
-
     512,    512,    1, //rock_diffuse
     512,    512,    1, //rock_normal
     512,    512,    1, //cliff_diffuse
@@ -320,9 +294,6 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texture_terrain_diffuse
     0,    0, //texture_terrain_normal
     0,    0, //texture_terrain_control
-
-    0,    0, //mountain_diffuse
-    0,    0, //mountain_normal
 
     0,    0, //rock_diffuse
     0,    0, //rock_normal
@@ -357,7 +328,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 18;
+static const int g_ShaderCount = 16;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -366,8 +337,6 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_transparent_lit",                      "vert",              "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
-    
-    "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
@@ -388,8 +357,6 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
     "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
 
-    "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
-
     "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
     "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
@@ -402,12 +369,11 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 8;
+static const int g_Object_Count = 7;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
     "object_skybox",                       "cube", //object_skybox
-    "object_mountain",                     "mountain", //object_mountain   
 
     "object_rock",                         "rock", //object_rock   
     "object_cliff",                        "cliff", //object_cliff   
@@ -422,7 +388,6 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
     "0", //object_skybox
-    "0", //object_mountain
 
     "0", //object_rock
     "0", //object_cliff
@@ -439,7 +404,6 @@ static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //object_skybox
-    0, //object_mountain 
 
     4, //object_rock 
     4, //object_cliff 
@@ -454,7 +418,6 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 static bool g_Object_IsShows[] = 
 {
     true, //object_skybox
-    true, //object_mountain
 
     true, //object_rock
     true, //object_cliff
@@ -469,7 +432,6 @@ static bool g_Object_IsShows[] =
 static bool g_Object_IsRotates[g_Object_Count] =
 {
     false, //object_skybox
-    false, //object_mountain
 
     false, //object_rock
     false, //object_cliff
@@ -484,7 +446,6 @@ static bool g_Object_IsRotates[g_Object_Count] =
 static bool g_Object_IsLightings[g_Object_Count] =
 {
     true, //object_skybox
-    true, //object_mountain
 
     true, //object_rock
     true, //object_cliff
@@ -499,7 +460,6 @@ static bool g_Object_IsLightings[g_Object_Count] =
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
     false, //object_skybox
-    false, //object_mountain
 
     false, //object_rock
     false, //object_cliff
@@ -514,12 +474,11 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 20;
+static const int g_ObjectRend_Count = 19;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
-    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
 
     "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
     "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
@@ -547,7 +506,6 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
-    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_mountain-1
     
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
@@ -575,7 +533,6 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_mountain-1
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
@@ -602,7 +559,6 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
  
     FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
@@ -629,7 +585,6 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
     false, //object_skybox-1
-    false, //object_mountain-1
 
     false, //object_rock-1
     false, //object_cliff-1
@@ -656,7 +611,6 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //object_skybox-1
-    false, //object_mountain-1
     
     false, //object_rock-1
     false, //object_cliff-1
