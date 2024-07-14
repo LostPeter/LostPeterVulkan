@@ -233,10 +233,10 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_terrain
     false, //object_skybox
 
-    true, //object_cube
-    true, //object_sphere
-    true, //object_viking_room
-    true, //object_bunny
+    false, //object_cube
+    false, //object_sphere
+    false, //object_viking_room
+    false, //object_bunny
 
     false, //object_depth
 };
@@ -647,7 +647,7 @@ void Vulkan_019_ShadowMap::createLightMain()
         this->mainLight.common.x = 0; //Directional Type
         this->mainLight.common.y = 1.0f; //Enable
         this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(-12.0f, 13.0f, 0.0f);
+        this->mainLight.position = FVector3(40.0f, 50.0f, 25.0f);
         this->mainLight.direction = FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f)); //FVector3(0.0f, -1.0f, 0.0f); //
     }
 void Vulkan_019_ShadowMap::createShadowLightMain()
@@ -1076,7 +1076,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
+                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                                       pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
@@ -1110,7 +1110,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                             this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_LineWidth,
+                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                             isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,

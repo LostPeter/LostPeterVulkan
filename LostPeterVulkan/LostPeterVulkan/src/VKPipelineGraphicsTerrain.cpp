@@ -85,6 +85,10 @@ namespace LostPeterVulkan
             VkFrontFace vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
             VkPolygonMode vkPolygonMode = VK_POLYGON_MODE_FILL;
             VkCullModeFlagBits vkCullModeFlagBits = VK_CULL_MODE_BACK_BIT;
+            VkBool32 depthBiasEnable = VK_FALSE;
+            float depthBiasConstantFactor = 0.0f;
+            float depthBiasClamp = 0.0f;
+            float depthBiasSlopeFactor = 0.0f;
             float lineWidth = 1.0f;
             VkBool32 isDepthTest = VK_TRUE;
             VkBool32 isDepthWrite = VK_TRUE; 
@@ -106,7 +110,7 @@ namespace LostPeterVulkan
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                               Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                              vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, lineWidth,
+                                                                              vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                                               isDepthTest, isDepthWrite, vkDepthCompareOp,
                                                                               isStencilTest, vkStencilOpFront, vkStencilOpBack, 
                                                                               isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
@@ -125,7 +129,7 @@ namespace LostPeterVulkan
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                                         Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                                        vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits, lineWidth,
+                                                                                        vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                                                         isDepthTest, isDepthWrite, vkDepthCompareOp,
                                                                                         isStencilTest, vkStencilOpFront, vkStencilOpBack, 
                                                                                         isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,

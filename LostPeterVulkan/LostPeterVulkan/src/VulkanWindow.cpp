@@ -1223,6 +1223,10 @@ namespace LostPeterVulkan
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
         , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+        , cfg_isDepthBiasEnable(VK_FALSE)
+        , cfg_DepthBiasConstantFactor(0.0f)
+        , cfg_DepthBiasClamp(0.0f)
+        , cfg_DepthBiasSlopeFactor(0.0f)
         , cfg_LineWidth(1.0f)
         , cfg_isDepthTest(VK_TRUE)
         , cfg_isDepthWrite(VK_TRUE)
@@ -5863,7 +5867,7 @@ namespace LostPeterVulkan
                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                 this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
+                                                                this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                 this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                 this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
                                                                 this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
@@ -5881,7 +5885,7 @@ namespace LostPeterVulkan
                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                           this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                          this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
+                                                                          this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                           this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                           this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
                                                                           this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
@@ -5906,7 +5910,7 @@ namespace LostPeterVulkan
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -5936,7 +5940,7 @@ namespace LostPeterVulkan
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
                                                 renderPass, pipelineLayout, aViewports, aScissors,
-                                                primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
@@ -5951,7 +5955,7 @@ namespace LostPeterVulkan
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -5997,7 +6001,7 @@ namespace LostPeterVulkan
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
                                                 renderPass, pipelineLayout, aViewports, aScissors,
-                                                primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
@@ -6009,7 +6013,7 @@ namespace LostPeterVulkan
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -6052,10 +6056,10 @@ namespace LostPeterVulkan
                 rasterizationStateInfo.polygonMode = polygonMode;
                 rasterizationStateInfo.cullMode = cullMode;
                 rasterizationStateInfo.frontFace = frontFace;
-                rasterizationStateInfo.depthBiasEnable = VK_FALSE;
-                rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
-                rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
-                rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+                rasterizationStateInfo.depthBiasEnable = depthBiasEnable;
+                rasterizationStateInfo.depthBiasConstantFactor = depthBiasConstantFactor;
+                rasterizationStateInfo.depthBiasClamp = depthBiasClamp; 
+                rasterizationStateInfo.depthBiasSlopeFactor = depthBiasSlopeFactor;
                 rasterizationStateInfo.lineWidth = lineWidth;
 
                 //5> Pipeline Multisample State
@@ -6159,7 +6163,7 @@ namespace LostPeterVulkan
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass /*= 0*/)
@@ -6200,10 +6204,10 @@ namespace LostPeterVulkan
                 rasterizationStateInfo.polygonMode = polygonMode;
                 rasterizationStateInfo.cullMode = cullMode;
                 rasterizationStateInfo.frontFace = frontFace;
-                rasterizationStateInfo.depthBiasEnable = VK_FALSE;
-                rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
-                rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
-                rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+                rasterizationStateInfo.depthBiasEnable = depthBiasEnable;
+                rasterizationStateInfo.depthBiasConstantFactor = depthBiasConstantFactor;
+                rasterizationStateInfo.depthBiasClamp = depthBiasClamp; 
+                rasterizationStateInfo.depthBiasSlopeFactor = depthBiasSlopeFactor;
                 rasterizationStateInfo.lineWidth = lineWidth;
 
                 //5> Pipeline Multisample State

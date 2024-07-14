@@ -87,6 +87,10 @@ public:
             , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
             , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
             , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+            , cfg_isDepthBiasEnable(VK_FALSE)
+            , cfg_DepthBiasConstantFactor(0.0f)
+            , cfg_DepthBiasClamp(0.0f)
+            , cfg_DepthBiasSlopeFactor(0.0f)
             , cfg_LineWidth(1.0f)
             , cfg_isDepthTest(VK_TRUE)
             , cfg_isDepthWrite(VK_TRUE)
@@ -235,6 +239,10 @@ public:
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;
         VkCullModeFlagBits cfg_vkCullModeFlagBits;
+        VkBool32 cfg_isDepthBiasEnable;
+        float cfg_DepthBiasConstantFactor;
+        float cfg_DepthBiasClamp;
+        float cfg_DepthBiasSlopeFactor;
         float cfg_LineWidth;
         VkBool32 cfg_isDepthTest;
         VkBool32 cfg_isDepthWrite; 
