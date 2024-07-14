@@ -152,8 +152,8 @@ namespace LostPeterVulkan
                                                               VK_SAMPLE_COUNT_1_BIT,
                                                               VK_ATTACHMENT_LOAD_OP_CLEAR,
                                                               VK_ATTACHMENT_STORE_OP_STORE,
-                                                              VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                              VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                              VK_ATTACHMENT_STORE_OP_STORE,
                                                               VK_IMAGE_LAYOUT_UNDEFINED,
                                                               VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
             aAttachmentDescription.push_back(attachmentSR_Depth);

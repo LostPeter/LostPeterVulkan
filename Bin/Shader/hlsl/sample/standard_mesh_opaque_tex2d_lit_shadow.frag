@@ -15,7 +15,7 @@ struct VSOutput
     [[vk::location(1)]] float4 inColor          : COLOR0;
     [[vk::location(2)]] float3 inWorldNormal    : NORMAL0;
     [[vk::location(3)]] float2 inTexCoord       : TEXCOORD0;
-    [[vk::location(4)]] float4 inShadowCoord    : TEXCOORD1;
+    //[[vk::location(4)]] float4 inShadowCoord    : TEXCOORD1;
 };
 
 
@@ -322,7 +322,12 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
     //Additional Light
 
     //Shadow
-    float shadow = (enablePCF == 1) ? filterPCF(input.inShadowCoord / input.inShadowCoord.w) : calculate_Depth(input.inShadowCoord / input.inShadowCoord.w, float2(0.0, 0.0));
+    //float shadow = (enablePCF == 1) ? filterPCF(input.inShadowCoord / input.inShadowCoord.w) : calculate_Depth(input.inShadowCoord / input.inShadowCoord.w, float2(0.0, 0.0));
+
+    float4 shadowMapCoords = mul(passConsts.g_MainLight.depthMVP, float4(input.inWorldPos.xyz, 1.0));
+    shadowMapCoords = (shadowMapCoords / shadowMapCoords.w);
+    shadowMapCoords.xy = shadowMapCoords.xy * 0.5 + 0.5;
+    float shadow = (enablePCF == 1) ? filterPCF(shadowMapCoords) : calculate_Depth(shadowMapCoords, float2(0.0, 0.0));
 
     //Texture
     float3 colorTexture = textureDiffuse.Sample(textureDiffuseSampler, input.inTexCoord).rgb;

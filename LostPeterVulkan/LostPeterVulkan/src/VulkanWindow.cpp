@@ -3114,7 +3114,7 @@ namespace LostPeterVulkan
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                                             VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_IMAGE_LAYOUT_UNDEFINED,
                                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Depth);
@@ -3190,7 +3190,7 @@ namespace LostPeterVulkan
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                                             VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_IMAGE_LAYOUT_UNDEFINED,
                                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Depth);
@@ -3307,7 +3307,7 @@ namespace LostPeterVulkan
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                                             VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_IMAGE_LAYOUT_UNDEFINED,
                                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Depth);
@@ -3402,7 +3402,7 @@ namespace LostPeterVulkan
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
                                             VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_IMAGE_LAYOUT_UNDEFINED,
                                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Depth);
