@@ -56,7 +56,7 @@ if not exist %folderShader% (
 )
 
 if "%debug%" == "debug" (
-    dxc -Od -Zi -spirv -T %name_profile% -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
+    dxc -Od -Zi -spirv -T %name_profile% -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing -fspv-extension=SPV_KHR_non_semantic_info -fspv-debug=vulkan-with-source %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
 ) else (
     dxc -spirv -T %name_profile% -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
 )
