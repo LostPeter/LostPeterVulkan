@@ -677,12 +677,11 @@ namespace LostPeterVulkan
 
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
             String nameShaderVert = "vert_standard_renderpass_shadowmap";
-            String nameShaderFrag = "frag_standard_renderpass_shadowmap";
             if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
                                                       "",
                                                       "",
                                                       "",
-                                                      nameShaderFrag,
+                                                      "",
                                                       this->m_mapVkShaderModules_Internal,
                                                       aShaderStageCreateInfos_DepthShadowMap))
             {
@@ -967,6 +966,7 @@ namespace LostPeterVulkan
             aStageCreateInfos_Graphics.push_back(shaderStageInfo);
         }
         //frag
+        if (!nameShaderFrag.empty())
         {
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderFrag);
             if (itFind == mapVkShaderModules.end())
@@ -1297,6 +1297,9 @@ namespace LostPeterVulkan
         , pEditorLineFlat2DCollector(nullptr)
         , pEditorLineFlat3DCollector(nullptr)
     {
+        cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+        cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+
         cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
@@ -5866,7 +5869,7 @@ namespace LostPeterVulkan
                                                                 fragShaderModule, "main",
                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
+                                                                this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
                                                                 this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                 this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                 this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
@@ -5884,7 +5887,7 @@ namespace LostPeterVulkan
                                                                           fragShaderModule, "main",
                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                          this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
+                                                                          this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
                                                                           this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
                                                                           this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                           this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
@@ -5909,7 +5912,7 @@ namespace LostPeterVulkan
                                                               VkShaderModule fragShaderModule, const String& fragMain,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
                                                               VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -5939,7 +5942,7 @@ namespace LostPeterVulkan
                                                 false, 0, 0,
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
-                                                renderPass, pipelineLayout, aViewports, aScissors,
+                                                renderPass, pipelineLayout, aViewports, aScissors, aDynamicStates,
                                                 primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
@@ -5954,7 +5957,7 @@ namespace LostPeterVulkan
                                                               VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
                                                               VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -6000,7 +6003,7 @@ namespace LostPeterVulkan
                                                 true, tessellationFlags, tessellationPatchControlPoints,
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
-                                                renderPass, pipelineLayout, aViewports, aScissors,
+                                                renderPass, pipelineLayout, aViewports, aScissors, aDynamicStates,
                                                 primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
@@ -6012,7 +6015,7 @@ namespace LostPeterVulkan
                                                               bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
                                                               VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -6113,14 +6116,9 @@ namespace LostPeterVulkan
 
                 //8> Pipeline Dynamic State
                 VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-                const std::vector<VkDynamicState> dynamicStateEnables = 
-                { 
-                    VK_DYNAMIC_STATE_VIEWPORT, 
-                    VK_DYNAMIC_STATE_SCISSOR 
-                };
                 dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-                dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
-                dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+                dynamicStateInfo.pDynamicStates = aDynamicStates.data();
+                dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(aDynamicStates.size());
                 dynamicStateInfo.flags = 0;
 
                 //9> Tessellation State
@@ -6162,7 +6160,7 @@ namespace LostPeterVulkan
                                                               bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
                                                               VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -6248,14 +6246,9 @@ namespace LostPeterVulkan
 
                 //8> Pipeline Dynamic State
                 VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-                const std::vector<VkDynamicState> dynamicStateEnables = 
-                { 
-                    VK_DYNAMIC_STATE_VIEWPORT, 
-                    VK_DYNAMIC_STATE_SCISSOR 
-                };
                 dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-                dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
-                dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+                dynamicStateInfo.pDynamicStates = aDynamicStates.data();
+                dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(aDynamicStates.size());
                 dynamicStateInfo.flags = 0;
 
                 //9> Tessellation State

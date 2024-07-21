@@ -61,18 +61,24 @@ namespace LostPeterVulkan
             aViewports.push_back(Base::GetWindowPtr()->poViewport);
             VkRect2DVector aScissors;
             aScissors.push_back(Base::GetWindowPtr()->poScissor);
+            VkDynamicStateVector aDynamicStates =
+            {
+                VK_DYNAMIC_STATE_VIEWPORT,
+                VK_DYNAMIC_STATE_SCISSOR,
+                VK_DYNAMIC_STATE_DEPTH_BIAS
+            };
+
+            VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
 
             this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                              this->m_pVKRenderPassShadowMap->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_TRUE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                              this->m_pVKRenderPassShadowMap->poRenderPass, this->poPipelineLayout, aViewports, aScissors, aDynamicStates,
+                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_TRUE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                              VK_FALSE, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                              VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                              VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                                                                              aColorBlendAttachmentState);
             if (this->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** VKPipelineGraphicsDepthShadowMap::Init: Failed to create pipeline graphics for [PipelineGraphics_DepthShadowMap] !";

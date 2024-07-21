@@ -158,6 +158,9 @@ public:
             , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
             , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
+            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+            
             this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-Model");
         }
         ~ModelObject()
@@ -289,6 +292,7 @@ public:
         VKPipelineComputePtrVector aPipelineComputes;
         
         //State
+        VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;

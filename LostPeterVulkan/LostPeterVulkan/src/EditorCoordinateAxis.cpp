@@ -1566,6 +1566,11 @@ namespace LostPeterVulkan
             aViewports.push_back(Base::GetWindowPtr()->poViewport);
             VkRect2DVector aScissors;
             aScissors.push_back(Base::GetWindowPtr()->poScissor);
+            VkDynamicStateVector aDynamicStates =
+            {
+                VK_DYNAMIC_STATE_VIEWPORT,
+                VK_DYNAMIC_STATE_SCISSOR
+            };
 
             VkStencilOpState stencilOpFront; 
             VkStencilOpState stencilOpBack; 
@@ -1575,7 +1580,7 @@ namespace LostPeterVulkan
                                                                                                  false, 0, 3,
                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
                                                                                                  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                                  VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                  VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -1595,7 +1600,7 @@ namespace LostPeterVulkan
                                                                                                            false, 0, 3,
                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
                                                                                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                                            VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -1628,7 +1633,7 @@ namespace LostPeterVulkan
                                                                                                             false, 0, 3,
                                                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
-                                                                                                            Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                            Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
                                                                                                             VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                                             VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                             VK_FALSE, stencilOpFront, stencilOpBack, 
