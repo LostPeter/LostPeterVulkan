@@ -13,7 +13,7 @@ debug=${1}
 rebuild=${2}
 
 name=libnoise-1.0.0
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     name_project=$name"_d"
     name_lib=$name"_d.a"
     nameutil_lib="libnoiseutils-1.0.0_d.a"
@@ -23,7 +23,7 @@ else
     nameutil_lib="libnoiseutils-1.0.0.a"
 fi
 
-if [ $rebuild == "rebuild" ]; then
+if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -37,7 +37,7 @@ cd MacOS
 cd $name_project
 
 #lib
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../Sources/$name/
 else
     cmake ../../../Sources/$name/

@@ -13,7 +13,7 @@ name_sample=${1}
 debug=${2}
 rebuild=${3}
 
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     name_project=$name_sample"_d"
 else
     name_project=$name_sample
@@ -24,7 +24,7 @@ sh ./Build_MacOS_Sample_Share.sh $name_sample $debug $rebuild
 
 
 #2> Build Sample
-if [ $rebuild == "rebuild" ]; then
+if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -37,7 +37,7 @@ cd Build
 cd MacOS
 cd $name_project
 
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     cmake -DDEBUG=1 ../../../$name_sample/pc
 else
     cmake ../../../$name_sample/pc

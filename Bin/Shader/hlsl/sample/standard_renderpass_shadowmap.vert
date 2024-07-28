@@ -79,22 +79,38 @@ struct PassConstants
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
-[[vk::binding(0)]]cbuffer passConsts               : register(b0) 
+[[vk::binding(0)]]cbuffer passConsts                : register(b0) 
 {
     PassConstants passConsts;
 }
 
 
+//ObjectConstants
+#define MAX_OBJECT_WORLD_COUNT 2048
+struct ObjectConstants
+{
+    float4x4 g_MatWorld;
+};
+
+[[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
+{
+    ObjectConstants objectConsts[MAX_OBJECT_WORLD_COUNT];
+}
+
+
 struct VSOutput
 {
-	float4 outPosition                      : SV_POSITION;
+	float4 outPosition : SV_POSITION;
 };
 
 
-VSOutput main(VSInput input)
+VSOutput main(VSInput input,
+              uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MainLight.depthMVP, float4(input.inPosition, 1.0));
+
+    ObjectConstants obj = objectConsts[instanceIndex];
+    output.outPosition = mul(passConsts.g_MainLight.depthMVP, mul(obj.g_MatWorld, float4(input.inPosition, 1.0)));
 
     return output;
 }

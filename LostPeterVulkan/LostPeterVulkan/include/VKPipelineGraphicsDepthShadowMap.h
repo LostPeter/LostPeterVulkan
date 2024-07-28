@@ -45,7 +45,7 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
-        virtual void UpdateDescriptorSets();
+        virtual void UpdateDescriptorSets(const VkBufferVector& poBuffersObject);
     };  
 
 }; //LostPeterVulkan

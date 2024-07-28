@@ -194,13 +194,13 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
         FMatrix4 poMatWorld;
 
         std::vector<ObjectConstants_Outline> objectCBs_Outline;
-        std::vector<VkBuffer> poBuffers_ObjectCB_Outline;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_Outline;
+        VkBufferVector poBuffers_ObjectCB_Outline;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_Outline;
 
         //Texture
         uint32_t poMipMapCount;

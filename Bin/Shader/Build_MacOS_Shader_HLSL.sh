@@ -49,7 +49,7 @@ folderSrc=$folder_shader
 folderVulkan="../Assets/Shader"
 mkdir -p $folderVulkan
 
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
 	dxc -Zi -spirv -T $name_profile -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing $folderSrc/$name_shader -Fo $folderVulkan/$name_shader.spv
 else
 	dxc -spirv -T $name_profile -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing $folderSrc/$name_shader -Fo $folderVulkan/$name_shader.spv

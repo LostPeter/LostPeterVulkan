@@ -95,7 +95,7 @@ namespace LostPeterVulkan
             F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::Init: createVkDescriptorSets failed !");
             return false;
         }
-        UpdateDescriptorSets();
+        //UpdateDescriptorSets(Base::GetWindowPtr()->poBuffers_ObjectWorldCB);
 
         return true;
     }
@@ -119,11 +119,12 @@ namespace LostPeterVulkan
         this->poDescriptorSets.clear();
     }  
 
-    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSets()
+    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSets(const VkBufferVector& poBuffersObject)
     {
         StringVector* pDescriptorSetLayoutNames = this->poDescriptorSetLayoutNames;
         F_Assert(pDescriptorSetLayoutNames != nullptr && "VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSets")
         size_t count_ds = this->poDescriptorSets.size();
+        F_Assert(poBuffersObject.size() == count_ds && "VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSets")
         for (size_t i = 0; i < count_ds; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
@@ -135,7 +136,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[j];
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -144,6 +145,19 @@ namespace LostPeterVulkan
                                                                       0,
                                                                       1,
                                                                       bufferInfo_Pass);
+                }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
+                {
+                    VkDescriptorBufferInfo bufferInfo_Object = {};
+                    bufferInfo_Object.buffer = poBuffersObject[i];
+                    bufferInfo_Object.offset = 0;
+                    bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_WORLD_COUNT;
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      this->poDescriptorSets[i],
+                                                                      j,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_Object);
                 }
                 else
                 {

@@ -210,18 +210,18 @@ public:
         int countInstance;
 
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_materialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        VkBufferVector poBuffers_materialCB;
+        VkDeviceMemoryVector poBuffersMemory_materialCB;
         float alpha;
 
         std::vector<ObjectConstants_Outline> objectCBs_Outline;
-        std::vector<VkBuffer> poBuffers_ObjectCB_Outline;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_Outline;
+        VkBufferVector poBuffers_ObjectCB_Outline;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_Outline;
 
         //Texture
         uint32_t poMipMapCount;

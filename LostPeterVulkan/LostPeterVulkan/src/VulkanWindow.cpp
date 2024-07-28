@@ -300,10 +300,11 @@ namespace LostPeterVulkan
     }
 
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 4;
+    static const int g_DescriptorSetLayoutCount_Internal = 5;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
+        "Pass-Object",
         "ObjectCopyBlit-TextureFrameColor",
         "TextureCopy-TextureCSR-TextureCSRW",
         "Pass-ObjectTerrain-Material-Instance-TextureFS-TextureFS-TextureFS",
@@ -475,7 +476,8 @@ namespace LostPeterVulkan
     {
         //1> PassCB
         destroyUniform_PassCB();
-
+        //2> ObjectWorldCB
+        destroyUniform_ObjectWorldCB();
     }
         void VulkanWindow::destroyUniform_PassCB()
         {
@@ -487,11 +489,23 @@ namespace LostPeterVulkan
             this->poBuffers_PassCB.clear();
             this->poBuffersMemory_PassCB.clear();
         }
+        void VulkanWindow::destroyUniform_ObjectWorldCB()
+        {
+            size_t count = this->poBuffers_ObjectWorldCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                destroyVkBuffer(this->poBuffers_ObjectWorldCB[i], this->poBuffersMemory_ObjectWorldCB[i]);
+            }
+            this->poBuffers_ObjectWorldCB.clear();
+            this->poBuffersMemory_ObjectWorldCB.clear();
+            this->objectWorldCBs.clear();
+        }
     void VulkanWindow::createUniformCB_Internal()
     {
         //1> PassCB
         createUniform_PassCB();
-
+        //2> ObjectWorldCB
+        createUniform_ObjectWorldCB();
     }
         void VulkanWindow::createUniform_PassCB()
         {
@@ -509,6 +523,23 @@ namespace LostPeterVulkan
                                this->poBuffersMemory_PassCB[i]);
             }
             F_LogInfo("VulkanWindow::createUniform_PassCB: Create Uniform Pass constant buffer success !");
+        }
+        void VulkanWindow::createUniform_ObjectWorldCB()
+        {
+            VkDeviceSize bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_WORLD_COUNT;
+            size_t count = this->poSwapChainImages.size();
+            this->poBuffers_ObjectWorldCB.resize(count);
+            this->poBuffersMemory_ObjectWorldCB.resize(count);
+
+            for (size_t i = 0; i < count; i++) 
+            {
+                createVkBuffer(bufferSize, 
+                               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                               this->poBuffers_ObjectWorldCB[i], 
+                               this->poBuffersMemory_ObjectWorldCB[i]);
+            }
+            F_LogInfo("VulkanWindow::createUniform_ObjectWorldCB: Create Uniform ObjectWorld constant buffer success !");
         }
 
     //PipelineCompute
@@ -665,7 +696,7 @@ namespace LostPeterVulkan
         void VulkanWindow::createPipelineGraphics_DepthShadowMap()
         {
             this->m_pPipelineGraphics_DepthShadowMap = new VKPipelineGraphicsDepthShadowMap("PipelineGraphics-DepthShadowMap", this->m_pVKRenderPassShadowMap);
-            String descriptorSetLayout = "Pass";
+            String descriptorSetLayout = "Pass-Object";
             StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
             VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
             VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
@@ -701,13 +732,40 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics_DepthShadowMap] create success !");
         }
-    void VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap()
+    void VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap(const VkBufferVector& poBuffersObject)
     {
         if (this->m_pPipelineGraphics_DepthShadowMap == nullptr ||
             !this->cfg_isRenderPassShadowMap)
             return;
 
-        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSets();
+        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSets(poBuffersObject);
+    }
+    void VulkanWindow::UpdateBuffer_ObjectWorld_Begin()
+    {
+        this->objectWorldCBs.clear();
+    }
+        void VulkanWindow::UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object)
+        {
+            this->objectWorldCBs.push_back(object);
+        }
+        void VulkanWindow::UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects)
+        {
+            size_t count = objects.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                this->objectWorldCBs.push_back(objectCBs[i]);
+            }
+        }
+    void VulkanWindow::UpdateBuffer_ObjectWorld_End()
+    {
+        if (this->objectWorldCBs.size() <= 0)
+            return;
+
+        size_t count = this->poBuffersMemory_ObjectWorldCB.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            updateVKBuffer(0, sizeof(ObjectConstants) * this->objectWorldCBs.size(), this->objectWorldCBs.data(), this->poBuffersMemory_ObjectWorldCB[i]);
+        }
     }
     bool VulkanWindow::Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer)
     {
@@ -715,12 +773,12 @@ namespace LostPeterVulkan
             !this->cfg_isRenderPassShadowMap)
             return false;
 
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         
+        
+
         return true;
     }
-    void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub)
+    void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart)
     {   
         VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
@@ -729,13 +787,16 @@ namespace LostPeterVulkan
         {
             bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
         if (pMeshSub->poIndexBuffer != nullptr)
         {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+            drawIndexed(commandBuffer, pMeshSub->poIndexCount, instanceCount, 0, 0, instanceStart);
         }
         else
         {
-            draw(commandBuffer, pMeshSub->poVertexCount, pMeshSub->instanceCount, 0, 0);
+            draw(commandBuffer, pMeshSub->poVertexCount, instanceCount, 0, instanceStart);
         }
     }
     void VulkanWindow::Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer)
@@ -1278,6 +1339,7 @@ namespace LostPeterVulkan
 
         , pCamera(nullptr)
         , pCameraRight(nullptr)
+        , pCameraMainLight(new FCamera)
 
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
@@ -1322,6 +1384,8 @@ namespace LostPeterVulkan
     VulkanWindow::~VulkanWindow()
     {
         F_DELETE(pCamera)
+        F_DELETE(pCameraRight)
+        F_DELETE(pCameraMainLight)
     }
 
     void VulkanWindow::OnInit()
@@ -6310,13 +6374,15 @@ namespace LostPeterVulkan
             VkPipeline VulkanWindow::createVkComputePipeline(VkShaderModule compShaderModule,
                                                              const String& compMain,
                                                              VkPipelineLayout pipelineLayout, 
-                                                             VkPipelineCreateFlags flags /*= 0*/)
+                                                             VkPipelineCreateFlags flags /*= 0*/,
+                                                             VkSpecializationInfo* pSpecializationInfo /*= nullptr*/)
             {
                 VkPipelineShaderStageCreateInfo compShaderStageInfo = {};
                 compShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                 compShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
                 compShaderStageInfo.module = compShaderModule;
                 compShaderStageInfo.pName = compMain.c_str();
+                compShaderStageInfo.pSpecializationInfo = pSpecializationInfo;
 
                 return createVkComputePipeline(compShaderStageInfo,
                                                pipelineLayout,
@@ -6986,11 +7052,15 @@ namespace LostPeterVulkan
                     //Light Settings
                     if (this->cfg_isRenderPassShadowMap)
                     {
-                        glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->shadowMainLight.fov), 1.0f, this->shadowMainLight.zNear, this->shadowMainLight.zFar);
-                        glm::mat4 depthViewMatrix = glm::lookAtLH(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0)); //FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction);
-                        glm::mat4 depthModelMatrix = glm::mat4(1.0f);
+                        // glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->shadowMainLight.fov), 1.0f, this->shadowMainLight.zNear, this->shadowMainLight.zFar);
+                        // glm::mat4 depthViewMatrix = glm::lookAtLH(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0)); //FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction); //
+                        // glm::mat4 depthModelMatrix = glm::mat4(1.0f);
+                        // this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
-                        this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+                        const FMatrix4& depthViewMatrix = this->pCameraMainLight->GetMatrix4View();
+                        const FMatrix4& depthProjectionMatrix = this->pCameraMainLight->GetMatrix4Projection();
+                        
+                        this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix;
                     }
                     memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
                     for (int i = 0; i < MAX_LIGHT_COUNT; i++)
@@ -7438,7 +7508,7 @@ namespace LostPeterVulkan
                         if (ImGui::CollapsingHeader("Light Settings"))
                         {
                             //Main Light
-                            lightConfigItem(this->mainLight, "Light - Main", 0, false);
+                            lightConfigItem(this->mainLight, "Light - Main", 0, false, true);
                             
                             //Additional Light
                             int count_light = MAX_LIGHT_COUNT;
@@ -7446,13 +7516,13 @@ namespace LostPeterVulkan
                             {
                                 LightConstants& lc = this->aAdditionalLights[i];
                                 String nameLight = "Light - " + FUtilString::SaveInt(i);
-                                lightConfigItem(lc, nameLight, i, true);
+                                lightConfigItem(lc, nameLight, i, true, false);
                             }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
                     }
-                        void VulkanWindow::lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType)
+                        void VulkanWindow::lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType, bool bIsMainLight)
                         {
                             struct EnumLightDesc { VulkanLightType Value; const char* Name; const char* Tooltip; };
                             static const EnumLightDesc s_aLightDescs[] =
@@ -7549,6 +7619,12 @@ namespace LostPeterVulkan
                                 if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
                                 {
                                     lc.position = vPosition;
+
+                                    if (bIsMainLight)
+                                    {
+                                        this->pCameraMainLight->SetPos(vPosition);
+                                        this->pCameraMainLight->UpdateViewMatrix();
+                                    }
                                 }
                                 ImGui::Spacing();
 
@@ -7558,6 +7634,12 @@ namespace LostPeterVulkan
                                 if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
                                 {
                                     lc.direction = FMath::ToDirection(vEulerAngle);
+
+                                    if (bIsMainLight)
+                                    {
+                                        this->pCameraMainLight->SetEulerAngles(vEulerAngle);
+                                        this->pCameraMainLight->UpdateViewMatrix();
+                                    }
                                 }
                                 //direction
                                 FVector3 vDirection = lc.direction;
@@ -7655,12 +7737,12 @@ namespace LostPeterVulkan
                         if (ImGui::CollapsingHeader("Shadow Settings"))
                         {
                             //Shadow MainLight
-                            shadowConfigItem(this->shadowMainLight, "Shadow MainLight");
+                            shadowConfigItem(this->shadowMainLight, "Shadow MainLight", true);
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
                     }
-                        void VulkanWindow::shadowConfigItem(ShadowConstants& sc, const String& name)
+                        void VulkanWindow::shadowConfigItem(ShadowConstants& sc, const String& name, bool bIsMainLight)
                         {
                             if (ImGui::CollapsingHeader(name.c_str()))
                             {
@@ -7670,6 +7752,12 @@ namespace LostPeterVulkan
                                 if (ImGui::DragFloat(nameFov.c_str(), &fFov, 0.001f, 20.0f, 90.0f))
                                 {
                                     sc.fov = fFov;
+
+                                    if (bIsMainLight)
+                                    {
+                                        this->pCameraMainLight->SetFovY(fFov);
+                                        this->pCameraMainLight->UpdateProjectionMatrix();
+                                    }
                                 }
                                 ImGui::Spacing();
 
@@ -7679,6 +7767,12 @@ namespace LostPeterVulkan
                                 if (ImGui::DragFloat(nameZNear.c_str(), &fZNear, 0.05f, 0.5f, 10.0f))
                                 {
                                     sc.zNear = fZNear;
+
+                                    if (bIsMainLight)
+                                    {
+                                        this->pCameraMainLight->SetNearZ(fZNear);
+                                        this->pCameraMainLight->UpdateProjectionMatrix();
+                                    }
                                 }
                                 ImGui::Spacing();
 
@@ -7688,6 +7782,12 @@ namespace LostPeterVulkan
                                 if (ImGui::DragFloat(nameZFar.c_str(), &fZFar, 0.05f, 20.0f, 1000.0f))
                                 {
                                     sc.zFar = fZFar;
+
+                                    if (bIsMainLight)
+                                    {
+                                        this->pCameraMainLight->SetFarZ(fZFar);
+                                        this->pCameraMainLight->UpdateProjectionMatrix();
+                                    }
                                 }
                                 ImGui::Spacing();
 

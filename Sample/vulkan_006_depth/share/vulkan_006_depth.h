@@ -170,8 +170,8 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
         FMatrix4 poMatWorld;
 
         //Texture

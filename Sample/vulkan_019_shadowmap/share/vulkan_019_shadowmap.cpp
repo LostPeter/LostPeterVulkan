@@ -317,7 +317,7 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(-2.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
     FVector3( 2.0f,    2, -2.0f),    FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
 
-    FVector3(    0,    2, -6.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
+    FVector3( 6.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -336,9 +336,9 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     false, //object_terrain-1
     false, //object_skybox-1
 
-    true, //object_cube-1
-    true, //object_sphere-1
-    true, //object_viking_room-1
+    false, //object_cube-1
+    false, //object_sphere-1
+    false, //object_viking_room-1
     true, //object_bunny-1
 
     false, //object_depth-1
@@ -598,7 +598,7 @@ Vulkan_019_ShadowMap::Vulkan_019_ShadowMap(int width, int height, String name)
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
-    this->cfg_isEditorCoordinateAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = true;
     this->cfg_editorGrid_Color.a = 0.2f;
 }
 
@@ -632,8 +632,8 @@ void Vulkan_019_ShadowMap::createCamera()
     {
         VulkanWindow::cameraReset();
 
-        this->pCamera->SetPos(FVector3(-12.0f, 13.0f, 0.0f));
-        this->pCamera->SetEulerAngles(FVector3(40.0f, 90.0f, 0.0f));
+        this->pCamera->SetPos(FVector3(0.0f, 12.0f, -10.0f));
+        this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
         this->pCamera->SetFarZ(100000.0f);
     }
 void Vulkan_019_ShadowMap::createLightMain()
@@ -647,8 +647,20 @@ void Vulkan_019_ShadowMap::createLightMain()
         this->mainLight.common.x = 0; //Directional Type
         this->mainLight.common.y = 1.0f; //Enable
         this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(40.0f, 50.0f, 25.0f);
-        this->mainLight.direction = FMath::ToDirection(FVector3(40.0f, 90.0f, 0.0f)); //FVector3(0.0f, -1.0f, 0.0f); //
+        this->mainLight.position = FVector3(0.0f, 12.0f, -10.0f);
+        FVector3 vEulerAngles(45.0f, 00.0f, 0.0f);
+        this->mainLight.direction = FMath::ToDirection(vEulerAngles);
+
+        this->shadowMainLight.zNear = 5.0f;
+        //Camera MainLight
+        this->pCameraMainLight->SetPos(this->mainLight.position);
+        this->pCameraMainLight->SetEulerAngles(vEulerAngles);
+        this->pCameraMainLight->SetFovY(this->shadowMainLight.fov);
+        this->pCameraMainLight->SetAspect(1.0f);
+        this->pCameraMainLight->SetNearZ(this->shadowMainLight.zNear);
+        this->pCameraMainLight->SetFarZ(this->shadowMainLight.zFar);
+        this->pCameraMainLight->UpdateViewMatrix();
+        this->pCameraMainLight->UpdateProjectionMatrix();
     }
 void Vulkan_019_ShadowMap::createShadowLightMain()
 {
@@ -1499,8 +1511,8 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Custom()
     }
 }
 void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                            ModelObjectRend* pRend, 
-                                                            ModelObjectRendIndirect* pRendIndirect)
+                                                         ModelObjectRend* pRend, 
+                                                         ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_019_ShadowMap::createDescriptorSets_Graphics")
@@ -1911,16 +1923,46 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
 
     void Vulkan_019_ShadowMap::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
     {
+        size_t count_rend = m_aModelObjectRends_All.size();
+        if (count_rend <= 0)
+            return;
+        int instanceStart = 0;
+        
+        //1> Update Object World
+        // UpdateBuffer_ObjectWorld_Begin();
+        // {
+        //     for (size_t i = 0; i < count_rend; i++)
+        //     {
+        //         ModelObjectRend* pRend = m_aModelObjectRends_All[i];
+        //         if (!pRend->isShow ||
+        //             !pRend->isCastShadow)
+        //             continue;
+                
+        //         int instanceCount = (int)pRend->objectCBs.size();
+        //         F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+        //         UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
+        //         instanceStart += instanceCount;
+        //     }
+        // }
+        // UpdateBuffer_ObjectWorld_End();
+        
+        //2> Draw Depth
         if (Draw_Graphics_DepthShadowMapBegin(commandBuffer))
         {
-            size_t count_rend = m_aModelObjectRends_All.size();
+            instanceStart = 0;
             for (size_t i = 0; i < count_rend; i++)
             {
                 ModelObjectRend* pRend = m_aModelObjectRends_All[i];
                 if (!pRend->isShow ||
                     !pRend->isCastShadow)
                     continue;
-                Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub);
+
+                UpdateDescriptorSets_Graphics_DepthShadowMap(pRend->poBuffers_ObjectCB);
+
+                int instanceCount = (int)pRend->objectCBs.size();
+                //F_LogInfo("2222222222: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+                Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub, instanceCount, instanceStart);
+                //instanceStart += instanceCount;
             }
             Draw_Graphics_DepthShadowMapEnd(commandBuffer);
         }
@@ -2034,6 +2076,16 @@ void Vulkan_019_ShadowMap::modelConfig()
                         }
                     }
                 }
+                //isCastShadow
+                String nameIsCastShadow = "Is CastShadow - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pModelObject->isCastShadow))
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        pRend->isCastShadow = pModelObject->isCastShadow;
+                    }
+                }
 
                 String nameInstances = "Instance - " + pModelObject->nameObject;
                 int countInstanceExt = pModelObject->countInstanceExt;
@@ -2099,9 +2151,14 @@ void Vulkan_019_ShadowMap::modelConfig()
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
                         //isCastShadow
-                        String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRendIndirect;
-                        bool isCastShadow = pRendIndirect->isCastShadow;
-                        ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
+                        String nameIsCastShadow = "Is CastShadow - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pRendIndirect->isCastShadow))
+                        {
+                            if (pRendIndirect->isCastShadow)
+                            {
+                                pModelObject->isCastShadow = true;
+                            }
+                        }
 
                         //countIndirectDraw
                         String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
@@ -2178,9 +2235,14 @@ void Vulkan_019_ShadowMap::modelConfig()
                             ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
                             //isCastShadow
-                            String nameIsCastShadow = "Is CastShadow(Read Only) - " + nameObjectRend;
-                            bool isCastShadow = pRend->isCastShadow;
-                            ImGui::Checkbox(nameIsCastShadow.c_str(), &isCastShadow);
+                            String nameIsCastShadow = "Is CastShadow - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pRend->isCastShadow))
+                            {
+                                if (pRend->isCastShadow)
+                                {
+                                    pModelObject->isCastShadow = true;
+                                }
+                            }
 
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))

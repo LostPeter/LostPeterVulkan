@@ -34,7 +34,7 @@ echo "mode: $mode, $debug"
 name_base="imgui"
 name="${name_base}-1.85"
 
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     name_project=$name"_"$mode"_d"
     name_dylib="lib"$name"_"$mode"_d.a"
 else
@@ -42,7 +42,7 @@ else
     name_dylib="lib"$name"_"$mode".a"
 fi
 
-if [ $rebuild == "rebuild" ]; then
+if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -56,7 +56,7 @@ cd MacOS
 cd $name_project
 
 #lib
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug -DPLATFORM_MODE=$mode ../../../Sources/$name/
 else
     cmake -DPLATFORM_MODE=$mode ../../../Sources/$name/

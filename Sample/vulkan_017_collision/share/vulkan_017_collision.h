@@ -50,25 +50,25 @@ public:
         int countInstance;
 
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<LineFlat2DObjectConstants> objectCBs_LineFlat2D;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat2D;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat2D;
+        VkBufferVector poBuffers_ObjectCB_LineFlat2D;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_LineFlat2D;
 
         std::vector<LineFlat3DObjectConstants> objectCBs_LineFlat3D;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat3D;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat3D;
+        VkBufferVector poBuffers_ObjectCB_LineFlat3D;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_LineFlat3D;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_materialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        VkBufferVector poBuffers_materialCB;
+        VkDeviceMemoryVector poBuffersMemory_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        std::vector<VkBuffer> poBuffers_tessellationCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        VkBufferVector poBuffers_tessellationCB;
+        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
 
         //Pipeline Graphics
@@ -316,24 +316,24 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
 
         std::vector<LineFlat2DObjectConstants> objectCBs_LineFlat2D;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat2D;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat2D;
+        VkBufferVector poBuffers_ObjectCB_LineFlat2D;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_LineFlat2D;
 
         std::vector<LineFlat3DObjectConstants> objectCBs_LineFlat3D;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat3D;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat3D;
+        VkBufferVector poBuffers_ObjectCB_LineFlat3D;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB_LineFlat3D;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_materialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        VkBufferVector poBuffers_materialCB;
+        VkDeviceMemoryVector poBuffersMemory_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        std::vector<VkBuffer> poBuffers_tessellationCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        VkBufferVector poBuffers_tessellationCB;
+        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
 
         //VkDescriptorSets

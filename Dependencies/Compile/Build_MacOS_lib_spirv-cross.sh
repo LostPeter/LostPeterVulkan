@@ -24,7 +24,7 @@ name_lib_reflect=libspirv-cross-reflect
 name_lib_util=libspirv-cross-util
 name_exe=spirv-cross
 
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     name_project=$name"_d"
     name_lib_core_final=$name_lib_core"_d.a"
     name_lib_c_final=$name_lib_c"_d.a"
@@ -48,7 +48,7 @@ else
     name_exe_final=$name_exe
 fi
 
-if [ $rebuild == "rebuild" ]; then
+if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
 mkdir -p "../Build/MacOS/"$name_project
@@ -70,7 +70,7 @@ cd MacOS
 cd $name_project
 
 #lib
-if [ $debug == "debug" ]; then
+if [ "$debug" == "debug" ]; then
     cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug -DSPIRV_CROSS_ENABLE_TESTS=OFF ../../../Sources/$name/
 else
     cmake -DSPIRV_CROSS_ENABLE_TESTS=OFF ../../../Sources/$name/

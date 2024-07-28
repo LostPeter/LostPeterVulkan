@@ -48,17 +48,17 @@ public:
         int countInstance;
 
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_materialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        VkBufferVector poBuffers_materialCB;
+        VkDeviceMemoryVector poBuffersMemory_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        std::vector<VkBuffer> poBuffers_tessellationCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        VkBufferVector poBuffers_tessellationCB;
+        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
 
         //Pipeline Graphics
@@ -287,16 +287,16 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_materialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        VkBufferVector poBuffers_materialCB;
+        VkDeviceMemoryVector poBuffersMemory_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        std::vector<VkBuffer> poBuffers_tessellationCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        VkBufferVector poBuffers_tessellationCB;
+        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
 
         //VkDescriptorSets
@@ -383,6 +383,7 @@ public:
         bool isLighting;
         bool isIndirectDraw;
         bool isIndirectDrawMulti;
+        bool isCastShadow;
 
         int countInstanceExt;
         int countInstance;
@@ -409,7 +410,8 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isIndirectDraw(false)
-            , isIndirectDrawMulti(true)
+            , isIndirectDrawMulti(false)
+            , isCastShadow(false)
 
             , countInstanceExt(0)
             , countInstance(1)

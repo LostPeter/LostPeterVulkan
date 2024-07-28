@@ -32,8 +32,12 @@ namespace LostPeterVulkan
         //Uniform ConstantBuffer
         //1> PassCB
         PassConstants passCB;
-        std::vector<VkBuffer> poBuffers_PassCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_PassCB;
+        VkBufferVector poBuffers_PassCB;
+        VkDeviceMemoryVector poBuffersMemory_PassCB;
+
+        std::vector<ObjectConstants> objectWorldCBs;
+        VkBufferVector poBuffers_ObjectWorldCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectWorldCB;
 
         //PipelineCompute
         //1> PipelineCompute_Terrain
@@ -97,9 +101,13 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_DepthShadowMap
-        virtual void UpdateDescriptorSets_Graphics_DepthShadowMap();
+        virtual void UpdateDescriptorSets_Graphics_DepthShadowMap(const VkBufferVector& poBuffersObject);
+        virtual void UpdateBuffer_ObjectWorld_Begin();
+            virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
+            virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
+        virtual void UpdateBuffer_ObjectWorld_End();
         virtual bool Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer);
-            virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub);
+            virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart);
         virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_Terrain
@@ -136,8 +144,10 @@ namespace LostPeterVulkan
         //Uniform ConstantBuffer
         virtual void destroyUniformCB_Internal();
             virtual void destroyUniform_PassCB();
+            virtual void destroyUniform_ObjectWorldCB();
         virtual void createUniformCB_Internal();
             virtual void createUniform_PassCB();
+            virtual void createUniform_ObjectWorldCB();
 
         //PipelineCompute
         virtual void destroyPipelineCompute_Internal();
@@ -371,16 +381,16 @@ namespace LostPeterVulkan
 
         //Constants Buffer
         std::vector<ObjectConstants> objectCBs;
-        std::vector<VkBuffer> poBuffers_ObjectCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        VkBufferVector poBuffers_ObjectCB;
+        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
-        std::vector<VkBuffer> poBuffers_MaterialCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_MaterialCB;
+        VkBufferVector poBuffers_MaterialCB;
+        VkDeviceMemoryVector poBuffersMemory_MaterialCB;
 
         std::vector<InstanceConstants> instanceCBs;
-        std::vector<VkBuffer> poBuffers_InstanceCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_InstanceCB;
+        VkBufferVector poBuffers_InstanceCB;
+        VkDeviceMemoryVector poBuffersMemory_InstanceCB;
 
         //Camera
         FCamera* pCamera; //Eye Left
@@ -393,6 +403,7 @@ namespace LostPeterVulkan
         //Shadow
         ShadowConstants shadowMainLight; //mainLight's shadow
         ShadowConstants shadowMainLight_Cfg; //mainLight's shadow cfg
+        FCamera* pCameraMainLight; //mainLight's shadow camera
         
         //Mouse
         FVector2 mousePosLast;
@@ -1080,7 +1091,8 @@ namespace LostPeterVulkan
                         virtual VkPipeline createVkComputePipeline(VkShaderModule compShaderModule,
                                                                    const String& compMain,
                                                                    VkPipelineLayout pipelineLayout, 
-                                                                   VkPipelineCreateFlags flags = 0);
+                                                                   VkPipelineCreateFlags flags = 0,
+                                                                   VkSpecializationInfo* pSpecializationInfo = nullptr);
                         virtual VkPipeline createVkComputePipeline(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
                                                                    VkPipelineLayout pipelineLayout, 
                                                                    VkPipelineCreateFlags flags = 0);
@@ -1187,11 +1199,11 @@ namespace LostPeterVulkan
                             virtual void cameraReset();
                         //Light
                         virtual void lightConfig();
-                            virtual void lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType);
+                            virtual void lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType, bool bIsMainLight);
                             virtual void lightMainReset();
                         //Shadow
                         virtual void shadowConfig();
-                            virtual void shadowConfigItem(ShadowConstants& sc, const String& name);
+                            virtual void shadowConfigItem(ShadowConstants& sc, const String& name, bool bIsMainLight);
                             virtual void shadowReset();
                         //Terrain
                         virtual void terrainConfig();
