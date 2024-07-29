@@ -95,7 +95,7 @@ namespace LostPeterVulkan
             F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::Init: createVkDescriptorSets failed !");
             return false;
         }
-        //UpdateDescriptorSets(Base::GetWindowPtr()->poBuffers_ObjectWorldCB);
+        UpdateDescriptorSets(Base::GetWindowPtr()->poBuffers_ObjectWorldCB);
 
         return true;
     }

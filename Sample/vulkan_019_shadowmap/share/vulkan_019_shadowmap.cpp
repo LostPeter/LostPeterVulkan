@@ -336,9 +336,9 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     false, //object_terrain-1
     false, //object_skybox-1
 
-    false, //object_cube-1
-    false, //object_sphere-1
-    false, //object_viking_room-1
+    true, //object_cube-1
+    true, //object_sphere-1
+    true, //object_viking_room-1
     true, //object_bunny-1
 
     false, //object_depth-1
@@ -1929,22 +1929,22 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
         int instanceStart = 0;
         
         //1> Update Object World
-        // UpdateBuffer_ObjectWorld_Begin();
-        // {
-        //     for (size_t i = 0; i < count_rend; i++)
-        //     {
-        //         ModelObjectRend* pRend = m_aModelObjectRends_All[i];
-        //         if (!pRend->isShow ||
-        //             !pRend->isCastShadow)
-        //             continue;
+        UpdateBuffer_ObjectWorld_Begin();
+        {
+            for (size_t i = 0; i < count_rend; i++)
+            {
+                ModelObjectRend* pRend = m_aModelObjectRends_All[i];
+                if (!pRend->isShow ||
+                    !pRend->isCastShadow)
+                    continue;
                 
-        //         int instanceCount = (int)pRend->objectCBs.size();
-        //         F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
-        //         UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
-        //         instanceStart += instanceCount;
-        //     }
-        // }
-        // UpdateBuffer_ObjectWorld_End();
+                int instanceCount = (int)pRend->objectCBs.size();
+                //F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
+                instanceStart += instanceCount;
+            }
+        }
+        UpdateBuffer_ObjectWorld_End();
         
         //2> Draw Depth
         if (Draw_Graphics_DepthShadowMapBegin(commandBuffer))
@@ -1957,12 +1957,10 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
                     !pRend->isCastShadow)
                     continue;
 
-                UpdateDescriptorSets_Graphics_DepthShadowMap(pRend->poBuffers_ObjectCB);
-
                 int instanceCount = (int)pRend->objectCBs.size();
                 //F_LogInfo("2222222222: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
                 Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub, instanceCount, instanceStart);
-                //instanceStart += instanceCount;
+                instanceStart += instanceCount;
             }
             Draw_Graphics_DepthShadowMapEnd(commandBuffer);
         }

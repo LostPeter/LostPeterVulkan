@@ -753,7 +753,7 @@ namespace LostPeterVulkan
             size_t count = objects.size();
             for (size_t i = 0; i < count; i++)
             {
-                this->objectWorldCBs.push_back(objectCBs[i]);
+                this->objectWorldCBs.push_back(objects[i]);
             }
         }
     void VulkanWindow::UpdateBuffer_ObjectWorld_End()
@@ -7052,14 +7052,8 @@ namespace LostPeterVulkan
                     //Light Settings
                     if (this->cfg_isRenderPassShadowMap)
                     {
-                        // glm::mat4 depthProjectionMatrix = glm::perspectiveLH(glm::radians(this->shadowMainLight.fov), 1.0f, this->shadowMainLight.zNear, this->shadowMainLight.zFar);
-                        // glm::mat4 depthViewMatrix = glm::lookAtLH(this->mainLight.position, glm::vec3(0.0f), glm::vec3(0, 1, 0)); //FMath::ToMatrix4(this->mainLight.position, this->mainLight.direction); //
-                        // glm::mat4 depthModelMatrix = glm::mat4(1.0f);
-                        // this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-
                         const FMatrix4& depthViewMatrix = this->pCameraMainLight->GetMatrix4View();
                         const FMatrix4& depthProjectionMatrix = this->pCameraMainLight->GetMatrix4Projection();
-                        
                         this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix;
                     }
                     memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
