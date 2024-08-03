@@ -343,6 +343,18 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
 
     false, //object_depth-1
 };
+static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] = 
+{
+    true, //object_terrain-1
+    false, //object_skybox-1
+
+    false, //object_cube-1
+    false, //object_sphere-1
+    false, //object_viking_room-1
+    false, //object_bunny-1
+
+    false, //object_depth-1
+};
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //object_terrain-1
@@ -845,6 +857,7 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
                 pRend->isCastShadow = g_ObjectRend_IsCastShadows[nIndexObjectRend];
+                pRend->isReceiveShadow = g_ObjectRend_IsReceiveShadows[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -1117,6 +1130,13 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
+            uint32_t enablePCF = 0;
+            if (pRend->isReceiveShadow)
+            {
+                VkSpecializationMapEntry specializationMapEntry = CreateSpecializationMapEntry(0, 0, sizeof(uint32_t));
+                VkSpecializationInfo specializationInfo = CreateSpecializationInfo(1, &specializationMapEntry, sizeof(uint32_t), &enablePCF);  
+                pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
+            }
             pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
@@ -1135,6 +1155,31 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
             F_LogInfo("Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+
+            //pPipelineGraphics->poPipeline2
+            if (pRend->isReceiveShadow)
+            {
+                enablePCF = 1;
+
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                                                                                 pRend->isUsedTessellation, 0, 3,
+                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
+                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
+                                                                                 pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
+                                                                                 isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
+                                                                                 pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                 pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                 pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Failed to create pipeline graphics pcf: " + pRend->nameObjectRend;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("Vulkan_019_ShadowMap::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics pcf success !", pRend->nameObjectRend.c_str());
+            }
         }
     }
 }
@@ -2242,6 +2287,18 @@ void Vulkan_019_ShadowMap::modelConfig()
                                 }
                             }
 
+                            //isReceiveShadow
+                            if (pRend->isReceiveShadow)
+                            {
+                                //isShadowPCF
+                                String nameIsShadowPCF = "Is ShadowPCF - " + nameObjectRend;
+                                if (ImGui::Checkbox(nameIsShadowPCF.c_str(), &pRend->isShadowPCF))
+                                {
+                                    
+                                }
+                            }
+
+
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))
                             {
@@ -2637,7 +2694,10 @@ void Vulkan_019_ShadowMap::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
     }
     else
     {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        if (pRend->isReceiveShadow && pRend->isShadowPCF && pRend->pPipelineGraphics->poPipeline2 != VK_NULL_HANDLE)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline2);
+        else
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);

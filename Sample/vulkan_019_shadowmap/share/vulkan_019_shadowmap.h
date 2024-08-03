@@ -35,6 +35,8 @@ public:
         bool isLighting;
         bool isTransparent;
         bool isCastShadow;
+        bool isReceiveShadow;
+        bool isShadowPCF;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -106,6 +108,8 @@ public:
             , isLighting(true)
             , isTransparent(false)
             , isCastShadow(false)
+            , isReceiveShadow(false)
+            , isShadowPCF(false)
 
             //Uniform
             , countInstance(1)

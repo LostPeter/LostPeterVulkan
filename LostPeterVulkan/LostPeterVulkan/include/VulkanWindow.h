@@ -199,6 +199,34 @@ namespace LostPeterVulkan
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                           VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
+        //VkSpecializationInfo
+        VkSpecializationMapEntry CreateSpecializationMapEntry(uint32_t constantID, uint32_t offset, size_t size)
+		{
+			VkSpecializationMapEntry specializationMapEntry = {};
+			specializationMapEntry.constantID = constantID;
+			specializationMapEntry.offset = offset;
+			specializationMapEntry.size = size;
+			return specializationMapEntry;
+		}
+        VkSpecializationInfo CreateSpecializationInfo(uint32_t mapEntryCount, const VkSpecializationMapEntry* mapEntries, size_t dataSize, const void* data)
+		{
+			VkSpecializationInfo specializationInfo = {};
+			specializationInfo.mapEntryCount = mapEntryCount;
+			specializationInfo.pMapEntries = mapEntries;
+			specializationInfo.dataSize = dataSize;
+			specializationInfo.pData = data;
+			return specializationInfo;
+		}
+        VkSpecializationInfo CreateSpecializationInfo(const VkSpecializationMapEntryVector& mapEntries, size_t dataSize, const void* data)
+		{
+			VkSpecializationInfo specializationInfo = {};
+			specializationInfo.mapEntryCount = static_cast<uint32_t>(mapEntries.size());
+			specializationInfo.pMapEntries = mapEntries.data();
+			specializationInfo.dataSize = dataSize;
+			specializationInfo.pData = data;
+			return specializationInfo;
+		}
+
         //DescriptorSetLayout
         virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout);
 

@@ -394,6 +394,8 @@ namespace LostPeterVulkan
 
     typedef std::vector<VkDynamicState> VkDynamicStateVector;
 
+    typedef std::vector<VkSpecializationMapEntry> VkSpecializationMapEntryVector;
+
     vulkanExport const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
     vulkanExport const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
     vulkanExport VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
