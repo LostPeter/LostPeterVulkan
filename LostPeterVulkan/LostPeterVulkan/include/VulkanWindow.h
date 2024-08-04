@@ -112,7 +112,8 @@ namespace LostPeterVulkan
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
-
+        virtual void Draw_Graphics_Terrain(VkCommandBuffer& commandBuffer);
+        
 
     protected:
         virtual void createInternal();
@@ -1254,12 +1255,11 @@ namespace LostPeterVulkan
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
-                    virtual void updateRenderPass_Terrain(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 

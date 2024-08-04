@@ -561,6 +561,7 @@ protected:
 
         virtual void endRenderImgui();
 
+        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
 
     //cleanup

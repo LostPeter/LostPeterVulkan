@@ -485,7 +485,7 @@ namespace LostPeterVulkan
 
     void VKRenderPassTerrain::CleanupSwapChain()
     {
-        
+        Destroy();
     }
     
     void VKRenderPassTerrain::RecreateSwapChain()

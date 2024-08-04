@@ -2678,6 +2678,12 @@ void Vulkan_020_Terrain::endRenderImgui()
 
 }
 
+
+void Vulkan_020_Terrain::drawMeshTerrain(VkCommandBuffer& commandBuffer)
+{
+    VulkanWindow::drawMeshTerrain(commandBuffer);
+
+}
 void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)

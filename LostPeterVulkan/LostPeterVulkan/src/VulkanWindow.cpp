@@ -773,8 +773,8 @@ namespace LostPeterVulkan
             !this->cfg_isRenderPassShadowMap)
             return false;
 
-        
-        
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
 
         return true;
     }
@@ -787,8 +787,6 @@ namespace LostPeterVulkan
         {
             bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
 
         if (pMeshSub->poIndexBuffer != nullptr)
         {
@@ -849,11 +847,30 @@ namespace LostPeterVulkan
         }
     void VulkanWindow::UpdateDescriptorSets_Graphics_Terrain()
     {
-        if (!this->cfg_isRenderPassTerrain)
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr)
             return;
 
-        
+        this->m_pPipelineGraphics_Terrain ->UpdateDescriptorSets();
     }
+    void VulkanWindow::Draw_Graphics_Terrain(VkCommandBuffer& commandBuffer)
+    {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr ||
+            this->m_pVKRenderPassTerrain == nullptr)
+            return;
+
+        VkBuffer vertexBuffers[] = { this->m_pVKRenderPassTerrain->poTerrainVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        bindIndexBuffer(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_Terrain->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
+        drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
+    }
+
 
 
     /////////////////////////// VulkanWindow //////////////////////
@@ -3082,12 +3099,8 @@ namespace LostPeterVulkan
             if (m_pVKRenderPassTerrain == nullptr)
             {
                 m_pVKRenderPassTerrain = new VKRenderPassTerrain("RenderPass_Terrain");
-                m_pVKRenderPassTerrain->Init();
             }
-            else
-            {
-                m_pVKRenderPassTerrain->RecreateSwapChain();
-            }
+            m_pVKRenderPassTerrain->Init();
         }
         void VulkanWindow::createRenderPass_Custom()
         {
@@ -7891,7 +7904,6 @@ namespace LostPeterVulkan
                     updateRenderPass_CustomBeforeDefault(commandBuffer);
                     {
                         updateRenderPass_Default(commandBuffer);
-                        updateRenderPass_Terrain(commandBuffer);
                     }
                     updateRenderPass_CustomAfterDefault(commandBuffer);
                 }
@@ -7985,6 +7997,7 @@ namespace LostPeterVulkan
                     
                         //2> Normal Render Pass
                         drawMeshDefault(commandBuffer);
+                        drawMeshTerrain(commandBuffer);
                         drawMeshDefault_Custom(commandBuffer);
                         drawMeshDefault_Editor(commandBuffer);
                         drawMeshDefault_CustomBeforeImgui(commandBuffer);
@@ -8022,6 +8035,15 @@ namespace LostPeterVulkan
                         {
                             draw(commandBuffer, this->poVertexCount, 1, 0, 0);
                         }
+                    }
+                    void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
+                    {
+                        if (!this->cfg_isRenderPassTerrain || 
+                            this->m_pVKRenderPassTerrain == nullptr ||
+                            this->m_pPipelineGraphics_Terrain == nullptr)
+                            return;
+                        
+                        Draw_Graphics_Terrain(commandBuffer);
                     }
                     void VulkanWindow::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
                     {
@@ -8063,20 +8085,6 @@ namespace LostPeterVulkan
                             vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
                             ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                         }
-                    }
-                void VulkanWindow::updateRenderPass_Terrain(VkCommandBuffer& commandBuffer)
-                {
-                    if (this->m_pVKRenderPassTerrain == nullptr ||
-                        !this->cfg_isRenderPassTerrain)
-                    {
-                        return;
-                    }
-
-
-                }
-                    void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
-                    {
-
                     }
                 void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
                 {

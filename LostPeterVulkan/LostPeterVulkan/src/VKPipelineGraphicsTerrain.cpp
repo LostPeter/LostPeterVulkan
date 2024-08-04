@@ -156,6 +156,7 @@ namespace LostPeterVulkan
             F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createVkDescriptorSets failed !");
             return false;
         }
+        UpdateDescriptorSets();
 
         return true;
     }
@@ -212,7 +213,7 @@ namespace LostPeterVulkan
         for (size_t i = 0; i < count; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
-            //(0) PassConstants
+            //<0> PassConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
                 bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
@@ -225,7 +226,7 @@ namespace LostPeterVulkan
                                                                   1,
                                                                   bufferInfo_Pass);
             }
-            //(1) TerrainObjectConstants
+            //<1> TerrainObjectConstants
             {
                 VkDescriptorBufferInfo bufferInfo_TerrainObject = {};
                 bufferInfo_TerrainObject.buffer = this->poBuffer_TerrainObjectCB;
@@ -238,7 +239,7 @@ namespace LostPeterVulkan
                                                                   1,
                                                                   bufferInfo_TerrainObject);
             }
-            //(2) MaterialConstants
+            //<2> MaterialConstants
             {
                 // VkDescriptorBufferInfo bufferInfo_Material = {};
                 // bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i];
@@ -251,7 +252,7 @@ namespace LostPeterVulkan
                 //                                                   1,
                 //                                                   bufferInfo_Material);
             }
-            //(3) InstanceConstants
+            //<3> InstanceConstants
             {
                 // VkDescriptorBufferInfo bufferInfo_Instance = {};
                 // bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i];
@@ -264,7 +265,7 @@ namespace LostPeterVulkan
                 //                                                   1,
                 //                                                   bufferInfo_Instance);
             }
-            //(4) texture2DArrayDiffuse
+            //<4> texture2DArrayDiffuse
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 this->poDescriptorSets[i],
@@ -274,7 +275,7 @@ namespace LostPeterVulkan
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                                                 this->m_pVKRenderPassTerrain->poTerrainDiffuseImageInfo);
             }
-            //(5) texture2DArrayNormal
+            //<5> texture2DArrayNormal
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 this->poDescriptorSets[i],
@@ -284,7 +285,7 @@ namespace LostPeterVulkan
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                                                 this->m_pVKRenderPassTerrain->poTerrainNormalImageInfo);
             }
-            //(6) texture2DArrayControl
+            //<6> texture2DArrayControl
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 this->poDescriptorSets[i],
