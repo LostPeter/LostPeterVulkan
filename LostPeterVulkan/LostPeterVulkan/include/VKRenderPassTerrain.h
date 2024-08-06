@@ -34,7 +34,7 @@ namespace LostPeterVulkan
         int32 poTerrainGridInstanceCount;
         bool poTerrainIsDrawInstance;
 
-        std::vector<FVertex_Pos3Normal3Tex2> poTerrain_Pos3Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2;
         uint32_t poTerrainVertexCount;
         size_t poTerrainVertexBuffer_Size;
         void* poTerrainVertexBuffer_Data;

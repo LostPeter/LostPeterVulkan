@@ -874,7 +874,7 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
-    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorGridShow = false;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 

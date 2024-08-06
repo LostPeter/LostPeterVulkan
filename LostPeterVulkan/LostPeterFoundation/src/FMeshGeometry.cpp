@@ -5290,7 +5290,7 @@ namespace LostPeterFoundation
                 
                 float x = -halfW + j * dx + offsetX;
                 FMeshVertex vertex = FMeshVertex(x, height, z,
-                                                 0.0f, 0.0f, 1.0f,
+                                                 0.0f, 1.0f, .0f,
                                                  1.0f, 0.0f, 0.0f,
                                                  j * du, flipV ? (1.0f - i * dv) : (i * dv));
                 SetVertex(meshData, i * vertexZ + j, vertex);

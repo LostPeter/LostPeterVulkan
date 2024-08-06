@@ -80,7 +80,7 @@ namespace LostPeterVulkan
         this->poTerrainHeightMapSize = 0;
 
         //Vertex/Index   
-        this->poTerrain_Pos3Normal3Tex2.clear();
+        this->poTerrain_Pos3Color4Normal3Tex2.clear();
         if (this->poTerrainVertexBuffer != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkBuffer(this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
@@ -248,16 +248,17 @@ namespace LostPeterVulkan
                                                false);
 
             int count_vertex = (int)meshData.vertices.size();
-            this->poTerrain_Pos3Normal3Tex2.clear();
-            this->poTerrain_Pos3Normal3Tex2.reserve(count_vertex);
+            this->poTerrain_Pos3Color4Normal3Tex2.clear();
+            this->poTerrain_Pos3Color4Normal3Tex2.reserve(count_vertex);
             for (int i = 0; i < count_vertex; i++)
             {
                 FMeshVertex& vertex = meshData.vertices[i];
-                FVertex_Pos3Normal3Tex2 v;
+                FVertex_Pos3Color4Normal3Tex2 v;
                 v.pos = vertex.pos;
+                v.color = vertex.color;
                 v.normal = vertex.normal;
                 v.texCoord = vertex.texCoord;
-                this->poTerrain_Pos3Normal3Tex2.push_back(v);
+                this->poTerrain_Pos3Color4Normal3Tex2.push_back(v);
             }
 
             int count_index = (int)meshData.indices32.size();
@@ -268,16 +269,16 @@ namespace LostPeterVulkan
                 this->poTerrain_Indices.push_back(meshData.indices32[i]);
             }
 
-            this->poTerrainVertexCount = (uint32_t)this->poTerrain_Pos3Normal3Tex2.size();
-            this->poTerrainVertexBuffer_Size = this->poTerrainVertexCount * sizeof(FVertex_Pos3Normal3Tex2);
-            this->poTerrainVertexBuffer_Data = &this->poTerrain_Pos3Normal3Tex2[0];
+            this->poTerrainVertexCount = (uint32_t)this->poTerrain_Pos3Color4Normal3Tex2.size();
+            this->poTerrainVertexBuffer_Size = this->poTerrainVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
+            this->poTerrainVertexBuffer_Data = &this->poTerrain_Pos3Color4Normal3Tex2[0];
             this->poTerrainIndexCount = (uint32_t)this->poTerrain_Indices.size();
             this->poTerrainIndexBuffer_Size = this->poTerrainIndexCount * sizeof(uint32_t);
             this->poTerrainIndexBuffer_Data = &this->poTerrain_Indices[0];
 
             F_LogInfo("VKRenderPassTerrain::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Grid: [%d - %d], Vertex-Index: [%d - %d], Instance-Grid: [%d - %d] success !", 
                       nVertexCount, nVertexCount,
-                      (int)this->poTerrain_Pos3Normal3Tex2.size(), 
+                      (int)this->poTerrain_Pos3Color4Normal3Tex2.size(), 
                       (int)this->poTerrain_Indices.size(),
                       (int)this->poTerrainGridInstanceCount,
                       (int)this->poTerrainGridInstanceVertexCount);

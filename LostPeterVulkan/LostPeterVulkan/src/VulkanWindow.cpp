@@ -865,7 +865,10 @@ namespace LostPeterVulkan
         bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
         bindIndexBuffer(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
+        if (this->cfg_isWireFrame)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline_WireFrame);
+        else
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_Terrain->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
 
         drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
