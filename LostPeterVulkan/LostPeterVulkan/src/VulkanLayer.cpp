@@ -49,37 +49,18 @@ namespace LostPeterVulkan
 
     static const char* g_szValidationLayersInstance[] = 
     {
-        "VK_KHR_surface",
 
     #if F_PLATFORM == F_PLATFORM_iOS
-        "VK_MVK_ios_surface",
-
-        "MoltenVK",
+        
     #elif F_PLATFORM == F_PLATFORM_ANDROID
-        "VK_KHR_android_surface",
-
-        "VK_LAYER_GOOGLE_threading",
-        "VK_LAYER_LUNARG_parameter_validation",
-        "VK_LAYER_LUNARG_object_tracker",
-        "VK_LAYER_LUNARG_core_validation",
-        "VK_LAYER_LUNARG_swapchain",
-        "VK_LAYER_GOOGLE_unique_objects",
+        
     #elif F_PLATFORM == F_PLATFORM_WINDOW
-        "VK_KHR_win32_surface",
 
-        "VK_LAYER_KHRONOS_validation",
+        
     #elif F_PLATFORM == F_PLATFORM_MAC
-        "VK_MVK_macos_surface",
 
-        "VK_LAYER_LUNARG_standard_validation",
-        "VK_LAYER_GOOGLE_unique_objects",
-        "VK_LAYER_GOOGLE_threading",
-        "VK_LAYER_LUNARG_core_validation",
-        "VK_LAYER_LUNARG_parameter_validation",
-        "VK_LAYER_LUNARG_object_tracker",
     #elif F_PLATFORM == F_PLATFORM_LINUX
         
-        "VK_LAYER_KHRONOS_validation",
     #else
         #pragma error "UnKnown platform! Abort! Abort!"
     #endif
@@ -91,22 +72,13 @@ namespace LostPeterVulkan
     #if F_PLATFORM == F_PLATFORM_iOS
         "MoltenVK",
     #elif F_PLATFORM == F_PLATFORM_ANDROID
-        "VK_LAYER_GOOGLE_threading",
-        "VK_LAYER_LUNARG_parameter_validation",
-        "VK_LAYER_LUNARG_object_tracker",
-        "VK_LAYER_LUNARG_core_validation",
-        "VK_LAYER_GOOGLE_unique_objects",
+
     #elif F_PLATFORM == F_PLATFORM_WINDOW
-        "VK_LAYER_KHRONOS_validation",
+        
     #elif F_PLATFORM == F_PLATFORM_MAC
-        "VK_LAYER_LUNARG_standard_validation",
-        "VK_LAYER_GOOGLE_unique_objects",
-        "VK_LAYER_GOOGLE_threading",
-        "VK_LAYER_LUNARG_core_validation",
-        "VK_LAYER_LUNARG_parameter_validation",
-        "VK_LAYER_LUNARG_object_tracker",
+        
     #elif F_PLATFORM == F_PLATFORM_LINUX
-        "VK_LAYER_KHRONOS_validation",
+        
     #else
         #pragma error "UnKnown platform! Abort! Abort!"
     #endif
@@ -115,13 +87,23 @@ namespace LostPeterVulkan
 
     static const char* g_szInstanceExtensions[] =
     {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+
     #if F_PLATFORM == F_PLATFORM_iOS
-        
+        "VK_MVK_ios_surface",
+
+        "MoltenVK",
+
     #elif F_PLATFORM == F_PLATFORM_ANDROID
+        "VK_KHR_android_surface",
 
     #elif F_PLATFORM == F_PLATFORM_WINDOW
+        "VK_KHR_win32_surface",
         
     #elif F_PLATFORM == F_PLATFORM_MAC
+        "VK_MVK_macos_surface",
+        VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
+        VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
 
     #elif F_PLATFORM == F_PLATFORM_LINUX
         
@@ -173,6 +155,7 @@ namespace LostPeterVulkan
     {
         for (int32 i = 0; i < layers.size(); ++i) 
         {
+            F_LogInfo("VulkanWindow::FindLayerIndexInList: Compare: src: [%s], dst: [%s] !", layers[i].layerProps.layerName, layerName);
             if (strcmp(layers[i].layerProps.layerName, layerName) == 0) {
                 return i;
             }
@@ -232,20 +215,24 @@ namespace LostPeterVulkan
                                                       ConstCharPtrVector& outInstanceLayers, 
                                                       ConstCharPtrVector& outInstanceExtensions)
     {
+        //1> Enum global layer extensions
         VulkanLayerExtensionVector globalLayerExtensions(1);
 	    EnumerateInstanceExtensionProperties(nullptr, globalLayerExtensions[0]);
 
+        //2> Found unique extensions
         StringVector foundUniqueExtensions;
         for (size_t i = 0; i < globalLayerExtensions[0].extensionProps.size(); ++i) 
         {
             FUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
         }
 
+        //3> Enum instance layer
         uint32 instanceLayerCount = 0;
         vkEnumerateInstanceLayerProperties(&instanceLayerCount, nullptr);
         std::vector<VkLayerProperties> globalLayerProperties(instanceLayerCount);
         vkEnumerateInstanceLayerProperties(&instanceLayerCount, globalLayerProperties.data());
 
+        //3> Found unique layer
         StringVector foundUniqueLayers;
         for (size_t i = 0; i < globalLayerProperties.size(); ++i) 
         {
@@ -257,22 +244,25 @@ namespace LostPeterVulkan
             globalLayerExtensions.push_back(layer);
         }
 
+        //4> Unique layer
         int layerCount = (int)foundUniqueLayers.size();
-        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique layer count: [%d] !", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
             const String& nameLayer = foundUniqueLayers[i];
-            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
+            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Layer index: [%d], Layer name: [%s], Layer count: [%d] !", i, nameLayer.c_str(), layerCount);
         }
 
+        //5> Unique extensions
         int extensionsCount = (int)foundUniqueExtensions.size();
-        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique instance extension count: [%d] !", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
             const String& nameExtension = foundUniqueExtensions[i];
-            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
+            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Instance Extension index: [%d], Extension name: [%s], Extension count: [%d] !", i, nameExtension.c_str(), extensionsCount);
         }
 
+        //6> bIsEnableValidationLayers
         if (bIsEnableValidationLayers)
         {
             for (int32 i = 0; g_szValidationLayersInstance[i] != nullptr; ++i) 
@@ -285,7 +275,7 @@ namespace LostPeterVulkan
                 } 
                 else 
                 {
-                    F_LogError("*********************** VulkanWindow::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer '%s'", currValidationLayer);
+                    F_LogError("*********************** VulkanWindow::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer [%s] !", currValidationLayer);
                 }
             }
 
@@ -295,6 +285,7 @@ namespace LostPeterVulkan
             }
         }
 
+        //7> outInstanceExtensions
         for (int32 i = 0; g_szInstanceExtensions[i] != nullptr; ++i) 
         {
             if (FindLayerExtensionInList(globalLayerExtensions, g_szInstanceExtensions[i])) 
@@ -310,10 +301,10 @@ namespace LostPeterVulkan
             int countLayers = (int)outInstanceLayers.size();
             if (countLayers > 0) 
             {
-                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layers count: %d", (int32)countLayers);
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layers count: [%d] !", (int32)countLayers);
                 for (int i = 0; i < countLayers; i++)
                 {
-                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layer index: %d, name: %s", i, outInstanceLayers[i]);
+                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layer index: [%d], name: [%s] !", i, outInstanceLayers[i]);
                 }
             }
             else 
@@ -325,10 +316,10 @@ namespace LostPeterVulkan
             int countExtensions = (int)outInstanceExtensions.size();
             if (countExtensions > 0) 
             {
-                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions count: %d", countExtensions);
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions count: [%d] !", countExtensions);
                 for (int i = 0; i < countExtensions; i++)
                 {
-                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions index: %d, name: %s", i, outInstanceExtensions[i]);
+                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions index: [%d], name: [%s] !", i, outInstanceExtensions[i]);
                 }
             }
             else 

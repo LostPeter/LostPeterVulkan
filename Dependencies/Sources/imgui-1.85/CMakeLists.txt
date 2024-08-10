@@ -285,7 +285,7 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
         ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
                             ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
-                            ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
+                            ${LIB_VULKAN_DIR}/libvulkan.1.3.290.dylib 
                             ${SYS_VULKAN_LIBS})
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)

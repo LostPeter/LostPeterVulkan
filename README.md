@@ -19,8 +19,8 @@ Document Web:
 Usage:
 
     Vulkan SDK: 
-        I'm using vulkan version 1.2.189.0
-        you can change it, but to MacOS, you must replace all libvulkan.1.2.189.dylib in all CMakeLists.txt to your version.
+        I'm using vulkan version 1.3.290.0
+        you can change it, but to MacOS, you must replace all libvulkan.1.3.290.dylib in all CMakeLists.txt to your version.
 
     MacOS:   
         Setup your vulkan sdk and config VULKAN_HOME to your .bash_profile, in CMakeLists.txt we will using it "$ENV{VULKAN_HOME}/macOS/include"  

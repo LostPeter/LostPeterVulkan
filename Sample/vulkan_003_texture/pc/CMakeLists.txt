@@ -160,7 +160,7 @@ elseif (APPLE)
                               ${COREVIDEO_LIBS}
                               ${IOKIT_LIBS}
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
-                              ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
+                              ${LIB_VULKAN_DIR}/libvulkan.1.3.290.dylib
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib
@@ -171,7 +171,7 @@ elseif (APPLE)
                               ${COREVIDEO_LIBS}
                               ${IOKIT_LIBS}
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
-                              ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
+                              ${LIB_VULKAN_DIR}/libvulkan.1.3.290.dylib
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib
