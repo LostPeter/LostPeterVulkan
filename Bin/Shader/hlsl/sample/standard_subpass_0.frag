@@ -9,23 +9,21 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSOutput
-{
-    [[vk::location(0)]] float4 inColor          : COLOR0;
-    [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
-};
+#include "../hlsl_input.hlsl"
+
 
 [[vk::binding(4)]] Texture2D texture2D            : register(t1);
 [[vk::binding(4)]] SamplerState texture2DSampler  : register(s1);
 
-struct PSOutput {
+struct PSOutput 
+{
     [[vk::location(0)]] float4 oColor0 : SV_TARGET0;
     [[vk::location(1)]] float4 oColor1 : SV_TARGET1;
     [[vk::location(2)]] float4 oColor2 : SV_TARGET2;
     [[vk::location(3)]] float4 oColor3 : SV_TARGET3;
 };
 
-PSOutput main(VSOutput input)
+PSOutput main(VSInput_Color4TexCood2 input)
 {
     float3 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
     

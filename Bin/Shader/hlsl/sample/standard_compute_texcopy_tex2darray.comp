@@ -9,14 +9,9 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct TextureCopyConstants
-{
-    //[x,y,z,w] = [w,h,mip,processLinear]
-    float4 texInfo;
-	float4 texOffset;
-	float4 texIndexArray;
-	float4 texClearColor;
-};
+#include "../hlsl_common.hlsl"
+
+
 [[vk::binding(0)]] cbuffer _textureInfo                         : register(b0)
 {
     TextureCopyConstants _textureInfo;
@@ -35,7 +30,7 @@ float4 LinearToSRGB(float4 pixel)
 {
 	float3 sRGBLo = pixel.xyz * 12.92;
 	float3 sRGBHi = (pow(abs(pixel.xyz), float3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
-	float3 sRGB = (pixel.xyz <= 0.0031308) ? sRGBLo : sRGBHi;
+	float3 sRGB = select((pixel.xyz <= 0.0031308), sRGBLo, sRGBHi);
 	return float4(sRGB, pixel.w);
 }
 

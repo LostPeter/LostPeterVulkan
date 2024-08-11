@@ -9,74 +9,9 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSOutput
-{
-    [[vk::location(0)]] float3 inWorldPos       : POSITION0;
-    [[vk::location(1)]] float4 inColor          : COLOR0;
-    [[vk::location(2)]] float2 inTexCoord       : TEXCOORD0;
-};
+#include "../hlsl_input.hlsl"
+#include "../hlsl_common.hlsl"
 
-
-//TransformConstants
-struct TransformConstants
-{
-    float4x4 mat4View;
-    float4x4 mat4View_Inv;
-    float4x4 mat4Proj;
-    float4x4 mat4Proj_Inv;
-    float4x4 mat4ViewProj;
-    float4x4 mat4ViewProj_Inv;
-};
-//CameraConstants
-struct CameraConstants
-{
-    float3 posEyeWorld;    
-    float fNearZ;
-    float fFarZ;
-    float fReserved1;
-    float fReserved2;
-    float fReserved3;
-};
-//LightConstants
-#define MAX_LIGHT_COUNT 16
-struct LightConstants
-{
-    float4 common;      // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-    float3 position;    // directional/point/spot
-    float falloffStart; // point/spot light only
-    float3 direction;   // directional/spot light only
-    float falloffEnd;   // point/spot light only
-    float4 ambient;     // ambient
-    float4 diffuse;     // diffuse
-    float4 specular;    // specular
-
-    float4x4 depthMVP;  // depthMVP
-};
-//PassConstants
-struct PassConstants
-{
-    //TransformConstants
-    TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
-    //CameraConstants
-    CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
-    
-    //TimeConstants
-    float g_TotalTime;
-    float g_DeltaTime;
-    float g_Pad1;
-    float g_Pad2;
-
-    //RenderTarget
-    float2 g_RenderTargetSize;
-    float2 g_RenderTargetSize_Inv;
-
-    //Material
-    float4 g_AmbientLight;
-    
-    //Light
-    LightConstants g_MainLight;
-    LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
-};
 
 [[vk::binding(0)]]cbuffer passConsts                : register(b0) 
 {
@@ -84,20 +19,13 @@ struct PassConstants
 }
 
 
-//GridObjectConstants
-struct GridObjectConstants
-{
-    float4x4 g_MatWorld;
-    float4 color;
-};
-
 [[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
 {
     GridObjectConstants gridObjectConsts;
 }
 
 
-float4 Grid(VSOutput input, float divisions, float4 color)
+float4 Grid(VSInput_Pos4Color4TexCood2 input, float divisions, float4 color)
 {
     float lineWidth = 2.0;
 
@@ -110,7 +38,8 @@ float4 Grid(VSOutput input, float divisions, float4 color)
     return float4(color.xyz * fLineResult, 0.05 * fLineResult);
 }
 
-float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
+float4 main(VSInput_Pos4Color4TexCood2 input, 
+            uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float fDivs;
     float divisions = 1000.0;
@@ -133,7 +62,7 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
     float4 outColor = lerp(vGrid1, vGrid2, fAlpha);
 
     float3 vPseudoViewPos = float3(viewPos.x, input.inWorldPos.y, viewPos.z);
-    float fDistanceToCamera = max(distance(input.inWorldPos, vPseudoViewPos) - abs(viewPos.y), 0);
+    float fDistanceToCamera = max(distance(input.inWorldPos.xyz, vPseudoViewPos) - abs(viewPos.y), 0);
     
     float fAlphaDecreaseDistance = 128.0f;
     float fDecreaseDistance = 1024.0f;

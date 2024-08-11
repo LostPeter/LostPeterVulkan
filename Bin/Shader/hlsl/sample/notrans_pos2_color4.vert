@@ -9,21 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSInput
-{
-    [[vk::location(0)]]float2 inPosition    : POSITION0;
-    [[vk::location(1)]]float4 inColor       : COLOR0;
-};
+#include "../hlsl_input.hlsl"
 
-struct VSOutput
-{
-	float4 outPosition                      : SV_POSITION;
-    [[vk::location(0)]] float4 outColor     : COLOR0;
-};
 
-VSOutput main(VSInput input)
+VSOutput_Color4 main(VSInput_Pos2Color4 input)
 {
-    VSOutput output = (VSOutput)0;
+    VSOutput_Color4 output = (VSOutput_Color4)0;
     output.outPosition = float4(input.inPosition, 0.0, 1.0);
     output.outColor = input.inColor;
 

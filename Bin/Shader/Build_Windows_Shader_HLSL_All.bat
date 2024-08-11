@@ -16,6 +16,8 @@ set debug=%1
 set name_folder=hlsl
 set folderSrc=.\%name_folder%
 set folderShader=..\Assets\Shader
+set folderInclude=.\%name_folder%
+
 if exist %folderShader% (
     rmdir /S/Q %folderShader%
 )
@@ -39,7 +41,7 @@ exit /b %errorlevel%
 		if exist %~1\%%i\nul (
             call :buildShader %~1\%%i %~2
         ) else (
-            call ./Build_Windows_Shader_HLSL.bat %%i %~1 %~2
+            call ./Build_Windows_Shader_HLSL.bat %%i %~1 %folderInclude% %~2
         )
 	) 
 

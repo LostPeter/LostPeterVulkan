@@ -13,7 +13,8 @@
 
 set name_shader=%1
 set folder_shader=%2
-set debug=%3
+set folder_include=%3
+set debug=%4
 
 set name_vert=\.vert
 set name_tesc=\.tesc
@@ -24,6 +25,7 @@ set name_comp=\.comp
 
 echo file name: %name_shader%
 echo folder name: %folder_shader%
+echo folder include: %folder_include%
 
 echo %name_shader%| findstr %name_vert% >nul && (
     set name_profile=vs_6_1
@@ -56,7 +58,7 @@ if not exist %folderShader% (
 )
 
 if "%debug%" == "debug" (
-    dxc -Od -Zi -spirv -T %name_profile% -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing -fspv-extension=SPV_KHR_non_semantic_info -fspv-debug=vulkan-with-source %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
+    dxc -Od -Zi -spirv -T %name_profile% -E main -I %folder_include% -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing -fspv-extension=SPV_KHR_non_semantic_info -fspv-debug=vulkan-with-source %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
 ) else (
-    dxc -spirv -T %name_profile% -E main -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
+    dxc -spirv -T %name_profile% -E main -I %folder_include% -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv
 )

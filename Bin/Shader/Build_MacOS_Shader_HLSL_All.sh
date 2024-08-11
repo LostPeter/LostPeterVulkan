@@ -14,6 +14,7 @@ debug=${1}
 name_folder="hlsl"
 dirSrc="./$name_folder"
 dirDst="../Assets/Shader"
+dirInclude="./$name_folder"
 
 rm -rf $dirDst
 mkdir -p $dirDst
@@ -35,7 +36,7 @@ function compile_shader() {
         if [ -d $1"/"$file ]; then
             compile_shader $1"/"$file
         else
-            ./Build_MacOS_Shader_HLSL.sh $file $1 $debug
+            ./Build_MacOS_Shader_HLSL.sh $file $1 $dirInclude $debug
         fi
     done
 }

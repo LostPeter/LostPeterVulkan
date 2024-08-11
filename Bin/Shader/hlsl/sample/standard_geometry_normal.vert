@@ -9,13 +9,8 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSInput
-{
-    [[vk::location(0)]]float3 inPosition    : POSITION0;
-    [[vk::location(1)]]float4 inColor       : COLOR0;
-    [[vk::location(2)]]float3 inNormal      : NORMAL0;
-    [[vk::location(3)]]float2 inTexCoord    : TEXCOORD0;
-};
+#include "../hlsl_input.hlsl"
+#include "../hlsl_common.hlsl"
 
 struct VSOutput
 {
@@ -24,7 +19,8 @@ struct VSOutput
 };
 
 
-VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
+VSOutput main(VSInput_Pos3Color4Normal3TexCood2 input, 
+              uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
     output.outPosition = float4(input.inPosition.xyz, instanceIndex);

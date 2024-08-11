@@ -9,15 +9,9 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
+#include "../hlsl_input.hlsl"
+#include "../hlsl_common.hlsl"
 
-#define MAX_OBJECT_COUNT 1024
-struct TessellationConstants
-{
-    float tessLevelOuter;
-    float tessLevelInner;
-    float tessAlpha;
-    float tessStrength;
-};
 
 [[vk::binding(6)]]cbuffer tessellationConsts        : register(b6)
 {

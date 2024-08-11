@@ -9,12 +9,10 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSOutput
-{
-    [[vk::location(0)]] float4 inColor          : COLOR0;
-};
+#include "../hlsl_input.hlsl"
 
-float4 main(VSOutput input) : SV_TARGET
+
+float4 main(VSInput_Color4 input) : SV_TARGET
 {
     float3 outColor = input.inColor.rgb;
     
