@@ -294,7 +294,6 @@ namespace LostPeterVulkan
                                                     this->poTerrainIndexBuffer_Data, 
                                                     this->poTerrainIndexBuffer, 
                                                     this->poTerrainIndexBufferMemory);
-            
         }
         void VKRenderPassTerrain::setupTerrainTexture()
         {

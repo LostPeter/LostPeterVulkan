@@ -11,6 +11,7 @@
 
 #include "../hlsl_input.hlsl"
 #include "../hlsl_common.hlsl"
+#include "../hlsl_terrain.hlsl"
 
 
 [[vk::binding(0)]]cbuffer passConsts                : register(b0) 
@@ -37,6 +38,19 @@
 }
 
 
+[[vk::binding(4)]]cbuffer terrainConsts             : register(b4) 
+{
+    TerrainConstants terrainConsts;
+}
+
+
+[[vk::binding(5)]] Texture2D textureHeightMap            : register(t1);
+// [[vk::binding(5)]] SamplerState textureHeightMapSampler  : register(s1);
+
+[[vk::binding(6)]] Texture2D textureNormalMap            : register(t2);
+// [[vk::binding(6)]] SamplerState textureNormalMapSampler  : register(s2);
+
+
 VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input, 
                                         uint viewIndex : SV_ViewID,
                                         uint instanceIndex : SV_InstanceID)
@@ -46,7 +60,13 @@ VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input,
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     ObjectConstants obj = objectConsts[instanceIndex];
     
-    output.outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
+    float height = 0;
+    // float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
+    //                                               input.inPosition,
+    //                                               terrainConsts.heightStart,
+    //                                               terrainConsts.heightMax);
+    float3 pos = float3(input.inPosition.x, height, input.inPosition.z);
+    output.outWorldPos = mul(obj.g_MatWorld, float4(pos, 1.0));
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;

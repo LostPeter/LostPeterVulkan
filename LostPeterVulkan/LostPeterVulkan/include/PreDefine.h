@@ -257,6 +257,7 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_InputAttachRed,                //22: InputAttachRed
         Vulkan_DescriptorSet_InputAttachGreen,              //23: InputAttachGreen
         Vulkan_DescriptorSet_InputAttachBlue,               //24: InputAttachBlue
+        Vulkan_DescriptorSet_Terrain,                       //25: Terrain
 
         Vulkan_DescriptorSet_Count,
     };

@@ -217,4 +217,15 @@ struct TessellationConstants
 ///////////////////////////////// GeometryConstants /////////////////////////////
 
 
+
+///////////////////////////////// TerrainConstants //////////////////////////////
+struct TerrainConstants
+{
+    float textureX; //HeightMap/NarmalMap Texture Size X
+    float textureZ; //HeightMap/NarmalMap Texture Size Z
+    float heightStart; //Height Low Start 
+    float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
+};
+
+
 #endif

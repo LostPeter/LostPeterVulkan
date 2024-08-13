@@ -27,7 +27,7 @@ echo file name: %name_shader%
 echo folder name: %folder_shader%
 echo folder include: %folder_include%
 
-set isProcess=1
+set /A isProcess=1
 
 echo %name_shader%| findstr %name_vert% >nul && (
     set name_profile=vs_6_1
@@ -48,17 +48,18 @@ echo %name_shader%| findstr %name_vert% >nul && (
     set name_profile=cs_6_1
 	@REM echo "file is .comp !"
 ) || ( echo file is not valid, file: %name_shader%
-    set isProcess=0
+    set /A isProcess=0
 )
 
-if %isProcess%==1 (
-    echo profile name: %name_profile%
 
-    set folderSrc=.\%folder_shader%
-    set folderShader=..\Assets\Shader
-    if not exist %folderShader% (
-        mkdir %folderShader%
-    )
+set folderSrc=.\%folder_shader%
+set folderShader=..\Assets\Shader
+if not exist %folderShader% (
+    mkdir %folderShader%
+)
+
+if %isProcess% EQU 1 (
+    echo profile name: %name_profile%
 
     if "%debug%" == "debug" (
         dxc -Od -Zi -spirv -T %name_profile% -E main -I %folder_include% -fspv-extension=SPV_KHR_ray_tracing -fspv-extension=SPV_KHR_multiview -fspv-extension=SPV_KHR_shader_draw_parameters -fspv-extension=SPV_EXT_descriptor_indexing -fspv-extension=SPV_KHR_non_semantic_info -fspv-debug=vulkan-with-source %folderSrc%\%name_shader% -Fo %folderShader%\%name_shader%.spv

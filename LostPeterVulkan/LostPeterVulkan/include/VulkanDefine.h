@@ -1179,7 +1179,7 @@ namespace LostPeterVulkan
     struct vulkanExport TerrainObjectConstants
     {
         FMatrix4 g_MatWorld;
-    
+
 
         TerrainObjectConstants()
             : g_MatWorld(FMath::Identity4x4())
@@ -1405,9 +1405,16 @@ namespace LostPeterVulkan
     //////////////////////////////// TerrainConstants ///////////////////////////////
     struct vulkanExport TerrainConstants
     {
-        
+        float textureX; //HeightMap/NarmalMap Texture Size X
+        float textureZ; //HeightMap/NarmalMap Texture Size Z
+        float heightStart; //Height Low Start 
+        float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
 
         TerrainConstants()
+            : textureX(1024)
+            , textureZ(1024)
+            , heightStart(0)
+            , heightMax(200)
         {
 
         }

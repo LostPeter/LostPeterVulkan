@@ -112,6 +112,7 @@ namespace LostPeterVulkan
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
+        virtual void UpdateBuffer_Graphics_Terrain();
         virtual void Draw_Graphics_Terrain(VkCommandBuffer& commandBuffer);
         
 

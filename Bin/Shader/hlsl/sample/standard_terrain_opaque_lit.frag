@@ -26,14 +26,14 @@
 }
 
 
-[[vk::binding(4)]] Texture2DArray texture2DArrayDiffuse       : register(t1);
-[[vk::binding(4)]] SamplerState texture2DArrayDiffuseSampler  : register(s1);
+[[vk::binding(7)]] Texture2DArray texture2DArrayDiffuse       : register(t1);
+[[vk::binding(7)]] SamplerState texture2DArrayDiffuseSampler  : register(s1);
 
-[[vk::binding(5)]] Texture2DArray texture2DArrayNormal        : register(t2);
-[[vk::binding(5)]] SamplerState texture2DArrayNormalSampler   : register(s2);
+[[vk::binding(8)]] Texture2DArray texture2DArrayNormal        : register(t2);
+[[vk::binding(8)]] SamplerState texture2DArrayNormalSampler   : register(s2);
 
-[[vk::binding(6)]] Texture2DArray texture2DArrayControl       : register(t3);
-[[vk::binding(6)]] SamplerState texture2DArrayControlSampler  : register(s3);
+[[vk::binding(9)]] Texture2DArray texture2DArrayControl       : register(t3);
+[[vk::binding(9)]] SamplerState texture2DArrayControlSampler  : register(s3);
 
 
 float4 main(VSInput_Pos4Color4Normal3TexCood2 input, 

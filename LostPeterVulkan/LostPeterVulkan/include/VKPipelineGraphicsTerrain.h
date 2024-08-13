@@ -37,6 +37,10 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_TerrainObjectCB;
         VkDeviceMemory poBufferMemory_TerrainObjectCB;
 
+        TerrainConstants terrainCB;
+        VkBuffer poBuffers_TerrainCB;
+        VkDeviceMemory poBuffersMemory_TerrainCB;
+
     public: 
         void Destroy();
         virtual bool Init(const String& descriptorSetLayout,
@@ -47,14 +51,16 @@ namespace LostPeterVulkan
 
     protected:
         void destroyBufferTerrainObject();
+        void destroyBufferTerrain();
         
         bool createBufferTerrainObject();
+        bool createBufferTerrain();
 
     public: 
         virtual void CleanupSwapChain();
-
+        
         virtual void UpdateDescriptorSets();
-
+        virtual void UpdateBufferTerrain();
     };  
 
 }; //LostPeterVulkan

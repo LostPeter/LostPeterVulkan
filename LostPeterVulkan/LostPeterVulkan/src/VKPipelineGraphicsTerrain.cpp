@@ -28,6 +28,9 @@ namespace LostPeterVulkan
 
         , poBuffer_TerrainObjectCB(VK_NULL_HANDLE)
         , poBufferMemory_TerrainObjectCB(VK_NULL_HANDLE)
+
+        , poBuffers_TerrainCB(VK_NULL_HANDLE)
+        , poBuffersMemory_TerrainCB(VK_NULL_HANDLE)
     {
 
     }
@@ -41,6 +44,7 @@ namespace LostPeterVulkan
     {
         CleanupSwapChain();
         destroyBufferTerrainObject();
+        destroyBufferTerrain();
     }
         void VKPipelineGraphicsTerrain::destroyBufferTerrainObject()
         {
@@ -51,6 +55,15 @@ namespace LostPeterVulkan
             }
             this->poBuffer_TerrainObjectCB = VK_NULL_HANDLE;
             this->poBufferMemory_TerrainObjectCB = VK_NULL_HANDLE;
+        }
+        void VKPipelineGraphicsTerrain::destroyBufferTerrain()
+        {
+            if (this->poBuffers_TerrainCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_TerrainCB, this->poBuffersMemory_TerrainCB);
+            }
+            this->poBuffers_TerrainCB = VK_NULL_HANDLE;
+            this->poBuffersMemory_TerrainCB = VK_NULL_HANDLE;
         }
 
     bool VKPipelineGraphicsTerrain::Init(const String& descriptorSetLayout,
@@ -73,6 +86,15 @@ namespace LostPeterVulkan
                 return false;
             }
         }
+        if (this->poBuffers_TerrainCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferTerrain())
+            {
+                F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createBufferTerrain failed !");
+                return false;
+            }
+        }
+         
 
         //2> VkPipeline
         {
@@ -155,7 +177,7 @@ namespace LostPeterVulkan
         {
             F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createVkDescriptorSets failed !");
             return false;
-        }
+        }    
         UpdateDescriptorSets();
 
         return true;
@@ -175,8 +197,8 @@ namespace LostPeterVulkan
                 for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainGridInstanceCount; j++)
                 {
                     FVector3 vPos = FVector3(j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf,
-                                                0.0f,
-                                                i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
+                                             0.0f,
+                                             i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
                     TerrainObjectConstants toInstance;
                     toInstance.g_MatWorld = FMath::Translate(vPos);
                     this->terrainObjectCBs.push_back(toWhole);
@@ -185,6 +207,16 @@ namespace LostPeterVulkan
             VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
             Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainObjectCB, this->poBufferMemory_TerrainObjectCB);
             Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainObjectCBs[0], this->poBufferMemory_TerrainObjectCB);
+            return true;
+        }
+        bool VKPipelineGraphicsTerrain::createBufferTerrain()
+        {
+            this->terrainCB.textureX = this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            this->terrainCB.textureZ = this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+
+            VkDeviceSize bufferSize = sizeof(TerrainConstants);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_TerrainCB, this->poBuffersMemory_TerrainCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainCB, this->poBuffersMemory_TerrainCB);
             return true;
         }
 
@@ -265,17 +297,20 @@ namespace LostPeterVulkan
                 //                                                   1,
                 //                                                   bufferInfo_Instance);
             }
-            //<4> texture2DArrayDiffuse
+            //<4> Terrain
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
-                                                                4,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainDiffuseImageInfo);
+                VkDescriptorBufferInfo bufferInfo_Terrain = {};
+                bufferInfo_Terrain.buffer = this->poBuffers_TerrainCB;
+                bufferInfo_Terrain.offset = 0;
+                bufferInfo_Terrain.range = sizeof(TerrainConstants);
+                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                  this->poDescriptorSets[i],
+                                                                  4,
+                                                                  0,
+                                                                  1,
+                                                                  bufferInfo_Terrain);
             }
-            //<5> texture2DArrayNormal
+            //<5> poTerrainHeightMapImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 this->poDescriptorSets[i],
@@ -283,9 +318,9 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainNormalImageInfo);
+                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo);
             }
-            //<6> texture2DArrayControl
+            //<6> poTerrainNormalMapImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 this->poDescriptorSets[i],
@@ -293,10 +328,45 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo);
+            }
+            //<7> poTerrainDiffuseImage
+            {
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                this->poDescriptorSets[i],
+                                                                7,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                                                this->m_pVKRenderPassTerrain->poTerrainDiffuseImageInfo);
+            }
+            //<8> poTerrainNormalImage
+            {
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                this->poDescriptorSets[i],
+                                                                8,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                                                this->m_pVKRenderPassTerrain->poTerrainNormalImageInfo);
+            }
+            //<9> poTerrainControlImage
+            {
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                this->poDescriptorSets[i],
+                                                                9,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                                                 this->m_pVKRenderPassTerrain->poTerrainControlImageInfo);
             }
             Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
         }
+    }
+
+    void VKPipelineGraphicsTerrain::UpdateBufferTerrain()
+    {
+        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TerrainConstants), &this->terrainCB, this->poBuffersMemory_TerrainCB);
     }
 
 }; //LostPeterVulkan

@@ -307,7 +307,7 @@ namespace LostPeterVulkan
         "Pass-Object",
         "ObjectCopyBlit-TextureFrameColor",
         "TextureCopy-TextureCSR-TextureCSRW",
-        "Pass-ObjectTerrain-Material-Instance-TextureFS-TextureFS-TextureFS",
+        "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
     };
     void VulkanWindow::destroyDescriptorSetLayouts_Internal()
     {
@@ -500,6 +500,7 @@ namespace LostPeterVulkan
             this->poBuffersMemory_ObjectWorldCB.clear();
             this->objectWorldCBs.clear();
         }
+        
     void VulkanWindow::createUniformCB_Internal()
     {
         //1> PassCB
@@ -808,7 +809,7 @@ namespace LostPeterVulkan
                 return;
 
             this->m_pPipelineGraphics_Terrain = new VKPipelineGraphicsTerrain("PipelineGraphics-Terrain", this->m_pVKRenderPassTerrain);
-            String descriptorSetLayout = "Pass-ObjectTerrain-Material-Instance-TextureFS-TextureFS-TextureFS";
+            String descriptorSetLayout = "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS";
             StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
             VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
             VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
@@ -851,7 +852,15 @@ namespace LostPeterVulkan
             this->m_pPipelineGraphics_Terrain == nullptr)
             return;
 
-        this->m_pPipelineGraphics_Terrain ->UpdateDescriptorSets();
+        this->m_pPipelineGraphics_Terrain->UpdateDescriptorSets();
+    }
+    void VulkanWindow::UpdateBuffer_Graphics_Terrain()
+    {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr)
+            return;
+
+        this->m_pPipelineGraphics_Terrain->UpdateBufferTerrain();
     }
     void VulkanWindow::Draw_Graphics_Terrain(VkCommandBuffer& commandBuffer)
     {
@@ -1206,6 +1215,10 @@ namespace LostPeterVulkan
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachBlue)) //InputAttachBlue
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Terrain)) //Terrain
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else
             {

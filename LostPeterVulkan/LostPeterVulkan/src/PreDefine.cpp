@@ -457,6 +457,7 @@ namespace LostPeterVulkan
         "InputAttachRed",           //22:  InputAttachRed
         "InputAttachGreen",         //23:  InputAttachGreen
         "InputAttachBlue",          //24:  InputAttachBlue
+        "Terrain",                  //25:  Terrain
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {
