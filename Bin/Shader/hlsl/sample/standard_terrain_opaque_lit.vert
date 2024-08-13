@@ -60,13 +60,14 @@ VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input,
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     ObjectConstants obj = objectConsts[instanceIndex];
     
-    float height = 0;
-    // float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
-    //                                               input.inPosition,
-    //                                               terrainConsts.heightStart,
-    //                                               terrainConsts.heightMax);
-    float3 pos = float3(input.inPosition.x, height, input.inPosition.z);
-    output.outWorldPos = mul(obj.g_MatWorld, float4(pos, 1.0));
+    //float height = 0;
+    float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
+                                                  input.inPosition,
+                                                  terrainConsts.heightStart,
+                                                  terrainConsts.heightMax);
+    //float3 pos = float3(input.inPosition.x, height, input.inPosition.z);
+    output.outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
+    output.outWorldPos.y = height;
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
