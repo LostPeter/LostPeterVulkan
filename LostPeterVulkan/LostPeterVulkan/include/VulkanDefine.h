@@ -1176,17 +1176,6 @@ namespace LostPeterVulkan
 
         }
     };
-    struct vulkanExport TerrainObjectConstants
-    {
-        FMatrix4 g_MatWorld;
-
-
-        TerrainObjectConstants()
-            : g_MatWorld(FMath::Identity4x4())
-        {
-
-        }
-    };
     struct vulkanExport GridObjectConstants
     {
         FMatrix4 g_MatWorld;
@@ -1325,6 +1314,21 @@ namespace LostPeterVulkan
         {
             
         }
+
+        static MaterialConstants RandomMaterialConstants()
+        {
+            MaterialConstants mc;
+            RandomMaterialConstants(mc);
+            return mc;
+        }
+        static void RandomMaterialConstants(MaterialConstants& mc)
+        {
+            mc.factorAmbient = FMath::RandomColor(false);
+            mc.factorDiffuse = FMath::RandomColor(false);
+            mc.factorSpecular = FMath::RandomColor(false);
+            mc.shininess = FMath::RandF(10.0f, 100.0f);
+            mc.alpha = FMath::RandF(0.2f, 0.9f);
+        }
     };
 
     //////////////////////////////// InstanceConstants //////////////////////////////
@@ -1405,16 +1409,30 @@ namespace LostPeterVulkan
     //////////////////////////////// TerrainConstants ///////////////////////////////
     struct vulkanExport TerrainConstants
     {
+        FMatrix4 matWorld; //Matrix world
         float textureX; //HeightMap/NarmalMap Texture Size X
         float textureZ; //HeightMap/NarmalMap Texture Size Z
         float heightStart; //Height Low Start 
         float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
 
         TerrainConstants()
-            : textureX(1024)
+            : matWorld(FMath::Identity4x4())
+            , textureX(1024)
             , textureZ(1024)
             , heightStart(0)
             , heightMax(200)
+        {
+
+        }
+    };
+    struct vulkanExport TerrainObjectConstants
+    {
+        float offsetX; //Instance offset X
+        float offsetZ; //Instance offset Z
+
+        TerrainObjectConstants()
+            : offsetX(0)
+            , offsetZ(0)
         {
 
         }

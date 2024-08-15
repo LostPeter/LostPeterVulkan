@@ -49,13 +49,14 @@ namespace LostPeterVulkan
 
     static const char* g_szValidationLayersInstance[] = 
     {
-
+        
+        
     #if F_PLATFORM == F_PLATFORM_iOS
         
     #elif F_PLATFORM == F_PLATFORM_ANDROID
         
     #elif F_PLATFORM == F_PLATFORM_WINDOW
-
+        "VK_LAYER_KHRONOS_validation",
         
     #elif F_PLATFORM == F_PLATFORM_MAC
 

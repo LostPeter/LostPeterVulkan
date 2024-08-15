@@ -1353,7 +1353,9 @@ namespace LostPeterVulkan
         , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
         , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")
         , cfg_terrainTextureControl_Path("Assets/Texture/Terrain/terrain_control.png")
-
+        , cfg_terrainHeightStart(0.0f)
+        , cfg_terrainHeightMax(200.0f)
+        
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
         , imgui_DescriptorPool(VK_NULL_HANDLE)
@@ -4244,6 +4246,7 @@ namespace LostPeterVulkan
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             width, 
                             height, 
                             mipMapCount,
@@ -4361,7 +4364,7 @@ namespace LostPeterVulkan
         }
 
         uint32_t depth = 1;
-        uint32_t numArray = count_tex;
+        uint32_t numArray = (uint32_t)count_tex;
         if (type == VK_IMAGE_TYPE_1D)
         {
             depth = 0;
@@ -4434,6 +4437,7 @@ namespace LostPeterVulkan
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             width, 
                             height,
                             mipMapCount,
@@ -4565,6 +4569,7 @@ namespace LostPeterVulkan
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             width, 
                             height,
                             1,
@@ -4664,7 +4669,7 @@ namespace LostPeterVulkan
         }
 
         uint32_t depth = 1;
-        uint32_t numArray = count_tex;
+        uint32_t numArray = (uint32_t)count_tex;
 
         //2> Create Buffer and copy Texture data to buffer
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
@@ -4733,6 +4738,7 @@ namespace LostPeterVulkan
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             width, 
                             height,
                             mipMapCount,
@@ -4779,10 +4785,12 @@ namespace LostPeterVulkan
     void VulkanWindow::createTextureRenderTarget1D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory,
@@ -4793,11 +4801,13 @@ namespace LostPeterVulkan
                                     isSetColor,
                                     width,
                                     1,
+                                    autoMipMap, 
                                     mipMapCount,
                                     VK_IMAGE_TYPE_1D,
                                     numSamples,
                                     format,
                                     usage,
+                                    finalLayout,
                                     isGraphicsComputeShared,
                                     image,
                                     imageMemory,
@@ -4807,10 +4817,12 @@ namespace LostPeterVulkan
     void VulkanWindow::createTextureRenderTarget1D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory)
@@ -4820,10 +4832,12 @@ namespace LostPeterVulkan
         createTextureRenderTarget1D(clDefault, 
                                     isSetColor,
                                     width, 
+                                    autoMipMap, 
                                     mipMapCount,
                                     numSamples,
                                     format,
                                     usage,
+                                    finalLayout,
                                     isGraphicsComputeShared,
                                     image, 
                                     imageMemory, 
@@ -4836,11 +4850,13 @@ namespace LostPeterVulkan
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkImageType type,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory,
@@ -4865,7 +4881,7 @@ namespace LostPeterVulkan
             vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height; i++)
+                for (uint32_t i = 0; i < width * height; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -4895,25 +4911,58 @@ namespace LostPeterVulkan
                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                       image, 
                       imageMemory);
+        
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
 
-        //3> TransitionImageLayout
-        transitionImageLayout(VK_NULL_HANDLE,
-                              image, 
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_GENERAL,
-                              0,
-                              mipMapCount,
-                              0,
-                              numArray);
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTarget2D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory)
@@ -4924,11 +4973,13 @@ namespace LostPeterVulkan
                                     isSetColor,
                                     width, 
                                     height,
+                                    autoMipMap, 
                                     mipMapCount,
                                     VK_IMAGE_TYPE_2D,
                                     numSamples,
                                     format,
                                     usage,
+                                    finalLayout,
                                     isGraphicsComputeShared,
                                     image, 
                                     imageMemory, 
@@ -4940,11 +4991,13 @@ namespace LostPeterVulkan
     void VulkanWindow::createTextureRenderTarget2D(uint8* pData,
                                                    uint32_t width, 
                                                    uint32_t height,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkImageType type,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory,
@@ -4992,23 +5045,56 @@ namespace LostPeterVulkan
                       image, 
                       imageMemory);
 
-        //3> TransitionImageLayout
-        transitionImageLayout(VK_NULL_HANDLE,
-                              image, 
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_GENERAL,
-                              0,
-                              mipMapCount,
-                              0,
-                              numArray);
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTarget2D(uint8* pData,
                                                    uint32_t width, 
                                                    uint32_t height,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory)
@@ -5018,11 +5104,13 @@ namespace LostPeterVulkan
         createTextureRenderTarget2D(pData,
                                     width, 
                                     height,
+                                    autoMipMap, 
                                     mipMapCount,
                                     VK_IMAGE_TYPE_2D,
                                     numSamples,
                                     format,
                                     usage,
+                                    finalLayout,
                                     isGraphicsComputeShared,
                                     image, 
                                     imageMemory, 
@@ -5036,11 +5124,13 @@ namespace LostPeterVulkan
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         uint32_t numArray,
+                                                        bool autoMipMap, 
                                                         uint32_t mipMapCount,
                                                         VkImageType type,
                                                         VkSampleCountFlagBits numSamples,
                                                         VkFormat format,
                                                         VkImageUsageFlags usage, 
+                                                        VkImageLayout finalLayout,
                                                         bool isGraphicsComputeShared,
                                                         VkImage& image, 
                                                         VkDeviceMemory& imageMemory,
@@ -5066,7 +5156,7 @@ namespace LostPeterVulkan
             vkMapMemory(this->poDevice, bufferMemory, 0, imageSizeAll, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height * numArray; i++)
+                for (uint32_t i = 0; i < width * height * numArray; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -5100,25 +5190,58 @@ namespace LostPeterVulkan
                       image, 
                       imageMemory);
 
-        //3> TransitionImageLayout
-        transitionImageLayout(VK_NULL_HANDLE,
-                              image, 
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_GENERAL,
-                              0,
-                              mipMapCount,
-                              0,
-                              numArray);
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTarget2DArray(const FVector4& clDefault,
                                                         bool isSetColor,
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         uint32_t numArray,
+                                                        bool autoMipMap, 
                                                         uint32_t mipMapCount,
                                                         VkSampleCountFlagBits numSamples,
                                                         VkFormat format,
                                                         VkImageUsageFlags usage, 
+                                                        VkImageLayout finalLayout,
                                                         bool isGraphicsComputeShared,
                                                         VkImage& image, 
                                                         VkDeviceMemory& imageMemory)
@@ -5130,11 +5253,13 @@ namespace LostPeterVulkan
                                          width, 
                                          height,
                                          numArray,
+                                         autoMipMap, 
                                          mipMapCount,
                                          VK_IMAGE_TYPE_2D,
                                          numSamples,
                                          format,
                                          usage,
+                                         finalLayout,
                                          isGraphicsComputeShared,
                                          image, 
                                          imageMemory, 
@@ -5148,10 +5273,12 @@ namespace LostPeterVulkan
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    uint32_t depth,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory,
@@ -5176,7 +5303,7 @@ namespace LostPeterVulkan
             vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height * depth; i++)
+                for (uint32_t i = 0; i < width * height * depth; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -5205,25 +5332,59 @@ namespace LostPeterVulkan
                       image, 
                       imageMemory);
 
-        //3> TransitionImageLayout
-        transitionImageLayout(VK_NULL_HANDLE,
-                              image, 
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_GENERAL,
-                              0,
-                              mipMapCount,
-                              0,
-                              1);
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            uint32_t numArray = 1;
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTarget3D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    uint32_t depth,
+                                                   bool autoMipMap, 
                                                    uint32_t mipMapCount,
                                                    VkSampleCountFlagBits numSamples,
                                                    VkFormat format,
                                                    VkImageUsageFlags usage, 
+                                                   VkImageLayout finalLayout,
                                                    bool isGraphicsComputeShared,
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory)
@@ -5235,10 +5396,12 @@ namespace LostPeterVulkan
                                     width, 
                                     height,
                                     depth,
+                                    autoMipMap, 
                                     mipMapCount,
                                     numSamples,
                                     format,
                                     usage,
+                                    finalLayout,
                                     isGraphicsComputeShared,
                                     image, 
                                     imageMemory, 
@@ -5249,10 +5412,12 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createTextureRenderTargetCubeMap(uint32_t width, 
                                                         uint32_t height,
+                                                        bool autoMipMap, 
                                                         uint32_t mipMapCount,
                                                         VkSampleCountFlagBits numSamples,
                                                         VkFormat format,
                                                         VkImageUsageFlags usage, 
+                                                        VkImageLayout finalLayout,
                                                         bool isGraphicsComputeShared,
                                                         VkImage& image, 
                                                         VkDeviceMemory& imageMemory,
@@ -5288,22 +5453,55 @@ namespace LostPeterVulkan
                       image, 
                       imageMemory);
 
-        //3> TransitionImageLayout
-        transitionImageLayout(VK_NULL_HANDLE,
-                              image, 
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_GENERAL,
-                              0,
-                              mipMapCount,
-                              0,
-                              numArray);
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTargetCubeMap(uint32_t width, 
                                                         uint32_t height,
+                                                        bool autoMipMap, 
                                                         uint32_t mipMapCount,
                                                         VkSampleCountFlagBits numSamples,
                                                         VkFormat format,
                                                         VkImageUsageFlags usage, 
+                                                        VkImageLayout finalLayout,
                                                         bool isGraphicsComputeShared,
                                                         VkImage& image, 
                                                         VkDeviceMemory& imageMemory)
@@ -5312,10 +5510,12 @@ namespace LostPeterVulkan
         VkDeviceMemory stagingBufferMemory;
         createTextureRenderTargetCubeMap(width, 
                                          height,
+                                         autoMipMap, 
                                          mipMapCount,
                                          numSamples,
                                          format,
                                          usage,
+                                         finalLayout,
                                          isGraphicsComputeShared,
                                          image, 
                                          imageMemory, 
@@ -5539,7 +5739,16 @@ namespace LostPeterVulkan
                     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-                    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+                } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) 
+                {
+                    // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_GENERAL
+                    barrier.srcAccessMask = 0;
+                    barrier.dstAccessMask = 0; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
                 else 
                 {
@@ -5601,6 +5810,7 @@ namespace LostPeterVulkan
         void VulkanWindow::generateMipMaps(VkCommandBuffer cmdBuffer,
                                            VkImage image, 
                                            VkFormat imageFormat, 
+                                           VkImageLayout finalLayout,
                                            int32_t width, 
                                            int32_t height, 
                                            uint32_t mipMapCount,
@@ -5672,7 +5882,7 @@ namespace LostPeterVulkan
                 transitionImageLayout(cmdBuffer,
                                       image,
                                       VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                      finalLayout,
                                       0,
                                       mipMapCount,
                                       0,
@@ -6807,7 +7017,7 @@ namespace LostPeterVulkan
             init_info.DescriptorPool = this->imgui_DescriptorPool;
             init_info.Subpass = 1;
             init_info.MinImageCount = this->imgui_MinimalSwapchainImages;
-            init_info.ImageCount = this->poSwapChainImages.size();
+            init_info.ImageCount = (uint32_t)this->poSwapChainImages.size();
             init_info.MSAASamples = this->poMSAASamples;
             init_info.CheckVkResultFn = checkImguiError;
             ImGui_ImplVulkan_Init(&init_info, this->poRenderPass);

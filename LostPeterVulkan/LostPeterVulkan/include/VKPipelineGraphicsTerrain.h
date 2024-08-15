@@ -37,9 +37,13 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_TerrainObjectCB;
         VkDeviceMemory poBufferMemory_TerrainObjectCB;
 
+        std::vector<MaterialConstants> materialCBs;
+        VkBuffer poBuffer_MaterialCB;
+        VkDeviceMemory poBufferMemory_MaterialCB;
+
         TerrainConstants terrainCB;
-        VkBuffer poBuffers_TerrainCB;
-        VkDeviceMemory poBuffersMemory_TerrainCB;
+        VkBuffer poBuffer_TerrainCB;
+        VkDeviceMemory poBufferMemory_TerrainCB;
 
     public: 
         void Destroy();
@@ -51,9 +55,11 @@ namespace LostPeterVulkan
 
     protected:
         void destroyBufferTerrainObject();
+        void destroyBufferMaterial();
         void destroyBufferTerrain();
         
         bool createBufferTerrainObject();
+        bool createBufferMaterial();
         bool createBufferTerrain();
 
     public: 

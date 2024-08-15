@@ -221,10 +221,16 @@ struct TessellationConstants
 ///////////////////////////////// TerrainConstants //////////////////////////////
 struct TerrainConstants
 {
+    float4x4 matWorld; //Matrix world 
     float textureX; //HeightMap/NarmalMap Texture Size X
     float textureZ; //HeightMap/NarmalMap Texture Size Z
     float heightStart; //Height Low Start 
     float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
+};
+struct TerrainObjectConstants
+{
+    float offsetX; //Instance offset X
+    float offsetZ; //Instance offset Z
 };
 
 

@@ -873,6 +873,7 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isUseComputeShader = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = false;
     this->cfg_isEditorCameraAxisShow = true;
@@ -936,6 +937,9 @@ void Vulkan_020_Terrain::createTerrain()
 
         this->cfg_isRenderPassTerrain = true;
         this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+
+        this->cfg_terrainHeightStart = -50.0f;
+        this->cfg_terrainHeightMax = 100.0f;
     }
 
 void Vulkan_020_Terrain::loadModel_Custom()
@@ -1176,8 +1180,8 @@ void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_ObjectRend_Tranforms[3 * i + 1],
-                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }

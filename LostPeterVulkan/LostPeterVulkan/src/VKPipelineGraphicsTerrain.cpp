@@ -29,8 +29,11 @@ namespace LostPeterVulkan
         , poBuffer_TerrainObjectCB(VK_NULL_HANDLE)
         , poBufferMemory_TerrainObjectCB(VK_NULL_HANDLE)
 
-        , poBuffers_TerrainCB(VK_NULL_HANDLE)
-        , poBuffersMemory_TerrainCB(VK_NULL_HANDLE)
+        , poBuffer_MaterialCB(VK_NULL_HANDLE)
+        , poBufferMemory_MaterialCB(VK_NULL_HANDLE)
+
+        , poBuffer_TerrainCB(VK_NULL_HANDLE)
+        , poBufferMemory_TerrainCB(VK_NULL_HANDLE)
     {
 
     }
@@ -44,6 +47,7 @@ namespace LostPeterVulkan
     {
         CleanupSwapChain();
         destroyBufferTerrainObject();
+        destroyBufferMaterial();
         destroyBufferTerrain();
     }
         void VKPipelineGraphicsTerrain::destroyBufferTerrainObject()
@@ -56,14 +60,24 @@ namespace LostPeterVulkan
             this->poBuffer_TerrainObjectCB = VK_NULL_HANDLE;
             this->poBufferMemory_TerrainObjectCB = VK_NULL_HANDLE;
         }
+        void VKPipelineGraphicsTerrain::destroyBufferMaterial()
+        {
+            this->materialCBs.clear();
+            if (this->poBuffer_MaterialCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_MaterialCB, this->poBufferMemory_MaterialCB);
+            }
+            this->poBuffer_MaterialCB = VK_NULL_HANDLE;
+            this->poBufferMemory_MaterialCB = VK_NULL_HANDLE;
+        }
         void VKPipelineGraphicsTerrain::destroyBufferTerrain()
         {
-            if (this->poBuffers_TerrainCB != VK_NULL_HANDLE)
+            if (this->poBuffer_TerrainCB != VK_NULL_HANDLE)
             {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_TerrainCB, this->poBuffersMemory_TerrainCB);
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_TerrainCB, this->poBufferMemory_TerrainCB);
             }
-            this->poBuffers_TerrainCB = VK_NULL_HANDLE;
-            this->poBuffersMemory_TerrainCB = VK_NULL_HANDLE;
+            this->poBuffer_TerrainCB = VK_NULL_HANDLE;
+            this->poBufferMemory_TerrainCB = VK_NULL_HANDLE;
         }
 
     bool VKPipelineGraphicsTerrain::Init(const String& descriptorSetLayout,
@@ -86,7 +100,15 @@ namespace LostPeterVulkan
                 return false;
             }
         }
-        if (this->poBuffers_TerrainCB == VK_NULL_HANDLE)
+        if (this->poBuffer_MaterialCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferMaterial())
+            {
+                F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createBufferMaterial failed !");
+                return false;
+            }
+        }
+        if (this->poBuffer_TerrainCB == VK_NULL_HANDLE)
         {
             if (!createBufferTerrain())
             {
@@ -196,27 +218,41 @@ namespace LostPeterVulkan
             {
                 for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainGridInstanceCount; j++)
                 {
-                    FVector3 vPos = FVector3(j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf,
-                                             0.0f,
-                                             i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
                     TerrainObjectConstants toInstance;
-                    toInstance.g_MatWorld = FMath::Translate(vPos);
-                    this->terrainObjectCBs.push_back(toWhole);
+                    toInstance.offsetX = j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
+                    toInstance.offsetZ = i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
+                    this->terrainObjectCBs.push_back(toInstance);
                 }
             }
+            F_Assert(this->terrainObjectCBs.size() < MAX_OBJECT_TERRAIN_COUNT && "VKPipelineGraphicsTerrain::createBufferTerrainObject")
             VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
             Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainObjectCB, this->poBufferMemory_TerrainObjectCB);
             Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainObjectCBs[0], this->poBufferMemory_TerrainObjectCB);
             return true;
         }
+        bool VKPipelineGraphicsTerrain::createBufferMaterial()
+        {
+            this->materialCBs.clear();
+            for (int i = 0; i < MAX_MATERIAL_COUNT; i++)
+            {
+                MaterialConstants mcWhole;
+                this->materialCBs.push_back(mcWhole);
+            }
+            VkDeviceSize bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_MaterialCB, this->poBufferMemory_MaterialCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->materialCBs[0], this->poBufferMemory_MaterialCB);
+            return true;
+        }
         bool VKPipelineGraphicsTerrain::createBufferTerrain()
         {
-            this->terrainCB.textureX = this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
-            this->terrainCB.textureZ = this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            this->terrainCB.heightStart = Base::GetWindowPtr()->cfg_terrainHeightStart;
+            this->terrainCB.heightMax = Base::GetWindowPtr()->cfg_terrainHeightMax;
 
             VkDeviceSize bufferSize = sizeof(TerrainConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_TerrainCB, this->poBuffersMemory_TerrainCB);
-            Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainCB, this->poBuffersMemory_TerrainCB);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainCB, this->poBufferMemory_TerrainCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainCB, this->poBufferMemory_TerrainCB);
             return true;
         }
 
@@ -273,16 +309,16 @@ namespace LostPeterVulkan
             }
             //<2> MaterialConstants
             {
-                // VkDescriptorBufferInfo bufferInfo_Material = {};
-                // bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i];
-                // bufferInfo_Material.offset = 0;
-                // bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
-                // Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                //                                                   this->poDescriptorSets[i],
-                //                                                   2,
-                //                                                   0,
-                //                                                   1,
-                //                                                   bufferInfo_Material);
+                VkDescriptorBufferInfo bufferInfo_Material = {};
+                bufferInfo_Material.buffer = this->poBuffer_MaterialCB;
+                bufferInfo_Material.offset = 0;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
+                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                  this->poDescriptorSets[i],
+                                                                  2,
+                                                                  0,
+                                                                  1,
+                                                                  bufferInfo_Material);
             }
             //<3> InstanceConstants
             {
@@ -300,7 +336,7 @@ namespace LostPeterVulkan
             //<4> Terrain
             {
                 VkDescriptorBufferInfo bufferInfo_Terrain = {};
-                bufferInfo_Terrain.buffer = this->poBuffers_TerrainCB;
+                bufferInfo_Terrain.buffer = this->poBuffer_TerrainCB;
                 bufferInfo_Terrain.offset = 0;
                 bufferInfo_Terrain.range = sizeof(TerrainConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -322,13 +358,13 @@ namespace LostPeterVulkan
             }
             //<6> poTerrainNormalMapImage
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
-                                                                6,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo);
+                // Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                //                                                 this->poDescriptorSets[i],
+                //                                                 6,
+                //                                                 0,
+                //                                                 1,
+                //                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                //                                                 this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo);
             }
             //<7> poTerrainDiffuseImage
             {
@@ -366,7 +402,7 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsTerrain::UpdateBufferTerrain()
     {
-        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TerrainConstants), &this->terrainCB, this->poBuffersMemory_TerrainCB);
+        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TerrainConstants), &this->terrainCB, this->poBufferMemory_TerrainCB);
     }
 
 }; //LostPeterVulkan

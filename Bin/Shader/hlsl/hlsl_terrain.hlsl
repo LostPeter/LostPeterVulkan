@@ -3,15 +3,16 @@
 
 
 float Terrain_GetHeightFromHeightMap(Texture2D textureHeightMap,
-                                     float3 pos,
+                                     float posX,
+                                     float posZ,
                                      float terrainStart,
                                      float terrainMax)
 {
     int2 texDim;
 	textureHeightMap.GetDimensions(texDim.x, texDim.y);
 
-    float x = pos.x + texDim.x / 2.0;
-    float z = texDim.y - (pos.z + texDim.y / 2.0);
+    float x = posX + texDim.x / 2.0;
+    float z = texDim.y - (posZ + texDim.y / 2.0);
 
     uint3 coord3 = uint3(x, z, 0);
     float4 height4 = textureHeightMap.Load(coord3);
