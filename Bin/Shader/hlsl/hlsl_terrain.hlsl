@@ -12,6 +12,7 @@
 #ifndef _HLSL_TERRAIN_
 #define _HLSL_TERRAIN_
 
+
 ///////////////////////////////// Height/Normal //////////////////////////////////////////
 float Terrain_GetHeightFromHeightMap(Texture2D textureHeightMap,
                                      float posX,
@@ -46,6 +47,7 @@ float3 Terrain_GetNormalFromNormalMap(Texture2D textureNormalMap,
     float3 normal = normal4.xyz * 2.0 - 1.0;
     return normal;
 }
+
 
 
 #endif

@@ -36,11 +36,11 @@
 [[vk::binding(6)]] Texture2D textureNormalMap       : register(t2);
 
 
-VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input, 
-                                        uint viewIndex : SV_ViewID,
-                                        uint instanceIndex : SV_InstanceID)
+VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input, 
+                      uint viewIndex : SV_ViewID,
+                      uint instanceIndex : SV_InstanceID)
 {
-    VSOutput_Pos4Color4Normal3TexCood2 output = (VSOutput_Pos4Color4Normal3TexCood2)0;
+    VSOutput_Terrain output = (VSOutput_Terrain)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     TerrainObjectConstants obj = terrainObjectConsts[instanceIndex];
@@ -52,10 +52,12 @@ VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input,
                                                   posZ,
                                                   terrainConsts.heightStart,
                                                   terrainConsts.heightMax);
-
     float3 normal = Terrain_GetNormalFromNormalMap(textureNormalMap,
                                                    posX,
                                                    posZ);
+    float2 uv = float2(posX * terrainConsts.textureX_Inverse,
+                       posZ * terrainConsts.textureZ_Inverse);
+
     output.outWorldPos = mul(terrainConsts.matWorld, float4(posX, 0.0, posZ, 1.0));
     output.outWorldPos.y = height;
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
@@ -63,7 +65,8 @@ VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input,
     output.outWorldPos.w = instanceIndex;
     output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)terrainConsts.matWorld, normal);
-    output.outTexCoord = input.inTexCoord;
-
+    output.outTexCoord.xy = uv;
+    output.outTexCoord.zw = float2(0, 0);
+    
     return output;
 }

@@ -1407,18 +1407,42 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// TerrainConstants ///////////////////////////////
+    struct vulkanExport TerrainSplatConstants
+    {
+        float splatSizeX; //size x
+        float splatSizeY; //size y
+        float splatOffsetX; //offset x
+        float splatOffsetY; //offset y
+
+        TerrainSplatConstants()
+            : splatSizeX(100)
+            , splatSizeY(100)
+            , splatOffsetX(0)
+            , splatOffsetY(0)
+        {
+
+        }
+    };
     struct vulkanExport TerrainConstants
     {
         FMatrix4 matWorld; //Matrix world
         float textureX; //HeightMap/NarmalMap Texture Size X
         float textureZ; //HeightMap/NarmalMap Texture Size Z
+        float textureX_Inverse; //1/textureX
+        float textureZ_Inverse; //1/textureZ
         float heightStart; //Height Low Start 
         float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
+        float reserve1;
+        float reserve2;
+
+        TerrainSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 
         TerrainConstants()
             : matWorld(FMath::Identity4x4())
             , textureX(1024)
             , textureZ(1024)
+            , textureX_Inverse(1.0f / 1024)
+            , textureZ_Inverse(1.0f / 1024)
             , heightStart(0)
             , heightMax(200)
         {

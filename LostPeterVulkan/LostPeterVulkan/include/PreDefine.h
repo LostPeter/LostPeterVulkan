@@ -31,6 +31,7 @@ namespace LostPeterVulkan
     #define MAX_OBJECT_LINEFLAT_3D_COUNT 512
     #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
+    #define MAX_TERRAIN_SPLAT_COUNT 16
 
     #define SHADER_NAME_Vertex                      "vert"
     #define SHADER_NAME_TessellationControl         "tesc"

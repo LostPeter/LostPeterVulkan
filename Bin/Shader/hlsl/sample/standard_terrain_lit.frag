@@ -26,6 +26,12 @@
 }
 
 
+[[vk::binding(4)]]cbuffer terrainConsts             : register(b4) 
+{
+    TerrainConstants terrainConsts;
+}
+
+
 [[vk::binding(7)]] Texture2DArray texture2DArrayDiffuse       : register(t1);
 [[vk::binding(7)]] SamplerState texture2DArrayDiffuseSampler  : register(s1);
 
@@ -36,7 +42,7 @@
 [[vk::binding(9)]] SamplerState texture2DArrayControlSampler  : register(s3);
 
 
-float4 main(VSInput_Pos4Color4Normal3TexCood2 input, 
+float4 main(VSInput_Terrain input, 
             uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float3 outColor;
@@ -60,7 +66,7 @@ float4 main(VSInput_Pos4Color4Normal3TexCood2 input,
 
 
     //Texture
-    float3 colorTexture = texture2DArrayDiffuse.Sample(texture2DArrayDiffuseSampler, float3(input.inTexCoord, mat.aTexLayers[0].indexTextureArray)).rgb;
+    float3 colorTexture = texture2DArrayDiffuse.Sample(texture2DArrayDiffuseSampler, float3(input.inTexCoord.xy, mat.aTexLayers[0].indexTextureArray)).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

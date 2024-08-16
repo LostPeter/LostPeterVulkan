@@ -228,6 +228,24 @@ struct VSInput_Pos4Color4Normal3Tangent3TexCood2TSPos3TSEyePos3
 };
 
 
+///////////////////////////////// Terrain ///////////////////////////////////////////////
+struct VSOutput_Terrain
+{
+	float4 outPosition                              : SV_POSITION;
+    [[vk::location(0)]] float4 outWorldPos          : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 outColor             : COLOR0;
+    [[vk::location(2)]] float3 outWorldNormal       : NORMAL0;
+    [[vk::location(3)]] float4 outTexCoord          : TEXCOORD0;
+};
+
+struct VSInput_Terrain
+{
+    [[vk::location(0)]] float4 inWorldPos           : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 inColor              : COLOR0;
+    [[vk::location(2)]] float3 inWorldNormal        : NORMAL0;
+    [[vk::location(3)]] float4 inTexCoord           : TEXCOORD0;
+};
+
 
 
 #endif

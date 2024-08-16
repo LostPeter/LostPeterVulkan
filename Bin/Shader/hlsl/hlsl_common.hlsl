@@ -18,6 +18,7 @@
 #define MAX_TEXTURE_COUNT 16
 #define MAX_MATERIAL_COUNT 64
 #define MAX_INSTANCE_COUNT 1024
+#define MAX_TERRAIN_SPLAT_COUNT 16
 
 
 ///////////////////////////////// PassConstants /////////////////////////////////
@@ -230,13 +231,26 @@ struct TessellationConstants
 
 
 ///////////////////////////////// TerrainConstants //////////////////////////////
+struct TerrainSplatConstants
+{
+    float splatSizeX; //size x
+    float splatSizeY; //size y
+    float splatOffsetX; //offset x
+    float splatOffsetY; //offset y
+};
 struct TerrainConstants
 {
     float4x4 matWorld; //Matrix world 
     float textureX; //HeightMap/NarmalMap Texture Size X
     float textureZ; //HeightMap/NarmalMap Texture Size Z
+    float textureX_Inverse; //1/textureX
+    float textureZ_Inverse; //1/textureZ
     float heightStart; //Height Low Start 
     float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
+    float reserve1;
+    float reserve2;
+
+    TerrainSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 };
 struct TerrainObjectConstants
 {
