@@ -15,10 +15,10 @@
 
 namespace LostPeterVulkan
 {
-    VKPipelineComputeTerrain::VKPipelineComputeTerrain(const String& namePipelineCompute, VKRenderPassTerrain* pRenderPassTerrain)
+    VKPipelineComputeTerrain::VKPipelineComputeTerrain(const String& namePipelineCompute, VKRenderPassTerrain* pVKRenderPassTerrain)
         : Base(namePipelineCompute)
 
-        , m_pRenderPassTerrain(pRenderPassTerrain)
+        , m_pVKRenderPassTerrain(pVKRenderPassTerrain)
         , nameDescriptorSetLayout("")
         , poDescriptorSetLayoutNames(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
@@ -28,6 +28,9 @@ namespace LostPeterVulkan
         , pTextureCopy(nullptr)
         , poBuffer_TextureCopy(VK_NULL_HANDLE)
         , poBufferMemory_TextureCopy(VK_NULL_HANDLE)
+
+        , isNormalUpdated(false)
+        , isNormalUpdated_Sustained(true)
     {
 
     }
@@ -67,7 +70,7 @@ namespace LostPeterVulkan
         //1> VkBuffer
         if (this->pTextureCopy == nullptr)
         {
-            if (!createBufferTextureCopy(this->m_pRenderPassTerrain->poTerrainHeightMapSize))
+            if (!createBufferTextureCopy(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize))
             {
                 F_LogError("*********************** VKPipelineComputeTerrain::Init: createBufferTextureCopy failed !");
                 return false;
@@ -77,7 +80,7 @@ namespace LostPeterVulkan
         //2> VkPipeline
         VkPipelineShaderStageCreateInfo shaderStageInfo = {};
         shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+        shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
         shaderStageInfo.module = vkShaderModule;
         shaderStageInfo.pName = "main";
         this->poPipeline = Base::GetWindowPtr()->createVkComputePipeline(shaderStageInfo, vkPipelineLayout);
@@ -94,6 +97,7 @@ namespace LostPeterVulkan
             F_LogError("*********************** VKPipelineComputeTerrain::Init: createVkDescriptorSet failed !");
             return false;
         }
+        UpdateDescriptorSet();
         
         return true;
     }
@@ -122,8 +126,7 @@ namespace LostPeterVulkan
         this->poDescriptorSet = VK_NULL_HANDLE;
     }  
 
-    void VKPipelineComputeTerrain::UpdateDescriptorSet(VkDescriptorImageInfo& imageInfoSrc,
-                                                       VkDescriptorImageInfo& imageInfoDst)
+    void VKPipelineComputeTerrain::UpdateDescriptorSet()
     {
         VkWriteDescriptorSetVector descriptorWrites;
         size_t count = this->poDescriptorSetLayoutNames->size();
@@ -152,7 +155,7 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                imageInfoSrc);
+                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo_Sampler);
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
             {
@@ -162,7 +165,7 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                                                                imageInfoDst);
+                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo_Sampler);
             }
         }
         Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-02-05
+* Time:     2024-08-16
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -19,23 +19,21 @@
     PassConstants passConsts;
 }
 
-
-[[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
+#define MAX_TERRAIN_OBJECT_COUNT 8196
+[[vk::binding(1)]]cbuffer terrainObjectConsts       : register(b1) 
 {
-    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+    TerrainObjectConstants terrainObjectConsts[MAX_TERRAIN_OBJECT_COUNT];
 }
 
 
-[[vk::binding(2)]]cbuffer materialConsts            : register(b2) 
+[[vk::binding(4)]]cbuffer terrainConsts             : register(b4) 
 {
-    MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
+    TerrainConstants terrainConsts;
 }
 
 
-[[vk::binding(3)]]cbuffer instanceConsts            : register(b3) 
-{
-    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
-}
+[[vk::binding(5)]] Texture2D textureHeightMap       : register(t1);
+[[vk::binding(6)]] Texture2D textureNormalMap       : register(t2);
 
 
 VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input, 
@@ -45,14 +43,26 @@ VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input,
     VSOutput_Pos4Color4Normal3TexCood2 output = (VSOutput_Pos4Color4Normal3TexCood2)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
-    ObjectConstants obj = objectConsts[instanceIndex];
+    TerrainObjectConstants obj = terrainObjectConsts[instanceIndex];
     
-    output.outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
+    float posX = input.inPosition.x + obj.offsetX;
+    float posZ = input.inPosition.z + obj.offsetZ;
+    float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
+                                                  posX,
+                                                  posZ,
+                                                  terrainConsts.heightStart,
+                                                  terrainConsts.heightMax);
+
+    float3 normal = Terrain_GetNormalFromNormalMap(textureNormalMap,
+                                                   posX,
+                                                   posZ);
+    output.outWorldPos = mul(terrainConsts.matWorld, float4(posX, 0.0, posZ, 1.0));
+    output.outWorldPos.y = height;
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
     output.outColor = input.inColor;
-    output.outWorldNormal = mul((float3x3)obj.g_MatWorld, input.inNormal);
+    output.outWorldNormal = mul((float3x3)terrainConsts.matWorld, normal);
     output.outTexCoord = input.inTexCoord;
 
     return output;

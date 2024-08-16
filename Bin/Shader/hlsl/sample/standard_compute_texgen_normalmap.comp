@@ -21,19 +21,6 @@
 [[vk::binding(2)]] RWTexture2D<float4> _textureDst              : register(u0);
 
 
-float4 processLinear(float4 pixel)
-{
-	return float4(pow(abs(pixel.xyz), 1.0 / 2.2), pixel.w);
-}
-
-float4 LinearToSRGB(float4 pixel)
-{
-	float3 sRGBLo = pixel.xyz * 12.92;
-	float3 sRGBHi = (pow(abs(pixel.xyz), float3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
-	float3 sRGB = select((pixel.xyz <= 0.0031308), sRGBLo, sRGBHi);
-	return float4(sRGB, pixel.w);
-}
-
 float3 GetPosition(uint2 coord)
 {
 	float w = _textureInfo.texInfo.x;

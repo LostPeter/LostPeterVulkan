@@ -56,6 +56,8 @@ namespace LostPeterVulkan
 
         //Uniform ConstantBuffer
         createUniformCB_Internal();
+        //PipelineCompute
+        createPipelineCompute_Internal();
         //PipelineGraphics
         createPipelineGraphics_Internal();
     }
@@ -367,7 +369,7 @@ namespace LostPeterVulkan
         ///////////////////////////////////////// vert /////////////////////////////////////////
         "vert_standard_copy_blit",                                "vert",              "Assets/Shader/standard_copy_blit.vert.spv", //standard_copy_blit vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
-        "vert_standard_terrain_opaque_lit",                       "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
+        "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
     
@@ -381,7 +383,7 @@ namespace LostPeterVulkan
         ///////////////////////////////////////// frag /////////////////////////////////////////
         "frag_standard_copy_blit",                                "frag",              "Assets/Shader/standard_copy_blit.frag.spv", //standard_copy_blit frag
         "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
-        "frag_standard_terrain_opaque_lit",                       "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
+        "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
 
         ///////////////////////////////////////// comp /////////////////////////////////////////
         "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
@@ -569,7 +571,7 @@ namespace LostPeterVulkan
             StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
             VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
             VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-            VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_texcopy_tex2d");
+            VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_texgen_normalmap");
 
             F_Assert(pDescriptorSetLayoutNames != nullptr &&
                      vkDescriptorSetLayout != nullptr &&
@@ -589,11 +591,31 @@ namespace LostPeterVulkan
         }
     void VulkanWindow::UpdateDescriptorSets_Compute_Terrain()
     {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineCompute_Terrain == nullptr)
+            return;
 
+        this->m_pPipelineCompute_Terrain->UpdateDescriptorSet();
     }
-        void VulkanWindow::Draw_Compute_Terrain(VkCommandBuffer& commandBuffer)
+        void VulkanWindow::Update_Compute_Terrain(VkCommandBuffer& commandBuffer)
         {
+            if (!this->cfg_isRenderPassTerrain ||
+                this->m_pPipelineCompute_Terrain == nullptr ||
+                this->m_pVKRenderPassTerrain == nullptr)
+                return;
 
+            if (!this->m_pPipelineCompute_Terrain->isNormalUpdated ||
+                this->m_pPipelineCompute_Terrain->isNormalUpdated_Sustained)
+            {
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->m_pPipelineCompute_Terrain->poPipeline);
+                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->m_pPipelineCompute_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineCompute_Terrain->poDescriptorSet, 0, 0);
+                
+                uint32_t groupX = (uint32_t)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize / 8);
+                uint32_t groupY = (uint32_t)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize / 8);
+                dispatch(commandBuffer, groupX, groupY, 1);
+
+                this->m_pPipelineCompute_Terrain->isNormalUpdated = true;
+            }
         }
 
     //PipelineGraphics
@@ -820,8 +842,8 @@ namespace LostPeterVulkan
                      "VulkanWindow::createPipelineGraphics_Terrain")
 
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Terrain;
-            String nameShaderVert = "vert_standard_terrain_opaque_lit";
-            String nameShaderFrag = "frag_standard_terrain_opaque_lit";
+            String nameShaderVert = "vert_standard_terrain_lit";
+            String nameShaderFrag = "frag_standard_terrain_lit";
             if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
                                                       "",
                                                       "",
@@ -1174,7 +1196,7 @@ namespace LostPeterVulkan
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC)) //TextureTESC
             {
@@ -7114,9 +7136,9 @@ namespace LostPeterVulkan
     bool VulkanWindow::beginCompute()
     {
         if (this->poQueueCompute == VK_NULL_HANDLE ||
-            this->poCommandBufferCompute == VK_NULL_HANDLE ||
-            this->poGraphicsWaitSemaphore == VK_NULL_HANDLE ||
-            this->poComputeWaitSemaphore == VK_NULL_HANDLE)
+            this->poCommandBufferCompute == VK_NULL_HANDLE) //||
+            //this->poGraphicsWaitSemaphore == VK_NULL_HANDLE ||
+            //this->poComputeWaitSemaphore == VK_NULL_HANDLE)
         {
             return false;
         }
@@ -7147,6 +7169,7 @@ namespace LostPeterVulkan
                     }
                     {
                         updateCompute_Default(commandBuffer);
+                        updateCompute_Terrain(commandBuffer);
                         updateCompute_Custom(commandBuffer);
                     }
                     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -7159,6 +7182,14 @@ namespace LostPeterVulkan
                     void VulkanWindow::updateCompute_Default(VkCommandBuffer& commandBuffer)
                     {
 
+                    }
+                    void VulkanWindow::updateCompute_Terrain(VkCommandBuffer& commandBuffer)
+                    {
+                        if (!cfg_isRenderPassTerrain ||
+                            m_pPipelineCompute_Terrain == nullptr)
+                            return;
+                        
+                        Update_Compute_Terrain(commandBuffer);
                     }
                     void VulkanWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                     {
@@ -7173,11 +7204,17 @@ namespace LostPeterVulkan
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
-            submitInfo.waitSemaphoreCount = 1;
-            submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
+            if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
+            {
+                submitInfo.waitSemaphoreCount = 1;
+                submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
+            }
             submitInfo.pWaitDstStageMask = &waitStageMask;
-            submitInfo.signalSemaphoreCount = 1;
-            submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
+            {
+                submitInfo.signalSemaphoreCount = 1;
+                submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+            }
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
             {

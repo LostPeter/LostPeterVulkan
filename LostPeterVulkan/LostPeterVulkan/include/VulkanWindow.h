@@ -92,7 +92,7 @@ namespace LostPeterVulkan
         //PipelineCompute
         //PipelineCompute_Terrain
         virtual void UpdateDescriptorSets_Compute_Terrain();
-        virtual void Draw_Compute_Terrain(VkCommandBuffer& commandBuffer);
+        virtual void Update_Compute_Terrain(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics
         //PipelineGraphics_CopyBlit
@@ -1227,6 +1227,7 @@ namespace LostPeterVulkan
             virtual void updateCompute();
                 virtual void updateComputeCommandBuffer();
                     virtual void updateCompute_Default(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_Terrain(VkCommandBuffer& commandBuffer);
                     virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
 
             virtual void compute();

@@ -51,12 +51,14 @@ namespace LostPeterVulkan
         VkImage poTerrainHeightMapImage;
         VkDeviceMemory poTerrainHeightMapImageMemory;
         VkImageView poTerrainHeightMapImageView;
-        VkDescriptorImageInfo poTerrainHeightMapImageInfo;
+        VkDescriptorImageInfo poTerrainHeightMapImageInfo_NoSampler;
+        VkDescriptorImageInfo poTerrainHeightMapImageInfo_Sampler;
         //NormalMap
         VkImage poTerrainNormalMapImage;
         VkDeviceMemory poTerrainNormalMapImageMemory;
         VkImageView poTerrainNormalMapImageView;
-        VkDescriptorImageInfo poTerrainNormalMapImageInfo;
+        VkDescriptorImageInfo poTerrainNormalMapImageInfo_NoSampler;
+        VkDescriptorImageInfo poTerrainNormalMapImageInfo_Sampler;
         VkSampler poTerrainImageSampler;
 
         //Diffuse

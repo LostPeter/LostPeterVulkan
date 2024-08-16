@@ -194,7 +194,7 @@ namespace LostPeterVulkan
                 F_LogError("*********************** VKRenderPassTerrain::loadTerrainData failed, path: [%s] !", pathTerrain.c_str());
                 return false;
             }
-            this->poTerrainHeightMapSize = (int32)FMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
+            this->poTerrainHeightMapSize = (int32)(FMath::Sqrt((float)this->poTerrainHeightMapDataSize / 2.0f));
 
             int nSize = this->poTerrainHeightMapSize;
             this->poTerrainHeightMapDataFloat = new float[nSize * nSize];
@@ -361,15 +361,25 @@ namespace LostPeterVulkan
                 }
                 //4> ImageInfo
                 {
-                    this->poTerrainHeightMapImageInfo = {};
-                    this->poTerrainHeightMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainHeightMapImageInfo.imageView = this->poTerrainHeightMapImageView;
-                    this->poTerrainHeightMapImageInfo.sampler = this->poTerrainImageSampler;
+                    //TerrainHeightMap Texture
+                    this->poTerrainHeightMapImageInfo_NoSampler = {};
+                    this->poTerrainHeightMapImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainHeightMapImageInfo_NoSampler.imageView = this->poTerrainHeightMapImageView;
+                    this->poTerrainHeightMapImageInfo_NoSampler.sampler = nullptr;
+                    this->poTerrainHeightMapImageInfo_Sampler = {};
+                    this->poTerrainHeightMapImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainHeightMapImageInfo_Sampler.imageView = this->poTerrainHeightMapImageView;
+                    this->poTerrainHeightMapImageInfo_Sampler.sampler = this->poTerrainImageSampler;
 
-                    this->poTerrainNormalMapImageInfo = {};
-                    this->poTerrainNormalMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                    this->poTerrainNormalMapImageInfo.imageView = this->poTerrainNormalMapImageView;
-                    this->poTerrainNormalMapImageInfo.sampler = this->poTerrainImageSampler;
+                    //TerrainNormalMap Texture
+                    this->poTerrainNormalMapImageInfo_NoSampler = {};
+                    this->poTerrainNormalMapImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                    this->poTerrainNormalMapImageInfo_NoSampler.imageView = this->poTerrainNormalMapImageView;
+                    this->poTerrainNormalMapImageInfo_NoSampler.sampler = nullptr;
+                    this->poTerrainNormalMapImageInfo_Sampler = {};
+                    this->poTerrainNormalMapImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                    this->poTerrainNormalMapImageInfo_Sampler.imageView = this->poTerrainNormalMapImageView;
+                    this->poTerrainNormalMapImageInfo_Sampler.sampler = this->poTerrainImageSampler;
                 }
             }
 

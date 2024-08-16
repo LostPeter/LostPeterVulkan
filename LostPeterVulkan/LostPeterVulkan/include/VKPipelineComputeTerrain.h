@@ -19,11 +19,11 @@ namespace LostPeterVulkan
     class vulkanExport VKPipelineComputeTerrain : public Base
     {
     public:
-        VKPipelineComputeTerrain(const String& namePipelineCompute, VKRenderPassTerrain* pRenderPassTerrain);
+        VKPipelineComputeTerrain(const String& namePipelineCompute, VKRenderPassTerrain* pVKRenderPassTerrain);
         virtual ~VKPipelineComputeTerrain();
 
     public:
-        VKRenderPassTerrain* m_pRenderPassTerrain;
+        VKRenderPassTerrain* m_pVKRenderPassTerrain;
 
         String nameDescriptorSetLayout;
         StringVector* poDescriptorSetLayoutNames;
@@ -35,6 +35,9 @@ namespace LostPeterVulkan
         TextureCopyConstants* pTextureCopy;
         VkBuffer poBuffer_TextureCopy;  
         VkDeviceMemory poBufferMemory_TextureCopy;
+
+        bool isNormalUpdated;
+        bool isNormalUpdated_Sustained;
 
     public:
         void Destroy();
@@ -52,8 +55,7 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
-        virtual void UpdateDescriptorSet(VkDescriptorImageInfo& imageInfoSrc,
-                                         VkDescriptorImageInfo& imageInfoDst);
+        virtual void UpdateDescriptorSet();
     };
 
 }; //LostPeterVulkan

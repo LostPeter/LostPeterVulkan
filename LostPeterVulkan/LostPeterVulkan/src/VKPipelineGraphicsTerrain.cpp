@@ -353,18 +353,18 @@ namespace LostPeterVulkan
                                                                 5,
                                                                 0,
                                                                 1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo);
+                                                                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo_NoSampler);
             }
             //<6> poTerrainNormalMapImage
             {
-                // Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                //                                                 this->poDescriptorSets[i],
-                //                                                 6,
-                //                                                 0,
-                //                                                 1,
-                //                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                //                                                 this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo);
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                this->poDescriptorSets[i],
+                                                                6,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo_NoSampler);
             }
             //<7> poTerrainDiffuseImage
             {
