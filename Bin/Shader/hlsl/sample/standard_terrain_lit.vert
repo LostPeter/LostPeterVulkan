@@ -45,20 +45,22 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     TerrainObjectConstants obj = terrainObjectConsts[instanceIndex];
     
-    float posX = input.inPosition.x + obj.offsetX;
-    float posZ = input.inPosition.z + obj.offsetZ;
+    float posX = input.inPosition.x + terrainConsts.terrainSizeX / 2.0 + obj.offsetX;
+    float posZ = terrainConsts.terrainSizeZ / 2.0 - input.inPosition.z + obj.offsetZ;
+    float xPerf = posX / terrainConsts.terrainSizeX;
+    float zPerf = posZ / terrainConsts.terrainSizeZ;
+
     float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
-                                                  posX,
-                                                  posZ,
+                                                  xPerf,
+                                                  zPerf,
                                                   terrainConsts.heightStart,
                                                   terrainConsts.heightMax);
     float3 normal = Terrain_GetNormalFromNormalMap(textureNormalMap,
-                                                   posX,
-                                                   posZ);
-    float2 uv = float2(posX * terrainConsts.textureX_Inverse,
-                       posZ * terrainConsts.textureZ_Inverse);
+                                                   xPerf,
+                                                   zPerf);
+    float2 uv = float2(xPerf, zPerf);
 
-    output.outWorldPos = mul(terrainConsts.matWorld, float4(posX, 0.0, posZ, 1.0));
+    output.outWorldPos = mul(terrainConsts.matWorld, float4(input.inPosition, 1.0));
     output.outWorldPos.y = height;
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
@@ -67,6 +69,10 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     output.outWorldNormal = mul((float3x3)terrainConsts.matWorld, normal);
     output.outTexCoord.xy = uv;
     output.outTexCoord.zw = float2(0, 0);
+    output.uvSplat01.xy = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 0);
+    output.uvSplat01.zw = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 1);
+    output.uvSplat23.xy = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 2);
+    output.uvSplat23.zw = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 3);
     
     return output;
 }

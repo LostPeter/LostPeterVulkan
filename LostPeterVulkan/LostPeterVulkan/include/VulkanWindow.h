@@ -1265,6 +1265,8 @@ namespace LostPeterVulkan
                             virtual void shadowReset();
                         //Terrain
                         virtual void terrainConfig();
+                            virtual void terrainConfigItem(TerrainConstants& tc, const String& name);
+                                virtual bool terrainConfigSplatItem(TerrainSplatConstants& tsc, const String& name);
                             virtual void terrainReset();
                         //PassConstants
                         virtual void passConstantsConfig();

@@ -1432,15 +1432,17 @@ namespace LostPeterVulkan
         float textureZ_Inverse; //1/textureZ
         float heightStart; //Height Low Start 
         float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
-        float reserve1;
-        float reserve2;
-
+        float terrainSizeX; //Terrain Size X
+        float terrainSizeZ; //Terrain Size Z
+        
         TerrainSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 
         TerrainConstants()
             : matWorld(FMath::Identity4x4())
-            , textureX(1024)
-            , textureZ(1024)
+            , terrainSizeX(1024)
+            , terrainSizeZ(1024)
+            , textureX(1025)
+            , textureZ(1025)
             , textureX_Inverse(1.0f / 1024)
             , textureZ_Inverse(1.0f / 1024)
             , heightStart(0)

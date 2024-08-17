@@ -247,8 +247,8 @@ struct TerrainConstants
     float textureZ_Inverse; //1/textureZ
     float heightStart; //Height Low Start 
     float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
-    float reserve1;
-    float reserve2;
+    float terrainSizeX; //Terrain Size X
+    float terrainSizeZ; //Terrain Size Z
 
     TerrainSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 };

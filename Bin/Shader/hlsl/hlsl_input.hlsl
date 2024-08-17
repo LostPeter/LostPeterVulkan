@@ -236,6 +236,8 @@ struct VSOutput_Terrain
     [[vk::location(1)]] float4 outColor             : COLOR0;
     [[vk::location(2)]] float3 outWorldNormal       : NORMAL0;
     [[vk::location(3)]] float4 outTexCoord          : TEXCOORD0;
+    [[vk::location(4)]] float4 uvSplat01            : TEXCOORD1; //xy: splat0, zw: splat1
+    [[vk::location(5)]] float4 uvSplat23            : TEXCOORD2; //xy: splat2, zw: splat3
 };
 
 struct VSInput_Terrain
@@ -244,6 +246,8 @@ struct VSInput_Terrain
     [[vk::location(1)]] float4 inColor              : COLOR0;
     [[vk::location(2)]] float3 inWorldNormal        : NORMAL0;
     [[vk::location(3)]] float4 inTexCoord           : TEXCOORD0;
+    [[vk::location(4)]] float4 uvSplat01            : TEXCOORD1; //xy: splat0, zw: splat1
+    [[vk::location(5)]] float4 uvSplat23            : TEXCOORD2; //xy: splat2, zw: splat3
 };
 
 

@@ -939,7 +939,7 @@ void Vulkan_020_Terrain::createTerrain()
         this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 
         this->cfg_terrainHeightStart = -50.0f;
-        this->cfg_terrainHeightMax = 100.0f;
+        this->cfg_terrainHeightMax = 500.0f;
     }
 
 void Vulkan_020_Terrain::loadModel_Custom()
@@ -2200,10 +2200,16 @@ bool Vulkan_020_Terrain::beginRenderImgui()
         //2> Light
         lightConfig();
 
-        //3> PassConstants
+        //3> Shadow
+        shadowConfig();
+
+        //4> Terrain
+        terrainConfig();
+
+        //5> PassConstants
         passConstantsConfig();
 
-        //4> Model
+        //6> Model
         modelConfig();
 
     }

@@ -247,10 +247,12 @@ namespace LostPeterVulkan
         {
             this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
             this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
-            this->terrainCB.textureX_Inverse = 1.0f / this->terrainCB.textureX;
-            this->terrainCB.textureZ_Inverse = 1.0f / this->terrainCB.textureZ;
+            this->terrainCB.textureX_Inverse = 1.0f / (this->terrainCB.textureX - 1.0f);
+            this->terrainCB.textureZ_Inverse = 1.0f / (this->terrainCB.textureZ - 1.0f);
             this->terrainCB.heightStart = Base::GetWindowPtr()->cfg_terrainHeightStart;
             this->terrainCB.heightMax = Base::GetWindowPtr()->cfg_terrainHeightMax;
+            this->terrainCB.terrainSizeX = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
+            this->terrainCB.terrainSizeZ = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
 
             VkDeviceSize bufferSize = sizeof(TerrainConstants);
             Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainCB, this->poBufferMemory_TerrainCB);

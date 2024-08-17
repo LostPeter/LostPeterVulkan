@@ -8089,8 +8089,108 @@ namespace LostPeterVulkan
                         }
                     void VulkanWindow::terrainConfig()
                     {
+                        if (!cfg_isRenderPassTerrain ||
+                            this->m_pPipelineGraphics_Terrain == nullptr)
+                        {
+                            return;
+                        }
 
+                        if (ImGui::CollapsingHeader("Terrain Settings"))
+                        {
+                            terrainConfigItem(this->m_pPipelineGraphics_Terrain->terrainCB, "Terrain");
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
                     }
+                        void VulkanWindow::terrainConfigItem(TerrainConstants& tc, const String& name)
+                        {
+                            if (ImGui::CollapsingHeader(name.c_str()))
+                            {
+                                bool isChange = false;
+
+                                //heightStart
+                                float fHeightStart = tc.heightStart;
+                                String nameHeightStart = "HeightStart - " + name;
+                                if (ImGui::DragFloat(nameHeightStart.c_str(), &fHeightStart, 0.05f, -500.0f, 1000.0f))
+                                {
+                                    tc.heightStart = fHeightStart;
+                                    isChange = true;
+                                }
+                                ImGui::Spacing();
+
+                                //heightMax
+                                 float fHeightMax = tc.heightMax;
+                                String nameHeightMax = "heightMax - " + name;
+                                if (ImGui::DragFloat(nameHeightMax.c_str(), &fHeightMax, 0.05f, -500.0f, 1000.0f))
+                                {
+                                    tc.heightMax = fHeightMax;
+                                    isChange = true;
+                                }
+                                ImGui::Spacing();
+
+                                //aSplats
+                                for (int i = 0; i < MAX_TERRAIN_SPLAT_COUNT; i++)
+                                {
+                                    String nameSplat = "Splat - " + FUtilString::SaveInt(i) + " - " + name;
+                                    if (terrainConfigSplatItem(tc.aSplats[i], nameSplat))
+                                    {
+                                        isChange = true;
+                                    }
+                                }
+
+                                if (isChange)
+                                {
+                                    UpdateBuffer_Graphics_Terrain();
+                                }
+                            }
+                        }
+                            bool VulkanWindow::terrainConfigSplatItem(TerrainSplatConstants& tsc, const String& name)
+                            {
+                                bool isChange = false;
+                                if (ImGui::CollapsingHeader(name.c_str()))
+                                {
+                                    //splatSizeX
+                                    float fSplatSizeX = tsc.splatSizeX;
+                                    String nameSplatSizeX= "SplatSizeX - " + name;
+                                    if (ImGui::DragFloat(nameSplatSizeX.c_str(), &fSplatSizeX, 0.05f, 1.0f, 2048.0f))
+                                    {
+                                        tsc.splatSizeX = fSplatSizeX;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatSizeY
+                                    float fSplatSizeY = tsc.splatSizeY;
+                                    String nameSplatSizeY = "SplatSizeY - " + name;
+                                    if (ImGui::DragFloat(nameSplatSizeY.c_str(), &fSplatSizeY, 0.05f, 1.0f, 2048.0f))
+                                    {
+                                        tsc.splatSizeY = fSplatSizeY;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatOffsetX
+                                    float fSplatOffsetX = tsc.splatOffsetX;
+                                    String nameSplatOffsetX = "SplatOffsetX - " + name;
+                                    if (ImGui::DragFloat(nameSplatOffsetX.c_str(), &fSplatOffsetX, 0.05f, 0.0f, 1024.0f))
+                                    {
+                                        tsc.splatOffsetX = fSplatOffsetX;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatOffsetY
+                                    float fSplatOffsetY = tsc.splatOffsetY;
+                                    String nameSplatOffsetY = "SplatOffsetY - " + name;
+                                    if (ImGui::DragFloat(nameSplatOffsetY.c_str(), &fSplatOffsetY, 0.05f, 0.0f, 1024.0f))
+                                    {
+                                        tsc.splatOffsetY = fSplatOffsetY;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+                                }
+                                return isChange;
+                            }
                         void VulkanWindow::terrainReset()
                         {
 
