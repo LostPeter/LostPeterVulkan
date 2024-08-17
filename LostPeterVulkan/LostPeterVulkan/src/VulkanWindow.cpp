@@ -8151,7 +8151,7 @@ namespace LostPeterVulkan
                                 {
                                     //splatSizeX
                                     float fSplatSizeX = tsc.splatSizeX;
-                                    String nameSplatSizeX= "SplatSizeX - " + name;
+                                    String nameSplatSizeX = "SplatSizeX - " + name;
                                     if (ImGui::DragFloat(nameSplatSizeX.c_str(), &fSplatSizeX, 0.05f, 1.0f, 2048.0f))
                                     {
                                         tsc.splatSizeX = fSplatSizeX;
@@ -8188,6 +8188,31 @@ namespace LostPeterVulkan
                                         isChange = true;
                                     }
                                     ImGui::Spacing();
+
+
+                                    //diffuseRemapScale
+                                    float fDiffuseRemapScale[4] = { tsc.diffuseRemapScale[0], tsc.diffuseRemapScale[1], tsc.diffuseRemapScale[2], tsc.diffuseRemapScale[3] };
+                                    String namediffuseRemapScale = "DiffuseRemapScale - " + name;
+                                    if (ImGui::DragFloat4(namediffuseRemapScale.c_str(), &fDiffuseRemapScale[0], 0.01f, 0.0f, 1.0f))
+                                    {
+                                        tsc.diffuseRemapScale.x = fDiffuseRemapScale[0];
+                                        tsc.diffuseRemapScale.y = fDiffuseRemapScale[1];
+                                        tsc.diffuseRemapScale.z = fDiffuseRemapScale[2];
+                                        tsc.diffuseRemapScale.w = fDiffuseRemapScale[3];
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //normalRemapScale
+                                    float fNormalRemapScale = tsc.normalRemapScale;
+                                    String nameNormalRemapScale = "NormalRemapScale - " + name;
+                                    if (ImGui::DragFloat(nameNormalRemapScale.c_str(), &fNormalRemapScale, 0.01f, 0.1f, 1.0f))
+                                    {
+                                        tsc.normalRemapScale = fNormalRemapScale;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
                                 }
                                 return isChange;
                             }

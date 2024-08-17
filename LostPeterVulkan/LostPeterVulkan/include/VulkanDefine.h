@@ -1414,11 +1414,19 @@ namespace LostPeterVulkan
         float splatOffsetX; //offset x
         float splatOffsetY; //offset y
 
+        FVector4 diffuseRemapScale; //diffuse remap scale
+        float normalRemapScale; //normal remap scale
+        float reserve0;
+        float reserve1;
+        float reserve2;
+
         TerrainSplatConstants()
             : splatSizeX(100)
             , splatSizeY(100)
             , splatOffsetX(0)
             , splatOffsetY(0)
+            , diffuseRemapScale(1.0f, 1.0f, 1.0f, 1.0f)
+            , normalRemapScale(1.0f)
         {
 
         }

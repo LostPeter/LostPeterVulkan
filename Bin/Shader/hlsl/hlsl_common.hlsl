@@ -237,6 +237,12 @@ struct TerrainSplatConstants
     float splatSizeY; //size y
     float splatOffsetX; //offset x
     float splatOffsetY; //offset y
+
+    float4 diffuseRemapScale; //diffuse remap scale
+    float normalRemapScale; //normal remap scale
+    float reserve0;
+    float reserve1;
+    float reserve2;
 };
 struct TerrainConstants
 {

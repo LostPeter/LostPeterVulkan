@@ -14,12 +14,20 @@
 
 
 ///////////////////////////////// NormalMap //////////////////////////////////////////////
+float3 Func_UnpackNormalRGB(float4 packedNormal, float scale = 1.0)
+{
+    float3 normal;
+    normal.xyz = packedNormal.rgb * 2.0 - 1.0;
+    normal.xy *= scale;
+    return normalize(normal);
+}
+
 float3 Func_UnpackNormalXYZ(Texture2D texNormalMap,
                             SamplerState texNormalMapSampler,
                             float2 uv)
 {
-    float3 tangentNormal = texNormalMap.Sample(texNormalMapSampler, uv).rgb;
-    return normalize(tangentNormal * 2.0 - 1.0);
+    float3 packedNormal = texNormalMap.Sample(texNormalMapSampler, uv).rgb;
+    return normalize(packedNormal * 2.0 - 1.0);
 }
 float3 Func_UnpackNormalXY(Texture2D texNormalMap,
                            SamplerState texNormalMapSampler,
@@ -39,16 +47,16 @@ float3 Func_CalculateNormal(Texture2D texNormalMap,
                             float3 inWorldNormal,
                             float3 inWorldTangent)
 {
-    float3 tangentNormal = Func_UnpackNormalXYZ(texNormalMap,
-                                                texNormalMapSampler,
-                                                inTexCoord);
+    float3 normal = Func_UnpackNormalXYZ(texNormalMap,
+                                         texNormalMapSampler,
+                                         inTexCoord);
 
     float3 N = normalize(inWorldNormal);
     float3 T = normalize(inWorldTangent);
     float3 B = normalize(cross(N, T));
     float3x3 TBN = transpose(float3x3(T, B, N));
 
-    return normalize(mul(TBN, tangentNormal));
+    return normalize(mul(TBN, normal));
 }
 
 
