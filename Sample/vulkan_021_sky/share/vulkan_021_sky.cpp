@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-07-06
+* Time:     2024-08-18
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_020_terrain.h"
+#include "vulkan_021_sky.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -19,13 +19,15 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 9;
+static const int g_MeshCount = 10;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+
+    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/mountain/mountain.obj", //mountain
 
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/cliff/cliff.obj", //cliff
@@ -43,6 +45,8 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //cube
     false, //sphere
 
+    false, //mountain
+
     false, //rock
     false, //cliff
 
@@ -58,6 +62,8 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //plane  
     false, //cube
     false, //sphere
+
+    false, //mountain
 
     false, //rock
     false, //cliff
@@ -75,6 +81,8 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //cube
     FMath::ms_mat4Unit, //sphere
 
+    FMath::ms_mat4Unit, //mountain
+
     FMath::ms_mat4Unit, //rock
     FMath::ms_mat4Unit, //cliff
 
@@ -88,7 +96,7 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 22;
+static const int g_TextureCount = 24;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -102,6 +110,9 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_terrain_diffuse",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
     "texture_terrain_normal",           "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
     "texture_terrain_control",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
+
+    "mountain_diffuse",                 "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_diffuse.png", //mountain_diffuse
+    "mountain_normal",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_normal.png", //mountain_normal
 
     "rock_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
     "rock_normal",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
@@ -135,6 +146,9 @@ static FTexturePixelFormatType g_TextureFormats[g_TextureCount] =
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_normal
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_control
 
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_normal
+
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_normal
     F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_diffuse
@@ -166,6 +180,9 @@ static FTextureFilterType g_TextureFilters[g_TextureCount] =
     F_TextureFilter_Bilinear, //texture_terrain_diffuse
     F_TextureFilter_Bilinear, //texture_terrain_normal
     F_TextureFilter_Bilinear, //texture_terrain_control
+
+    F_TextureFilter_Bilinear, //mountain_diffuse
+    F_TextureFilter_Bilinear, //mountain_normal
 
     F_TextureFilter_Bilinear, //rock_diffuse
     F_TextureFilter_Bilinear, //rock_normal
@@ -199,6 +216,9 @@ static FTextureAddressingType g_TextureAddressings[g_TextureCount] =
     F_TextureAddressing_Clamp, //texture_terrain_normal
     F_TextureAddressing_Clamp, //texture_terrain_control
 
+    F_TextureAddressing_Clamp, //mountain_diffuse
+    F_TextureAddressing_Clamp, //mountain_normal
+
     F_TextureAddressing_Clamp, //rock_diffuse
     F_TextureAddressing_Clamp, //rock_normal
     F_TextureAddressing_Clamp, //cliff_diffuse
@@ -230,6 +250,9 @@ static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
     F_TextureBorderColor_OpaqueBlack, //texture_terrain_control
+
+    F_TextureBorderColor_OpaqueBlack, //mountain_diffuse
+    F_TextureBorderColor_OpaqueBlack, //mountain_normal
 
     F_TextureBorderColor_OpaqueBlack, //rock_diffuse
     F_TextureBorderColor_OpaqueBlack, //rock_normal
@@ -263,6 +286,9 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //texture_terrain_normal
     512,    512,    1, //texture_terrain_control
 
+   1024,   1024,    1, //mountain_diffuse
+   1024,   1024,    1, //mountain_normal
+
     512,    512,    1, //rock_diffuse
     512,    512,    1, //rock_normal
     512,    512,    1, //cliff_diffuse
@@ -294,6 +320,9 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texture_terrain_diffuse
     0,    0, //texture_terrain_normal
     0,    0, //texture_terrain_control
+
+    0,    0, //mountain_diffuse
+    0,    0, //mountain_normal
 
     0,    0, //rock_diffuse
     0,    0, //rock_normal
@@ -328,7 +357,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 16;
+static const int g_ShaderCount = 18;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -337,6 +366,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_transparent_lit",                      "vert",              "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
+    
+    "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
@@ -357,6 +388,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
     "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
 
+    "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
+
     "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
     "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
@@ -369,11 +402,12 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 7;
+static const int g_Object_Count = 8;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
     "object_skybox",                       "cube", //object_skybox
+    "object_mountain",                     "mountain", //object_mountain   
 
     "object_rock",                         "rock", //object_rock   
     "object_cliff",                        "cliff", //object_cliff   
@@ -388,6 +422,7 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
     "0", //object_skybox
+    "0", //object_mountain
 
     "0", //object_rock
     "0", //object_cliff
@@ -404,6 +439,7 @@ static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //object_skybox
+    0, //object_mountain 
 
     4, //object_rock 
     4, //object_cliff 
@@ -418,6 +454,7 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 static bool g_Object_IsShows[] = 
 {
     true, //object_skybox
+    true, //object_mountain
 
     true, //object_rock
     true, //object_cliff
@@ -432,6 +469,7 @@ static bool g_Object_IsShows[] =
 static bool g_Object_IsRotates[g_Object_Count] =
 {
     false, //object_skybox
+    false, //object_mountain
 
     false, //object_rock
     false, //object_cliff
@@ -446,6 +484,7 @@ static bool g_Object_IsRotates[g_Object_Count] =
 static bool g_Object_IsLightings[g_Object_Count] =
 {
     true, //object_skybox
+    true, //object_mountain
 
     true, //object_rock
     true, //object_cliff
@@ -460,6 +499,7 @@ static bool g_Object_IsLightings[g_Object_Count] =
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
     false, //object_skybox
+    false, //object_mountain
 
     false, //object_rock
     false, //object_cliff
@@ -474,11 +514,12 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 19;
+static const int g_ObjectRend_Count = 20;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
 
     "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
     "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
@@ -506,6 +547,7 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_mountain-1
     
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
@@ -533,6 +575,7 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_mountain-1
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
@@ -558,7 +601,8 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3( 1000.0f,   1000.0f,   1000.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
  
     FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
@@ -585,6 +629,7 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
     false, //object_skybox-1
+    false, //object_mountain-1
 
     false, //object_rock-1
     false, //object_cliff-1
@@ -611,6 +656,7 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //object_skybox-1
+    false, //object_mountain-1
     
     false, //object_rock-1
     false, //object_cliff-1
@@ -641,7 +687,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_020_Terrain::ModelObjectRendIndirect::Destroy()
+void Vulkan_021_Sky::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -660,7 +706,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_021_Sky::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -705,9 +751,9 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_021_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    F_Assert(_aRends.size() > 0 && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer")
+    F_Assert(_aRends.size() > 0 && "Vulkan_021_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -750,7 +796,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const M
     }
     else
     {
-        F_Assert(false && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
+        F_Assert(false && "Vulkan_021_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -767,7 +813,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const M
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_021_Sky::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -812,7 +858,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupUniformIndirectCommandBuf
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_021_Sky::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -833,7 +879,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_021_Sky::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -866,16 +912,15 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 
 
-Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
+Vulkan_021_Sky::Vulkan_021_Sky(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-    this->cfg_isUseComputeShader = true;
     this->cfg_isEditorCreate = true;
-    this->cfg_isEditorGridShow = false;
+    this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 
@@ -883,9 +928,11 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
+
+    this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
-void Vulkan_020_Terrain::setUpEnabledFeatures()
+void Vulkan_021_Sky::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -896,55 +943,30 @@ void Vulkan_020_Terrain::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_020_Terrain::setUpEnabledFeatures: multiDrawIndirect is not supported !");
-    }
-
-    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
-    {
-        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
+        F_LogError("*********************** Vulkan_021_Sky::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_020_Terrain::createDescriptorSetLayout_Custom()
+void Vulkan_021_Sky::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_020_Terrain::createCamera()
+void Vulkan_021_Sky::createCamera()
 {
-    VulkanWindow::createCamera();
-    
+    this->pCamera = new FCamera();
     cameraReset();
 }
-    void Vulkan_020_Terrain::cameraReset()
-    {
-        VulkanWindow::cameraReset();
-
-        this->pCamera->SetPos(FVector3(-256.0f, 200.0f, 0.0f));
-        this->pCamera->SetEulerAngles(FVector3(25.0f, 90.0f, 0.0f));
-        this->pCamera->SetFarZ(1000000.0f);
-        this->pCamera->UpdateViewMatrix();
-        this->pCamera->UpdateProjectionMatrix();
-    }
-
-void Vulkan_020_Terrain::createTerrain()
+void Vulkan_021_Sky::cameraReset()
 {
-    VulkanWindow::createTerrain();
+    VulkanWindow::cameraReset();
 
-    terrainReset();
+    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
+    this->pCamera->SetFarZ(100000.0f);
 }
-    void Vulkan_020_Terrain::terrainReset()
-    {
-        VulkanWindow::terrainReset();
 
-        this->cfg_isRenderPassTerrain = true;
-        this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
-
-        this->cfg_terrainHeightStart = -50.0f;
-        this->cfg_terrainHeightMax = 500.0f;
-    }
-
-void Vulkan_020_Terrain::loadModel_Custom()
+void Vulkan_021_Sky::loadModel_Custom()
 {
     createMeshes();
     createTextures();
@@ -962,7 +984,7 @@ void Vulkan_020_Terrain::loadModel_Custom()
             //Mesh
             {
                 Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
-                F_Assert(pMesh != nullptr && "Vulkan_020_Terrain::loadModel_Custom")
+                F_Assert(pMesh != nullptr && "Vulkan_021_Sky::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -992,7 +1014,7 @@ void Vulkan_020_Terrain::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_020_Terrain::loadModel_Custom")
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_021_Sky::loadModel_Custom")
 
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -1150,16 +1172,16 @@ void Vulkan_020_Terrain::loadModel_Custom()
 
     }
 }
-void Vulkan_020_Terrain::createIndirectCommands()
+void Vulkan_021_Sky::createIndirectCommands()
 {
 
 }
 
-void Vulkan_020_Terrain::createCustomCB()
+void Vulkan_021_Sky::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_021_Sky::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -1182,8 +1204,8 @@ void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                            g_ObjectRend_Tranforms[3 * i + 1],
-                                                            g_ObjectRend_Tranforms[3 * i + 2]);
+                                                                 g_ObjectRend_Tranforms[3 * i + 1],
+                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
@@ -1289,7 +1311,7 @@ void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_020_Terrain::createCustomBeforePipeline()
+void Vulkan_021_Sky::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -1300,7 +1322,7 @@ void Vulkan_020_Terrain::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
+void Vulkan_021_Sky::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1328,7 +1350,7 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1338,21 +1360,21 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1371,11 +1393,11 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_021_Sky::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1405,15 +1427,15 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_021_Sky::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_021_Sky::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_020_Terrain::createComputePipeline_Custom()
+void Vulkan_021_Sky::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1430,7 +1452,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1438,7 +1460,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1450,21 +1472,21 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1472,7 +1494,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_021_Sky::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1480,7 +1502,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_020_Terrain::destroyMeshes()
+void Vulkan_021_Sky::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1491,7 +1513,7 @@ void Vulkan_020_Terrain::destroyMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_020_Terrain::createMeshes()
+void Vulkan_021_Sky::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1520,7 +1542,7 @@ void Vulkan_020_Terrain::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_021_Sky::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1528,11 +1550,11 @@ void Vulkan_020_Terrain::createMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_020_Terrain::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_021_Sky::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Mesh* Vulkan_020_Terrain::findMesh(const String& nameMesh)
+Mesh* Vulkan_021_Sky::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1543,7 +1565,7 @@ Mesh* Vulkan_020_Terrain::findMesh(const String& nameMesh)
 }
 
 
-void Vulkan_020_Terrain::destroyTextures()
+void Vulkan_021_Sky::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1554,7 +1576,7 @@ void Vulkan_020_Terrain::destroyTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_020_Terrain::createTextures()
+void Vulkan_021_Sky::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1597,14 +1619,14 @@ void Vulkan_020_Terrain::createTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_020_Terrain::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_021_Sky::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Texture* Vulkan_020_Terrain::findTexture(const String& nameTexture)
+Texture* Vulkan_021_Sky::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -1615,7 +1637,7 @@ Texture* Vulkan_020_Terrain::findTexture(const String& nameTexture)
 }
 
 
-void Vulkan_020_Terrain::destroyDescriptorSetLayouts()
+void Vulkan_021_Sky::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1626,7 +1648,7 @@ void Vulkan_020_Terrain::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_020_Terrain::createDescriptorSetLayouts()
+void Vulkan_021_Sky::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1635,7 +1657,7 @@ void Vulkan_020_Terrain::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_021_Sky::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1643,10 +1665,10 @@ void Vulkan_020_Terrain::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        F_LogInfo("Vulkan_020_Terrain::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_021_Sky::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_020_Terrain::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_021_Sky::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -1655,7 +1677,7 @@ VkDescriptorSetLayout Vulkan_020_Terrain::findDescriptorSetLayout(const String& 
     }
     return itFind->second;
 }
-StringVector* Vulkan_020_Terrain::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_021_Sky::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -1666,7 +1688,7 @@ StringVector* Vulkan_020_Terrain::findDescriptorSetLayoutNames(const String& nam
 }
 
 
-void Vulkan_020_Terrain::destroyShaderModules()
+void Vulkan_021_Sky::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -1677,7 +1699,7 @@ void Vulkan_020_Terrain::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_020_Terrain::createShaderModules()
+void Vulkan_021_Sky::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1688,11 +1710,11 @@ void Vulkan_020_Terrain::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_020_Terrain::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_021_Sky::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_020_Terrain::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_021_Sky::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -1703,7 +1725,7 @@ VkShaderModule Vulkan_020_Terrain::findShaderModule(const String& nameShaderModu
 }
 
 
-void Vulkan_020_Terrain::destroyPipelineLayouts()
+void Vulkan_021_Sky::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1713,7 +1735,7 @@ void Vulkan_020_Terrain::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_020_Terrain::createPipelineLayouts()
+void Vulkan_021_Sky::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1721,7 +1743,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_021_Sky::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1730,7 +1752,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_021_Sky::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1738,7 +1760,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_020_Terrain::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_021_Sky::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -1750,7 +1772,7 @@ VkPipelineLayout Vulkan_020_Terrain::findPipelineLayout(const String& namePipeli
 
 
 
-void Vulkan_020_Terrain::createDescriptorSets_Custom()
+void Vulkan_021_Sky::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -1785,12 +1807,12 @@ void Vulkan_020_Terrain::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+void Vulkan_021_Sky::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                        ModelObjectRend* pRend, 
                                                        ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Graphics")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_021_Sky::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1919,7 +1941,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             }
             else
             {
-                String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_021_Sky::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1927,11 +1949,11 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
+void Vulkan_021_Sky::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Compute")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_021_Sky::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -1983,7 +2005,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipeli
         }
         else
         {
-            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "*********************** Vulkan_021_Sky::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1991,7 +2013,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipeli
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_020_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_021_Sky::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2050,7 +2072,7 @@ void Vulkan_020_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
     }
 }
 
-void Vulkan_020_Terrain::updateCBs_Custom()
+void Vulkan_021_Sky::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -2144,7 +2166,7 @@ void Vulkan_020_Terrain::updateCBs_Custom()
     }
 }
 
-void Vulkan_020_Terrain::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_021_Sky::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2185,13 +2207,13 @@ void Vulkan_020_Terrain::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
     }
 }
 
-bool Vulkan_020_Terrain::beginRenderImgui()
+bool Vulkan_021_Sky::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_020_Terrain", &windowOpened, 0);
+    ImGui::Begin("Vulkan_021_Sky", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -2202,16 +2224,10 @@ bool Vulkan_020_Terrain::beginRenderImgui()
         //2> Light
         lightConfig();
 
-        //3> Shadow
-        shadowConfig();
-
-        //4> Terrain
-        terrainConfig();
-
-        //5> PassConstants
+        //3> PassConstants
         passConstantsConfig();
 
-        //6> Model
+        //4> Model
         modelConfig();
 
     }
@@ -2219,7 +2235,7 @@ bool Vulkan_020_Terrain::beginRenderImgui()
 
     return true;
 }
-void Vulkan_020_Terrain::modelConfig()
+void Vulkan_021_Sky::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -2684,19 +2700,13 @@ void Vulkan_020_Terrain::modelConfig()
     }
 }
 
-void Vulkan_020_Terrain::endRenderImgui()
+void Vulkan_021_Sky::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-
-void Vulkan_020_Terrain::drawMeshTerrain(VkCommandBuffer& commandBuffer)
-{
-    VulkanWindow::drawMeshTerrain(commandBuffer);
-
-}
-void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_021_Sky::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -2721,7 +2731,7 @@ void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
-void Vulkan_020_Terrain::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_021_Sky::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -2749,7 +2759,7 @@ void Vulkan_020_Terrain::drawModelObjectRendIndirects(VkCommandBuffer& commandBu
         }
     }
 }   
-void Vulkan_020_Terrain::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_021_Sky::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -2793,7 +2803,7 @@ void Vulkan_020_Terrain::drawModelObjectRendIndirect(VkCommandBuffer& commandBuf
     }
 }
 
-void Vulkan_020_Terrain::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_021_Sky::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2804,7 +2814,7 @@ void Vulkan_020_Terrain::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mo
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_020_Terrain::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_021_Sky::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
@@ -2851,7 +2861,7 @@ void Vulkan_020_Terrain::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
     }
 }
 
-void Vulkan_020_Terrain::cleanupCustom()
+void Vulkan_021_Sky::cleanupCustom()
 {   
     destroyTextures();
     destroyMeshes();
@@ -2869,7 +2879,7 @@ void Vulkan_020_Terrain::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_020_Terrain::cleanupSwapChain_Custom()
+void Vulkan_021_Sky::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2884,7 +2894,7 @@ void Vulkan_020_Terrain::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_020_Terrain::recreateSwapChain_Custom()
+void Vulkan_021_Sky::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
