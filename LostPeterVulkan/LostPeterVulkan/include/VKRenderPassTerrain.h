@@ -24,16 +24,20 @@ namespace LostPeterVulkan
         virtual ~VKRenderPassTerrain();
 
     public:
+        static const uint32 c_nMaxGridVertexCount;
+        static const uint32 c_nInstanceGridVertexCount;
+
+    public:
         //Terrain
         uint8* poTerrainHeightMapData;
         float* poTerrainHeightMapDataFloat;
         int32 poTerrainHeightMapDataSize;
         int32 poTerrainHeightMapSize;
-        int32 poTerrainGridVertexCount;
-        int32 poTerrainGridInstanceVertexCount;
-        int32 poTerrainGridInstanceCount;
-        bool poTerrainIsDrawInstance;
 
+        bool poTerrainInstanceIsDraw;
+        int32 poTerrainInstanceCount;
+
+        //Mesh Whole
         std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2;
         uint32_t poTerrainVertexCount;
         size_t poTerrainVertexBuffer_Size;
@@ -46,6 +50,20 @@ namespace LostPeterVulkan
         void* poTerrainIndexBuffer_Data;
         VkBuffer poTerrainIndexBuffer;
         VkDeviceMemory poTerrainIndexBufferMemory;
+
+        //Mesh Instance
+        std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2_Instance;
+        uint32_t poTerrainVertexCount_Instance;
+        size_t poTerrainVertexBuffer_Size_Instance;
+        void* poTerrainVertexBuffer_Data_Instance;
+        VkBuffer poTerrainVertexBuffer_Instance;
+        VkDeviceMemory poTerrainVertexBufferMemory_Instance;
+        std::vector<uint32_t> poTerrain_Indices_Instance;
+        uint32_t poTerrainIndexCount_Instance;
+        size_t poTerrainIndexBuffer_Size_Instance;
+        void* poTerrainIndexBuffer_Data_Instance;
+        VkBuffer poTerrainIndexBuffer_Instance;
+        VkDeviceMemory poTerrainIndexBufferMemory_Instance;
 
         //HeightMap
         VkImage poTerrainHeightMapImage;
@@ -87,7 +105,8 @@ namespace LostPeterVulkan
 
     protected:
         virtual bool loadTerrainData(); 
-        virtual void setupTerrainGeometry();
+        virtual void setupTerrainGeometryWhole();
+        virtual void setupTerrainGeometryInstance();
         virtual void setupTerrainTexture();
 
     public:

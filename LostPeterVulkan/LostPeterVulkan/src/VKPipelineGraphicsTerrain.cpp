@@ -211,12 +211,11 @@ namespace LostPeterVulkan
             this->terrainObjectCBs.push_back(toWhole);
             float fTerrainSize = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
             float fTerrainSizeHalf = fTerrainSize / 2.0f;
-            float fTerrainInstanceSize = (float)(this->m_pVKRenderPassTerrain->poTerrainGridInstanceVertexCount - 1.0f);
+            float fTerrainInstanceSize = (float)(VKRenderPassTerrain::c_nInstanceGridVertexCount - 1.0f);
             float fTerrainInstanceSizeHalf = fTerrainInstanceSize / 2.0f;
-            int nHalfInstanceCount = this->m_pVKRenderPassTerrain->poTerrainGridInstanceCount / 2;
-            for (int i = 0; i < this->m_pVKRenderPassTerrain->poTerrainGridInstanceCount; i++)
+            for (int i = 0; i < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; i++)
             {
-                for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainGridInstanceCount; j++)
+                for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; j++)
                 {
                     TerrainObjectConstants toInstance;
                     toInstance.offsetX = j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
@@ -437,7 +436,7 @@ namespace LostPeterVulkan
         }
         float fHeight = GetTerrainHeight(vPos.x, vPos.z);
         vPos.y = fHeight;
-        
+
         return true;
     }
 

@@ -891,19 +891,35 @@ namespace LostPeterVulkan
             this->m_pVKRenderPassTerrain == nullptr)
             return;
 
-        VkBuffer vertexBuffers[] = { this->m_pVKRenderPassTerrain->poTerrainVertexBuffer };
-        VkDeviceSize offsets[] = { 0 };
-        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        bindIndexBuffer(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        
-        if (this->cfg_isWireFrame)
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline_WireFrame);
+        if (!this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw)
+        {
+            Draw_Graphics_Terrain_Whole(commandBuffer);
+        }
         else
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_Terrain->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-
-        drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
+        {
+            Draw_Graphics_Terrain_Instance(commandBuffer);
+        }   
     }
+        void VulkanWindow::Draw_Graphics_Terrain_Whole(VkCommandBuffer& commandBuffer)
+        {
+            VkBuffer vertexBuffers[] = { this->m_pVKRenderPassTerrain->poTerrainVertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            bindIndexBuffer(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            
+            if (this->cfg_isWireFrame)
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline_WireFrame);
+            else
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_Terrain->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
+            drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
+        }
+        void VulkanWindow::Draw_Graphics_Terrain_Instance(VkCommandBuffer& commandBuffer)
+        {
+
+        }
+
     float VulkanWindow::GetTerrainHeight(const FVector3& vPos)
     {
         if (!this->cfg_isRenderPassTerrain ||
@@ -8125,6 +8141,7 @@ namespace LostPeterVulkan
                     void VulkanWindow::terrainConfig()
                     {
                         if (!cfg_isRenderPassTerrain ||
+                            this->m_pVKRenderPassTerrain == nullptr ||
                             this->m_pPipelineGraphics_Terrain == nullptr)
                         {
                             return;
@@ -8132,6 +8149,14 @@ namespace LostPeterVulkan
 
                         if (ImGui::CollapsingHeader("Terrain Settings"))
                         {
+                            //poTerrainInstanceIsDraw
+                            bool isInstanceIsDraw = this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw;
+                            if (ImGui::Checkbox("Instance Draw", &isInstanceIsDraw))
+                            {   
+                                this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw = isInstanceIsDraw;
+                            }
+                            ImGui::Spacing();
+
                             terrainConfigItem(this->m_pPipelineGraphics_Terrain->terrainCB, "Terrain");
                         }
                         ImGui::Separator();
