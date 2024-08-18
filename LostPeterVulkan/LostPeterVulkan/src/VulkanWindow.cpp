@@ -904,7 +904,34 @@ namespace LostPeterVulkan
 
         drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
     }
+    float VulkanWindow::GetTerrainHeight(const FVector3& vPos)
+    {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr)
+            return vPos.y;
 
+        return GetTerrainHeight(vPos.x, vPos.z);
+    }
+    float VulkanWindow::GetTerrainHeight(float x, float z)
+    {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr)
+            return 0.0f;
+
+        return this->m_pPipelineGraphics_Terrain->GetTerrainHeight(x, z);
+    }
+    bool VulkanWindow::RaytraceTerrain(float screenX, float screenY, FVector3& vPos)
+    {
+        return RaytraceTerrain(screenX, screenY, this->pCamera, this->GetViewportVector4(), vPos);
+    }
+    bool VulkanWindow::RaytraceTerrain(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FVector3& vPos)
+    {
+        if (!this->cfg_isRenderPassTerrain ||
+            this->m_pPipelineGraphics_Terrain == nullptr)
+            return false;
+
+        return this->m_pPipelineGraphics_Terrain->RaytraceTerrain(screenX, screenY, pCamera, vViewport, vPos);
+    }
 
 
     /////////////////////////// VulkanWindow //////////////////////
@@ -7505,7 +7532,15 @@ namespace LostPeterVulkan
                                             this->mouseButtonDownMiddle ? "true" : "false");
 
                                 ImGui::Separator();
-                                
+                                if (this->cfg_isRenderPassTerrain &&
+                                    this->m_pPipelineGraphics_Terrain != nullptr)
+                                {
+                                    FVector3 vPosTerrain;
+                                    bool isRaytraceTerrain = RaytraceTerrain(this->mousePosLast.x, this->mousePosLast.y, vPosTerrain);
+
+                                    ImGui::Text("RaytraceTerrain: [%s]\nPosTerrain: [%f, %f, %f]", 
+                                                isRaytraceTerrain ? "true" : "false", vPosTerrain.x, vPosTerrain.y, vPosTerrain.z);
+                                }
                             }
                         }
                         void VulkanWindow::commonEditorConfig()

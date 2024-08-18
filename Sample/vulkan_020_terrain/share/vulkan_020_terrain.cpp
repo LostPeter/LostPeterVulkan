@@ -920,8 +920,8 @@ void Vulkan_020_Terrain::createCamera()
     {
         VulkanWindow::cameraReset();
 
-        this->pCamera->SetPos(FVector3(-256.0f, 200.0f, 0.0f));
-        this->pCamera->SetEulerAngles(FVector3(25.0f, 90.0f, 0.0f));
+        this->pCamera->SetPos(FVector3(-30.0f, 9.0f, 5.0f));
+        this->pCamera->SetEulerAngles(FVector3(9.0f, 95.0f, 0.0f));
         this->pCamera->SetFarZ(1000000.0f);
         this->pCamera->UpdateViewMatrix();
         this->pCamera->UpdateProjectionMatrix();
@@ -1181,7 +1181,10 @@ void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                FVector3 vPos = g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0);
+                float fHeight = GetTerrainHeight(vPos);
+                vPos.y = fHeight;
+                objectConstants.g_MatWorld = FMath::FromTRS(vPos,
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);

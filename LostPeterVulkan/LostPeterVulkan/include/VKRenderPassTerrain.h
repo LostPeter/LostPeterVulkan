@@ -83,18 +83,21 @@ namespace LostPeterVulkan
 
     public:
         void Destroy();
-
         virtual bool Init();
 
     protected:
-        
         virtual bool loadTerrainData(); 
         virtual void setupTerrainGeometry();
         virtual void setupTerrainTexture();
-    
+
     public:
         void CleanupSwapChain();
         void RecreateSwapChain();
+
+    public:
+        float GetTerrainHeight(int x, int z, float heightStart, float heightMax);
+        float GetTerrainHeight(const FVector3& vPos, float heightStart, float heightMax);
+        float GetTerrainHeight(float x, float z, float heightStart, float heightMax);
     };
 
 }; //LostPeterVulkan

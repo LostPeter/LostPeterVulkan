@@ -409,4 +409,36 @@ namespace LostPeterVulkan
         Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TerrainConstants), &this->terrainCB, this->poBufferMemory_TerrainCB);
     }
 
+    float VKPipelineGraphicsTerrain::GetTerrainHeight(int x, int z)
+    {
+        return this->m_pVKRenderPassTerrain->GetTerrainHeight(x, z, this->terrainCB.heightStart, this->terrainCB.heightMax);
+    }
+    float VKPipelineGraphicsTerrain::GetTerrainHeight(const FVector3& vPos)
+    {
+        return GetTerrainHeight(vPos.x, vPos.z);
+    }
+    float VKPipelineGraphicsTerrain::GetTerrainHeight(float x, float z)
+    {
+        return this->m_pVKRenderPassTerrain->GetTerrainHeight(x, z, this->terrainCB.heightStart, this->terrainCB.heightMax);
+    }
+
+    bool VKPipelineGraphicsTerrain::RaytraceTerrain(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FVector3& vPos)
+    {
+        vPos = FMath::ms_v3Zero;
+
+        FRay ray;
+        pCamera->ConvertScreenPos2ToWorldRay(screenX, screenY, vViewport, &ray);
+
+        FPlane plane(FMath::ms_v3UnitY, 0.0f);
+        std::pair<bool, float> ret = FMath::Intersects_RayPlane(ray, plane, vPos);
+        if (!ret.first)
+        {
+            return false;
+        }
+        float fHeight = GetTerrainHeight(vPos.x, vPos.z);
+        vPos.y = fHeight;
+        
+        return true;
+    }
+
 }; //LostPeterVulkan

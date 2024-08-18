@@ -3611,4 +3611,72 @@ namespace LostPeterFoundation
         vWorldCoord = glm::unProject(vScreenCoord, mat4ModelView, mat4Proj, vViewport);
     }
 
+    float FMath::BiLinear(float xCoord, float zCoord,
+                          int xSize, int zSize,
+                          float* pData)
+    {
+        int x = (int)xCoord;
+        int z = (int)zCoord;
+        if (x < 0)
+        {
+            x = 0;
+            xCoord = 0.0f;
+        }
+        if (x >= xSize)
+        {
+            x = xSize - 1;
+            xCoord = xSize - 1;
+        }
+        if (z < 0)
+        {
+            z = 0;
+            zCoord = 0.0f;
+        }
+        if (z >= zSize)
+        {
+            z = zSize - 1;
+            zCoord = zSize - 1;
+        }
+        
+        int xHigh = x + 1;
+        if (xHigh >= xSize)
+            xHigh = xSize - 1;
+        int zHigh = z + 1;
+        if (zHigh >= zSize)
+            zHigh = zSize - 1;
+
+        float dataLxLz = pData[x + z * xSize];
+        float dataLxHz = pData[x + zHigh * xSize];
+        float dataHxLz = pData[xHigh + z * xSize];
+        float dataHxHz = pData[xHigh + zHigh * xSize];
+
+        return BiLinear(xCoord, zCoord,
+                        dataLxLz, dataLxHz, dataHxLz, dataHxHz);
+    }
+
+    float FMath::BiLinear(float xCoord, float zCoord,
+                          float dataLxLz, float dataLxHz, float dataHxLz, float dataHxHz)
+    {
+        int x = (int)xCoord;
+        int z = (int)zCoord;
+        float xRelative = xCoord - x;
+        float zRelative = zCoord - z;
+
+        bool isLowerTri = (xRelative + zRelative < 1.0f);
+        float fHeight = 0.0f;
+        if (isLowerTri)
+        {
+            fHeight = dataLxLz;
+            fHeight += xRelative * (dataHxLz - dataLxLz);
+            fHeight += zRelative * (dataLxHz - dataLxLz);
+        }
+        else
+        {
+            fHeight = dataHxHz;
+            fHeight += (1.0f - xRelative) * (dataLxHz - dataHxHz);
+            fHeight += (1.0f - zRelative) * (dataHxLz - dataHxHz);
+        }
+        return fHeight;
+    }
+
 }; //LostPeterFoundation

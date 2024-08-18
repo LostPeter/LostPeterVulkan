@@ -67,6 +67,13 @@ namespace LostPeterVulkan
         
         virtual void UpdateDescriptorSets();
         virtual void UpdateBufferTerrain();
+
+    public:
+        float GetTerrainHeight(int x, int z);
+        float GetTerrainHeight(const FVector3& vPos);
+        float GetTerrainHeight(float x, float z);
+
+        bool RaytraceTerrain(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FVector3& vPos);
     };  
 
 }; //LostPeterVulkan

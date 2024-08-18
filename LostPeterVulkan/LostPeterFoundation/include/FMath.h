@@ -1105,6 +1105,14 @@ namespace LostPeterFoundation
 
         static FVector3 TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport);
         static void TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport, FVector3& vWorldCoord);
+    
+    public:
+        static float BiLinear(float xCoord, float zCoord,
+                              int xSize, int zSize,
+                              float* pData);
+        static float BiLinear(float xCoord, float zCoord,
+                              float dataLxLz, float dataLxHz, float dataHxLz, float dataHxHz);
+
     };
 
 }; //LostPeterFoundation

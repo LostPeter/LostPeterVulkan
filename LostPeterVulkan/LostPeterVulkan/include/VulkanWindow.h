@@ -114,7 +114,10 @@ namespace LostPeterVulkan
         virtual void UpdateDescriptorSets_Graphics_Terrain();
         virtual void UpdateBuffer_Graphics_Terrain();
         virtual void Draw_Graphics_Terrain(VkCommandBuffer& commandBuffer);
-        
+        virtual float GetTerrainHeight(const FVector3& vPos);
+        virtual float GetTerrainHeight(float x, float z);
+        virtual bool RaytraceTerrain(float screenX, float screenY, FVector3& vPos);
+        virtual bool RaytraceTerrain(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FVector3& vPos);
 
     protected:
         virtual void createInternal();

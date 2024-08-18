@@ -507,4 +507,30 @@ namespace LostPeterVulkan
 
     }
 
+    float VKRenderPassTerrain::GetTerrainHeight(int x, int z, float heightStart, float heightMax)
+    {
+        int size = this->poTerrainHeightMapSize;
+        x = FMath::Clamp(x, 0, size - 1);
+        z = FMath::Clamp(z, 0, size - 1);
+        float fPerf = poTerrainHeightMapDataFloat[x + z * size];
+        return heightStart + heightMax * fPerf;
+    }
+    float VKRenderPassTerrain::GetTerrainHeight(const FVector3& vPos, float heightStart, float heightMax)
+    {
+        return GetTerrainHeight(vPos.x, vPos.z, heightStart, heightMax);
+    }
+    float VKRenderPassTerrain::GetTerrainHeight(float x, float z, float heightStart, float heightMax)
+    {
+        float sizeX = this->poTerrainHeightMapSize - 1.0f;
+        float sizeZ = this->poTerrainHeightMapSize - 1.0f;
+        float xCoord = FMath::Clamp((x + sizeX / 2.0f), 0.0f, sizeX);
+        float zCoord = FMath::Clamp((sizeZ / 2.0f - z), 0.0f, sizeZ);
+        
+        float fPerf = FMath::BiLinear(xCoord, zCoord,
+                                      this->poTerrainHeightMapSize, this->poTerrainHeightMapSize,
+                                      this->poTerrainHeightMapDataFloat);
+        float fHeight = heightStart + heightMax * fPerf;
+        return fHeight;
+    }
+
 }; //LostPeterVulkan
