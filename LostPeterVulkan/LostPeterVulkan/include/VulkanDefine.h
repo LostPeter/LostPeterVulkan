@@ -1472,6 +1472,35 @@ namespace LostPeterVulkan
         }
     };
 
+    //////////////////////////////// CullConstants //////////////////////////////////
+
+    struct vulkanExport CullConstants
+    {
+        FMatrix4 mat4VPLast;  //VP Last
+        FVector4 v4FrustumPlanes[MAX_FRUSTUN_PLANE_COUNT]; //6 Frustum Planes
+        FVector4 v4ParamComon[4]; //Param common
+        FVector4 v4ParamRender; //Param Render
+        FVector4 v4PosPlayer; //Pos Player
+    };
+    struct vulkanExport CullObjectConstants
+    {
+        FVector4 vPos; //xyz = pos, w = cluster offset 
+        FVector4 vExt; //xyz = ext, w = isNoHizTest
+        float renderIndex;
+        float renderCount;
+        float reserve0;
+        float reserve1;
+
+        CullObjectConstants()
+            : vPos(FMath::ms_v4Zero)
+            , vExt(FMath::ms_v4Zero)
+            , renderIndex(0)
+            , renderCount(0)
+        {
+
+        }
+    };
+
 
 }; //LostPeterVulkan
 

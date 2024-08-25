@@ -548,9 +548,18 @@ namespace LostPeterVulkan
     //PipelineCompute
     void VulkanWindow::destroyPipelineCompute_Internal()
     {
-        //1> PipelineCompute_Terrain
+        destroyPipelineCompute_Cull();
+        destroyPipelineCompute_HizDepth();
         destroyPipelineCompute_Terrain();
     }
+        void VulkanWindow::destroyPipelineCompute_Cull()
+        {
+            F_DELETE(m_pPipelineCompute_Cull)
+        }
+        void VulkanWindow::destroyPipelineCompute_HizDepth()
+        {
+            F_DELETE(m_pPipelineCompute_HizDepth)
+        }
         void VulkanWindow::destroyPipelineCompute_Terrain()
         {
             F_DELETE(m_pPipelineCompute_Terrain)
@@ -558,9 +567,29 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createPipelineCompute_Internal()
     {
-        //1> PipelineCompute_Terrain
+        createPipelineCompute_Cull();
+        createPipelineCompute_HizDepth();
         createPipelineCompute_Terrain();
     }
+        void VulkanWindow::createPipelineCompute_Cull()
+        {
+            if (!this->cfg_isCullComputeFrustum)
+                return;
+
+            m_pPipelineCompute_Cull = new VKPipelineComputeCull("PipelineCompute-Cull");
+
+
+        }
+        void VulkanWindow::createPipelineCompute_HizDepth()
+        {
+            if (!this->cfg_isCullComputeFrustum ||
+                 !this->cfg_isCullComputeHiz)
+                return;
+
+            m_pPipelineCompute_HizDepth = new VKPipelineComputeHizDepth("PipelineCompute-HizDepth");
+
+
+        }
         void VulkanWindow::createPipelineCompute_Terrain()
         {
             if (!this->cfg_isRenderPassTerrain)
@@ -621,11 +650,8 @@ namespace LostPeterVulkan
     //PipelineGraphics
     void VulkanWindow::destroyPipelineGraphics_Internal()
     {
-        //1> PipelineGraphics_Terrain
         destroyPipelineGraphics_Terrain();
-        //2> PipelineGraphics_DepthShadowMap
         destroyPipelineGraphics_DepthShadowMap();
-        //3> PipelineGraphics_CopyBlit
         destroyPipelineGraphics_CopyBlit();
 
     }
@@ -644,11 +670,8 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createPipelineGraphics_Internal()
     {
-        //1> PipelineGraphics_CopyBlit
         createPipelineGraphics_CopyBlit();
-        //2> PipelineGraphics_DepthShadowMap
         createPipelineGraphics_DepthShadowMap();
-        //3> PipelineGraphics_Terrain
         createPipelineGraphics_Terrain();
 
     }
@@ -1217,6 +1240,10 @@ namespace LostPeterVulkan
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCull)) //ObjectCull
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
@@ -1282,6 +1309,10 @@ namespace LostPeterVulkan
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Terrain)) //Terrain
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Cull)) //Cull
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
@@ -1378,6 +1409,8 @@ namespace LostPeterVulkan
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
+        , cfg_isCullComputeFrustum(false)
+        , cfg_isCullComputeHiz(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
@@ -1431,6 +1464,8 @@ namespace LostPeterVulkan
         , m_pVKRenderPassShadowMap(nullptr)
         , m_pVKRenderPassTerrain(nullptr)
 
+        , m_pPipelineCompute_Cull(nullptr)
+        , m_pPipelineCompute_HizDepth(nullptr)
         , m_pPipelineCompute_Terrain(nullptr)
 
         , m_pPipelineGraphics_CopyBlit(nullptr)

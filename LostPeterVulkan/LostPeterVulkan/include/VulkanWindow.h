@@ -30,7 +30,6 @@ namespace LostPeterVulkan
         VKRenderPassTerrain* m_pVKRenderPassTerrain;
 
         //Uniform ConstantBuffer
-        //1> PassCB
         PassConstants passCB;
         VkBufferVector poBuffers_PassCB;
         VkDeviceMemoryVector poBuffersMemory_PassCB;
@@ -40,15 +39,13 @@ namespace LostPeterVulkan
         VkDeviceMemoryVector poBuffersMemory_ObjectWorldCB;
 
         //PipelineCompute
-        //1> PipelineCompute_Terrain
+        VKPipelineComputeCull* m_pPipelineCompute_Cull;
+        VKPipelineComputeHizDepth* m_pPipelineCompute_HizDepth;
         VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
 
         //PipelineGraphics
-        //1> PipelineGraphics_CopyBlit
         VKPipelineGraphicsCopyBlit* m_pPipelineGraphics_CopyBlit;
-        //2> PipelineGraphics_DepthShadowMap
         VKPipelineGraphicsDepthShadowMap* m_pPipelineGraphics_DepthShadowMap;
-        //3> PipelineGraphics_Terrain
         VKPipelineGraphicsTerrain* m_pPipelineGraphics_Terrain;
 
         //Mesh
@@ -158,8 +155,12 @@ namespace LostPeterVulkan
 
         //PipelineCompute
         virtual void destroyPipelineCompute_Internal();
+            virtual void destroyPipelineCompute_Cull();
+            virtual void destroyPipelineCompute_HizDepth();
             virtual void destroyPipelineCompute_Terrain();
         virtual void createPipelineCompute_Internal();
+            virtual void createPipelineCompute_Cull();
+            virtual void createPipelineCompute_HizDepth();
             virtual void createPipelineCompute_Terrain();
 
         //PipelineGraphics
@@ -360,6 +361,8 @@ namespace LostPeterVulkan
         bool cfg_isNegativeViewport;
         bool cfg_isUseComputeShader;
         bool cfg_isCreateRenderComputeSycSemaphore;
+        bool cfg_isCullComputeFrustum;
+        bool cfg_isCullComputeHiz;
         VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;

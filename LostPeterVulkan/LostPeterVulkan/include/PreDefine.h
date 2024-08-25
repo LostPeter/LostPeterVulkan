@@ -32,6 +32,8 @@ namespace LostPeterVulkan
     #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
     #define MAX_TERRAIN_SPLAT_COUNT 16
+    #define MAX_FRUSTUN_PLANE_COUNT 6
+    #define MAX_OBJECT_CULL_COUNT 8196
 
     #define SHADER_NAME_Vertex                      "vert"
     #define SHADER_NAME_TessellationControl         "tesc"
@@ -243,23 +245,25 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_ObjectLineFlat2D,              //6:  ObjectLineFlat2D
         Vulkan_DescriptorSet_ObjectLineFlat3D,              //7:  ObjectLineFlat3D
         Vulkan_DescriptorSet_ObjectCopyBlit,                //8:  ObjectCopyBlit
-        Vulkan_DescriptorSet_Material,                      //9:  Material
-        Vulkan_DescriptorSet_Instance,                      //10: Instance
-        Vulkan_DescriptorSet_TextureCopy,                   //11: TextureCopy
-        Vulkan_DescriptorSet_Tessellation,                  //12: Tessellation
-        Vulkan_DescriptorSet_Geometry,                      //13: Geometry
-        Vulkan_DescriptorSet_TextureVS,                     //14: TextureVS
-        Vulkan_DescriptorSet_TextureTESC,                   //15: TextureTESC
-        Vulkan_DescriptorSet_TextureTESE,                   //16: TextureTESE
-        Vulkan_DescriptorSet_TextureFS,                     //17: TextureFS
-        Vulkan_DescriptorSet_TextureFrameColor,             //18: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //19: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //20: TextureCSRW
-        Vulkan_DescriptorSet_TextureDepthShadow,            //21: TextureDepthShadow
-        Vulkan_DescriptorSet_InputAttachRed,                //22: InputAttachRed
-        Vulkan_DescriptorSet_InputAttachGreen,              //23: InputAttachGreen
-        Vulkan_DescriptorSet_InputAttachBlue,               //24: InputAttachBlue
-        Vulkan_DescriptorSet_Terrain,                       //25: Terrain
+        Vulkan_DescriptorSet_ObjectCull,                    //9:  ObjectCull
+        Vulkan_DescriptorSet_Material,                      //10: Material
+        Vulkan_DescriptorSet_Instance,                      //11: Instance
+        Vulkan_DescriptorSet_TextureCopy,                   //12: TextureCopy
+        Vulkan_DescriptorSet_Tessellation,                  //13: Tessellation
+        Vulkan_DescriptorSet_Geometry,                      //14: Geometry
+        Vulkan_DescriptorSet_TextureVS,                     //15: TextureVS
+        Vulkan_DescriptorSet_TextureTESC,                   //16: TextureTESC
+        Vulkan_DescriptorSet_TextureTESE,                   //17: TextureTESE
+        Vulkan_DescriptorSet_TextureFS,                     //18: TextureFS
+        Vulkan_DescriptorSet_TextureFrameColor,             //19: TextureFrameColor
+        Vulkan_DescriptorSet_TextureCSR,                    //20: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //21: TextureCSRW
+        Vulkan_DescriptorSet_TextureDepthShadow,            //22: TextureDepthShadow
+        Vulkan_DescriptorSet_InputAttachRed,                //23: InputAttachRed
+        Vulkan_DescriptorSet_InputAttachGreen,              //24: InputAttachGreen
+        Vulkan_DescriptorSet_InputAttachBlue,               //25: InputAttachBlue
+        Vulkan_DescriptorSet_Terrain,                       //26: Terrain
+        Vulkan_DescriptorSet_Cull,                          //27: Cull
 
         Vulkan_DescriptorSet_Count,
     };
@@ -468,6 +472,8 @@ namespace LostPeterVulkan
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineCompute;
+    class VKPipelineComputeCull;
+    class VKPipelineComputeHizDepth;
     class VKPipelineComputeTerrain;
     class VKPipelineGraphics;
     class VKPipelineGraphicsCopyBlit;

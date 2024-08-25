@@ -24,6 +24,8 @@
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"
+#include "VKPipelineComputeCull.h"
+#include "VKPipelineComputeHizDepth.h"
 #include "VKPipelineComputeTerrain.h"
 #include "VKPipelineGraphics.h"
 #include "VKPipelineGraphicsCopyBlit.h"

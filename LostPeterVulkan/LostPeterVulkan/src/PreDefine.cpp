@@ -441,23 +441,25 @@ namespace LostPeterVulkan
         "ObjectLineFlat2D",         //6:   ObjectLineFlat2D
         "ObjectLineFlat3D",         //7:   ObjectLineFlat3D
         "ObjectCopyBlit",           //8:   ObjectCopyBlit
-        "Material",                 //9:   Material
-        "Instance",                 //10:  Instance
-        "TextureCopy",              //11:  TextureCopy
-        "Tessellation",             //12:  Tessellation
-        "Geometry",                 //13:  Geometry
-        "TextureVS",                //14:  TextureVS
-        "TextureTESC",              //15:  TextureTESC
-        "TextureTESE",              //16:  TextureTESE
-        "TextureFS",                //17:  TextureFS
-        "TextureFrameColor",        //18:  TextureFrameColor
-        "TextureCSR",               //19:  TextureCSR
-        "TextureCSRW",              //20:  TextureCSRW
-        "TextureDepthShadow",       //21:  TextureDepthShadow
-        "InputAttachRed",           //22:  InputAttachRed
-        "InputAttachGreen",         //23:  InputAttachGreen
-        "InputAttachBlue",          //24:  InputAttachBlue
-        "Terrain",                  //25:  Terrain
+        "ObjectCull",               //9:   ObjectCull
+        "Material",                 //10:  Material
+        "Instance",                 //11:  Instance
+        "TextureCopy",              //12:  TextureCopy
+        "Tessellation",             //13:  Tessellation
+        "Geometry",                 //14:  Geometry
+        "TextureVS",                //15:  TextureVS
+        "TextureTESC",              //16:  TextureTESC
+        "TextureTESE",              //17:  TextureTESE
+        "TextureFS",                //18:  TextureFS
+        "TextureFrameColor",        //19:  TextureFrameColor
+        "TextureCSR",               //20:  TextureCSR
+        "TextureCSRW",              //21:  TextureCSRW
+        "TextureDepthShadow",       //22:  TextureDepthShadow
+        "InputAttachRed",           //23:  InputAttachRed
+        "InputAttachGreen",         //24:  InputAttachGreen
+        "InputAttachBlue",          //25:  InputAttachBlue
+        "Terrain",                  //26:  Terrain
+        "Cull",                     //27:  Cull
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {
