@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-08-18
+* Time:     2024-07-06
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -10,11 +10,11 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_022_fog.h"
+#include "vulkan_021_terrain.h"
 
 
 int main()
 {
-    Vulkan_022_Fog sample(1280, 720, "LostPeter - Vulkan_022_Fog");
+    Vulkan_021_Terrain sample(1280, 720, "LostPeter - Vulkan_021_Terrain");
     return App::Run(&sample);
 }

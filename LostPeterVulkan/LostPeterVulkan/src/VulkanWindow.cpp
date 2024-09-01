@@ -362,7 +362,7 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 9;
+    static const int g_ShaderCount_Internal = 11;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
@@ -390,6 +390,8 @@ namespace LostPeterVulkan
         "comp_standard_compute_texcopy_tex2darray",               "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
         "comp_standard_compute_texgen_normalmap",                 "comp",              "Assets/Shader/standard_compute_texgen_normalmap.comp.spv", //standard_compute_texgen_normalmap comp
 
+        "comp_standard_compute_cull",                             "comp",              "Assets/Shader/standard_compute_cull.comp.spv", //standard_compute_cull comp
+        "comp_standard_compute_hiz_depth",                        "comp",              "Assets/Shader/standard_compute_hiz_depth.comp.spv", //standard_compute_hiz_depth comp
     };
     void VulkanWindow::destroyShaderModules_Internal()
     {

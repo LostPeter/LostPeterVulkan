@@ -120,8 +120,8 @@ void main(point VSOutput input[1],
         float oscillationStrength = 2.5f;
         float sinSkewCoeff = random;
         float lerpCoeff = (sin(oscillationStrength * passConsts.g_DeltaTime + sinSkewCoeff) + 1.0) / 2;
-        float2 leftWindBound = wind * (1.0 - oscillateDelta);
-        float2 rightWindBound = wind * (1.0 + oscillateDelta);
+        float2 leftWindBound = wind * (1.0 - c_fOscillateDelta);
+        float2 rightWindBound = wind * (1.0 + c_fOscillateDelta);
 
         wind = lerp(leftWindBound, rightWindBound, lerpCoeff);
 

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-07-06
+* Time:     2024-09-01
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_020_terrain.h"
+#include "vulkan_020_culling.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -641,7 +641,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_020_Terrain::ModelObjectRendIndirect::Destroy()
+void Vulkan_020_Culling::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -660,7 +660,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_020_Culling::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -705,9 +705,9 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_020_Culling::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    F_Assert(_aRends.size() > 0 && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer")
+    F_Assert(_aRends.size() > 0 && "Vulkan_020_Culling::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -750,7 +750,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const M
     }
     else
     {
-        F_Assert(false && "Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
+        F_Assert(false && "Vulkan_020_Culling::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -767,7 +767,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupVertexIndexBuffer(const M
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_020_Culling::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -812,7 +812,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::SetupUniformIndirectCommandBuf
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_020_Culling::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -833,7 +833,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_020_Culling::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -866,7 +866,7 @@ void Vulkan_020_Terrain::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 
 
-Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
+Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
@@ -885,7 +885,7 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
-void Vulkan_020_Terrain::setUpEnabledFeatures()
+void Vulkan_020_Culling::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -896,7 +896,7 @@ void Vulkan_020_Terrain::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_020_Terrain::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        F_LogError("*********************** Vulkan_020_Culling::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 
     if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
@@ -905,18 +905,18 @@ void Vulkan_020_Terrain::setUpEnabledFeatures()
     }
 }
 
-void Vulkan_020_Terrain::createDescriptorSetLayout_Custom()
+void Vulkan_020_Culling::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_020_Terrain::createCamera()
+void Vulkan_020_Culling::createCamera()
 {
     VulkanWindow::createCamera();
     
     cameraReset();
 }
-    void Vulkan_020_Terrain::cameraReset()
+    void Vulkan_020_Culling::cameraReset()
     {
         VulkanWindow::cameraReset();
 
@@ -927,13 +927,13 @@ void Vulkan_020_Terrain::createCamera()
         this->pCamera->UpdateProjectionMatrix();
     }
 
-void Vulkan_020_Terrain::createTerrain()
+void Vulkan_020_Culling::createTerrain()
 {
     VulkanWindow::createTerrain();
 
     terrainReset();
 }
-    void Vulkan_020_Terrain::terrainReset()
+    void Vulkan_020_Culling::terrainReset()
     {
         VulkanWindow::terrainReset();
 
@@ -944,7 +944,7 @@ void Vulkan_020_Terrain::createTerrain()
         this->cfg_terrainHeightMax = 500.0f;
     }
 
-void Vulkan_020_Terrain::loadModel_Custom()
+void Vulkan_020_Culling::loadModel_Custom()
 {
     createMeshes();
     createTextures();
@@ -962,7 +962,7 @@ void Vulkan_020_Terrain::loadModel_Custom()
             //Mesh
             {
                 Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
-                F_Assert(pMesh != nullptr && "Vulkan_020_Terrain::loadModel_Custom")
+                F_Assert(pMesh != nullptr && "Vulkan_020_Culling::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -992,7 +992,7 @@ void Vulkan_020_Terrain::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_020_Terrain::loadModel_Custom")
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_020_Culling::loadModel_Custom")
 
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -1150,16 +1150,16 @@ void Vulkan_020_Terrain::loadModel_Custom()
 
     }
 }
-void Vulkan_020_Terrain::createIndirectCommands()
+void Vulkan_020_Culling::createIndirectCommands()
 {
 
 }
 
-void Vulkan_020_Terrain::createCustomCB()
+void Vulkan_020_Culling::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -1292,7 +1292,7 @@ void Vulkan_020_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_020_Terrain::createCustomBeforePipeline()
+void Vulkan_020_Culling::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -1303,7 +1303,7 @@ void Vulkan_020_Terrain::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
+void Vulkan_020_Culling::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1331,7 +1331,7 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1341,21 +1341,21 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1374,11 +1374,11 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1408,15 +1408,15 @@ void Vulkan_020_Terrain::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_020_Terrain::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_020_Terrain::createComputePipeline_Custom()
+void Vulkan_020_Culling::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1433,7 +1433,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1441,7 +1441,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1453,21 +1453,21 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1475,7 +1475,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_020_Terrain::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_020_Culling::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1483,7 +1483,7 @@ void Vulkan_020_Terrain::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_020_Terrain::destroyMeshes()
+void Vulkan_020_Culling::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1494,7 +1494,7 @@ void Vulkan_020_Terrain::destroyMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_020_Terrain::createMeshes()
+void Vulkan_020_Culling::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1523,7 +1523,7 @@ void Vulkan_020_Terrain::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "*********************** Vulkan_020_Terrain::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_020_Culling::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1531,11 +1531,11 @@ void Vulkan_020_Terrain::createMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_020_Terrain::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Culling::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Mesh* Vulkan_020_Terrain::findMesh(const String& nameMesh)
+Mesh* Vulkan_020_Culling::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1546,7 +1546,7 @@ Mesh* Vulkan_020_Terrain::findMesh(const String& nameMesh)
 }
 
 
-void Vulkan_020_Terrain::destroyTextures()
+void Vulkan_020_Culling::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1557,7 +1557,7 @@ void Vulkan_020_Terrain::destroyTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_020_Terrain::createTextures()
+void Vulkan_020_Culling::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1600,14 +1600,14 @@ void Vulkan_020_Terrain::createTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_020_Terrain::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Culling::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Texture* Vulkan_020_Terrain::findTexture(const String& nameTexture)
+Texture* Vulkan_020_Culling::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -1618,7 +1618,7 @@ Texture* Vulkan_020_Terrain::findTexture(const String& nameTexture)
 }
 
 
-void Vulkan_020_Terrain::destroyDescriptorSetLayouts()
+void Vulkan_020_Culling::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1629,7 +1629,7 @@ void Vulkan_020_Terrain::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_020_Terrain::createDescriptorSetLayouts()
+void Vulkan_020_Culling::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1638,7 +1638,7 @@ void Vulkan_020_Terrain::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_020_Culling::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1646,10 +1646,10 @@ void Vulkan_020_Terrain::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        F_LogInfo("Vulkan_020_Terrain::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_020_Culling::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_020_Terrain::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_020_Culling::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -1658,7 +1658,7 @@ VkDescriptorSetLayout Vulkan_020_Terrain::findDescriptorSetLayout(const String& 
     }
     return itFind->second;
 }
-StringVector* Vulkan_020_Terrain::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_020_Culling::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -1669,7 +1669,7 @@ StringVector* Vulkan_020_Terrain::findDescriptorSetLayoutNames(const String& nam
 }
 
 
-void Vulkan_020_Terrain::destroyShaderModules()
+void Vulkan_020_Culling::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -1680,7 +1680,7 @@ void Vulkan_020_Terrain::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_020_Terrain::createShaderModules()
+void Vulkan_020_Culling::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1691,11 +1691,11 @@ void Vulkan_020_Terrain::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_020_Terrain::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_020_Culling::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_020_Terrain::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_020_Culling::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -1706,7 +1706,7 @@ VkShaderModule Vulkan_020_Terrain::findShaderModule(const String& nameShaderModu
 }
 
 
-void Vulkan_020_Terrain::destroyPipelineLayouts()
+void Vulkan_020_Culling::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1716,7 +1716,7 @@ void Vulkan_020_Terrain::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_020_Terrain::createPipelineLayouts()
+void Vulkan_020_Culling::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1724,7 +1724,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_020_Culling::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1733,7 +1733,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_020_Terrain::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_020_Culling::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1741,7 +1741,7 @@ void Vulkan_020_Terrain::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_020_Terrain::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_020_Culling::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -1753,7 +1753,7 @@ VkPipelineLayout Vulkan_020_Terrain::findPipelineLayout(const String& namePipeli
 
 
 
-void Vulkan_020_Terrain::createDescriptorSets_Custom()
+void Vulkan_020_Culling::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -1788,12 +1788,12 @@ void Vulkan_020_Terrain::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                        ModelObjectRend* pRend, 
                                                        ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Graphics")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1922,7 +1922,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             }
             else
             {
-                String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_020_Culling::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1930,11 +1930,11 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
+void Vulkan_020_Culling::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Terrain::createDescriptorSets_Compute")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -1986,7 +1986,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipeli
         }
         else
         {
-            String msg = "*********************** Vulkan_020_Terrain::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "*********************** Vulkan_020_Culling::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1994,7 +1994,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipeli
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_020_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2053,7 +2053,7 @@ void Vulkan_020_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
     }
 }
 
-void Vulkan_020_Terrain::updateCBs_Custom()
+void Vulkan_020_Culling::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -2147,7 +2147,7 @@ void Vulkan_020_Terrain::updateCBs_Custom()
     }
 }
 
-void Vulkan_020_Terrain::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2188,13 +2188,13 @@ void Vulkan_020_Terrain::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
     }
 }
 
-bool Vulkan_020_Terrain::beginRenderImgui()
+bool Vulkan_020_Culling::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_020_Terrain", &windowOpened, 0);
+    ImGui::Begin("Vulkan_020_Culling", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -2222,7 +2222,7 @@ bool Vulkan_020_Terrain::beginRenderImgui()
 
     return true;
 }
-void Vulkan_020_Terrain::modelConfig()
+void Vulkan_020_Culling::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -2687,19 +2687,19 @@ void Vulkan_020_Terrain::modelConfig()
     }
 }
 
-void Vulkan_020_Terrain::endRenderImgui()
+void Vulkan_020_Culling::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
 
-void Vulkan_020_Terrain::drawMeshTerrain(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::drawMeshTerrain(VkCommandBuffer& commandBuffer)
 {
     VulkanWindow::drawMeshTerrain(commandBuffer);
 
 }
-void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -2724,7 +2724,7 @@ void Vulkan_020_Terrain::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
-void Vulkan_020_Terrain::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_020_Culling::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -2752,7 +2752,7 @@ void Vulkan_020_Terrain::drawModelObjectRendIndirects(VkCommandBuffer& commandBu
         }
     }
 }   
-void Vulkan_020_Terrain::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_020_Culling::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -2796,7 +2796,7 @@ void Vulkan_020_Terrain::drawModelObjectRendIndirect(VkCommandBuffer& commandBuf
     }
 }
 
-void Vulkan_020_Terrain::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_020_Culling::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2807,7 +2807,7 @@ void Vulkan_020_Terrain::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mo
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_020_Terrain::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_020_Culling::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
@@ -2854,7 +2854,7 @@ void Vulkan_020_Terrain::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
     }
 }
 
-void Vulkan_020_Terrain::cleanupCustom()
+void Vulkan_020_Culling::cleanupCustom()
 {   
     destroyTextures();
     destroyMeshes();
@@ -2872,7 +2872,7 @@ void Vulkan_020_Terrain::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_020_Terrain::cleanupSwapChain_Custom()
+void Vulkan_020_Culling::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2887,7 +2887,7 @@ void Vulkan_020_Terrain::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_020_Terrain::recreateSwapChain_Custom()
+void Vulkan_020_Culling::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

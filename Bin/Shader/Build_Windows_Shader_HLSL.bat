@@ -47,7 +47,7 @@ echo %name_shader%| findstr %name_vert% >nul && (
 ) || echo %name_shader%| findstr %name_comp% >nul && (
     set name_profile=cs_6_1
 	@REM echo "file is .comp !"
-) || ( echo file is not valid, file: %name_shader%
+) || ( echo Ignore file, is not [.vert/.tesc/.tese/.geom/.frag.comp], name: %name_shader%
     set /A isProcess=0
 )
 

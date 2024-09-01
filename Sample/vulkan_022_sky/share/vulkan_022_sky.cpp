@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_022_fog.h"
+#include "vulkan_022_sky.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -687,7 +687,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_022_Fog::ModelObjectRendIndirect::Destroy()
+void Vulkan_022_Sky::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -706,7 +706,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_022_Fog::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_022_Sky::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -751,9 +751,9 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_022_Fog::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_022_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    F_Assert(_aRends.size() > 0 && "Vulkan_022_Fog::ModelObjectRendIndirect::SetupVertexIndexBuffer")
+    F_Assert(_aRends.size() > 0 && "Vulkan_022_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -796,7 +796,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::SetupVertexIndexBuffer(const Model
     }
     else
     {
-        F_Assert(false && "Vulkan_022_Fog::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
+        F_Assert(false && "Vulkan_022_Sky::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -813,7 +813,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::SetupVertexIndexBuffer(const Model
     }
 }
 
-void Vulkan_022_Fog::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_022_Sky::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -858,7 +858,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer(
     }
 }
 
-void Vulkan_022_Fog::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_022_Sky::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -879,7 +879,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_022_Fog::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_022_Sky::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -912,7 +912,7 @@ void Vulkan_022_Fog::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 
 
-Vulkan_022_Fog::Vulkan_022_Fog(int width, int height, String name)
+Vulkan_022_Sky::Vulkan_022_Sky(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
@@ -932,7 +932,7 @@ Vulkan_022_Fog::Vulkan_022_Fog(int width, int height, String name)
     this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
-void Vulkan_022_Fog::setUpEnabledFeatures()
+void Vulkan_022_Sky::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -943,21 +943,21 @@ void Vulkan_022_Fog::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_022_Fog::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        F_LogError("*********************** Vulkan_022_Sky::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_022_Fog::createDescriptorSetLayout_Custom()
+void Vulkan_022_Sky::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_022_Fog::createCamera()
+void Vulkan_022_Sky::createCamera()
 {
     this->pCamera = new FCamera();
     cameraReset();
 }
-void Vulkan_022_Fog::cameraReset()
+void Vulkan_022_Sky::cameraReset()
 {
     VulkanWindow::cameraReset();
 
@@ -966,7 +966,7 @@ void Vulkan_022_Fog::cameraReset()
     this->pCamera->SetFarZ(100000.0f);
 }
 
-void Vulkan_022_Fog::loadModel_Custom()
+void Vulkan_022_Sky::loadModel_Custom()
 {
     createMeshes();
     createTextures();
@@ -984,7 +984,7 @@ void Vulkan_022_Fog::loadModel_Custom()
             //Mesh
             {
                 Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
-                F_Assert(pMesh != nullptr && "Vulkan_022_Fog::loadModel_Custom")
+                F_Assert(pMesh != nullptr && "Vulkan_022_Sky::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1014,7 +1014,7 @@ void Vulkan_022_Fog::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_022_Fog::loadModel_Custom")
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_022_Sky::loadModel_Custom")
 
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -1172,16 +1172,16 @@ void Vulkan_022_Fog::loadModel_Custom()
 
     }
 }
-void Vulkan_022_Fog::createIndirectCommands()
+void Vulkan_022_Sky::createIndirectCommands()
 {
 
 }
 
-void Vulkan_022_Fog::createCustomCB()
+void Vulkan_022_Sky::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_022_Fog::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_022_Sky::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -1311,7 +1311,7 @@ void Vulkan_022_Fog::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_022_Fog::createCustomBeforePipeline()
+void Vulkan_022_Sky::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -1322,7 +1322,7 @@ void Vulkan_022_Fog::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_022_Fog::createGraphicsPipeline_Custom()
+void Vulkan_022_Sky::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1350,7 +1350,7 @@ void Vulkan_022_Fog::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1360,21 +1360,21 @@ void Vulkan_022_Fog::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1393,11 +1393,11 @@ void Vulkan_022_Fog::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_022_Fog::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_022_Sky::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1427,15 +1427,15 @@ void Vulkan_022_Fog::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_022_Sky::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_022_Fog::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_022_Sky::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_022_Fog::createComputePipeline_Custom()
+void Vulkan_022_Sky::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1452,7 +1452,7 @@ void Vulkan_022_Fog::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1460,7 +1460,7 @@ void Vulkan_022_Fog::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1472,21 +1472,21 @@ void Vulkan_022_Fog::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1494,7 +1494,7 @@ void Vulkan_022_Fog::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_022_Fog::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_022_Sky::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1502,7 +1502,7 @@ void Vulkan_022_Fog::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_022_Fog::destroyMeshes()
+void Vulkan_022_Sky::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1513,7 +1513,7 @@ void Vulkan_022_Fog::destroyMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_022_Fog::createMeshes()
+void Vulkan_022_Sky::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1542,7 +1542,7 @@ void Vulkan_022_Fog::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "*********************** Vulkan_022_Fog::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_022_Sky::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1550,11 +1550,11 @@ void Vulkan_022_Fog::createMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_022_Fog::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_022_Sky::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Mesh* Vulkan_022_Fog::findMesh(const String& nameMesh)
+Mesh* Vulkan_022_Sky::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1565,7 +1565,7 @@ Mesh* Vulkan_022_Fog::findMesh(const String& nameMesh)
 }
 
 
-void Vulkan_022_Fog::destroyTextures()
+void Vulkan_022_Sky::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1576,7 +1576,7 @@ void Vulkan_022_Fog::destroyTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_022_Fog::createTextures()
+void Vulkan_022_Sky::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1619,14 +1619,14 @@ void Vulkan_022_Fog::createTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_022_Fog::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_022_Sky::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Texture* Vulkan_022_Fog::findTexture(const String& nameTexture)
+Texture* Vulkan_022_Sky::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -1637,7 +1637,7 @@ Texture* Vulkan_022_Fog::findTexture(const String& nameTexture)
 }
 
 
-void Vulkan_022_Fog::destroyDescriptorSetLayouts()
+void Vulkan_022_Sky::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1648,7 +1648,7 @@ void Vulkan_022_Fog::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_022_Fog::createDescriptorSetLayouts()
+void Vulkan_022_Sky::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1657,7 +1657,7 @@ void Vulkan_022_Fog::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "*********************** Vulkan_022_Fog::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_022_Sky::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1665,10 +1665,10 @@ void Vulkan_022_Fog::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        F_LogInfo("Vulkan_022_Fog::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_022_Sky::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_022_Fog::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_022_Sky::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -1677,7 +1677,7 @@ VkDescriptorSetLayout Vulkan_022_Fog::findDescriptorSetLayout(const String& name
     }
     return itFind->second;
 }
-StringVector* Vulkan_022_Fog::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_022_Sky::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -1688,7 +1688,7 @@ StringVector* Vulkan_022_Fog::findDescriptorSetLayoutNames(const String& nameDes
 }
 
 
-void Vulkan_022_Fog::destroyShaderModules()
+void Vulkan_022_Sky::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -1699,7 +1699,7 @@ void Vulkan_022_Fog::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_022_Fog::createShaderModules()
+void Vulkan_022_Sky::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1710,11 +1710,11 @@ void Vulkan_022_Fog::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_022_Fog::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_022_Sky::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_022_Fog::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_022_Sky::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -1725,7 +1725,7 @@ VkShaderModule Vulkan_022_Fog::findShaderModule(const String& nameShaderModule)
 }
 
 
-void Vulkan_022_Fog::destroyPipelineLayouts()
+void Vulkan_022_Sky::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1735,7 +1735,7 @@ void Vulkan_022_Fog::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_022_Fog::createPipelineLayouts()
+void Vulkan_022_Sky::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1743,7 +1743,7 @@ void Vulkan_022_Fog::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_022_Fog::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_022_Sky::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1752,7 +1752,7 @@ void Vulkan_022_Fog::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_022_Fog::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_022_Sky::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1760,7 +1760,7 @@ void Vulkan_022_Fog::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_022_Fog::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_022_Sky::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -1772,7 +1772,7 @@ VkPipelineLayout Vulkan_022_Fog::findPipelineLayout(const String& namePipelineLa
 
 
 
-void Vulkan_022_Fog::createDescriptorSets_Custom()
+void Vulkan_022_Sky::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -1807,12 +1807,12 @@ void Vulkan_022_Fog::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_022_Fog::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+void Vulkan_022_Sky::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                        ModelObjectRend* pRend, 
                                                        ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_022_Fog::createDescriptorSets_Graphics")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_022_Sky::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1941,7 +1941,7 @@ void Vulkan_022_Fog::createDescriptorSets_Graphics(VkDescriptorSetVector& poDesc
             }
             else
             {
-                String msg = "*********************** Vulkan_022_Fog::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_022_Sky::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1949,11 +1949,11 @@ void Vulkan_022_Fog::createDescriptorSets_Graphics(VkDescriptorSetVector& poDesc
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_022_Fog::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
+void Vulkan_022_Sky::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_022_Fog::createDescriptorSets_Compute")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_022_Sky::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -2005,7 +2005,7 @@ void Vulkan_022_Fog::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCo
         }
         else
         {
-            String msg = "*********************** Vulkan_022_Fog::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "*********************** Vulkan_022_Sky::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2013,7 +2013,7 @@ void Vulkan_022_Fog::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCo
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_022_Fog::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_022_Sky::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2072,7 +2072,7 @@ void Vulkan_022_Fog::updateCompute_Custom(VkCommandBuffer& commandBuffer)
     }
 }
 
-void Vulkan_022_Fog::updateCBs_Custom()
+void Vulkan_022_Sky::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -2166,7 +2166,7 @@ void Vulkan_022_Fog::updateCBs_Custom()
     }
 }
 
-void Vulkan_022_Fog::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_022_Sky::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2207,13 +2207,13 @@ void Vulkan_022_Fog::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& comma
     }
 }
 
-bool Vulkan_022_Fog::beginRenderImgui()
+bool Vulkan_022_Sky::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_022_Fog", &windowOpened, 0);
+    ImGui::Begin("Vulkan_022_Sky", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -2235,7 +2235,7 @@ bool Vulkan_022_Fog::beginRenderImgui()
 
     return true;
 }
-void Vulkan_022_Fog::modelConfig()
+void Vulkan_022_Sky::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -2700,13 +2700,13 @@ void Vulkan_022_Fog::modelConfig()
     }
 }
 
-void Vulkan_022_Fog::endRenderImgui()
+void Vulkan_022_Sky::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_022_Fog::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_022_Sky::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -2731,7 +2731,7 @@ void Vulkan_022_Fog::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
-void Vulkan_022_Fog::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_022_Sky::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -2759,7 +2759,7 @@ void Vulkan_022_Fog::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer
         }
     }
 }   
-void Vulkan_022_Fog::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_022_Sky::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -2803,7 +2803,7 @@ void Vulkan_022_Fog::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer,
     }
 }
 
-void Vulkan_022_Fog::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_022_Sky::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2814,7 +2814,7 @@ void Vulkan_022_Fog::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelO
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_022_Fog::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_022_Sky::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
@@ -2861,7 +2861,7 @@ void Vulkan_022_Fog::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelOb
     }
 }
 
-void Vulkan_022_Fog::cleanupCustom()
+void Vulkan_022_Sky::cleanupCustom()
 {   
     destroyTextures();
     destroyMeshes();
@@ -2879,7 +2879,7 @@ void Vulkan_022_Fog::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_022_Fog::cleanupSwapChain_Custom()
+void Vulkan_022_Sky::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2894,7 +2894,7 @@ void Vulkan_022_Fog::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_022_Fog::recreateSwapChain_Custom()
+void Vulkan_022_Sky::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

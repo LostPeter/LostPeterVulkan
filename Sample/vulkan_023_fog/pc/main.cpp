@@ -10,11 +10,11 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_021_sky.h"
+#include "vulkan_023_fog.h"
 
 
 int main()
 {
-    Vulkan_021_Sky sample(1280, 720, "LostPeter - Vulkan_021_Sky");
+    Vulkan_023_Fog sample(1280, 720, "LostPeter - Vulkan_023_Fog");
     return App::Run(&sample);
 }

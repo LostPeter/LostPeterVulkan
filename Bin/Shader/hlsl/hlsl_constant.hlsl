@@ -13,9 +13,39 @@
 #define _HLSL_CONSTANT_
 
 
+///////////////////////////////// Constants /////////////////////////////////////
+//Common
 #define PI 3.141592
 #define PI_HALF 1.570796
-static const float oscillateDelta = 0.05;
+
+
+
+
+//Max XX Count
+#define MAX_LIGHT_COUNT                 16
+#define MAX_OBJECT_COUNT                1024
+#define MAX_TEXTURE_COUNT               16
+#define MAX_MATERIAL_COUNT              64
+#define MAX_INSTANCE_COUNT              1024
+#define MAX_TERRAIN_SPLAT_COUNT         16
+#define MAX_PLANE_COUNT		            6
+
+
+//Static
+static const float c_fOscillateDelta = 0.05;
+
+static const float3 c_aAggressiveExtentArray[8] =
+{
+    float3( 1,       1,      1),
+    float3( 1,       1,     -1),
+    float3( 1,      -1,      1),
+    float3( 1,      -1,     -1),
+    float3(-1,       1,      1),
+    float3(-1,       1,     -1),
+    float3(-1,      -1,      1),
+    float3(-1,      -1,     -1)
+};
+
 
 
 #endif

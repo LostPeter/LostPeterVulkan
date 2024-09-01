@@ -9,17 +9,17 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_021_SKY_H_
-#define _VULKAN_021_SKY_H_
+#ifndef _VULKAN_022_SKY_H_
+#define _VULKAN_022_SKY_H_
 
 #include "VulkanWindow.h"
 #include "FMath.h"
 using namespace LostPeterVulkan; 
 
-class Vulkan_021_Sky : public VulkanWindow
+class Vulkan_022_Sky : public VulkanWindow
 {
 public:
-    Vulkan_021_Sky(int width, int height, String name);
+    Vulkan_022_Sky(int width, int height, String name);
 
 public:
     /////////////////////////// ModelObjectRend /////////////////////
@@ -368,7 +368,7 @@ public:
     struct ModelObject
     {
         //Window
-        Vulkan_021_Sky* pWindow;
+        Vulkan_022_Sky* pWindow;
         int index;
 
         //Name
@@ -393,7 +393,7 @@ public:
         ModelObjectRendPtrVector aRends;
         ModelObjectRendIndirect* pRendIndirect;
 
-        ModelObject(Vulkan_021_Sky* _pWindow,
+        ModelObject(Vulkan_022_Sky* _pWindow,
                     int _index)
             //Window
             : pWindow(_pWindow)

@@ -2,7 +2,7 @@
 # LostPeterVulkan - Copyright (C) 2022 by LostPeter
 # 
 # Author:   LostPeter
-# Time:     2024-07-06
+# Time:     2024-08-18
 # Github:   https://github.com/LostPeter/LostPeterVulkan
 # Document: https://www.zhihu.com/people/lostpeter/posts
 #
@@ -10,7 +10,7 @@
 #****************************************************************************/
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
-SET(NAME_PROJECT "vulkan_020_terrain")
+SET(NAME_PROJECT "vulkan_023_fog")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")

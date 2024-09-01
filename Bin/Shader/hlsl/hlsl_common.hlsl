@@ -12,13 +12,8 @@
 #ifndef _HLSL_COMMON_
 #define _HLSL_COMMON_
 
-///////////////////////////////// Constants /////////////////////////////////////
-#define MAX_LIGHT_COUNT 16
-#define MAX_OBJECT_COUNT 1024
-#define MAX_TEXTURE_COUNT 16
-#define MAX_MATERIAL_COUNT 64
-#define MAX_INSTANCE_COUNT 1024
-#define MAX_TERRAIN_SPLAT_COUNT 16
+
+#include "./hlsl_constant.hlsl"
 
 
 ///////////////////////////////// PassConstants /////////////////////////////////

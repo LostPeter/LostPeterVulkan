@@ -41,7 +41,7 @@ elif [[ $name_shader =~ $name_comp ]]; then
     name_profile="cs_6_1"
 	# echo "file is .comp !"
 else
-	echo "file is not valid, file: $name_shader"
+	echo "Ignore file, is not [.vert/.tesc/.tese/.geom/.frag.comp], name: $name_shader"
 	exit
 fi
 

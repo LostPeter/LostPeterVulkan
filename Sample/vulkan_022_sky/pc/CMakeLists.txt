@@ -10,7 +10,7 @@
 #****************************************************************************/
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
-SET(NAME_PROJECT "vulkan_021_sky")
+SET(NAME_PROJECT "vulkan_022_sky")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")
