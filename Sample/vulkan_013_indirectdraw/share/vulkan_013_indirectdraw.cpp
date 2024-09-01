@@ -2808,7 +2808,8 @@ void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffe
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
-        if (!pRend->isShow)
+        if (!pRend->isShow ||
+            !pRend->pModelObject->isShow)
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }

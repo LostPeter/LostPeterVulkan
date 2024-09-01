@@ -21,7 +21,7 @@ class Vulkan_020_Culling : public VulkanWindow
 public:
     Vulkan_020_Culling(int width, int height, String name);
 
-public:
+public: 
     /////////////////////////// ModelObjectRend /////////////////////
     struct ModelObject;
     struct ModelObjectRend
@@ -34,6 +34,9 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isCastShadow;
+        bool isReceiveShadow;
+        bool isShadowPCF;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -104,6 +107,9 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isCastShadow(false)
+            , isReceiveShadow(false)
+            , isShadowPCF(false)
 
             //Uniform
             , countInstance(1)
@@ -134,7 +140,7 @@ public:
             , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
             , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
             , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
-            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)            
         {
             cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
             cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
@@ -264,6 +270,7 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isCastShadow;
 
         //Vertex
         std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
@@ -315,6 +322,7 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isCastShadow(false)
 
             //Vertex
             , poVertexCount(0)
@@ -379,6 +387,7 @@ public:
         bool isLighting;
         bool isIndirectDraw;
         bool isIndirectDrawMulti;
+        bool isCastShadow;
 
         int countInstanceExt;
         int countInstance;
@@ -405,7 +414,8 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isIndirectDraw(false)
-            , isIndirectDrawMulti(true)
+            , isIndirectDrawMulti(false)
+            , isCastShadow(false)
 
             , countInstanceExt(0)
             , countInstance(1)
@@ -522,9 +532,10 @@ protected:
         virtual void createDescriptorSetLayout_Custom();
 
     //Load Assets
-        //Camera
+        //Camera/Light/Shadow
         virtual void createCamera();
-        virtual void createTerrain();
+        virtual void createLightMain();
+        virtual void createShadowLightMain();
 
         //Geometry/Texture
         virtual void loadModel_Custom();
@@ -554,14 +565,15 @@ protected:
 
         virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
 
+            virtual void drawMeshShadowMap(VkCommandBuffer& commandBuffer);
+
         virtual bool beginRenderImgui();
             virtual void cameraReset();
-            virtual void terrainReset();
+            virtual void lightMainReset();
             virtual void modelConfig();
 
         virtual void endRenderImgui();
 
-        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
 
     //cleanup

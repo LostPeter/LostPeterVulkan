@@ -2809,7 +2809,8 @@ void Vulkan_022_Sky::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelO
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
-        if (!pRend->isShow)
+        if (!pRend->isShow ||
+            !pRend->pModelObject->isShow)
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }

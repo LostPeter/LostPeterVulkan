@@ -2570,7 +2570,8 @@ void Vulkan_016_Geometry::drawModelObjectRends(VkCommandBuffer& commandBuffer, M
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
-        if (!pRend->isShow)
+        if (!pRend->isShow ||
+            !pRend->pModelObject->isShow)
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }

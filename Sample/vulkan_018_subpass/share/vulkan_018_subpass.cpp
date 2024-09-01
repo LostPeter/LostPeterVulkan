@@ -1647,7 +1647,8 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
             for (size_t i = 0; i < count_rend; i++)
             {
                 ModelObjectRend* pRend = aRends[i];
-                if (!pRend->isShow)
+                if (!pRend->isShow ||
+                    !pRend->pModelObject->isShow)
                     continue;
                 drawModelObjectRend(commandBuffer, pRend);
             }

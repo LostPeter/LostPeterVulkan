@@ -19,13 +19,15 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 9;
+static const int g_MeshCount = 11;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+    "viking_room",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/viking_room/viking_room.obj", //viking_room
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/bunny/bunny.obj", //bunny
 
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/cliff/cliff.obj", //cliff
@@ -35,13 +37,14 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 
     "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/grass/grass.fbx", //grass
     "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/flower/flower.fbx", //flower
-
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
     true, //plane
     false, //cube
     false, //sphere
+    false, //viking_room
+    false, //bunny
 
     false, //rock
     false, //cliff
@@ -58,6 +61,8 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //plane  
     false, //cube
     false, //sphere
+    true, //viking_room
+    false, //bunny
 
     false, //rock
     false, //cliff
@@ -74,6 +79,8 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //cube
     FMath::ms_mat4Unit, //sphere
+    FMath::RotateX(-90.0f), //viking_room
+    FMath::ms_mat4Unit, //bunny
 
     FMath::ms_mat4Unit, //rock
     FMath::ms_mat4Unit, //cliff
@@ -88,21 +95,17 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 22;
+static const int g_TextureCount = 19;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "default_blackwhite",               "2D",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
-    "bricks_diffuse",                   "2D",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
     "terrain",                          "2D",            "false",                  "false",                           "Assets/Texture/Common/terrain.png", //terrain
-    "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
-    
     "texturecubemap",                   "CubeMap",       "false",                  "false",                           "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
 
-    "texture_terrain_diffuse",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
-    "texture_terrain_normal",           "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
-    "texture_terrain_control",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
-
+    "default_white",                    "2D",            "false",                  "false",                           "Assets/Texture/Common/default_white.bmp", //default_white
+    "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
+    "viking_room",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/viking_room/viking_room.png", //viking_room
+    
     "rock_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
     "rock_normal",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
     "cliff_diffuse",                    "2D",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_diffuse.png", //cliff_diffuse
@@ -124,16 +127,12 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
 };
 static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
-
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
 
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_diffuse
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_normal
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_control
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //viking_room
 
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_normal
@@ -156,16 +155,12 @@ static FTexturePixelFormatType g_TextureFormats[g_TextureCount] =
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
-    F_TextureFilter_Bilinear, //default_blackwhite
-    F_TextureFilter_Bilinear, //bricks_diffuse
     F_TextureFilter_Bilinear, //terrain
-    F_TextureFilter_Bilinear, //texture2d
-
     F_TextureFilter_Bilinear, //texturecubemap
 
-    F_TextureFilter_Bilinear, //texture_terrain_diffuse
-    F_TextureFilter_Bilinear, //texture_terrain_normal
-    F_TextureFilter_Bilinear, //texture_terrain_control
+    F_TextureFilter_Bilinear, //default_white
+    F_TextureFilter_Bilinear, //texture2d
+    F_TextureFilter_Bilinear, //viking_room    
 
     F_TextureFilter_Bilinear, //rock_diffuse
     F_TextureFilter_Bilinear, //rock_normal
@@ -188,17 +183,13 @@ static FTextureFilterType g_TextureFilters[g_TextureCount] =
 };
 static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
-    F_TextureAddressing_Clamp, //default_blackwhite
-    F_TextureAddressing_Clamp, //bricks_diffuse
     F_TextureAddressing_Clamp, //terrain
-    F_TextureAddressing_Clamp, //texture2d
-
     F_TextureAddressing_Wrap, //texturecubemap
 
-    F_TextureAddressing_Clamp, //texture_terrain_diffuse
-    F_TextureAddressing_Clamp, //texture_terrain_normal
-    F_TextureAddressing_Clamp, //texture_terrain_control
-
+    F_TextureAddressing_Clamp, //default_white
+    F_TextureAddressing_Clamp, //texture2d
+    F_TextureAddressing_Clamp, //viking_room
+    
     F_TextureAddressing_Clamp, //rock_diffuse
     F_TextureAddressing_Clamp, //rock_normal
     F_TextureAddressing_Clamp, //cliff_diffuse
@@ -220,17 +211,13 @@ static FTextureAddressingType g_TextureAddressings[g_TextureCount] =
 };
 static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
-    F_TextureBorderColor_OpaqueBlack, //default_blackwhite
-    F_TextureBorderColor_OpaqueBlack, //bricks_diffuse
     F_TextureBorderColor_OpaqueBlack, //terrain
-    F_TextureBorderColor_OpaqueBlack, //texture2d
-
     F_TextureBorderColor_OpaqueBlack, //texturecubemap
 
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_control
-
+    F_TextureBorderColor_OpaqueBlack, //default_white
+    F_TextureBorderColor_OpaqueBlack, //texture2d
+    F_TextureBorderColor_OpaqueBlack, //viking_room
+    
     F_TextureBorderColor_OpaqueBlack, //rock_diffuse
     F_TextureBorderColor_OpaqueBlack, //rock_normal
     F_TextureBorderColor_OpaqueBlack, //cliff_diffuse
@@ -252,17 +239,13 @@ static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
-    512,    512,    1, //default_blackwhite
-    512,    512,    1, //bricks_diffuse
     512,    512,    1, //terrain
-    512,    512,    1, //texture2d
-
     512,    512,    1, //texturecubemap
 
-   1024,   1024,    1, //texture_terrain_diffuse
-   1024,   1024,    1, //texture_terrain_normal
-    512,    512,    1, //texture_terrain_control
-
+     64,     64,    1, //default_white
+    512,    512,    1, //texture2d
+   1024,   1024,    1, //viking_room
+    
     512,    512,    1, //rock_diffuse
     512,    512,    1, //rock_normal
     512,    512,    1, //cliff_diffuse
@@ -284,16 +267,12 @@ static int g_TextureSizes[3 * g_TextureCount] =
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
-    0,    0, //default_blackwhite
-    0,    0, //bricks_diffuse
     0,    0, //terrain
-    0,    0, //texture2d
-
     0,    0, //texturecubemap
 
-    0,    0, //texture_terrain_diffuse
-    0,    0, //texture_terrain_normal
-    0,    0, //texture_terrain_control
+    0,    0, //default_white
+    0,    0, //texture2d
+    0,    0, //viking_room
 
     0,    0, //rock_diffuse
     0,    0, //rock_normal
@@ -312,34 +291,35 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //grass_wheat
 
     0,    0, //flower_atlas
-
 };
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 3;
+static const int g_DescriptorSetLayoutCount = 5;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
+    "Pass-Object-Material-Instance-TextureDepthShadow",
+    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
+
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
-
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 16;
+static const int g_ShaderCount = 14;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
     "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_standard_mesh_transparent_lit",                      "vert",              "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
-
+    "vert_standard_mesh_opaque_tex2d_lit_shadow",              "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.vert.spv", //standard_mesh_opaque_tex2d_lit_shadow vert
+    
+    "vert_standard_debug_shadow_depth",                        "vert",              "Assets/Shader/standard_debug_shadow_depth.vert.spv", //standard_debug_shadow_depth vert
+    
     "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
-    "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
 
@@ -351,29 +331,37 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
+
     ///////////////////////////////////////// frag /////////////////////////////////////////
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_standard_mesh_transparent_lit",                      "frag",              "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit frag
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
-
+    "frag_standard_mesh_opaque_tex2d_lit_shadow",              "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.frag.spv", //standard_mesh_opaque_tex2d_lit_shadow frag
+    
+    "frag_standard_debug_shadow_depth",                        "frag",              "Assets/Shader/standard_debug_shadow_depth.frag.spv", //standard_debug_shadow_depth frag
+    
     "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
-    "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
-    
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 7;
+static const int g_Object_Count = 13;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
-    //Object Name                          //Mesh Name                                                                    
+    //Object Name                          //Mesh Name          
+    "object_terrain",                      "plane", //object_terrain
     "object_skybox",                       "cube", //object_skybox
+
+    "object_cube",                         "cube", //object_cube   
+    "object_sphere",                       "sphere", //object_sphere
+    "object_viking_room",                  "viking_room", //object_viking_room    
+    "object_bunny",                        "bunny", //object_bunny  
+
+    "object_depth",                        "plane", //object_depth
 
     "object_rock",                         "rock", //object_rock   
     "object_cliff",                        "cliff", //object_cliff   
@@ -387,7 +375,15 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
+    "0", //object_terrain
     "0", //object_skybox
+
+    "0", //object_cube
+    "0", //object_sphere
+    "0", //object_viking_room      
+    "0", //object_bunny       
+
+    "0", //object_depth
 
     "0", //object_rock
     "0", //object_cliff
@@ -403,7 +399,15 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
+    0, //object_terrain
     0, //object_skybox
+
+    0, //object_cube 
+    0, //object_sphere 
+    0, //object_viking_room 
+    0, //object_bunny 
+
+    0, //object_depth
 
     4, //object_rock 
     4, //object_cliff 
@@ -413,11 +417,18 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 
     4, //object_grass 
     4, //object_flower 
-
 };
 static bool g_Object_IsShows[] = 
 {
+    true, //object_terrain
     true, //object_skybox
+
+    true, //object_cube
+    true, //object_sphere
+    true, //object_viking_room
+    true, //object_bunny
+
+    false, //object_depth
 
     true, //object_rock
     true, //object_cliff
@@ -431,7 +442,15 @@ static bool g_Object_IsShows[] =
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
+    false, //object_terrain
     false, //object_skybox
+
+    false, //object_cube
+    false, //object_sphere
+    false, //object_viking_room
+    false, //object_bunny
+
+    false, //object_depth
 
     false, //object_rock
     false, //object_cliff
@@ -445,7 +464,15 @@ static bool g_Object_IsRotates[g_Object_Count] =
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
+    true, //object_terrain
     true, //object_skybox
+
+    true, //object_cube
+    true, //object_sphere
+    true, //object_viking_room
+    true, //object_bunny
+
+    false, //object_depth
 
     true, //object_rock
     true, //object_cliff
@@ -459,7 +486,15 @@ static bool g_Object_IsLightings[g_Object_Count] =
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
+    false, //object_terrain
     false, //object_skybox
+
+    false, //object_cube
+    false, //object_sphere
+    false, //object_viking_room
+    false, //object_bunny
+
+    false, //object_depth
 
     false, //object_rock
     false, //object_cliff
@@ -474,11 +509,19 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 19;
+static const int g_ObjectRend_Count = 25;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
+    "object_terrain-1",                    "",                     "",                              "",                         "",                    "terrain",                                                                      "", //object_terrain-1
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+
+    "object_cube-1",                       "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_cube-1
+    "object_sphere-1",                     "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_sphere-1
+    "object_viking_room-1",                "",                     "",                              "",                         "",                    "viking_room",                                                                  "", //object_viking_room-1
+    "object_bunny-1",                      "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_bunny-1
+    
+    "object_depth-1",                      "",                     "",                              "",                         "",                    "",                                                                             "", //object_depth-1
 
     "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
     "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
@@ -505,8 +548,16 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
+    "vert_standard_mesh_opaque_tex2d_lit_shadow",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit_shadow",           "", //object_terrain-1
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
     
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_cube-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_sphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_viking_room-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_bunny-1
+
+    "vert_standard_debug_shadow_depth",                     "",                                             "",                                         "",                         "frag_standard_debug_shadow_depth",                     "", //object_depth-1
+
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
 
@@ -532,7 +583,15 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
+    "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",       "", //object_terrain-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
+
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_cube-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_sphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_viking_room-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_bunny-1
+
+    "Pass-Object-Material-Instance-TextureDepthShadow",                 "", //object_depth-1
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
@@ -558,8 +617,16 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3( 1000.0f,   1000.0f,   1000.0f), //object_skybox-1
+    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_terrain-1
+    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
  
+    FVector3( 2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
+    FVector3(-2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
+    FVector3(-2.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_viking_room-1
+    FVector3( 2.0f,    2, -2.0f),    FVector3(     0, 180,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_bunny-1
+
+    FVector3( 6.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
+
     FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
 
@@ -584,7 +651,83 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
+    false, //object_terrain-1
     false, //object_skybox-1
+
+    false, //object_cube-1
+    false, //object_sphere-1
+    false, //object_viking_room-1
+    false, //object_bunny-1
+
+    false, //object_depth-1
+
+    false, //object_rock-1
+    false, //object_cliff-1
+
+    false, //object_tree-1
+    false, //object_tree-2
+    false, //object_tree_spruce-1
+    false, //object_tree_spruce-2
+
+    false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
+    false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
+
+};
+static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
+{
+    false, //object_terrain-1
+    false, //object_skybox-1
+
+    true, //object_cube-1
+    true, //object_sphere-1
+    true, //object_viking_room-1
+    true, //object_bunny-1
+
+    false, //object_depth-1
+
+    true, //object_rock-1
+    true, //object_cliff-1
+
+    true, //object_tree-1
+    true, //object_tree-2
+    true, //object_tree_spruce-1
+    true, //object_tree_spruce-2
+
+    true, //object_grass-1
+    true, //object_grass-2
+    true, //object_grass-3
+    true, //object_grass-4
+    true, //object_flower-1
+    true, //object_flower-2
+    true, //object_flower-3
+    true, //object_flower-4
+    true, //object_flower-5
+    true, //object_flower-6
+    true, //object_flower-7
+    true, //object_flower-8
+
+};
+static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] = 
+{
+    true, //object_terrain-1
+    false, //object_skybox-1
+
+    false, //object_cube-1
+    false, //object_sphere-1
+    false, //object_viking_room-1
+    false, //object_bunny-1
+
+    false, //object_depth-1
 
     false, //object_rock-1
     false, //object_cliff-1
@@ -610,8 +753,16 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
+    false, //object_terrain-1
     false, //object_skybox-1
     
+    false, //object_cube-1
+    false, //object_sphere-1
+    false, //object_viking_room-1
+    false, //object_bunny-1
+
+    false, //object_depth-1
+
     false, //object_rock-1
     false, //object_cliff-1
 
@@ -632,7 +783,6 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-6
     false, //object_flower-7
     false, //object_flower-8
-
 };
 
 
@@ -871,18 +1021,14 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
+    this->cfg_isRenderPassShadowMap = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-    this->cfg_isUseComputeShader = true;
     this->cfg_isEditorCreate = true;
-    this->cfg_isEditorGridShow = false;
+    this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
-    this->cfg_isEditorCoordinateAxisShow = false;
-
-    this->mainLight.common.x = 0; //Directional Type
-    this->mainLight.common.y = 1.0f; //Enable
-    this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = FVector3(0, -1, 0); //y-
+    this->cfg_isEditorCoordinateAxisShow = true;
+    this->cfg_editorGrid_Color.a = 0.2f;
 }
 
 void Vulkan_020_Culling::setUpEnabledFeatures()
@@ -898,11 +1044,6 @@ void Vulkan_020_Culling::setUpEnabledFeatures()
         this->m_isDrawIndirectMulti = false;
         F_LogError("*********************** Vulkan_020_Culling::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
-
-    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
-    {
-        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
-    }
 }
 
 void Vulkan_020_Culling::createDescriptorSetLayout_Custom()
@@ -913,36 +1054,48 @@ void Vulkan_020_Culling::createDescriptorSetLayout_Custom()
 void Vulkan_020_Culling::createCamera()
 {
     VulkanWindow::createCamera();
-    
+
     cameraReset();
 }
     void Vulkan_020_Culling::cameraReset()
     {
         VulkanWindow::cameraReset();
 
-        this->pCamera->SetPos(FVector3(-30.0f, 9.0f, 5.0f));
-        this->pCamera->SetEulerAngles(FVector3(9.0f, 95.0f, 0.0f));
+        this->pCamera->SetPos(FVector3(0.0f, 12.0f, -10.0f));
+        this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
         this->pCamera->SetFarZ(1000000.0f);
-        this->pCamera->UpdateViewMatrix();
-        this->pCamera->UpdateProjectionMatrix();
     }
-
-void Vulkan_020_Culling::createTerrain()
+void Vulkan_020_Culling::createLightMain()
 {
-    VulkanWindow::createTerrain();
-
-    terrainReset();
+    lightMainReset();
 }
-    void Vulkan_020_Culling::terrainReset()
+    void Vulkan_020_Culling::lightMainReset()
     {
-        VulkanWindow::terrainReset();
+        VulkanWindow::lightMainReset();
 
-        this->cfg_isRenderPassTerrain = true;
-        this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+        this->mainLight.common.x = 0; //Directional Type
+        this->mainLight.common.y = 1.0f; //Enable
+        this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
+        this->mainLight.position = FVector3(0.0f, 12.0f, -10.0f);
+        FVector3 vEulerAngles(45.0f, 00.0f, 0.0f);
+        this->mainLight.direction = FMath::ToDirection(vEulerAngles);
 
-        this->cfg_terrainHeightStart = -50.0f;
-        this->cfg_terrainHeightMax = 500.0f;
+        this->shadowMainLight.zNear = 5.0f;
+        //Camera MainLight
+        this->pCameraMainLight->SetPos(this->mainLight.position);
+        this->pCameraMainLight->SetEulerAngles(vEulerAngles);
+        this->pCameraMainLight->SetFovY(this->shadowMainLight.fov);
+        this->pCameraMainLight->SetAspect(1.0f);
+        this->pCameraMainLight->SetNearZ(this->shadowMainLight.zNear);
+        this->pCameraMainLight->SetFarZ(this->shadowMainLight.zFar);
+        this->pCameraMainLight->UpdateViewMatrix();
+        this->pCameraMainLight->UpdateProjectionMatrix();
     }
+void Vulkan_020_Culling::createShadowLightMain()
+{
+
+}
+
 
 void Vulkan_020_Culling::loadModel_Custom()
 {
@@ -1120,6 +1273,8 @@ void Vulkan_020_Culling::loadModel_Custom()
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
+                pRend->isCastShadow = g_ObjectRend_IsCastShadows[nIndexObjectRend];
+                pRend->isReceiveShadow = g_ObjectRend_IsReceiveShadows[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -1181,10 +1336,7 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                FVector3 vPos = g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0);
-                float fHeight = GetTerrainHeight(vPos);
-                vPos.y = fHeight;
-                objectConstants.g_MatWorld = FMath::FromTRS(vPos,
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
@@ -1395,6 +1547,13 @@ void Vulkan_020_Culling::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
+            uint32_t enablePCF = 0;
+            if (pRend->isReceiveShadow)
+            {
+                VkSpecializationMapEntry specializationMapEntry = CreateSpecializationMapEntry(0, 0, sizeof(uint32_t));
+                VkSpecializationInfo specializationInfo = CreateSpecializationInfo(1, &specializationMapEntry, sizeof(uint32_t), &enablePCF);  
+                pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
+            }
             pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
@@ -1413,6 +1572,31 @@ void Vulkan_020_Culling::createGraphicsPipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
             F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+
+            //pPipelineGraphics->poPipeline2
+            if (pRend->isReceiveShadow)
+            {
+                enablePCF = 1;
+
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                                                                                 pRend->isUsedTessellation, 0, 3,
+                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
+                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
+                                                                                 pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
+                                                                                 isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
+                                                                                 pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                 pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                 pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: Failed to create pipeline graphics pcf: " + pRend->nameObjectRend;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics pcf success !", pRend->nameObjectRend.c_str());
+            }
         }
     }
 }
@@ -1703,7 +1887,7 @@ VkShaderModule Vulkan_020_Culling::findShaderModule(const String& nameShaderModu
         return nullptr;
     }
     return itFind->second;
-}
+}   
 
 
 void Vulkan_020_Culling::destroyPipelineLayouts()
@@ -1789,8 +1973,8 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
     }
 }
 void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                       ModelObjectRend* pRend, 
-                                                       ModelObjectRendIndirect* pRendIndirect)
+                                                         ModelObjectRend* pRend, 
+                                                         ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::createDescriptorSets_Graphics")
@@ -1919,6 +2103,17 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
+            }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
+            {
+                F_Assert(m_pVKRenderPassShadowMap && "Vulkan_020_Culling::createDescriptorSets_Graphics")
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          m_pVKRenderPassShadowMap->imageInfo);
             }
             else
             {
@@ -2188,6 +2383,51 @@ void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
     }
 }
 
+    void Vulkan_020_Culling::drawMeshShadowMap(VkCommandBuffer& commandBuffer)
+    {
+        size_t count_rend = m_aModelObjectRends_All.size();
+        if (count_rend <= 0)
+            return;
+        int instanceStart = 0;
+        
+        //1> Update Object World
+        UpdateBuffer_ObjectWorld_Begin();
+        {
+            for (size_t i = 0; i < count_rend; i++)
+            {
+                ModelObjectRend* pRend = m_aModelObjectRends_All[i];
+                if (!pRend->isShow ||
+                    !pRend->isCastShadow)
+                    continue;
+                
+                int instanceCount = (int)pRend->objectCBs.size();
+                //F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
+                instanceStart += instanceCount;
+            }
+        }
+        UpdateBuffer_ObjectWorld_End();
+        
+        //2> Draw Depth
+        if (Draw_Graphics_DepthShadowMapBegin(commandBuffer))
+        {
+            instanceStart = 0;
+            for (size_t i = 0; i < count_rend; i++)
+            {
+                ModelObjectRend* pRend = m_aModelObjectRends_All[i];
+                if (!pRend->isShow ||
+                    !pRend->isCastShadow)
+                    continue;
+
+                int instanceCount = (int)pRend->objectCBs.size();
+                //F_LogInfo("2222222222: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+                Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub, instanceCount, instanceStart);
+                instanceStart += instanceCount;
+            }
+            Draw_Graphics_DepthShadowMapEnd(commandBuffer);
+        }
+    }
+
 bool Vulkan_020_Culling::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
@@ -2208,13 +2448,10 @@ bool Vulkan_020_Culling::beginRenderImgui()
         //3> Shadow
         shadowConfig();
 
-        //4> Terrain
-        terrainConfig();
-
-        //5> PassConstants
+        //4> PassConstants
         passConstantsConfig();
 
-        //6> Model
+        //5> Model
         modelConfig();
 
     }
@@ -2227,15 +2464,15 @@ void Vulkan_020_Culling::modelConfig()
     if (ImGui::CollapsingHeader("Model Settings"))
     {
         //m_isDrawIndirect
-        if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
-        {
+        // if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
+        // {
             
-        }
+        // }
         //m_isDrawIndirectMulti
-        if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
-        {
+        // if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
+        // {
             
-        }
+        // }
 
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
@@ -2297,6 +2534,16 @@ void Vulkan_020_Culling::modelConfig()
                             MaterialConstants& mat = pRend->materialCBs[p];
                             mat.lighting = pModelObject->isLighting;
                         }
+                    }
+                }
+                //isCastShadow
+                String nameIsCastShadow = "Is CastShadow - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pModelObject->isCastShadow))
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        pRend->isCastShadow = pModelObject->isCastShadow;
                     }
                 }
 
@@ -2362,6 +2609,16 @@ void Vulkan_020_Culling::modelConfig()
                         String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRendIndirect;
                         bool isTransparent = pRendIndirect->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+
+                        //isCastShadow
+                        String nameIsCastShadow = "Is CastShadow - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pRendIndirect->isCastShadow))
+                        {
+                            if (pRendIndirect->isCastShadow)
+                            {
+                                pModelObject->isCastShadow = true;
+                            }
+                        }
 
                         //countIndirectDraw
                         String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
@@ -2436,6 +2693,28 @@ void Vulkan_020_Culling::modelConfig()
                             String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
                             bool isTransparent = pRend->isTransparent;
                             ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+
+                            //isCastShadow
+                            String nameIsCastShadow = "Is CastShadow - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsCastShadow.c_str(), &pRend->isCastShadow))
+                            {
+                                if (pRend->isCastShadow)
+                                {
+                                    pModelObject->isCastShadow = true;
+                                }
+                            }
+
+                            //isReceiveShadow
+                            if (pRend->isReceiveShadow)
+                            {
+                                //isShadowPCF
+                                String nameIsShadowPCF = "Is ShadowPCF - " + nameObjectRend;
+                                if (ImGui::Checkbox(nameIsShadowPCF.c_str(), &pRend->isShadowPCF))
+                                {
+                                    
+                                }
+                            }
+
 
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))
@@ -2693,12 +2972,6 @@ void Vulkan_020_Culling::endRenderImgui()
 
 }
 
-
-void Vulkan_020_Culling::drawMeshTerrain(VkCommandBuffer& commandBuffer)
-{
-    VulkanWindow::drawMeshTerrain(commandBuffer);
-
-}
 void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
@@ -2802,7 +3075,8 @@ void Vulkan_020_Culling::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mo
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
-        if (!pRend->isShow)
+        if (!pRend->isShow ||
+            !pRend->pModelObject->isShow)
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }
@@ -2838,7 +3112,10 @@ void Vulkan_020_Culling::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
     }
     else
     {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        if (pRend->isReceiveShadow && pRend->isShadowPCF && pRend->pPipelineGraphics->poPipeline2 != VK_NULL_HANDLE)
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline2);
+        else
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
