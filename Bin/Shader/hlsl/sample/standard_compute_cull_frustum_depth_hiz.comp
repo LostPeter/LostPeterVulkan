@@ -1,0 +1,77 @@
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author:   LostPeter
+* Time:     2024-09-07
+* Github:   https://github.com/LostPeter/LostPeterVulkan
+* Document: https://www.zhihu.com/people/lostpeter/posts
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+#include "../hlsl_common.hlsl"
+#include "../hlsl_cull.hlsl"
+
+
+[[vk::binding(0)]] cbuffer cullConsts                           				: register(b0)
+{
+    CullConstants cullConsts;
+}
+
+[[vk::binding(1)]] RWStructuredBuffer<uint> argsCB              				: register(u0);
+[[vk::binding(2)]] RWStructuredBuffer<CullObjectConstants> cullObjectConstsCB 	: register(u1);
+[[vk::binding(3)]] RWStructuredBuffer<float> lodCB								: register(u2);
+[[vk::binding(4)]] RWStructuredBuffer<uint> resultCB							: register(u3);
+
+[[vk::binding(5)]] Texture2D<half> textureDepthHiz              				: register(t1);
+[[vk::binding(5)]] SamplerState texture2DSamplerDepthHiz    					: register(s1);
+
+
+[numthreads(64, 1, 1)]
+void main(uint id : SV_DispatchThreadID)
+{
+	if (id >= cullConsts.nMaxClusterCount)
+        return;
+		
+    CullObjectConstants currentObject = cullObjectConstsCB[id];
+	float disPlayer = distance(cullConsts.v4PosPlayer.xyz, currentObject.vPos.xyz);
+
+    for (uint i = 0; i < cullConsts.nMaxLodCount; i++)
+    {
+        uint index = i;
+        uint indexBaseLod = index * cullConsts.nMaxRenderCount * 2;
+        float lodDisMin = lodCB[indexBaseLod + currentObject.nRenderIndex * 2 + 0];
+        float lodDisMax = lodCB[indexBaseLod + currentObject.nRenderIndex * 2 + 1];
+
+        if (cullConsts.nIsNoCulling > 0 ||
+		    disPlayer <= cullConsts.v4PosPlayer.w ||
+            (disPlayer >= lodDisMin && 
+			disPlayer < lodDisMax && 
+			!Cull_Frustum(cullConsts.v4FrustumPlanes,
+						  cullConsts.v4ParamComon,
+						  currentObject.vPos.xyz, 
+						  currentObject.vExt.xyz) &&
+			(currentObject.nIsNoHizTest > 0 ||
+			Cull_DepthHiz_MinZ0(textureDepthHiz,
+								texture2DSamplerDepthHiz,
+								cullConsts.mat4VPLast,
+								cullConsts.v4ParamComon,
+								currentObject.vPos.xyz, 
+						  		currentObject.vExt.xyz,
+								true > 0.5))
+			))
+        {
+            uint indexBaseResult = index * cullConsts.nMaxClusterCount;
+            uint indexBaseRender = index * cullConsts.nMaxRenderCount * 5;
+
+            uint currentIndex = 0;
+            for (uint j = 0; j < currentObject.nRenderCount; j++)
+            {
+                InterlockedAdd(argsCB[indexBaseRender + (currentObject.nRenderIndex + j) * 5 + 1], 1, currentIndex);
+            }
+            resultCB[indexBaseResult + currentObject.nClusterOffset + currentIndex] = id - currentObject.nClusterOffset;
+
+            break;
+        }
+    }
+}

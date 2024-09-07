@@ -1,0 +1,34 @@
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author:   LostPeter
+* Time:     2024-09-07
+* Github:   https://github.com/LostPeter/LostPeterVulkan
+* Document: https://www.zhihu.com/people/lostpeter/posts
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+#include "../hlsl_common.hlsl"
+
+
+[[vk::binding(0)]] cbuffer cullConsts                           : register(b0)
+{
+    CullConstants cullConsts;
+}
+
+[[vk::binding(1)]] RWStructuredBuffer<uint> argsCB              : register(u0);
+
+
+[numthreads(64, 1, 1)]
+void main(uint id : SV_DispatchThreadID)
+{
+	if (id > cullConsts.nMaxRenderCount)
+        return;
+
+    for (uint i = 0; i < cullConsts.nMaxLodCount; i++)
+    {
+        uint indexBaseRender = i * cullConsts.nMaxRenderCount * 5;
+        argsCB[indexBaseRender + id * 5 + 1] = 0;
+    }
+}

@@ -362,7 +362,7 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 11;
+    static const int g_ShaderCount_Internal = 14;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
@@ -389,9 +389,12 @@ namespace LostPeterVulkan
         "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
         "comp_standard_compute_texcopy_tex2darray",               "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
         "comp_standard_compute_texgen_normalmap",                 "comp",              "Assets/Shader/standard_compute_texgen_normalmap.comp.spv", //standard_compute_texgen_normalmap comp
-
-        "comp_standard_compute_cull",                             "comp",              "Assets/Shader/standard_compute_cull.comp.spv", //standard_compute_cull comp
-        "comp_standard_compute_hiz_depth",                        "comp",              "Assets/Shader/standard_compute_hiz_depth.comp.spv", //standard_compute_hiz_depth comp
+        
+        "comp_standard_compute_cull_clear_args",                  "comp",              "Assets/Shader/standard_compute_cull_clear_args.comp.spv", //standard_compute_cull_clear_args comp
+        "comp_standard_compute_cull_frustum",                     "comp",              "Assets/Shader/standard_compute_cull_frustum.comp.spv", //standard_compute_cull_frustum comp
+        "comp_standard_compute_cull_frustum_depth_hiz",           "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz.comp.spv", //standard_compute_cull_frustum_depth_hiz comp
+        "comp_standard_compute_cull_frustum_depth_hiz_clip",      "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz_clip.comp.spv", //standard_compute_cull_frustum_depth_hiz_clip comp
+        "comp_standard_compute_hiz_depth_generate",               "comp",              "Assets/Shader/standard_compute_hiz_depth_generate.comp.spv", //standard_compute_hiz_depth_generate comp
     };
     void VulkanWindow::destroyShaderModules_Internal()
     {

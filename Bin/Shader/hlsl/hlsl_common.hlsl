@@ -260,4 +260,37 @@ struct TerrainObjectConstants
 };
 
 
+//////////////////////////////// CullConstants //////////////////////////////////
+struct CullConstants
+{
+    uint nMaxLodCount; //Max Lod Count
+    uint nMaxRenderCount; //Max Render Count
+    uint nMaxClusterCount; //Max Cluster Count
+    uint nIsNoCulling; //Is No Culling?
+
+    float4x4 mat4VPLast;  //VP Last
+    float4 v4FrustumPlanes[MAX_FRUSTUM_PLANE_COUNT]; //6 Frustum Planes
+    float4 v4ParamComon[4]; //Param common (0: CameraPos; 1: Min FrustumPlanes; 2: Max FrustumPlanes; 3: Hiz ScreenRes)
+    float4 v4ParamRender; //Param Render
+    float4 v4PosPlayer; //Pos Player
+};
+struct CullObjectConstants
+{
+    float4 vPos; //xyz = pos, w = cluster offset
+    float4 vExt; //xyz = ext, w = isNoHizTest
+    uint nRenderIndex; //Render Index
+    uint nRenderCount; //Render Count
+    uint nClusterOffset; //Cluster Offset
+    uint nIsNoHizTest; //IsNoHizTest
+};
+
+
+//////////////////////////////// HizDeothConstants //////////////////////////////
+struct HizDeothConstants
+{
+    float4 vRtDepthSize;
+};
+
+
+
 #endif

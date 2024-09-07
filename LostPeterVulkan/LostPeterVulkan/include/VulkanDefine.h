@@ -1471,14 +1471,18 @@ namespace LostPeterVulkan
 
         }
     };
-
+    
     //////////////////////////////// CullConstants //////////////////////////////////
-
     struct vulkanExport CullConstants
     {
+        uint32 nMaxLodCount; //Max Lod Count
+        uint32 nMaxRenderCount; //Max Render Count
+        uint32 nMaxClusterCount; //Max Cluster Count
+        uint32 nIsNoCulling; //Is No Culling?
+
         FMatrix4 mat4VPLast;  //VP Last
-        FVector4 v4FrustumPlanes[MAX_FRUSTUN_PLANE_COUNT]; //6 Frustum Planes
-        FVector4 v4ParamComon[4]; //Param common
+        FVector4 v4FrustumPlanes[MAX_FRUSTUM_PLANE_COUNT]; //6 Frustum Planes
+        FVector4 v4ParamComon[4]; ///Param common (0: CameraPos; 1: Min FrustumPlanes; 2: Max FrustumPlanes; 3: Hiz ScreenRes)
         FVector4 v4ParamRender; //Param Render
         FVector4 v4PosPlayer; //Pos Player
     };
@@ -1486,16 +1490,30 @@ namespace LostPeterVulkan
     {
         FVector4 vPos; //xyz = pos, w = cluster offset 
         FVector4 vExt; //xyz = ext, w = isNoHizTest
-        float renderIndex;
-        float renderCount;
-        float reserve0;
-        float reserve1;
+        uint32 nRenderIndex; //Render Index
+        uint32 nRenderCount; //Render Count
+        uint32 nClusterOffset; //Cluster Offset
+        uint32 nIsNoHizTest; //IsNoHizTest
 
         CullObjectConstants()
             : vPos(FMath::ms_v4Zero)
             , vExt(FMath::ms_v4Zero)
-            , renderIndex(0)
-            , renderCount(0)
+            , nRenderIndex(0)
+            , nRenderCount(0)
+            , nClusterOffset(0)
+            , nIsNoHizTest(0)
+        {
+
+        }
+    };
+
+    //////////////////////////////// HizDeothConstants //////////////////////////////
+    struct vulkanExport HizDeothConstants
+    {
+        FVector4 vRtDepthSize;
+
+        HizDeothConstants()
+            : vRtDepthSize(0,0,0,0)
         {
 
         }

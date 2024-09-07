@@ -32,7 +32,7 @@ namespace LostPeterVulkan
     #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
     #define MAX_TERRAIN_SPLAT_COUNT 16
-    #define MAX_FRUSTUN_PLANE_COUNT 6
+    #define MAX_FRUSTUM_PLANE_COUNT 6
     #define MAX_OBJECT_CULL_COUNT 8196
 
     #define SHADER_NAME_Vertex                      "vert"
