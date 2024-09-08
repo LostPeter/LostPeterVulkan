@@ -361,8 +361,8 @@ namespace LostPeterVulkan
         bool cfg_isNegativeViewport;
         bool cfg_isUseComputeShader;
         bool cfg_isCreateRenderComputeSycSemaphore;
-        bool cfg_isCullComputeFrustum;
-        bool cfg_isCullComputeHiz;
+        bool cfg_isCullComputeShader;
+        bool cfg_isCullHizDepthComputeShader;
         VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;
@@ -1172,15 +1172,16 @@ namespace LostPeterVulkan
                         virtual void createVkDescriptorSet(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
                         virtual void createVkDescriptorSets(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
 
-                        virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                                                                        VkDescriptorType descriptorType,
-                                                                                                        uint32_t descriptorCount,
-                                                                                                        VkShaderStageFlags stageFlags);
-                        virtual void createVkDescriptorSetLayoutBinding_Uniform(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
-                                                                                uint32_t binding,
-                                                                                VkDescriptorType descriptorType,
-                                                                                uint32_t descriptorCount,
-                                                                                VkShaderStageFlags stageFlags);
+                        virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                                                                       VkDescriptorType descriptorType,
+                                                                                                       uint32_t descriptorCount,
+                                                                                                       VkShaderStageFlags stageFlags);
+                        virtual void createVkDescriptorSetLayoutBinding_Buffer(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                               uint32_t binding,
+                                                                               VkDescriptorType descriptorType,
+                                                                               uint32_t descriptorCount,
+                                                                               VkShaderStageFlags stageFlags);
+                        
                         virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Image(uint32_t binding,
                                                                                                       VkDescriptorType descriptorType,
                                                                                                       uint32_t descriptorCount,

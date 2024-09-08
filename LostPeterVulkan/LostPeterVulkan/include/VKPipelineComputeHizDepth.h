@@ -31,6 +31,11 @@ namespace LostPeterVulkan
         VkDescriptorSet poDescriptorSet;
         
         
+        //HizDepthConstants
+        HizDepthConstants hizDepthCB;
+        VkBuffer poBuffer_HizDepthCB;  
+        VkDeviceMemory poBufferMemory_HizDepthCB;
+
 
     public:
         void Destroy();
@@ -41,9 +46,9 @@ namespace LostPeterVulkan
                           const VkShaderModule& vkShaderModule);
 
     protected:
-        void destroyBufferCull();
+        void destroyBufferHizDepth();
         
-        bool createBufferCull();
+        bool createBufferHizDepth();
 
     public:
         virtual void CleanupSwapChain();

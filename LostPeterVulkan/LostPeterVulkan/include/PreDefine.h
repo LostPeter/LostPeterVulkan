@@ -264,6 +264,11 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_InputAttachBlue,               //25: InputAttachBlue
         Vulkan_DescriptorSet_Terrain,                       //26: Terrain
         Vulkan_DescriptorSet_Cull,                          //27: Cull
+        Vulkan_DescriptorSet_HizDepth,                      //28: HizDepth
+        Vulkan_DescriptorSet_BufferRWArgsCB,                //29: BufferRWArgsCB
+        Vulkan_DescriptorSet_BufferRWLodCB,                 //30: BufferRWLodCB
+        Vulkan_DescriptorSet_BufferRWResultCB,              //31: BufferRWResultCB
+        Vulkan_DescriptorSet_BufferRWClipCB,                //32: BufferRWClipCB
 
         Vulkan_DescriptorSet_Count,
     };

@@ -12,9 +12,9 @@
 #include "../hlsl_common.hlsl"
 
 
-[[vk::binding(0)]] cbuffer hizDeothConstants                   	: register(b0)
+[[vk::binding(0)]] cbuffer hizDepthConstants                   	: register(b0)
 {
-    HizDeothConstants hizDeothConstants;
+    HizDepthConstants hizDepthConstants;
 }
 
 [[vk::binding(1)]] RWTexture2D<float> _textureSrc              	: register(u0);
@@ -24,7 +24,7 @@
 [numthreads(8, 8, 1)]
 void main(uint2 id : SV_DispatchThreadID)
 {	
-	if ((float)id.x > hizDeothConstants.vRtDepthSize.x || (float)id.y > hizDeothConstants.vRtDepthSize.y)
+	if ((float)id.x > hizDepthConstants.vRtDepthSize.x || (float)id.y > hizDepthConstants.vRtDepthSize.y)
         return;
 
     uint2 idOri = id * 2;
@@ -33,7 +33,7 @@ void main(uint2 id : SV_DispatchThreadID)
 						  _textureSrc[idOri + uint2(1, 1)],
 						  _textureSrc[idOri + uint2(0, 1)]);
 	
-	if (hizDeothConstants.vRtDepthSize.w < 1)
+	if (hizDepthConstants.vRtDepthSize.w < 1)
 	{
 		value.xy = min(value.xy, value.zw);
     	_textureDst[id] = min(value.x, value.y);

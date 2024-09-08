@@ -167,6 +167,12 @@ namespace LostPeterVulkan
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
                                                                 this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo_Sampler);
             }
+            else
+            {
+                String msg = "*********************** VKPipelineComputeTerrain::UpdateDescriptorSet: Wrong DescriptorSetLayout type: " + nameDescriptor;
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
         }
         Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
     }

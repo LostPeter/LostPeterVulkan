@@ -460,6 +460,11 @@ namespace LostPeterVulkan
         "InputAttachBlue",          //25:  InputAttachBlue
         "Terrain",                  //26:  Terrain
         "Cull",                     //27:  Cull
+        "HizDepth",                 //28:  HizDepth
+        "BufferRWArgsCB",           //29:  BufferRWArgsCB
+        "BufferRWLodCB",            //30:  BufferRWLodCB
+        "BufferRWResultCB",         //31:  BufferRWResultCB
+        "BufferRWClipCB",           //32:  BufferRWClipCB
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

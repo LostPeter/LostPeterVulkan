@@ -1507,12 +1507,12 @@ namespace LostPeterVulkan
         }
     };
 
-    //////////////////////////////// HizDeothConstants //////////////////////////////
-    struct vulkanExport HizDeothConstants
+    //////////////////////////////// HizDepthConstants //////////////////////////////
+    struct vulkanExport HizDepthConstants
     {
         FVector4 vRtDepthSize;
 
-        HizDeothConstants()
+        HizDepthConstants()
             : vRtDepthSize(0,0,0,0)
         {
 

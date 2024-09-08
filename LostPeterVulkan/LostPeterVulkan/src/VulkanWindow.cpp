@@ -302,12 +302,17 @@ namespace LostPeterVulkan
     }
 
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 5;
+    static const int g_DescriptorSetLayoutCount_Internal = 10;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
         "Pass-Object",
         "ObjectCopyBlit-TextureFrameColor",
+        "Cull-BufferRWArgsCB",
+        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB",
+        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-TextureCSR",
+        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
+        "HizDepth-TextureCSRW-TextureCSRW",
         "TextureCopy-TextureCSR-TextureCSRW",
         "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
     };
@@ -389,7 +394,7 @@ namespace LostPeterVulkan
         "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
         "comp_standard_compute_texcopy_tex2darray",               "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
         "comp_standard_compute_texgen_normalmap",                 "comp",              "Assets/Shader/standard_compute_texgen_normalmap.comp.spv", //standard_compute_texgen_normalmap comp
-        
+
         "comp_standard_compute_cull_clear_args",                  "comp",              "Assets/Shader/standard_compute_cull_clear_args.comp.spv", //standard_compute_cull_clear_args comp
         "comp_standard_compute_cull_frustum",                     "comp",              "Assets/Shader/standard_compute_cull_frustum.comp.spv", //standard_compute_cull_frustum comp
         "comp_standard_compute_cull_frustum_depth_hiz",           "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz.comp.spv", //standard_compute_cull_frustum_depth_hiz comp
@@ -578,22 +583,147 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::createPipelineCompute_Cull()
         {
-            if (!this->cfg_isCullComputeFrustum)
+            if (!this->cfg_isCullComputeShader)
                 return;
 
-            m_pPipelineCompute_Cull = new VKPipelineComputeCull("PipelineCompute-Cull");
+            this->m_pPipelineCompute_Cull = new VKPipelineComputeCull("PipelineCompute-Cull");
+            if (!this->m_pPipelineCompute_Cull->Init())
+            {
+                F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->Init failed !");
+                return;
+            }
 
+            //PipelineCompute-CullClearArgs
+            {
+                String descriptorSetLayout = "Cull-BufferRWArgsCB";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_clear_args");
 
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         vkShaderModule != nullptr &&
+                         "VulkanWindow::createPipelineCompute_Cull")
+
+                if (!this->m_pPipelineCompute_Cull->InitCullClearArgs(descriptorSetLayout,
+                                                                      pDescriptorSetLayoutNames,
+                                                                      vkDescriptorSetLayout,
+                                                                      vkPipelineLayout,
+                                                                      vkShaderModule))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullClearArgs failed !");
+                    return;
+                }
+            }
+
+            //PipelineCompute-CullFrustum
+            {
+                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum");
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         vkShaderModule != nullptr &&
+                         "VulkanWindow::createPipelineCompute_Cull")
+
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustum(descriptorSetLayout,
+                                                                    pDescriptorSetLayoutNames,
+                                                                    vkDescriptorSetLayout,
+                                                                    vkPipelineLayout,
+                                                                    vkShaderModule))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustum failed !");
+                    return;
+                }
+            }
+
+            //PipelineCompute-CullFrustumDepthHiz
+            {
+                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-TextureCSR";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum_depth_hiz");
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         vkShaderModule != nullptr &&
+                         "VulkanWindow::createPipelineCompute_Cull")
+
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHiz(descriptorSetLayout,
+                                                                            pDescriptorSetLayoutNames,
+                                                                            vkDescriptorSetLayout,
+                                                                            vkPipelineLayout,
+                                                                            vkShaderModule))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHiz failed !");
+                    return;
+                }
+            }
+
+            //PipelineCompute-CullFrustumDepthHizClip
+            {
+                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum_depth_hiz_clip");
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         vkShaderModule != nullptr &&
+                         "VulkanWindow::createPipelineCompute_Cull")
+
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip(descriptorSetLayout,
+                                                                                pDescriptorSetLayoutNames,
+                                                                                vkDescriptorSetLayout,
+                                                                                vkPipelineLayout,
+                                                                                vkShaderModule))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip failed !");
+                    return;
+                }
+            }
+
+            F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create PipelineCompute_Cull success !");
         }
         void VulkanWindow::createPipelineCompute_HizDepth()
         {
-            if (!this->cfg_isCullComputeFrustum ||
-                 !this->cfg_isCullComputeHiz)
+            if (!this->cfg_isCullComputeShader ||
+                !this->cfg_isCullHizDepthComputeShader)
                 return;
 
-            m_pPipelineCompute_HizDepth = new VKPipelineComputeHizDepth("PipelineCompute-HizDepth");
+            this->m_pPipelineCompute_HizDepth = new VKPipelineComputeHizDepth("PipelineCompute-HizDepth");
+            String descriptorSetLayout = "HizDepth-TextureCSRW-TextureCSRW";
+            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+            VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_hiz_depth_generate");
 
+            F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                     vkDescriptorSetLayout != nullptr &&
+                     vkPipelineLayout != nullptr &&
+                     vkShaderModule != nullptr &&
+                     "VulkanWindow::createPipelineCompute_HizDepth")
 
+            if (!this->m_pPipelineCompute_HizDepth->Init(descriptorSetLayout,
+                                                         pDescriptorSetLayoutNames,
+                                                         vkDescriptorSetLayout,
+                                                         vkPipelineLayout,
+                                                         vkShaderModule))
+            {
+                F_LogError("*********************** VulkanWindow::createPipelineCompute_HizDepth: m_pPipelineCompute_HizDepth->Init failed !");
+                return;
+            }
+            F_LogInfo("VulkanWindow::createPipelineCompute_HizDepth: Create PipelineCompute_HizDepth success !");
         }
         void VulkanWindow::createPipelineCompute_Terrain()
         {
@@ -619,9 +749,10 @@ namespace LostPeterVulkan
                                                         vkPipelineLayout,
                                                         vkShaderModule))
             {
-                F_LogError("*********************** VulkanWindow::createPipelineCompute_Terrain: PipelineCompute_Terrain->Init failed !");
+                F_LogError("*********************** VulkanWindow::createPipelineCompute_Terrain: m_pPipelineCompute_Terrain->Init failed !");
                 return;
             }
+            F_LogInfo("VulkanWindow::createPipelineCompute_Terrain: Create PipelineCompute_Terrain success !");
         }
     void VulkanWindow::UpdateDescriptorSets_Compute_Terrain()
     {
@@ -1211,63 +1342,63 @@ namespace LostPeterVulkan
             const String& strLayout = (*pNamesDescriptorSetLayout)[i];
             if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectTerrain)) //ObjectTerrain
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCameraAxis)) //ObjectCameraAxis
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCoordinateAxis)) //ObjectCoordinateAxis
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat2D)) //ObjectLineFlat2D
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat3D)) //ObjectLineFlat3D
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCull)) //ObjectCull
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Geometry)) //Geometry
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_GEOMETRY_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_GEOMETRY_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
@@ -1303,23 +1434,43 @@ namespace LostPeterVulkan
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachRed)) //InputAttachRed
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachGreen)) //InputAttachGreen
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachBlue)) //InputAttachBlue
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Terrain)) //Terrain
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Cull)) //Cull
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_HizDepth)) //HizDepth
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWArgsCB)) //BufferRWArgsCB
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWLodCB)) //BufferRWLodCB
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWResultCB)) //BufferRWResultCB
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWClipCB)) //BufferRWClipCB
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else
             {
@@ -1414,8 +1565,8 @@ namespace LostPeterVulkan
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
-        , cfg_isCullComputeFrustum(false)
-        , cfg_isCullComputeHiz(false)
+        , cfg_isCullComputeShader(false)
+        , cfg_isCullHizDepthComputeShader(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
@@ -6900,24 +7051,24 @@ namespace LostPeterVulkan
                 }
             }
 
-            VkDescriptorSetLayoutBinding VulkanWindow::createVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
-                                                                                                  VkDescriptorType descriptorType,
-                                                                                                  uint32_t descriptorCount,
-                                                                                                  VkShaderStageFlags stageFlags)
+            VkDescriptorSetLayoutBinding VulkanWindow::createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
+                                                                                                 VkDescriptorType descriptorType,
+                                                                                                 uint32_t descriptorCount,
+                                                                                                 VkShaderStageFlags stageFlags)
             {
                 VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
-                createVkDescriptorSetLayoutBinding_Uniform(descriptorSetLayoutBinding,
-                                                           binding,
-                                                           descriptorType,
-                                                           descriptorCount,
-                                                           stageFlags);
+                createVkDescriptorSetLayoutBinding_Buffer(descriptorSetLayoutBinding,
+                                                          binding,
+                                                          descriptorType,
+                                                          descriptorCount,
+                                                          stageFlags);
                 return descriptorSetLayoutBinding;
             }
-            void VulkanWindow::createVkDescriptorSetLayoutBinding_Uniform(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
-                                                                          uint32_t binding,
-                                                                          VkDescriptorType descriptorType,
-                                                                          uint32_t descriptorCount,
-                                                                          VkShaderStageFlags stageFlags)
+            void VulkanWindow::createVkDescriptorSetLayoutBinding_Buffer(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                         uint32_t binding,
+                                                                         VkDescriptorType descriptorType,
+                                                                         uint32_t descriptorCount,
+                                                                         VkShaderStageFlags stageFlags)
             {
                 descriptorSetLayoutBinding.binding = binding;
                 descriptorSetLayoutBinding.descriptorType = descriptorType;
