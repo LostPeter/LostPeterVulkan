@@ -169,7 +169,7 @@ namespace LostPeterVulkan
         this->poTerrainDiffuseImage = VK_NULL_HANDLE;
         this->poTerrainDiffuseImageMemory = VK_NULL_HANDLE;
         this->poTerrainDiffuseImageView = VK_NULL_HANDLE;
-         if (this->poTerrainDiffuseImageSampler != VK_NULL_HANDLE)
+        if (this->poTerrainDiffuseImageSampler != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainDiffuseImageSampler);
         }

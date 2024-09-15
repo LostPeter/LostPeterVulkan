@@ -454,17 +454,19 @@ namespace LostPeterVulkan
         "TextureFrameColor",        //19:  TextureFrameColor
         "TextureCSR",               //20:  TextureCSR
         "TextureCSRW",              //21:  TextureCSRW
-        "TextureDepthShadow",       //22:  TextureDepthShadow
-        "InputAttachRed",           //23:  InputAttachRed
-        "InputAttachGreen",         //24:  InputAttachGreen
-        "InputAttachBlue",          //25:  InputAttachBlue
-        "Terrain",                  //26:  Terrain
-        "Cull",                     //27:  Cull
-        "HizDepth",                 //28:  HizDepth
-        "BufferRWArgsCB",           //29:  BufferRWArgsCB
-        "BufferRWLodCB",            //30:  BufferRWLodCB
-        "BufferRWResultCB",         //31:  BufferRWResultCB
-        "BufferRWClipCB",           //32:  BufferRWClipCB
+        "TextureCSRWSrc",           //22:  TextureCSRWSrc
+        "TextureCSRWDst",           //23:  TextureCSRWDst
+        "TextureDepthShadow",       //24:  TextureDepthShadow
+        "InputAttachRed",           //25:  InputAttachRed
+        "InputAttachGreen",         //26:  InputAttachGreen
+        "InputAttachBlue",          //27:  InputAttachBlue
+        "Terrain",                  //28:  Terrain
+        "Cull",                     //29:  Cull
+        "HizDepth",                 //30:  HizDepth
+        "BufferRWArgsCB",           //31:  BufferRWArgsCB
+        "BufferRWLodCB",            //32:  BufferRWLodCB
+        "BufferRWResultCB",         //33:  BufferRWResultCB
+        "BufferRWClipCB",           //34:  BufferRWClipCB
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

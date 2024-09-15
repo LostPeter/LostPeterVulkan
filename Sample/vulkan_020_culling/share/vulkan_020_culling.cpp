@@ -503,7 +503,7 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_tree_spruce
 
     false, //object_grass
-    true, //object_flower
+    false, //object_flower
 
 };
 
@@ -1030,8 +1030,8 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     this->cfg_isEditorCoordinateAxisShow = true;
     this->cfg_editorGrid_Color.a = 0.2f;
 
-    this->cfg_isCullComputeShader = true;
-    this->cfg_isCullHizDepthComputeShader = true;
+    this->cfg_isRenderPassCull = true;
+    //this->cfg_isCullHizDepthComputeShader = true;
 }
 
 void Vulkan_020_Culling::setUpEnabledFeatures()
@@ -1158,6 +1158,7 @@ void Vulkan_020_Culling::loadModel_Custom()
                 {
                     String nameTextureVS = g_ObjectRend_Configs[7 * nIndexObjectRend + 1]; //Texture VS
                     if (!nameTextureVS.empty())
+
                     {
                         StringVector aTextureVS = FUtilString::Split(nameTextureVS, ";");
                         size_t count_tex = aTextureVS.size();

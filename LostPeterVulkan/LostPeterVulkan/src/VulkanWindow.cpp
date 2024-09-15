@@ -37,6 +37,7 @@ namespace LostPeterVulkan
     void VulkanWindow::cleanupInternal()
     {
         F_DELETE(m_pVKRenderPassTerrain)
+        F_DELETE(m_pVKRenderPassCull)
         F_DELETE(m_pVKRenderPassShadowMap)
 
         //Texture
@@ -65,6 +66,8 @@ namespace LostPeterVulkan
     {
         //Uniform ConstantBuffer
         destroyUniformCB_Internal();
+        //PipelineCompute
+        destroyPipelineCompute_Internal();
         //PipelineGraphics
         destroyPipelineGraphics_Internal();
 
@@ -80,11 +83,17 @@ namespace LostPeterVulkan
         {
             m_pVKRenderPassShadowMap->CleanupSwapChain();
         }
+        //RenderPassCull
+        if (m_pVKRenderPassCull != nullptr)
+        {
+            m_pVKRenderPassCull->CleanupSwapChain();
+        }
         //RenderPassTerrain
         if (m_pVKRenderPassTerrain != nullptr)
         {
             m_pVKRenderPassTerrain->CleanupSwapChain();
         }
+
     }
 
     //Mesh
@@ -312,7 +321,7 @@ namespace LostPeterVulkan
         "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB",
         "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-TextureCSR",
         "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
-        "HizDepth-TextureCSRW-TextureCSRW",
+        "HizDepth-TextureCSRWSrc-TextureCSRWDst",
         "TextureCopy-TextureCSR-TextureCSRW",
         "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
     };
@@ -559,16 +568,11 @@ namespace LostPeterVulkan
     void VulkanWindow::destroyPipelineCompute_Internal()
     {
         destroyPipelineCompute_Cull();
-        destroyPipelineCompute_HizDepth();
         destroyPipelineCompute_Terrain();
     }
         void VulkanWindow::destroyPipelineCompute_Cull()
         {
             F_DELETE(m_pPipelineCompute_Cull)
-        }
-        void VulkanWindow::destroyPipelineCompute_HizDepth()
-        {
-            F_DELETE(m_pPipelineCompute_HizDepth)
         }
         void VulkanWindow::destroyPipelineCompute_Terrain()
         {
@@ -578,15 +582,14 @@ namespace LostPeterVulkan
     void VulkanWindow::createPipelineCompute_Internal()
     {
         createPipelineCompute_Cull();
-        createPipelineCompute_HizDepth();
         createPipelineCompute_Terrain();
     }
         void VulkanWindow::createPipelineCompute_Cull()
         {
-            if (!this->cfg_isCullComputeShader)
+            if (!this->cfg_isRenderPassCull)
                 return;
 
-            this->m_pPipelineCompute_Cull = new VKPipelineComputeCull("PipelineCompute-Cull");
+            this->m_pPipelineCompute_Cull = new VKPipelineComputeCull("PipelineCompute-Cull", this->m_pVKRenderPassCull);
             if (!this->m_pPipelineCompute_Cull->Init())
             {
                 F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->Init failed !");
@@ -616,6 +619,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullClearArgs failed !");
                     return;
                 }
+                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullClearArgs] success !");
             }
 
             //PipelineCompute-CullFrustum
@@ -641,6 +645,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustum failed !");
                     return;
                 }
+                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustum] success !");
             }
 
             //PipelineCompute-CullFrustumDepthHiz
@@ -666,6 +671,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHiz failed !");
                     return;
                 }
+                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHiz] success !");
             }
 
             //PipelineCompute-CullFrustumDepthHizClip
@@ -691,39 +697,36 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip failed !");
                     return;
                 }
+                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHizClip] success !");
+            }
+
+            //PipelineCompute-HizDepthGenerate
+            {
+                String descriptorSetLayout = "HizDepth-TextureCSRWSrc-TextureCSRWDst";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_hiz_depth_generate");
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         vkShaderModule != nullptr &&
+                         "VulkanWindow::createPipelineCompute_Cull")
+
+                if (!this->m_pPipelineCompute_Cull->InitHizDepthGenerate(descriptorSetLayout,
+                                                                         pDescriptorSetLayoutNames,
+                                                                         vkDescriptorSetLayout,
+                                                                         vkPipelineLayout,
+                                                                         vkShaderModule))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitHizDepthGenerate failed !");
+                    return;
+                }
+                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-HizDepthGenerate] success !");
             }
 
             F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create PipelineCompute_Cull success !");
-        }
-        void VulkanWindow::createPipelineCompute_HizDepth()
-        {
-            if (!this->cfg_isCullComputeShader ||
-                !this->cfg_isCullHizDepthComputeShader)
-                return;
-
-            this->m_pPipelineCompute_HizDepth = new VKPipelineComputeHizDepth("PipelineCompute-HizDepth");
-            String descriptorSetLayout = "HizDepth-TextureCSRW-TextureCSRW";
-            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-            VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_hiz_depth_generate");
-
-            F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                     vkDescriptorSetLayout != nullptr &&
-                     vkPipelineLayout != nullptr &&
-                     vkShaderModule != nullptr &&
-                     "VulkanWindow::createPipelineCompute_HizDepth")
-
-            if (!this->m_pPipelineCompute_HizDepth->Init(descriptorSetLayout,
-                                                         pDescriptorSetLayoutNames,
-                                                         vkDescriptorSetLayout,
-                                                         vkPipelineLayout,
-                                                         vkShaderModule))
-            {
-                F_LogError("*********************** VulkanWindow::createPipelineCompute_HizDepth: m_pPipelineCompute_HizDepth->Init failed !");
-                return;
-            }
-            F_LogInfo("VulkanWindow::createPipelineCompute_HizDepth: Create PipelineCompute_HizDepth success !");
         }
         void VulkanWindow::createPipelineCompute_Terrain()
         {
@@ -1428,6 +1431,14 @@ namespace LostPeterVulkan
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
             }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWSrc)) //TextureCSRWSrc
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWDst)) //TextureCSRWDst
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
+            }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
@@ -1557,6 +1568,7 @@ namespace LostPeterVulkan
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
         , cfg_isRenderPassDefaultCustom(false)
         , cfg_isRenderPassShadowMap(false)
+        , cfg_isRenderPassCull(false)
         , cfg_isRenderPassTerrain(false)
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
@@ -1565,7 +1577,6 @@ namespace LostPeterVulkan
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
-        , cfg_isCullComputeShader(false)
         , cfg_isCullHizDepthComputeShader(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
@@ -1618,10 +1629,10 @@ namespace LostPeterVulkan
 
         //Internal
         , m_pVKRenderPassShadowMap(nullptr)
+        , m_pVKRenderPassCull(nullptr)
         , m_pVKRenderPassTerrain(nullptr)
 
         , m_pPipelineCompute_Cull(nullptr)
-        , m_pPipelineCompute_HizDepth(nullptr)
         , m_pPipelineCompute_Terrain(nullptr)
 
         , m_pPipelineGraphics_CopyBlit(nullptr)
@@ -3318,10 +3329,13 @@ namespace LostPeterVulkan
         //2> createRenderPass_Default
         createRenderPass_Default();
 
-        //3> createRenderPass_Terrain
+        //3> createRenderPass_Cull
+        createRenderPass_Cull();
+
+        //4> createRenderPass_Terrain
         createRenderPass_Terrain();
 
-        //4> createRenderPass_Custom
+        //5> createRenderPass_Custom
         createRenderPass_Custom();
     }
         void VulkanWindow::createRenderPass_ShadowMap()
@@ -3367,6 +3381,17 @@ namespace LostPeterVulkan
             }
             
             F_LogInfo("VulkanWindow::createRenderPass_Default: Success to create RenderPass_Default !");
+        }
+        void VulkanWindow::createRenderPass_Cull()
+        {
+            if (!this->cfg_isRenderPassCull)
+                return;
+
+            if (m_pVKRenderPassCull == nullptr)
+            {
+                m_pVKRenderPassCull = new VKRenderPassCull("RenderPass_Cull");
+            }
+            m_pVKRenderPassCull->Init();
         }
         void VulkanWindow::createRenderPass_Terrain()
         {

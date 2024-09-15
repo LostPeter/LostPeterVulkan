@@ -27,6 +27,7 @@ namespace LostPeterVulkan
     public:
         //RenderPass
         VKRenderPassShadowMap* m_pVKRenderPassShadowMap; 
+        VKRenderPassCull* m_pVKRenderPassCull;
         VKRenderPassTerrain* m_pVKRenderPassTerrain;
 
         //Uniform ConstantBuffer
@@ -40,7 +41,6 @@ namespace LostPeterVulkan
 
         //PipelineCompute
         VKPipelineComputeCull* m_pPipelineCompute_Cull;
-        VKPipelineComputeHizDepth* m_pPipelineCompute_HizDepth;
         VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
 
         //PipelineGraphics
@@ -156,11 +156,9 @@ namespace LostPeterVulkan
         //PipelineCompute
         virtual void destroyPipelineCompute_Internal();
             virtual void destroyPipelineCompute_Cull();
-            virtual void destroyPipelineCompute_HizDepth();
             virtual void destroyPipelineCompute_Terrain();
         virtual void createPipelineCompute_Internal();
             virtual void createPipelineCompute_Cull();
-            virtual void createPipelineCompute_HizDepth();
             virtual void createPipelineCompute_Terrain();
 
         //PipelineGraphics
@@ -353,6 +351,7 @@ namespace LostPeterVulkan
         FVector4Vector cfg_colorValues;
         bool cfg_isRenderPassDefaultCustom;
         bool cfg_isRenderPassShadowMap;
+        bool cfg_isRenderPassCull;
         bool cfg_isRenderPassTerrain;
         bool cfg_isMSAA;
         bool cfg_isImgui;
@@ -361,7 +360,6 @@ namespace LostPeterVulkan
         bool cfg_isNegativeViewport;
         bool cfg_isUseComputeShader;
         bool cfg_isCreateRenderComputeSycSemaphore;
-        bool cfg_isCullComputeShader;
         bool cfg_isCullHizDepthComputeShader;
         VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
@@ -646,6 +644,7 @@ namespace LostPeterVulkan
                 virtual void createRenderPasses();
                     virtual void createRenderPass_ShadowMap();
                     virtual void createRenderPass_Default();
+                    virtual void createRenderPass_Cull();
                     virtual void createRenderPass_Terrain();
                     virtual void createRenderPass_Custom();
                         virtual void createRenderPass_DefaultCustom(VkRenderPass& vkRenderPass);

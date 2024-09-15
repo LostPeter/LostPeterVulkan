@@ -10,43 +10,79 @@
 ****************************************************************************/
 
 #include "../include/VKPipelineComputeCull.h"
+#include "../include/VKRenderPassCull.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeterVulkan
 {
-    VKPipelineComputeCull::VKPipelineComputeCull(const String& namePipelineCompute)
+    VKPipelineComputeCull::VKPipelineComputeCull(const String& namePipelineCompute, VKRenderPassCull* pVKRenderPassCull)
         : Base(namePipelineCompute)
+        , m_pVKRenderPassCull(pVKRenderPassCull)
 
+        //PipelineCompute-CullClearArgs
         , nameDescriptorSetLayout_CullClearArgs("")
         , poDescriptorSetLayoutNames_CullClearArgs(nullptr)
         , poDescriptorSetLayout_CullClearArgs(VK_NULL_HANDLE)
         , poPipelineLayout_CullClearArgs(VK_NULL_HANDLE)
         , poPipeline_CullClearArgs(VK_NULL_HANDLE)
 
+        //PipelineCompute-CullFrustum
         , nameDescriptorSetLayout_CullFrustum("")
         , poDescriptorSetLayoutNames_CullFrustum(nullptr)
         , poDescriptorSetLayout_CullFrustum(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustum(VK_NULL_HANDLE)
         , poPipeline_CullFrustum(VK_NULL_HANDLE)
 
+        //PipelineCompute-CullFrustumDepthHiz
         , nameDescriptorSetLayout_CullFrustumDepthHiz("")
         , poDescriptorSetLayoutNames_CullFrustumDepthHiz(nullptr)
         , poDescriptorSetLayout_CullFrustumDepthHiz(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustumDepthHiz(VK_NULL_HANDLE)
         , poPipeline_CullFrustumDepthHiz(VK_NULL_HANDLE)
 
+        //PipelineCompute-CullFrustumDepthHizClip
         , nameDescriptorSetLayout_CullFrustumDepthHizClip("")
         , poDescriptorSetLayoutNames_CullFrustumDepthHizClip(nullptr)
         , poDescriptorSetLayout_CullFrustumDepthHizClip(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustumDepthHizClip(VK_NULL_HANDLE)
         , poPipeline_CullFrustumDepthHizClip(VK_NULL_HANDLE)
 
+        //PipelineCompute-HizDepthGenerate
+        , nameDescriptorSetLayout_HizDepthGenerate("")
+        , poDescriptorSetLayoutNames_HizDepthGenerate(nullptr)
+        , poDescriptorSetLayout_HizDepthGenerate(VK_NULL_HANDLE)
+        , poPipelineLayout_HizDepthGenerate(VK_NULL_HANDLE)
+        , poPipeline_HizDepthGenerate(VK_NULL_HANDLE)
+
+        //CullConstants
         , poBuffer_CullCB(VK_NULL_HANDLE)
         , poBufferMemory_CullCB(VK_NULL_HANDLE)
 
+        //CullObjectConstants
         , poBuffer_CullObjectCB(VK_NULL_HANDLE)
         , poBufferMemory_CullObjectCB(VK_NULL_HANDLE)
 
+        //CullObjectConstants
+        , poBuffer_HizDepthCB(VK_NULL_HANDLE)
+        , poBufferMemory_HizDepthCB(VK_NULL_HANDLE)
+        
+        //Args
+        , poBuffer_ArgsCB(VK_NULL_HANDLE)
+        , poBufferMemory_ArgsCB(VK_NULL_HANDLE)
+
+        //Lod
+        , poBuffer_LodCB(VK_NULL_HANDLE)
+        , poBufferMemory_LodCB(VK_NULL_HANDLE)
+
+        //Result
+        , poBuffer_ResultCB(VK_NULL_HANDLE)
+        , poBufferMemory_ResultCB(VK_NULL_HANDLE)
+
+        //Clip
+        , poBuffer_ClipCB(VK_NULL_HANDLE)
+        , poBufferMemory_ClipCB(VK_NULL_HANDLE)
+
+        
     {
 
     }
@@ -59,9 +95,58 @@ namespace LostPeterVulkan
     void VKPipelineComputeCull::Destroy()
     {
         CleanupSwapChain();
+        destroyBufferClip();
+        destroyBufferResult();
+        destroyBufferLod();
+        destroyBufferArgs();
         destroyBufferCullObject();
         destroyBufferCull();
     }
+        void VKPipelineComputeCull::destroyBufferClip()
+        {
+            if (this->poBuffer_ClipCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_ClipCB, this->poBufferMemory_ClipCB);
+            }
+            this->poBuffer_ClipCB = VK_NULL_HANDLE;
+            this->poBufferMemory_ClipCB = VK_NULL_HANDLE;
+        }
+        void VKPipelineComputeCull::destroyBufferResult()
+        {
+            if (this->poBuffer_ResultCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_ResultCB, this->poBufferMemory_ResultCB);
+            }
+            this->poBuffer_ResultCB = VK_NULL_HANDLE;
+            this->poBufferMemory_ResultCB = VK_NULL_HANDLE;
+        }
+        void VKPipelineComputeCull::destroyBufferLod()
+        {
+            if (this->poBuffer_LodCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_LodCB, this->poBufferMemory_LodCB);
+            }
+            this->poBuffer_LodCB = VK_NULL_HANDLE;
+            this->poBufferMemory_LodCB = VK_NULL_HANDLE;
+        }
+        void VKPipelineComputeCull::destroyBufferArgs()
+        {
+            if (this->poBuffer_ArgsCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_ArgsCB, this->poBufferMemory_ArgsCB);
+            }
+            this->poBuffer_ArgsCB = VK_NULL_HANDLE;
+            this->poBufferMemory_ArgsCB = VK_NULL_HANDLE;
+        }
+        void VKPipelineComputeCull::destroyBufferHizDepth()
+        {
+            if (this->poBuffer_HizDepthCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
+            }
+            this->poBuffer_HizDepthCB = VK_NULL_HANDLE;
+            this->poBufferMemory_HizDepthCB = VK_NULL_HANDLE;
+        }
         void VKPipelineComputeCull::destroyBufferCullObject()
         {
             if (this->poBuffer_CullCB != VK_NULL_HANDLE)
@@ -90,7 +175,7 @@ namespace LostPeterVulkan
 
     bool VKPipelineComputeCull::Init()
     {
-        //1> VkBuffer
+        //CullConstants
         if (this->poBuffer_CullCB == VK_NULL_HANDLE)
         {
             if (!createBufferCull())
@@ -99,11 +184,57 @@ namespace LostPeterVulkan
                 return false;
             }
         }
+        //CullObjectConstants
         if (this->poBuffer_CullObjectCB == VK_NULL_HANDLE)
         {
             if (!createBufferCullObject())
             {
                 F_LogError("*********************** VKPipelineComputeCull::Init: createBufferCullObject failed !");
+                return false;
+            }
+        }
+        //HizDepthConstants
+        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferHizDepth())
+            {
+                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferHizDepth failed !");
+                return false;
+            }
+        }
+        //Args
+        if (this->poBuffer_ArgsCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferArgs())
+            {
+                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferArgs failed !");
+                return false;
+            }
+        }
+        //Lod
+        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferLod())
+            {
+                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferLod failed !");
+                return false;
+            }
+        }
+        //Result
+        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferResult())
+            {
+                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferResult failed !");
+                return false;
+            }
+        }
+        //Clip
+        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
+        {
+            if (!createBufferClip())
+            {
+                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferClip failed !");
                 return false;
             }
         }
@@ -210,6 +341,31 @@ namespace LostPeterVulkan
 
         return true;
     }
+    bool VKPipelineComputeCull::InitHizDepthGenerate(const String& descriptorSetLayout,
+                                                     StringVector* pDescriptorSetLayoutNames,
+                                                     const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                                     const VkPipelineLayout& vkPipelineLayout,
+                                                     const VkShaderModule& vkShaderModule)
+    {
+        this->nameDescriptorSetLayout_HizDepthGenerate = descriptorSetLayout;
+        this->poDescriptorSetLayoutNames_HizDepthGenerate = pDescriptorSetLayoutNames;
+        this->poDescriptorSetLayout_HizDepthGenerate = vkDescriptorSetLayout;
+        this->poPipelineLayout_HizDepthGenerate = vkPipelineLayout;
+
+        if (!createVkComputePipeline(descriptorSetLayout,
+                                     pDescriptorSetLayoutNames,
+                                     vkDescriptorSetLayout,
+                                     vkPipelineLayout,
+                                     vkShaderModule,
+                                     this->poPipeline_HizDepthGenerate,
+                                     this->poDescriptorSet_HizDepthGenerate))
+        {
+            F_LogError("*********************** VKPipelineComputeCull::InitHizDepthGenerate: createVkComputePipeline failed !");
+            return false;
+        }
+
+        return true;
+    }
         bool VKPipelineComputeCull::createBufferCull()
         {
             destroyBufferCull();
@@ -225,6 +381,33 @@ namespace LostPeterVulkan
 
             VkDeviceSize bufferSize = sizeof(CullObjectConstants) * MAX_OBJECT_CULL_COUNT;
             Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_CullObjectCB, this->poBufferMemory_CullObjectCB);
+            return true;
+        }
+        bool VKPipelineComputeCull::createBufferHizDepth()
+        {
+            destroyBufferHizDepth();
+
+            VkDeviceSize bufferSize = sizeof(HizDepthConstants);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(HizDepthConstants), &this->hizDepthCB, this->poBufferMemory_HizDepthCB);
+            return true;
+        } 
+        bool VKPipelineComputeCull::createBufferArgs()
+        {
+
+
+            return true;
+        }
+        bool VKPipelineComputeCull::createBufferLod()
+        {
+            return true;
+        }
+        bool VKPipelineComputeCull::createBufferResult()
+        {
+            return true;
+        }
+        bool VKPipelineComputeCull::createBufferClip()
+        {
             return true;
         }
         bool VKPipelineComputeCull::createVkComputePipeline(const String& descriptorSetLayout,
@@ -260,7 +443,6 @@ namespace LostPeterVulkan
             return true;
         }
 
-
     void VKPipelineComputeCull::CleanupSwapChain()
     {
         //PipelineCompute-CullClearArgs
@@ -271,7 +453,7 @@ namespace LostPeterVulkan
         this->poPipeline_CullClearArgs = VK_NULL_HANDLE;
         this->poDescriptorSet_CullClearArgs = VK_NULL_HANDLE;
 
-        //PipelineCompute-CullClearArgs
+        //PipelineCompute-CullFrustum
         this->poDescriptorSetLayoutNames_CullFrustum = nullptr;
         this->poDescriptorSetLayout_CullFrustum = VK_NULL_HANDLE;
         this->poPipelineLayout_CullFrustum = VK_NULL_HANDLE;
@@ -279,7 +461,7 @@ namespace LostPeterVulkan
         this->poPipeline_CullFrustum = VK_NULL_HANDLE;
         this->poDescriptorSet_CullFrustum = VK_NULL_HANDLE;
 
-        //PipelineCompute-CullClearArgs
+        //PipelineCompute-CullFrustumDepthHiz
         this->poDescriptorSetLayoutNames_CullFrustumDepthHiz = nullptr;
         this->poDescriptorSetLayout_CullFrustumDepthHiz = VK_NULL_HANDLE;
         this->poPipelineLayout_CullFrustumDepthHiz = VK_NULL_HANDLE;
@@ -287,13 +469,23 @@ namespace LostPeterVulkan
         this->poPipeline_CullFrustumDepthHiz = VK_NULL_HANDLE;
         this->poDescriptorSet_CullFrustumDepthHiz = VK_NULL_HANDLE;
 
-        //PipelineCompute-CullClearArgs
+        //PipelineCompute-CullFrustumDepthHizClip
         this->poDescriptorSetLayoutNames_CullFrustumDepthHizClip = nullptr;
         this->poDescriptorSetLayout_CullFrustumDepthHizClip = VK_NULL_HANDLE;
         this->poPipelineLayout_CullFrustumDepthHizClip = VK_NULL_HANDLE;
         destroyVkComputePipeline(this->poPipeline_CullFrustumDepthHizClip);  
         this->poPipeline_CullFrustumDepthHizClip = VK_NULL_HANDLE;
         this->poDescriptorSet_CullFrustumDepthHizClip = VK_NULL_HANDLE;
+
+        //PipelineCompute-HizDepthGenerate
+        this->poDescriptorSetLayoutNames_HizDepthGenerate = nullptr;
+        this->poDescriptorSetLayout_HizDepthGenerate = VK_NULL_HANDLE;
+        this->poPipelineLayout_HizDepthGenerate = VK_NULL_HANDLE;
+        destroyVkComputePipeline(this->poPipeline_HizDepthGenerate);  
+        this->poPipeline_HizDepthGenerate = VK_NULL_HANDLE;
+        this->poDescriptorSet_HizDepthGenerate = VK_NULL_HANDLE;
+
+
     }  
 
     void VKPipelineComputeCull::UpdateDescriptorSet(VkDescriptorSet& descriptorSet,
@@ -331,6 +523,19 @@ namespace LostPeterVulkan
                                                                   1,
                                                                   bufferInfo_ObjectCull);
             }
+            else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_HizDepth)) //HizDepth
+            {
+                VkDescriptorBufferInfo bufferInfo_HizDepth = {};
+                bufferInfo_HizDepth.buffer = this->poBuffer_HizDepthCB;
+                bufferInfo_HizDepth.offset = 0;
+                bufferInfo_HizDepth.range = sizeof(HizDepthConstants);
+                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                  descriptorSet,
+                                                                  (uint32_t)i,
+                                                                  0,
+                                                                  1,
+                                                                  bufferInfo_HizDepth);
+            }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWArgsCB)) //BufferRWArgsCB
             {
                 
@@ -349,7 +554,33 @@ namespace LostPeterVulkan
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
             {
-                
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                descriptorSet,
+                                                                (uint32_t)i,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                                                this->m_pVKRenderPassCull->poHizDepthImageInfo_Sampler);
+            }
+            else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWSrc)) //TextureCSRWSrc
+            {
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                descriptorSet,
+                                                                (uint32_t)i,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                                                this->m_pVKRenderPassCull->poHizDepthImageInfo_NoSampler);
+            }
+            else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWDst)) //TextureCSRWDst
+            {
+                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                descriptorSet,
+                                                                (uint32_t)i,
+                                                                0,
+                                                                1,
+                                                                VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                                                this->m_pVKRenderPassCull->poHizDepthImageInfo_NoSampler);
             }
             else
             {

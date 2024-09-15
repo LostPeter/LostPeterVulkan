@@ -19,10 +19,16 @@ namespace LostPeterVulkan
     class vulkanExport VKPipelineComputeCull : public Base
     {
     public:
-        VKPipelineComputeCull(const String& namePipelineCompute);
+        VKPipelineComputeCull(const String& namePipelineCompute, VKRenderPassCull* pVKRenderPassCull);
         virtual ~VKPipelineComputeCull();
 
     public:
+    
+
+    public:
+        VKRenderPassCull* m_pVKRenderPassCull;
+
+        ////////////////////////// PipelineCompute //////////////////////////
         //PipelineCompute-CullClearArgs
         String nameDescriptorSetLayout_CullClearArgs;
         StringVector* poDescriptorSetLayoutNames_CullClearArgs;
@@ -55,7 +61,15 @@ namespace LostPeterVulkan
         VkPipeline poPipeline_CullFrustumDepthHizClip;
         VkDescriptorSet poDescriptorSet_CullFrustumDepthHizClip;
 
-        
+        //PipelineCompute-HizDepthGenerate
+        String nameDescriptorSetLayout_HizDepthGenerate;
+        StringVector* poDescriptorSetLayoutNames_HizDepthGenerate;
+        VkDescriptorSetLayout poDescriptorSetLayout_HizDepthGenerate;
+        VkPipelineLayout poPipelineLayout_HizDepthGenerate;
+        VkPipeline poPipeline_HizDepthGenerate;
+        VkDescriptorSet poDescriptorSet_HizDepthGenerate;
+
+        ////////////////////////// Buffer ///////////////////////////////////
         //CullConstants
         CullConstants cullCB;
         VkBuffer poBuffer_CullCB;  
@@ -66,7 +80,30 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_CullObjectCB;
         VkDeviceMemory poBufferMemory_CullObjectCB;
 
-        //
+        //HizDepthConstants
+        HizDepthConstants hizDepthCB;
+        VkBuffer poBuffer_HizDepthCB;  
+        VkDeviceMemory poBufferMemory_HizDepthCB;
+
+        //Args
+        Uint32Vector aArgsCB;
+        VkBuffer poBuffer_ArgsCB;  
+        VkDeviceMemory poBufferMemory_ArgsCB;
+
+        //Lod
+        FloatVector aLodCB;
+        VkBuffer poBuffer_LodCB;  
+        VkDeviceMemory poBufferMemory_LodCB;
+
+        //Result
+        Uint32Vector aResultCB;
+        VkBuffer poBuffer_ResultCB;  
+        VkDeviceMemory poBufferMemory_ResultCB;
+
+        //Clip
+        Uint32Vector aClipCB;
+        VkBuffer poBuffer_ClipCB;  
+        VkDeviceMemory poBufferMemory_ClipCB;
 
 
     public:
@@ -94,13 +131,29 @@ namespace LostPeterVulkan
                                                  const VkPipelineLayout& vkPipelineLayout,
                                                  const VkShaderModule& vkShaderModule);
 
+        virtual bool InitHizDepthGenerate(const String& descriptorSetLayout,
+                                          StringVector* pDescriptorSetLayoutNames,
+                                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                          const VkPipelineLayout& vkPipelineLayout,
+                                          const VkShaderModule& vkShaderModule);
+
     protected:
+        void destroyBufferClip();
+        void destroyBufferResult();
+        void destroyBufferLod();
+        void destroyBufferArgs();
+        void destroyBufferHizDepth();
         void destroyBufferCullObject();
         void destroyBufferCull();
         void destroyVkComputePipeline(VkPipeline& poPipeline);
         
         bool createBufferCull();
         bool createBufferCullObject();
+        bool createBufferHizDepth();
+        bool createBufferArgs();
+        bool createBufferLod();
+        bool createBufferResult();
+        bool createBufferClip();
         bool createVkComputePipeline(const String& descriptorSetLayout,
                                      StringVector* pDescriptorSetLayoutNames,
                                      const VkDescriptorSetLayout& vkDescriptorSetLayout,

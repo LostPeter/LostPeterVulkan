@@ -258,17 +258,19 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_TextureFrameColor,             //19: TextureFrameColor
         Vulkan_DescriptorSet_TextureCSR,                    //20: TextureCSR
         Vulkan_DescriptorSet_TextureCSRW,                   //21: TextureCSRW
-        Vulkan_DescriptorSet_TextureDepthShadow,            //22: TextureDepthShadow
-        Vulkan_DescriptorSet_InputAttachRed,                //23: InputAttachRed
-        Vulkan_DescriptorSet_InputAttachGreen,              //24: InputAttachGreen
-        Vulkan_DescriptorSet_InputAttachBlue,               //25: InputAttachBlue
-        Vulkan_DescriptorSet_Terrain,                       //26: Terrain
-        Vulkan_DescriptorSet_Cull,                          //27: Cull
-        Vulkan_DescriptorSet_HizDepth,                      //28: HizDepth
-        Vulkan_DescriptorSet_BufferRWArgsCB,                //29: BufferRWArgsCB
-        Vulkan_DescriptorSet_BufferRWLodCB,                 //30: BufferRWLodCB
-        Vulkan_DescriptorSet_BufferRWResultCB,              //31: BufferRWResultCB
-        Vulkan_DescriptorSet_BufferRWClipCB,                //32: BufferRWClipCB
+        Vulkan_DescriptorSet_TextureCSRWSrc,                //22: TextureCSRWSrc
+        Vulkan_DescriptorSet_TextureCSRWDst,                //23: TextureCSRWDst
+        Vulkan_DescriptorSet_TextureDepthShadow,            //24: TextureDepthShadow
+        Vulkan_DescriptorSet_InputAttachRed,                //25: InputAttachRed
+        Vulkan_DescriptorSet_InputAttachGreen,              //26: InputAttachGreen
+        Vulkan_DescriptorSet_InputAttachBlue,               //27: InputAttachBlue
+        Vulkan_DescriptorSet_Terrain,                       //28: Terrain
+        Vulkan_DescriptorSet_Cull,                          //29: Cull
+        Vulkan_DescriptorSet_HizDepth,                      //30: HizDepth
+        Vulkan_DescriptorSet_BufferRWArgsCB,                //31: BufferRWArgsCB
+        Vulkan_DescriptorSet_BufferRWLodCB,                 //32: BufferRWLodCB
+        Vulkan_DescriptorSet_BufferRWResultCB,              //33: BufferRWResultCB
+        Vulkan_DescriptorSet_BufferRWClipCB,                //34: BufferRWClipCB
 
         Vulkan_DescriptorSet_Count,
     };
@@ -478,12 +480,12 @@ namespace LostPeterVulkan
     class VKMultiRenderPass;
     class VKPipelineCompute;
     class VKPipelineComputeCull;
-    class VKPipelineComputeHizDepth;
     class VKPipelineComputeTerrain;
     class VKPipelineGraphics;
     class VKPipelineGraphicsCopyBlit;
     class VKPipelineGraphicsDepthShadowMap;
     class VKPipelineGraphicsTerrain;
+    class VKRenderPassCull;
     class VKRenderPassShadowMap;
     class VKRenderPassTerrain;
 
@@ -498,6 +500,8 @@ namespace LostPeterVulkan
 
 
     class Base;
+    class CullUnit;
+    class CullUnitManager;
     class EditorBase;
     class EditorCameraAxis;
     class EditorCoordinateAxis;
