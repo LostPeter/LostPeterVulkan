@@ -1506,7 +1506,21 @@ namespace LostPeterVulkan
 
         }
     };
+    typedef std::vector<CullObjectConstants> CullObjectConstantsVector;
+    struct vulkanExport InstanceData
+    {
+        FMatrix4 mat4Object2World;
+        FMatrix4 mat4World2Object;
 
+        InstanceData()
+            : mat4Object2World(FMath::Identity4x4())
+            , mat4World2Object(FMath::Identity4x4())
+        {
+
+        }
+    };
+    typedef std::vector<InstanceData> InstanceDataVector;
+    
     //////////////////////////////// HizDepthConstants //////////////////////////////
     struct vulkanExport HizDepthConstants
     {

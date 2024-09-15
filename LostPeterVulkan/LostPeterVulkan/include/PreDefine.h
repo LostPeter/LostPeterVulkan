@@ -185,11 +185,30 @@ namespace LostPeterVulkan
     vulkanExport const String& Util_GetPixelFormatComponentTypeName(int type);
 
 
+    enum VulkanLodType
+	{
+        Vulkan_Lod_0 = 0,
+        Vulkan_Lod_1,
+        Vulkan_Lod_2,
+        
+        Vulkan_Lod_Count,
+	};
+
+    enum VulkanCullUnitType
+    {
+        Vulkan_CullUnit_Object = 0,
+        Vulkan_CullUnit_Terrain,
+
+        Vulkan_CullUnit_Count,
+    };
+
+
     enum VulkanLightType
     {
         Vulkan_Light_Directional = 0,
         Vulkan_Light_Point,
         Vulkan_Light_Spot,
+
     };
 
 
@@ -500,8 +519,15 @@ namespace LostPeterVulkan
 
 
     class Base;
+    class CullLodData;
+    class CullRenderData;
     class CullUnit;
     class CullUnitManager;
+    class CullUnitObject;
+    class CullUnitObjectDynamic;
+    class CullUnitObjectStatic;
+    class CullUnitTerrain;
+    class CullUnitTerrainStatic;
     class EditorBase;
     class EditorCameraAxis;
     class EditorCoordinateAxis;

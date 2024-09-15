@@ -5285,15 +5285,7 @@ namespace LostPeterVulkan
                                                    VkBuffer& buffer, 
                                                    VkDeviceMemory& bufferMemory)
     {
-        uint32_t sizeFormat = 4;
-        if (format == VK_FORMAT_R8_UNORM)
-        {
-            sizeFormat = 1;
-        }
-        else if (format == VK_FORMAT_R16_UNORM)
-        {
-            sizeFormat = 2;
-        }
+        uint32_t sizeFormat = getSizeFromFormat(format);
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * sizeFormat;
         createVkBuffer(imageSize, 
@@ -5805,7 +5797,20 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }                                                     
 
+        uint32_t VulkanWindow::getSizeFromFormat(VkFormat format)
+        {
+            uint32_t sizeFormat = 4;
+            if (format == VK_FORMAT_R8_UNORM)
+            {
+                sizeFormat = 1;
+            }
+            else if (format == VK_FORMAT_R16_UNORM)
+            {
+                sizeFormat = 2;
+            }
 
+            return sizeFormat;
+        }
         void VulkanWindow::createVkImage(uint32_t width, 
                                          uint32_t height, 
                                          uint32_t depth, 

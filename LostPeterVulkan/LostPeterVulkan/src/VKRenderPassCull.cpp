@@ -60,6 +60,8 @@ namespace LostPeterVulkan
     }
         void VKRenderPassCull::setupCullTexture()
         {
+            F_LogInfo("VKRenderPassCull::setupCullTexture: Start setup cull texture !");
+
             //HizDepth
             {
                 Base::GetWindowPtr()->createTextureRenderTarget2D(nullptr,
@@ -68,19 +70,21 @@ namespace LostPeterVulkan
                                                                   true,
                                                                   9,
                                                                   VK_SAMPLE_COUNT_1_BIT,
-                                                                  VK_FORMAT_D32_SFLOAT,
+                                                                  VK_FORMAT_R32_SFLOAT,
                                                                   VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
                                                                   VK_IMAGE_LAYOUT_GENERAL,
                                                                   true,
                                                                   this->poHizDepthImage,
                                                                   this->poHizDepthImageMemory);
+                F_LogInfo("VKRenderPassCull::setupCullTexture: createTextureRenderTarget2D !");
                 Base::GetWindowPtr()->createVkImageView(this->poHizDepthImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D, 
-                                                        VK_FORMAT_D32_SFLOAT, 
-                                                        VK_IMAGE_ASPECT_DEPTH_BIT, 
+                                                        VK_FORMAT_R32_SFLOAT, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT,
                                                         1, 
                                                         1, 
                                                         this->poHizDepthImageView);
+                F_LogInfo("VKRenderPassCull::setupCullTexture: createVkImageView !");
                 Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
                                                       F_TextureAddressing_Clamp,
                                                       F_TextureBorderColor_OpaqueBlack,
@@ -90,7 +94,7 @@ namespace LostPeterVulkan
                                                       1.0f,
                                                       0.0f,
                                                       this->poHizDepthSampler);
-
+                F_LogInfo("VKRenderPassCull::setupCullTexture: createVkSampler !");
 
                 this->poHizDepthImageInfo_NoSampler = {};
                 this->poHizDepthImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
@@ -103,6 +107,8 @@ namespace LostPeterVulkan
 
                 F_LogInfo("VKRenderPassCull::setupCullTexture: Compute: Create render texture [HizDepth] - [%d, %d] success !", s_nHizDepthWidth, s_nHizDepthHeight);
             }
+
+            F_LogInfo("VKRenderPassCull::setupCullTexture: End setup cull texture !");
         }
 
     void VKRenderPassCull::CleanupSwapChain()

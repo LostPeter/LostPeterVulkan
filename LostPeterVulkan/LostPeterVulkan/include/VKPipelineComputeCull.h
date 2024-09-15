@@ -76,7 +76,7 @@ namespace LostPeterVulkan
         VkDeviceMemory poBufferMemory_CullCB;
 
         //CullObjectConstants
-        std::vector<CullObjectConstants> cullObjectCBs;
+        CullObjectConstantsVector cullObjectCBs;
         VkBuffer poBuffer_CullObjectCB;
         VkDeviceMemory poBufferMemory_CullObjectCB;
 

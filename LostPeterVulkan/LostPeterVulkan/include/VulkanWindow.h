@@ -1012,7 +1012,7 @@ namespace LostPeterVulkan
                                                                   VkImage& image, 
                                                                   VkDeviceMemory& imageMemory);
                     
-
+                        virtual uint32_t getSizeFromFormat(VkFormat format);
                         virtual void createVkImage(uint32_t width, 
                                                    uint32_t height, 
                                                    uint32_t depth, 
