@@ -23,12 +23,20 @@ namespace LostPeterVulkan
         virtual ~CullRenderData();
 
     public:
+        CullLodDataPtrVector aLodDatas;
+        int nRenderIndex;
+        int nClusterOffset;
+        int nMaxMaterialCount;
+        InstanceDataVector aInstanceDatas;
+        CullObjectConstantsVector aClusterDatas;
+
 
 
     public:
+        void Destroy();
+        void Init();
 
-    public:
-        
+        void Clear();
 
     public:
 

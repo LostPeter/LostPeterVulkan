@@ -14,12 +14,18 @@
 
 namespace LostPeterVulkan
 {
-    CullLodData::CullLodData(const String& nameRenderData)
-        : Base(nameRenderData)
-    {
+    CullLodData::CullLodData(const String& nameLodData)
+        : Base(nameLodData)
+
+        , isRender(true)
+        , isCastShadow(false)
+        , fLodDistanceMin(10.0f)
+        , fLodDistanceMax(50.0f)
         
+    {
+
     }
-    
+
     CullLodData::~CullLodData()
     {
 

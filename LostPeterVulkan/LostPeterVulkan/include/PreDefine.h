@@ -519,6 +519,7 @@ namespace LostPeterVulkan
 
 
     class Base;
+    class ComputeBuffer;
     class CullLodData;
     class CullRenderData;
     class CullUnit;
@@ -538,6 +539,23 @@ namespace LostPeterVulkan
     class MeshSub;
     class Texture;
 
+    
+    typedef std::vector<CullLodData*> CullLodDataPtrVector;
+    typedef std::map<String, CullLodData*> CullLodDataPtrMap;
+    typedef std::vector<CullRenderData*> CullRenderDataPtrVector;
+    typedef std::map<String, CullRenderData*> CullRenderDataPtrMap;
+    typedef std::vector<CullUnit*> CullUnitPtrVector;
+    typedef std::map<String, CullUnit*> CullUnitPtrMap;
+    typedef std::vector<CullUnitObject*> CullUnitObjectPtrVector;
+    typedef std::map<String, CullUnitObject*> CullUnitObjectPtrMap;
+    typedef std::vector<CullUnitObjectDynamic*> CullUnitObjectDynamicPtrVector;
+    typedef std::map<String, CullUnitObjectDynamic*> CullUnitObjectDynamicPtrMap;
+    typedef std::vector<CullUnitObjectStatic*> CullUnitObjectStaticPtrVector;
+    typedef std::map<String, CullUnitObjectStatic*> CullUnitObjectStaticPtrMap;
+    typedef std::vector<CullUnitTerrain*> CullUnitTerrainPtrVector;
+    typedef std::map<String, CullUnitTerrain*> CullUnitTerrainPtrMap;
+    typedef std::vector<CullUnitTerrainStatic*> CullUnitTerrainStaticPtrVector;
+    typedef std::map<String, CullUnitTerrainStatic*> CullUnitTerrainStaticPtrMap;
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;

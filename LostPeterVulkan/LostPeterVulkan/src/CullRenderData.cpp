@@ -19,12 +19,25 @@ namespace LostPeterVulkan
     {
         
     }
-    
+
     CullRenderData::~CullRenderData()
     {
 
     }
 
-    
+    void CullRenderData::Destroy()
+    {
+
+    }
+
+    void CullRenderData::Init()
+    {
+
+    }
+
+    void CullRenderData::Clear()
+    {
+        
+    }
     
 }; //LostPeterVulkan

@@ -26,8 +26,21 @@ namespace LostPeterVulkan
         
 
     public:
-        void Destroy();
+        virtual int GetRenderDataCount() = 0;
+        virtual CullRenderData* GetRenderData() = 0;
+        
+        virtual int GetClusterDataCount(int index) = 0;
+        virtual const CullObjectConstantsVector& GetClusterDatas() = 0;
 
+        virtual int GetLodCount() = 0;
+
+        virtual ComputeBuffer* GetClusterDataCB() = 0;
+        virtual ComputeBuffer* GetLodCB() = 0;
+
+        virtual ComputeBuffer* GetResultCB() = 0;
+        virtual ComputeBuffer* GetClipCB() { return nullptr; }
+
+        virtual void UpdateBuffer() = 0;
     };
 
 }; //LostPeterVulkan

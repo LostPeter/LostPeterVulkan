@@ -14,6 +14,16 @@
 
 namespace LostPeterVulkan
 {
+    float CullUnitObjectStatic::s_aLodMaxDistance[6] = 
+    {
+          0.0f,   128.0f,
+		128.0f,   256.0f,
+		256.0f,   512.0f
+    };
+    int CullUnitObjectStatic::s_nMaxRenderCount = 200;
+    int CullUnitObjectStatic::s_nStepRenderCount = 20;
+    int CullUnitObjectStatic::s_nMaxInstanceCount = 100000;
+    
     CullUnitObjectStatic::CullUnitObjectStatic(const String& nameUnit)
         : CullUnitObject(nameUnit)
     {

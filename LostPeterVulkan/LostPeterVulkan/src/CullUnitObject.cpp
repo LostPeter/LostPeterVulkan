@@ -24,10 +24,5 @@ namespace LostPeterVulkan
     {
 
     }
-
-    void CullUnitObject::Destroy()
-    {
-        
-    }
     
 }; //LostPeterVulkan

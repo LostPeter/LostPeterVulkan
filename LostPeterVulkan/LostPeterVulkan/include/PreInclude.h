@@ -35,6 +35,7 @@
 #include "VKRenderPassTerrain.h"
 
 #include "Base.h"
+#include "ComputeBuffer.h"
 #include "CullLodData.h"
 #include "CullRenderData.h"
 #include "CullUnit.h"

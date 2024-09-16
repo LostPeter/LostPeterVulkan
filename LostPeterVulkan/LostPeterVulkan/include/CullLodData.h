@@ -19,11 +19,15 @@ namespace LostPeterVulkan
     class vulkanExport CullLodData : public Base
     {
     public:
-        CullLodData(const String& nameRenderData);
+        CullLodData(const String& nameLodData);
         virtual ~CullLodData();
 
     public:
-
+        bool isRender;
+        bool isCastShadow;
+        float fLodDistanceMin;
+        float fLodDistanceMax;
+        
 
     public:
 

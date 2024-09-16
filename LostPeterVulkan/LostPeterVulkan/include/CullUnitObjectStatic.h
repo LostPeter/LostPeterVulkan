@@ -23,6 +23,12 @@ namespace LostPeterVulkan
         virtual ~CullUnitObjectStatic();
 
     public:
+        static float s_aLodMaxDistance[6];
+        static int s_nMaxRenderCount;
+        static int s_nStepRenderCount;
+        static int s_nMaxInstanceCount;
+
+    public:
         
 
     public:
