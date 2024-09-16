@@ -522,8 +522,11 @@ namespace LostPeterVulkan
     class ComputeBuffer;
     class CullLodData;
     class CullRenderData;
+    class CullManager;
+    class CullObjectDynamic;
+    class CullObjectStatic;
+    class CullTerrainStatic;
     class CullUnit;
-    class CullUnitManager;
     class CullUnitObject;
     class CullUnitObjectDynamic;
     class CullUnitObjectStatic;
@@ -539,7 +542,7 @@ namespace LostPeterVulkan
     class MeshSub;
     class Texture;
 
-    
+
     typedef std::vector<CullLodData*> CullLodDataPtrVector;
     typedef std::map<String, CullLodData*> CullLodDataPtrMap;
     typedef std::vector<CullRenderData*> CullRenderDataPtrVector;

@@ -30,7 +30,7 @@ namespace LostPeterVulkan
         virtual CullRenderData* GetRenderData() = 0;
         
         virtual int GetClusterDataCount(int index) = 0;
-        virtual const CullObjectConstantsVector& GetClusterDatas() = 0;
+        virtual CullObjectConstantsVector* GetClusterDatas() = 0;
 
         virtual int GetLodCount() = 0;
 

@@ -51,7 +51,7 @@ namespace LostPeterVulkan
         void RecreateSwapChain();
 
     protected:
-        
+
     };
 
 }; //LostPeterVulkan

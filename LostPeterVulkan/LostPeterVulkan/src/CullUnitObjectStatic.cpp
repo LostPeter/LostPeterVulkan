@@ -11,28 +11,22 @@
 
 #include "../include/CullUnitObjectStatic.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullObjectStatic.h"
 
 namespace LostPeterVulkan
 {
-    float CullUnitObjectStatic::s_aLodMaxDistance[6] = 
-    {
-          0.0f,   128.0f,
-		128.0f,   256.0f,
-		256.0f,   512.0f
-    };
-    int CullUnitObjectStatic::s_nMaxRenderCount = 200;
-    int CullUnitObjectStatic::s_nStepRenderCount = 20;
-    int CullUnitObjectStatic::s_nMaxInstanceCount = 100000;
     
-    CullUnitObjectStatic::CullUnitObjectStatic(const String& nameUnit)
-        : CullUnitObject(nameUnit)
-    {
 
+    CullUnitObjectStatic::CullUnitObjectStatic(const String& nameUnit, CullObjectStatic* pCullOS)
+        : CullUnitObject(nameUnit)
+        , pCullObjectStatic(pCullOS)
+    {
+        F_Assert(pCullObjectStatic != nullptr && "CullUnitObjectStatic::CullUnitObjectStatic")
     }
 
     CullUnitObjectStatic::~CullUnitObjectStatic()
     {
-
+        Destroy();
     }
 
     void CullUnitObjectStatic::Destroy()
@@ -40,4 +34,74 @@ namespace LostPeterVulkan
         
     }
     
+    void CullUnitObjectStatic::Init()
+    {
+
+    }
+
+    bool CullUnitObjectStatic::IsCulling()
+    {
+        return true;
+    }
+
+    int CullUnitObjectStatic::GetRenderCount()
+    {
+        return 0;
+    }
+
+    ComputeBuffer* CullUnitObjectStatic::GetRenderArgsCB()
+    {
+        return nullptr; 
+    }
+
+    int CullUnitObjectStatic::GetRenderDataCount()
+    {
+        return 0;
+    }
+
+    CullRenderData* CullUnitObjectStatic::GetRenderData()
+    {
+        return nullptr; 
+    }
+
+    int CullUnitObjectStatic::GetClusterDataCount(int index)
+    {
+        return 0;
+    }
+
+    CullObjectConstantsVector* CullUnitObjectStatic::GetClusterDatas()
+    {
+        return nullptr; 
+    }
+
+    int CullUnitObjectStatic::GetLodCount()
+    {
+        return 0;
+    }
+
+    ComputeBuffer* CullUnitObjectStatic::GetClusterDataCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullUnitObjectStatic::GetLodCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullUnitObjectStatic::GetResultCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullUnitObjectStatic::GetClipCB() 
+    { 
+        return nullptr; 
+    }
+
+    void CullUnitObjectStatic::UpdateBuffer()
+    {
+
+    }
+
 }; //LostPeterVulkan

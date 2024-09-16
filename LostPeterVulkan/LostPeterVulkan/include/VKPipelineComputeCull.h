@@ -27,6 +27,7 @@ namespace LostPeterVulkan
 
     public:
         VKRenderPassCull* m_pVKRenderPassCull;
+        CullManager* m_pCullManager;
 
         ////////////////////////// PipelineCompute //////////////////////////
         //PipelineCompute-CullClearArgs

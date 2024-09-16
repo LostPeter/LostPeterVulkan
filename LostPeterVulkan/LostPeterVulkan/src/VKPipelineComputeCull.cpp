@@ -12,12 +12,14 @@
 #include "../include/VKPipelineComputeCull.h"
 #include "../include/VKRenderPassCull.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullManager.h"
 
 namespace LostPeterVulkan
 {
     VKPipelineComputeCull::VKPipelineComputeCull(const String& namePipelineCompute, VKRenderPassCull* pVKRenderPassCull)
         : Base(namePipelineCompute)
         , m_pVKRenderPassCull(pVKRenderPassCull)
+        , m_pCullManager(new CullManager())
 
         //PipelineCompute-CullClearArgs
         , nameDescriptorSetLayout_CullClearArgs("")
@@ -94,6 +96,7 @@ namespace LostPeterVulkan
 
     void VKPipelineComputeCull::Destroy()
     {
+        F_DELETE(m_pCullManager)
         CleanupSwapChain();
         destroyBufferClip();
         destroyBufferResult();
@@ -238,6 +241,8 @@ namespace LostPeterVulkan
                 return false;
             }
         }
+        //CullManager
+        m_pCullManager->Init(this);
 
         return true;
     }
@@ -400,14 +405,17 @@ namespace LostPeterVulkan
         }
         bool VKPipelineComputeCull::createBufferLod()
         {
+
             return true;
         }
         bool VKPipelineComputeCull::createBufferResult()
         {
+
             return true;
         }
         bool VKPipelineComputeCull::createBufferClip()
         {
+            
             return true;
         }
         bool VKPipelineComputeCull::createVkComputePipeline(const String& descriptorSetLayout,

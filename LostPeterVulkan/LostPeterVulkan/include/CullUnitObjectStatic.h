@@ -19,20 +19,38 @@ namespace LostPeterVulkan
     class vulkanExport CullUnitObjectStatic : public CullUnitObject
     {
     public:
-        CullUnitObjectStatic(const String& nameUnit);
+        CullUnitObjectStatic(const String& nameUnit, CullObjectStatic* pCullOS);
         virtual ~CullUnitObjectStatic();
 
     public:
-        static float s_aLodMaxDistance[6];
-        static int s_nMaxRenderCount;
-        static int s_nStepRenderCount;
-        static int s_nMaxInstanceCount;
+        CullObjectStatic* pCullObjectStatic;
 
-    public:
         
+    public:
+        virtual void Destroy();
+        virtual void Init();
 
     public:
-        void Destroy();
+        virtual bool IsCulling();
+        virtual int GetRenderCount();  
+        virtual ComputeBuffer* GetRenderArgsCB();
+
+    public:
+        virtual int GetRenderDataCount();
+        virtual CullRenderData* GetRenderData();
+        
+        virtual int GetClusterDataCount(int index);
+        virtual CullObjectConstantsVector* GetClusterDatas();
+
+        virtual int GetLodCount();
+
+        virtual ComputeBuffer* GetClusterDataCB();
+        virtual ComputeBuffer* GetLodCB();
+
+        virtual ComputeBuffer* GetResultCB();
+        virtual ComputeBuffer* GetClipCB();
+
+        virtual void UpdateBuffer();
 
     };
 
