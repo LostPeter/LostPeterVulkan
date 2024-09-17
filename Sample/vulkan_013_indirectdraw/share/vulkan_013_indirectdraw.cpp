@@ -1203,8 +1203,8 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_ObjectRend_Tranforms[3 * i + 1],
-                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
