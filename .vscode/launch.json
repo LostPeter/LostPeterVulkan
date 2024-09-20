@@ -75,8 +75,6 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/jianwei.dou/Desktop/Develop_GitHub/LostPeterVulkan/LostPeterVulkan/LostPeterFoundation/src",
-      "program": "/Users/jianwei.dou/Desktop/Develop_GitHub/LostPeterVulkan/LostPeterVulkan/LostPeterFoundation/src/build/Debug/outDebug"
     }
   ]
 }

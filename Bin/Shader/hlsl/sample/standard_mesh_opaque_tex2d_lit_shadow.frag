@@ -60,10 +60,14 @@ float4 main(VSInput_Pos4Color4Normal3TexCood2ShadowCoord4 input,
     //Additional Light
 
     //Shadow
-    float4 coord = input.inShadowCoord / input.inShadowCoord.w;
-    coord.y = 1.0 - coord.y;
-    float shadow = (enablePCF == 1) ? filterPCF(textureDepth, textureDepthSampler, coord, ambient) : calculate_Depth(textureDepth, textureDepthSampler, coord, float2(0.0, 0.0), ambient);
-
+    float shadow = 1.0;
+    if (mat.receiveshadow)
+    {
+        float4 coord = input.inShadowCoord / input.inShadowCoord.w;
+        coord.y = 1.0 - coord.y;
+        shadow = (enablePCF == 1) ? filterPCF(textureDepth, textureDepthSampler, coord, ambient) : calculate_Depth(textureDepth, textureDepthSampler, coord, float2(0.0, 0.0), ambient);
+    }
+    
     //Texture
     float3 colorTexture = textureDiffuse.Sample(textureDiffuseSampler, input.inTexCoord).rgb;
     //VertexColor

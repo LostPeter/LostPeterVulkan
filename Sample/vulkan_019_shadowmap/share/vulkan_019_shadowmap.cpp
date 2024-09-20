@@ -355,18 +355,6 @@ static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] =
 
     false, //object_depth-1
 };
-static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
-{
-    false, //object_terrain-1
-    false, //object_skybox-1
-    
-    false, //object_cube-1
-    false, //object_sphere-1
-    false, //object_viking_room-1
-    false, //object_bunny-1
-
-    false, //object_depth-1
-};
 
 
 
@@ -830,10 +818,6 @@ void Vulkan_019_ShadowMap::loadModel_Custom()
                 if (!nameShaderTesc.empty() || !nameShaderTese.empty())
                 {
                     pRend->isUsedTessellation = true;
-                    if (g_ObjectRend_IsTopologyPatchLists[nIndexObjectRend])
-                    {
-                        pRend->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
-                    }
                 }
 
                 //Pipeline Graphics - DescriptorSetLayout
@@ -910,6 +894,8 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
         int indexObject = pRend->pModelObject->index;
         int count_instance = pRend->pModelObject->countInstance;
         bool isObjectLighting = g_Object_IsLightings[indexObject];
+        bool isObjectCastShadow = pRend->isCastShadow;
+        bool isObjectReceiveShadow = pRend->isReceiveShadow;
 
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
@@ -935,6 +921,8 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
                 materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
                 materialConstants.lighting = isObjectLighting;
+                materialConstants.castshadow = isObjectCastShadow;
+                materialConstants.receiveshadow = isObjectReceiveShadow;
                 //Texture VS
                 {
                     TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));

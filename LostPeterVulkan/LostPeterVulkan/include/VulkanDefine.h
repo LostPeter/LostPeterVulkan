@@ -1299,7 +1299,11 @@ namespace LostPeterVulkan
         float shininess;
         float alpha;
         float lighting;
+        float castshadow;
+        float receiveshadow;
         float reserve0;
+        float reserve1;
+        float reserve2;
 
         TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 
@@ -1310,7 +1314,11 @@ namespace LostPeterVulkan
             , shininess(20.0f)
             , alpha(1.0f)
             , lighting(1.0f)
+            , castshadow(0.0f)
+            , receiveshadow(0.0f)
             , reserve0(0.0f)
+            , reserve1(0.0f)
+            , reserve2(0.0f)
         {
             
         }

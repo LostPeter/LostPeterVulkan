@@ -172,7 +172,11 @@ struct MaterialConstants
     float shininess;
     float alpha;
     float lighting;
+    float castshadow;
+    float receiveshadow;
     float reserve0;
+    float reserve1;
+    float reserve2;
 
     TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 };
