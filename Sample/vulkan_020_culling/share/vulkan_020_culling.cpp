@@ -225,11 +225,11 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0", //object_cube
     "0", //object_sphere
     
-    "0:1:2", //object_grass_lod
-    "0:1:2", //object_rock_lod
+    "0;1;2", //object_grass_lod
+    "0;1;2", //object_rock_lod
 };  
 
-static float g_Object_InstanceGap = 3.0f;
+static float g_Object_InstanceGap = 2.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //object_terrain
