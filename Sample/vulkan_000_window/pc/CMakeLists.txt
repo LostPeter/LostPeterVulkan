@@ -178,7 +178,6 @@ elseif (APPLE)
                               ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -flat_namespace \
-        -Wl,-no_pie \
         -Wl,-search_paths_first"
     )
     

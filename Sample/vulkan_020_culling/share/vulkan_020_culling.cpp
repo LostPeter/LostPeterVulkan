@@ -348,12 +348,12 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3( 2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
     FVector3(-2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
 
-    FVector3(-2.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-1
-    FVector3( 0.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-2
-    FVector3( 2.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-3
-    FVector3(-2.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-1
-    FVector3( 0.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-2
-    FVector3( 2.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-3
+    FVector3( 0.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-1
+    FVector3( 0.0f,    2, -1.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-2
+    FVector3( 0.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-3
+    FVector3( 0.0f,    2, -3.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-1
+    FVector3( 0.0f,    2, -4.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-2
+    FVector3( 0.0f,    2, -5.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-3
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -380,15 +380,15 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     true, //object_sphere-1
     
     true, //object_grass_lod-1
-    true, //object_grass_lod-2
-    true, //object_grass_lod-3
+    false, //object_grass_lod-2
+    false, //object_grass_lod-3
     true, //object_rock_lod-1
-    true, //object_rock_lod-2
-    true, //object_rock_lod-3
+    false, //object_rock_lod-2
+    false, //object_rock_lod-3
 };
 static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] = 
 {
-    false, //object_terrain-1
+    true, //object_terrain-1
     false, //object_skybox-1
 
     false, //object_cube-1
@@ -638,7 +638,7 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
-    this->cfg_isRenderPassShadowMap = false;
+    this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -2431,6 +2431,22 @@ void Vulkan_020_Culling::modelConfig()
                                             if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                             {
                                                 mat.lighting = isLighting ? 1.0f : 0.0f;
+                                            }
+
+                                            //castshadow
+                                            String nameCastshadow = "Castshadow - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            bool isCastshadow = mat.castshadow == 1.0f ? true : false;
+                                            if (ImGui::Checkbox(nameCastshadow.c_str(), &isCastshadow))
+                                            {
+                                                mat.castshadow = isCastshadow ? 1.0f : 0.0f;
+                                            }
+
+                                            //receiveshadow
+                                            String nameReceiveshadow = "receiveshadow - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            bool isReceiveshadow = mat.receiveshadow == 1.0f ? true : false;
+                                            if (ImGui::Checkbox(nameReceiveshadow.c_str(), &isReceiveshadow))
+                                            {
+                                                mat.receiveshadow = isReceiveshadow ? 1.0f : 0.0f;
                                             }
 
                                             //Texture VS

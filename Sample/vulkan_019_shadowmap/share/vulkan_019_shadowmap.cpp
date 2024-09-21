@@ -2383,6 +2383,22 @@ void Vulkan_019_ShadowMap::modelConfig()
                                                 mat.lighting = isLighting ? 1.0f : 0.0f;
                                             }
 
+                                            //castshadow
+                                            String nameCastshadow = "Castshadow - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            bool isCastshadow = mat.castshadow == 1.0f ? true : false;
+                                            if (ImGui::Checkbox(nameCastshadow.c_str(), &isCastshadow))
+                                            {
+                                                mat.castshadow = isCastshadow ? 1.0f : 0.0f;
+                                            }
+
+                                            //receiveshadow
+                                            String nameReceiveshadow = "receiveshadow - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            bool isReceiveshadow = mat.receiveshadow == 1.0f ? true : false;
+                                            if (ImGui::Checkbox(nameReceiveshadow.c_str(), &isReceiveshadow))
+                                            {
+                                                mat.receiveshadow = isReceiveshadow ? 1.0f : 0.0f;
+                                            }
+
                                             //Texture VS
                                             {
                                                 TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
