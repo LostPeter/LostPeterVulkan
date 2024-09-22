@@ -53,7 +53,8 @@ namespace LostPeterVulkan
     void CullManager::Destroy()
     {
         RemoveAllCullUnit();
-
+        F_DELETE(this->pCullObjectStatic)
+        F_DELETE(this->pCullObjectDynamic)
     }
 
     void CullManager::Init(VKPipelineComputeCull* pPipelineComputeCull)

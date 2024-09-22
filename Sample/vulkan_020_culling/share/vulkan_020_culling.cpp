@@ -19,7 +19,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 5;
+static const int g_MeshCount = 26;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -28,8 +28,29 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
     
     "grass_lod",        "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/grass_lod/grass_lod.fbx", //grass_lod
-    "rock_lod",         "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock_lod.fbx", //rock_lod
-
+    
+    "rock001_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock001_lod.fbx", //rock001_lod
+    "rock002_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock002_lod.fbx", //rock002_lod
+    "rock003_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock003_lod.fbx", //rock003_lod
+    "rock004_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock004_lod.fbx", //rock004_lod
+    "rock005_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock005_lod.fbx", //rock005_lod
+    "rock006_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock006_lod.fbx", //rock006_lod
+    "rock007_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock007_lod.fbx", //rock007_lod
+    "rock008_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock008_lod.fbx", //rock008_lod
+    "rock009_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock009_lod.fbx", //rock009_lod
+    "rock010_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock010_lod.fbx", //rock010_lod
+    "rock011_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock011_lod.fbx", //rock011_lod
+    "rock012_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock012_lod.fbx", //rock012_lod
+    "rock013_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock013_lod.fbx", //rock013_lod
+    "rock014_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock014_lod.fbx", //rock014_lod
+    "rock015_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock015_lod.fbx", //rock015_lod
+    "rock016_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock016_lod.fbx", //rock016_lod
+    "rock017_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock017_lod.fbx", //rock017_lod
+    "rock018_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock018_lod.fbx", //rock018_lod
+    "rock019_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock019_lod.fbx", //rock019_lod
+    "rock020_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock020_lod.fbx", //rock020_lod
+    "rock021_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock021_lod.fbx", //rock021_lod
+    "rock022_lod",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/rock_lod/rock022_lod.fbx", //rock022_lod
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
@@ -38,7 +59,29 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //sphere
 
     false, //grass_lod
-    false, //rock_lod
+
+    false, //rock001_lod
+    false, //rock002_lod
+    false, //rock003_lod
+    false, //rock004_lod
+    false, //rock005_lod
+    false, //rock006_lod
+    false, //rock007_lod
+    false, //rock008_lod
+    false, //rock009_lod
+    false, //rock010_lod
+    false, //rock011_lod
+    false, //rock012_lod
+    false, //rock013_lod
+    false, //rock014_lod
+    false, //rock015_lod
+    false, //rock016_lod
+    false, //rock017_lod
+    false, //rock018_lod
+    false, //rock019_lod
+    false, //rock020_lod
+    false, //rock021_lod
+    false, //rock022_lod
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
@@ -47,7 +90,29 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //sphere
 
     false, //grass_lod
-    false, //rock_lod
+
+    false, //rock001_lod
+    false, //rock002_lod
+    false, //rock003_lod
+    false, //rock004_lod
+    false, //rock005_lod
+    false, //rock006_lod
+    false, //rock007_lod
+    false, //rock008_lod
+    false, //rock009_lod
+    false, //rock010_lod
+    false, //rock011_lod
+    false, //rock012_lod
+    false, //rock013_lod
+    false, //rock014_lod
+    false, //rock015_lod
+    false, //rock016_lod
+    false, //rock017_lod
+    false, //rock018_lod
+    false, //rock019_lod
+    false, //rock020_lod
+    false, //rock021_lod
+    false, //rock022_lod
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
@@ -56,12 +121,34 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //sphere
 
     FMath::ms_mat4Unit, //grass_lod
-    FMath::ms_mat4Unit, //rock_lod
+
+    FMath::ms_mat4Unit, //rock001_lod
+    FMath::ms_mat4Unit, //rock002_lod
+    FMath::ms_mat4Unit, //rock003_lod
+    FMath::ms_mat4Unit, //rock004_lod
+    FMath::ms_mat4Unit, //rock005_lod
+    FMath::ms_mat4Unit, //rock006_lod
+    FMath::ms_mat4Unit, //rock007_lod
+    FMath::ms_mat4Unit, //rock008_lod
+    FMath::ms_mat4Unit, //rock009_lod
+    FMath::ms_mat4Unit, //rock010_lod
+    FMath::ms_mat4Unit, //rock011_lod
+    FMath::ms_mat4Unit, //rock012_lod
+    FMath::ms_mat4Unit, //rock013_lod
+    FMath::ms_mat4Unit, //rock014_lod
+    FMath::ms_mat4Unit, //rock015_lod
+    FMath::ms_mat4Unit, //rock016_lod
+    FMath::ms_mat4Unit, //rock017_lod
+    FMath::ms_mat4Unit, //rock018_lod
+    FMath::ms_mat4Unit, //rock019_lod
+    FMath::ms_mat4Unit, //rock020_lod
+    FMath::ms_mat4Unit, //rock021_lod
+    FMath::ms_mat4Unit, //rock022_lod
 };
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 7;
+static const int g_TextureCount = 37;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -71,9 +158,39 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "default_white",                    "2D",            "false",                  "false",                           "Assets/Texture/Common/default_white.bmp", //default_white
     "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
     
-    "rock_lod_albedo",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock_lod_albedo.tga", //rock_lod_albedo
-    "rock_lod_normal",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock_lod_normal.tga", //rock_lod_normal
-    "rock_lod_ao",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock_lod_ao.tga", //rock_lod_ao
+    "rock001_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock001_lod_albedo.tga", //rock001_lod_albedo
+    "rock001_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock001_lod_normal.tga", //rock001_lod_normal
+    "rock001_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock001_lod_ao.tga", //rock001_lod_ao
+    "rock002_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock002_lod_albedo.tga", //rock002_lod_albedo
+    "rock002_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock002_lod_normal.tga", //rock002_lod_normal
+    "rock002_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock002_lod_ao.tga", //rock002_lod_ao
+    "rock003_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock003_lod_albedo.tga", //rock003_lod_albedo
+    "rock003_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock003_lod_normal.tga", //rock003_lod_normal
+    "rock003_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock003_lod_ao.tga", //rock003_lod_ao
+    "rock004_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock004_lod_albedo.tga", //rock004_lod_albedo
+    "rock004_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock004_lod_normal.tga", //rock004_lod_normal
+    "rock004_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock004_lod_ao.tga", //rock004_lod_ao
+    "rock005_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock005_lod_albedo.tga", //rock005_lod_albedo
+    "rock005_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock005_lod_normal.tga", //rock005_lod_normal
+    "rock005_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock005_lod_ao.tga", //rock005_lod_ao
+    "rock006_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock006_lod_albedo.tga", //rock006_lod_albedo
+    "rock006_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock006_lod_normal.tga", //rock006_lod_normal
+    "rock006_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock006_lod_ao.tga", //rock006_lod_ao
+    "rock007_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock007_lod_albedo.tga", //rock007_lod_albedo
+    "rock007_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock007_lod_normal.tga", //rock007_lod_normal
+    "rock007_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock007_lod_ao.tga", //rock007_lod_ao
+    "rock008_lod_albedo",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock008_lod_albedo.tga", //rock008_lod_albedo
+    "rock008_lod_normal",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock008_lod_normal.tga", //rock008_lod_normal
+    "rock008_lod_ao",                   "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock008_lod_ao.tga", //rock008_lod_ao
+    "rock009_010_lod_albedo",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock009_010_lod_albedo.tga", //rock009_010_lod_albedo
+    "rock009_010_lod_normal",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock009_010_lod_normal.tga", //rock009_010_lod_normal
+    "rock009_010_lod_ao",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock009_010_lod_ao.tga", //rock009_010_lod_ao
+    "rock011_012_lod_albedo",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock011_012_lod_albedo.tga", //rock011_012_lod_albedo
+    "rock011_012_lod_normal",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock011_012_lod_normal.tga", //rock011_012_lod_normal
+    "rock011_012_lod_ao",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock011_012_lod_ao.tga", //rock011_012_lod_ao
+    "rock013_022_lod_albedo",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock013_022_lod_albedo.tga", //rock013_022_lod_albedo
+    "rock013_022_lod_normal",           "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock013_022_lod_normal.tga", //rock013_022_lod_normal
+    "rock013_022_lod_ao",               "2D",            "false",                  "false",                           "Assets/Texture/Model/rock_lod/rock013_022_lod_ao.tga", //rock013_022_lod_ao
 };
 static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
@@ -83,9 +200,39 @@ static FTexturePixelFormatType g_TextureFormats[g_TextureCount] =
     F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
     
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_lod_albedo
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_lod_normal
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock001_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock001_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock001_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock002_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock002_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock002_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock003_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock003_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock003_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock004_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock004_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock004_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock005_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock005_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock005_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock006_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock006_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock006_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock007_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock007_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock007_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock008_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock008_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock008_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock009_010_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock009_010_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock009_010_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock011_012_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock011_012_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock011_012_lod_ao
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock013_022_lod_albedo
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock013_022_lod_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock013_022_lod_ao
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
@@ -95,9 +242,39 @@ static FTextureFilterType g_TextureFilters[g_TextureCount] =
     F_TextureFilter_Bilinear, //default_white
     F_TextureFilter_Bilinear, //texture2d
     
-    F_TextureFilter_Bilinear, //rock_lod_albedo
-    F_TextureFilter_Bilinear, //rock_lod_normal
-    F_TextureFilter_Bilinear, //rock_lod_ao
+    F_TextureFilter_Bilinear, //rock001_lod_albedo
+    F_TextureFilter_Bilinear, //rock001_lod_normal
+    F_TextureFilter_Bilinear, //rock001_lod_ao
+    F_TextureFilter_Bilinear, //rock002_lod_albedo
+    F_TextureFilter_Bilinear, //rock002_lod_normal
+    F_TextureFilter_Bilinear, //rock002_lod_ao
+    F_TextureFilter_Bilinear, //rock003_lod_albedo
+    F_TextureFilter_Bilinear, //rock003_lod_normal
+    F_TextureFilter_Bilinear, //rock003_lod_ao
+    F_TextureFilter_Bilinear, //rock004_lod_albedo
+    F_TextureFilter_Bilinear, //rock004_lod_normal
+    F_TextureFilter_Bilinear, //rock004_lod_ao
+    F_TextureFilter_Bilinear, //rock005_lod_albedo
+    F_TextureFilter_Bilinear, //rock005_lod_normal
+    F_TextureFilter_Bilinear, //rock005_lod_ao
+    F_TextureFilter_Bilinear, //rock006_lod_albedo
+    F_TextureFilter_Bilinear, //rock006_lod_normal
+    F_TextureFilter_Bilinear, //rock006_lod_ao
+    F_TextureFilter_Bilinear, //rock007_lod_albedo
+    F_TextureFilter_Bilinear, //rock007_lod_normal
+    F_TextureFilter_Bilinear, //rock007_lod_ao
+    F_TextureFilter_Bilinear, //rock008_lod_albedo
+    F_TextureFilter_Bilinear, //rock008_lod_normal
+    F_TextureFilter_Bilinear, //rock008_lod_ao
+    F_TextureFilter_Bilinear, //rock009_010_lod_albedo
+    F_TextureFilter_Bilinear, //rock009_010_lod_normal
+    F_TextureFilter_Bilinear, //rock009_010_lod_ao
+    F_TextureFilter_Bilinear, //rock011_012_lod_albedo
+    F_TextureFilter_Bilinear, //rock011_012_lod_normal
+    F_TextureFilter_Bilinear, //rock011_012_lod_ao
+    F_TextureFilter_Bilinear, //rock013_022_lod_albedo
+    F_TextureFilter_Bilinear, //rock013_022_lod_normal
+    F_TextureFilter_Bilinear, //rock013_022_lod_ao
 };
 static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
@@ -107,9 +284,39 @@ static FTextureAddressingType g_TextureAddressings[g_TextureCount] =
     F_TextureAddressing_Clamp, //default_white
     F_TextureAddressing_Clamp, //texture2d
     
-    F_TextureAddressing_Clamp, //rock_lod_albedo
-    F_TextureAddressing_Clamp, //rock_lod_normal
-    F_TextureAddressing_Clamp, //rock_lod_ao
+    F_TextureAddressing_Clamp, //rock001_lod_albedo
+    F_TextureAddressing_Clamp, //rock001_lod_normal
+    F_TextureAddressing_Clamp, //rock001_lod_ao
+    F_TextureAddressing_Clamp, //rock002_lod_albedo
+    F_TextureAddressing_Clamp, //rock002_lod_normal
+    F_TextureAddressing_Clamp, //rock002_lod_ao
+    F_TextureAddressing_Clamp, //rock003_lod_albedo
+    F_TextureAddressing_Clamp, //rock003_lod_normal
+    F_TextureAddressing_Clamp, //rock003_lod_ao
+    F_TextureAddressing_Clamp, //rock004_lod_albedo
+    F_TextureAddressing_Clamp, //rock004_lod_normal
+    F_TextureAddressing_Clamp, //rock004_lod_ao
+    F_TextureAddressing_Clamp, //rock005_lod_albedo
+    F_TextureAddressing_Clamp, //rock005_lod_normal
+    F_TextureAddressing_Clamp, //rock005_lod_ao
+    F_TextureAddressing_Clamp, //rock006_lod_albedo
+    F_TextureAddressing_Clamp, //rock006_lod_normal
+    F_TextureAddressing_Clamp, //rock006_lod_ao
+    F_TextureAddressing_Clamp, //rock007_lod_albedo
+    F_TextureAddressing_Clamp, //rock007_lod_normal
+    F_TextureAddressing_Clamp, //rock007_lod_ao
+    F_TextureAddressing_Clamp, //rock008_lod_albedo
+    F_TextureAddressing_Clamp, //rock008_lod_normal
+    F_TextureAddressing_Clamp, //rock008_lod_ao
+    F_TextureAddressing_Clamp, //rock009_010_lod_albedo
+    F_TextureAddressing_Clamp, //rock009_010_lod_normal
+    F_TextureAddressing_Clamp, //rock009_010_lod_ao
+    F_TextureAddressing_Clamp, //rock011_012_lod_albedo
+    F_TextureAddressing_Clamp, //rock011_012_lod_normal
+    F_TextureAddressing_Clamp, //rock011_012_lod_ao
+    F_TextureAddressing_Clamp, //rock013_022_lod_albedo
+    F_TextureAddressing_Clamp, //rock013_022_lod_normal
+    F_TextureAddressing_Clamp, //rock013_022_lod_ao
 };
 static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
@@ -119,9 +326,39 @@ static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     F_TextureBorderColor_OpaqueBlack, //default_white
     F_TextureBorderColor_OpaqueBlack, //texture2d
     
-    F_TextureBorderColor_OpaqueBlack, //rock_lod_albedo
-    F_TextureBorderColor_OpaqueBlack, //rock_lod_normal
-    F_TextureBorderColor_OpaqueBlack, //rock_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock001_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock001_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock001_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock002_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock002_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock002_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock003_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock003_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock003_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock004_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock004_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock004_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock005_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock005_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock005_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock006_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock006_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock006_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock007_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock007_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock007_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock008_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock008_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock008_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock009_010_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock009_010_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock009_010_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock011_012_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock011_012_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock011_012_lod_ao
+    F_TextureBorderColor_OpaqueBlack, //rock013_022_lod_albedo
+    F_TextureBorderColor_OpaqueBlack, //rock013_022_lod_normal
+    F_TextureBorderColor_OpaqueBlack, //rock013_022_lod_ao
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
@@ -131,9 +368,39 @@ static int g_TextureSizes[3 * g_TextureCount] =
      64,     64,    1, //default_white
     512,    512,    1, //texture2d
     
-   1024,   1024,    1, //rock_lod_albedo
-   1024,   1024,    1, //rock_lod_normal
-   1024,   1024,    1, //rock_lod_ao
+   1024,   1024,    1, //rock001_lod_albedo
+   1024,   1024,    1, //rock001_lod_normal
+   1024,   1024,    1, //rock001_lod_ao
+   1024,   1024,    1, //rock002_lod_albedo
+   1024,   1024,    1, //rock002_lod_normal
+   1024,   1024,    1, //rock002_lod_ao
+   1024,   1024,    1, //rock003_lod_albedo
+   1024,   1024,    1, //rock003_lod_normal
+   1024,   1024,    1, //rock003_lod_ao
+   1024,   1024,    1, //rock004_lod_albedo
+   1024,   1024,    1, //rock004_lod_normal
+   1024,   1024,    1, //rock004_lod_ao
+   1024,   1024,    1, //rock005_lod_albedo
+   1024,   1024,    1, //rock005_lod_normal
+   1024,   1024,    1, //rock005_lod_ao
+   1024,   1024,    1, //rock006_lod_albedo
+   1024,   1024,    1, //rock006_lod_normal
+   1024,   1024,    1, //rock006_lod_ao
+   1024,   1024,    1, //rock007_lod_albedo
+   1024,   1024,    1, //rock007_lod_normal
+   1024,   1024,    1, //rock007_lod_ao
+   1024,   1024,    1, //rock008_lod_albedo
+   1024,   1024,    1, //rock008_lod_normal
+   1024,   1024,    1, //rock008_lod_ao
+   1024,   1024,    1, //rock009_010_lod_albedo
+   1024,   1024,    1, //rock009_010_lod_normal
+   1024,   1024,    1, //rock009_010_lod_ao
+   1024,   1024,    1, //rock011_012_lod_albedo
+   1024,   1024,    1, //rock011_012_lod_normal
+   1024,   1024,    1, //rock011_012_lod_ao
+   1024,   1024,    1, //rock013_022_lod_albedo
+   1024,   1024,    1, //rock013_022_lod_normal
+   1024,   1024,    1, //rock013_022_lod_ao
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
@@ -143,9 +410,39 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //default_white
     0,    0, //texture2d
     
-    0,    0, //rock_lod_albedo
-    0,    0, //rock_lod_normal
-    0,    0, //rock_lod_ao
+    0,    0, //rock001_lod_albedo
+    0,    0, //rock001_lod_normal
+    0,    0, //rock001_lod_ao
+    0,    0, //rock002_lod_albedo
+    0,    0, //rock002_lod_normal
+    0,    0, //rock002_lod_ao
+    0,    0, //rock003_lod_albedo
+    0,    0, //rock003_lod_normal
+    0,    0, //rock003_lod_ao
+    0,    0, //rock004_lod_albedo
+    0,    0, //rock004_lod_normal
+    0,    0, //rock004_lod_ao
+    0,    0, //rock005_lod_albedo
+    0,    0, //rock005_lod_normal
+    0,    0, //rock005_lod_ao
+    0,    0, //rock006_lod_albedo
+    0,    0, //rock006_lod_normal
+    0,    0, //rock006_lod_ao
+    0,    0, //rock007_lod_albedo
+    0,    0, //rock007_lod_normal
+    0,    0, //rock007_lod_ao
+    0,    0, //rock008_lod_albedo
+    0,    0, //rock008_lod_normal
+    0,    0, //rock008_lod_ao
+    0,    0, //rock009_010_lod_albedo
+    0,    0, //rock009_010_lod_normal
+    0,    0, //rock009_010_lod_ao
+    0,    0, //rock011_012_lod_albedo
+    0,    0, //rock011_012_lod_normal
+    0,    0, //rock011_012_lod_ao
+    0,    0, //rock013_022_lod_albedo
+    0,    0, //rock013_022_lod_normal
+    0,    0, //rock013_022_lod_ao
 };
 
 
@@ -204,202 +501,521 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 6;
+static const int g_Object_Count = 28;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name          
     "object_terrain",                      "plane", //object_terrain
     "object_skybox",                       "cube", //object_skybox
+    "object_depth",                        "plane", //object_depth
 
     "object_cube",                         "cube", //object_cube   
     "object_sphere",                       "sphere", //object_sphere
     
     "object_grass_lod",                    "grass_lod", //grass_lod
-    "object_rock_lod",                     "rock_lod", //rock_lod
+
+    "object_rock001_lod",                  "rock001_lod", //object_rock001_lod
+    "object_rock002_lod",                  "rock002_lod", //object_rock002_lod
+    "object_rock003_lod",                  "rock003_lod", //object_rock003_lod
+    "object_rock004_lod",                  "rock004_lod", //object_rock004_lod
+    "object_rock005_lod",                  "rock005_lod", //object_rock005_lod
+    "object_rock006_lod",                  "rock006_lod", //object_rock006_lod
+    "object_rock007_lod",                  "rock007_lod", //object_rock007_lod
+    "object_rock008_lod",                  "rock008_lod", //object_rock008_lod
+    "object_rock009_lod",                  "rock009_lod", //object_rock009_lod
+    "object_rock010_lod",                  "rock010_lod", //object_rock010_lod
+    "object_rock011_lod",                  "rock011_lod", //object_rock011_lod
+    "object_rock012_lod",                  "rock012_lod", //object_rock012_lod
+    "object_rock013_lod",                  "rock013_lod", //object_rock013_lod
+    "object_rock014_lod",                  "rock014_lod", //object_rock014_lod
+    "object_rock015_lod",                  "rock015_lod", //object_rock015_lod
+    "object_rock016_lod",                  "rock016_lod", //object_rock016_lod
+    "object_rock017_lod",                  "rock017_lod", //object_rock017_lod
+    "object_rock018_lod",                  "rock018_lod", //object_rock018_lod
+    "object_rock019_lod",                  "rock019_lod", //object_rock019_lod
+    "object_rock020_lod",                  "rock020_lod", //object_rock020_lod
+    "object_rock021_lod",                  "rock021_lod", //object_rock021_lod
+    "object_rock022_lod",                  "rock022_lod", //object_rock022_lod
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
     "0", //object_terrain
     "0", //object_skybox
+    "0", //object_depth
 
     "0", //object_cube
     "0", //object_sphere
     
-    "0;1;2", //object_grass_lod
-    "0;1;2", //object_rock_lod
+    //"0;1;2", //object_grass_lod
+
+    // "0;1;2", //object_rock001_lod
+    // "0;1;2", //object_rock002_lod
+    // "0;1;2", //object_rock003_lod
+    // "0;1;2", //object_rock004_lod
+    // "0;1;2", //object_rock005_lod
+    // "0;1;2", //object_rock006_lod
+    // "0;1;2", //object_rock007_lod
+    // "0;1;2", //object_rock008_lod
+    // "0;1;2", //object_rock009_lod
+    // "0;1;2", //object_rock010_lod
+    // "0;1;2", //object_rock011_lod
+    // "0;1;2", //object_rock012_lod
+    // "0;1;2", //object_rock013_lod
+    // "0;1;2", //object_rock014_lod
+    // "0;1;2", //object_rock015_lod
+    // "0;1;2", //object_rock016_lod
+    // "0;1;2", //object_rock017_lod
+    // "0;1;2", //object_rock018_lod
+    // "0;1;2", //object_rock019_lod
+    // "0;1;2", //object_rock020_lod
+    // "0;1;2", //object_rock021_lod
+    // "0;1;2", //object_rock022_lod
+
+    "0", //object_grass_lod
+
+    "0", //object_rock001_lod
+    "0", //object_rock002_lod
+    "0", //object_rock003_lod
+    "0", //object_rock004_lod
+    "0", //object_rock005_lod
+    "0", //object_rock006_lod
+    "0", //object_rock007_lod
+    "0", //object_rock008_lod
+    "0", //object_rock009_lod
+    "0", //object_rock010_lod
+    "0", //object_rock011_lod
+    "0", //object_rock012_lod
+    "0", //object_rock013_lod
+    "0", //object_rock014_lod
+    "0", //object_rock015_lod
+    "0", //object_rock016_lod
+    "0", //object_rock017_lod
+    "0", //object_rock018_lod
+    "0", //object_rock019_lod
+    "0", //object_rock020_lod
+    "0", //object_rock021_lod
+    "0", //object_rock022_lod
 };  
 
-static float g_Object_InstanceGap = 2.0f;
+static float g_Object_InstanceGap = 1.5f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //object_terrain
     0, //object_skybox
+    0, //object_depth
 
     0, //object_cube 
     0, //object_sphere 
     
-    4, //object_grass_lod 
-    4, //object_rock_lod 
+    16, //object_grass_lod 
+
+    16, //object_rock001_lod 
+    16, //object_rock002_lod 
+    16, //object_rock003_lod 
+    16, //object_rock004_lod 
+    16, //object_rock005_lod 
+    16, //object_rock006_lod 
+    16, //object_rock007_lod 
+    16, //object_rock008_lod 
+    16, //object_rock009_lod 
+    16, //object_rock010_lod 
+    16, //object_rock011_lod 
+    16, //object_rock012_lod 
+    16, //object_rock013_lod 
+    16, //object_rock014_lod 
+    16, //object_rock015_lod 
+    16, //object_rock016_lod 
+    16, //object_rock017_lod 
+    16, //object_rock018_lod 
+    16, //object_rock019_lod 
+    16, //object_rock020_lod 
+    16, //object_rock021_lod 
+    16, //object_rock022_lod 
 };
 static bool g_Object_IsShows[] = 
 {
     true, //object_terrain
     true, //object_skybox
+    true, //object_depth
 
     true, //object_cube
     true, //object_sphere
     
     true, //object_grass_lod
-    true, //object_rock_lod
+
+    true, //object_rock001_lod
+    true, //object_rock002_lod
+    true, //object_rock003_lod
+    true, //object_rock004_lod
+    true, //object_rock005_lod
+    true, //object_rock006_lod
+    true, //object_rock007_lod
+    true, //object_rock008_lod
+    true, //object_rock009_lod
+    true, //object_rock010_lod
+    true, //object_rock011_lod
+    true, //object_rock012_lod
+    true, //object_rock013_lod
+    true, //object_rock014_lod
+    true, //object_rock015_lod
+    true, //object_rock016_lod
+    true, //object_rock017_lod
+    true, //object_rock018_lod
+    true, //object_rock019_lod
+    true, //object_rock020_lod
+    true, //object_rock021_lod
+    true, //object_rock022_lod
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
     false, //object_terrain
     false, //object_skybox
+    false, //object_depth
 
     false, //object_cube
     false, //object_sphere
     
     false, //object_grass_lod
-    false, //object_rock_lod
+
+    false, //object_rock001_lod
+    false, //object_rock002_lod
+    false, //object_rock003_lod
+    false, //object_rock004_lod
+    false, //object_rock005_lod
+    false, //object_rock006_lod
+    false, //object_rock007_lod
+    false, //object_rock008_lod
+    false, //object_rock009_lod
+    false, //object_rock010_lod
+    false, //object_rock011_lod
+    false, //object_rock012_lod
+    false, //object_rock013_lod
+    false, //object_rock014_lod
+    false, //object_rock015_lod
+    false, //object_rock016_lod
+    false, //object_rock017_lod
+    false, //object_rock018_lod
+    false, //object_rock019_lod
+    false, //object_rock020_lod
+    false, //object_rock021_lod
+    false, //object_rock022_lod
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
     true, //object_terrain
     true, //object_skybox
+    false, //object_depth
 
     true, //object_cube
     true, //object_sphere
     
     true, //object_grass_lod
-    true, //object_rock_lod
+
+    true, //object_rock001_lod
+    true, //object_rock002_lod
+    true, //object_rock003_lod
+    true, //object_rock004_lod
+    true, //object_rock005_lod
+    true, //object_rock006_lod
+    true, //object_rock007_lod
+    true, //object_rock008_lod
+    true, //object_rock009_lod
+    true, //object_rock010_lod
+    true, //object_rock011_lod
+    true, //object_rock012_lod
+    true, //object_rock013_lod
+    true, //object_rock014_lod
+    true, //object_rock015_lod
+    true, //object_rock016_lod
+    true, //object_rock017_lod
+    true, //object_rock018_lod
+    true, //object_rock019_lod
+    true, //object_rock020_lod
+    true, //object_rock021_lod
+    true, //object_rock022_lod
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
     false, //object_terrain
     false, //object_skybox
+    false, //object_depth
 
     false, //object_cube
     false, //object_sphere
     
     false, //object_grass_lod
-    false, //object_rock_lod
+
+    false, //object_rock001_lod
+    false, //object_rock002_lod
+    false, //object_rock003_lod
+    false, //object_rock004_lod
+    false, //object_rock005_lod
+    false, //object_rock006_lod
+    false, //object_rock007_lod
+    false, //object_rock008_lod
+    false, //object_rock009_lod
+    false, //object_rock010_lod
+    false, //object_rock011_lod
+    false, //object_rock012_lod
+    false, //object_rock013_lod
+    false, //object_rock014_lod
+    false, //object_rock015_lod
+    false, //object_rock016_lod
+    false, //object_rock017_lod
+    false, //object_rock018_lod
+    false, //object_rock019_lod
+    false, //object_rock020_lod
+    false, //object_rock021_lod
+    false, //object_rock022_lod
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 10;
+static const int g_ObjectRend_Count = 28;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
     "object_terrain-1",                    "",                     "",                              "",                         "",                    "terrain",                                                                      "", //object_terrain-1
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+    "object_depth-1",                      "",                     "",                              "",                         "",                    "",                                                                             "", //object_depth-1
 
     "object_cube-1",                       "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_cube-1
     "object_sphere-1",                     "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_sphere-1
     
     "object_grass_lod-1",                  "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_grass_lod-1
-    "object_grass_lod-2",                  "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_grass_lod-2
-    "object_grass_lod-3",                  "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_grass_lod-3
-    "object_rock_lod-1",                   "",                     "",                              "",                         "",                    "rock_lod_albedo",                                                              "", //object_rock_lod-1
-    "object_rock_lod-2",                   "",                     "",                              "",                         "",                    "rock_lod_albedo",                                                              "", //object_rock_lod-2
-    "object_rock_lod-3",                   "",                     "",                              "",                         "",                    "rock_lod_albedo",                                                              "", //object_rock_lod-3
-
+    
+    "object_rock001_lod-1",                "",                     "",                              "",                         "",                    "rock001_lod_albedo",                                                           "", //object_rock001_lod-1
+    "object_rock002_lod-1",                "",                     "",                              "",                         "",                    "rock002_lod_albedo",                                                           "", //object_rock002_lod-1
+    "object_rock003_lod-1",                "",                     "",                              "",                         "",                    "rock003_lod_albedo",                                                           "", //object_rock003_lod-1
+    "object_rock004_lod-1",                "",                     "",                              "",                         "",                    "rock004_lod_albedo",                                                           "", //object_rock004_lod-1
+    "object_rock005_lod-1",                "",                     "",                              "",                         "",                    "rock005_lod_albedo",                                                           "", //object_rock005_lod-1
+    "object_rock006_lod-1",                "",                     "",                              "",                         "",                    "rock006_lod_albedo",                                                           "", //object_rock006_lod-1
+    "object_rock007_lod-1",                "",                     "",                              "",                         "",                    "rock007_lod_albedo",                                                           "", //object_rock007_lod-1
+    "object_rock008_lod-1",                "",                     "",                              "",                         "",                    "rock008_lod_albedo",                                                           "", //object_rock008_lod-1
+    "object_rock009_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock009_lod-1
+    "object_rock010_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock010_lod-1
+    "object_rock011_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock011_lod-1
+    "object_rock012_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock012_lod-1
+    "object_rock013_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock013_lod-1
+    "object_rock014_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock014_lod-1
+    "object_rock015_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock015_lod-1
+    "object_rock016_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock016_lod-1
+    "object_rock017_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock017_lod-1
+    "object_rock018_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock018_lod-1
+    "object_rock019_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock019_lod-1
+    "object_rock020_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock020_lod-1
+    "object_rock021_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock021_lod-1
+    "object_rock022_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock022_lod-1
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_tex2d_lit_shadow",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit_shadow",           "", //object_terrain-1
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
-    
+    "vert_standard_debug_shadow_depth",                     "",                                             "",                                         "",                         "frag_standard_debug_shadow_depth",                     "", //object_depth-1
+
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_cube-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_sphere-1
     
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_grass_lod-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_grass_lod-2
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_grass_lod-3
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock_lod-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock_lod-2
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock_lod-3
-    
+
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock001_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock002_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock003_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock004_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock005_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock006_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock007_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock008_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock009_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock010_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock011_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock012_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock013_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock014_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock015_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock016_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock017_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock018_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock019_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock020_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock021_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock022_lod-1
+
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",       "", //object_terrain-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
+    "Pass-Object-Material-Instance-TextureDepthShadow",                 "", //object_depth-1
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_cube-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_sphere-1
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass_lod-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass_lod-2
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass_lod-3
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock_lod-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock_lod-2
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock_lod-3
+
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock001_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock002_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock003_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock004_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock005_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock006_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock007_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock008_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock009_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock010_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock011_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock012_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock013_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock014_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock015_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock016_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock017_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock018_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock019_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock020_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock021_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock022_lod-1
 
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_terrain-1
-    FVector3(    0,  0.0,   0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(    0,  0.0,    0.0),    FVector3(     0,   0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_terrain-1
+    FVector3(    0,  0.0,    0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(    0,    1,  15.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
  
-    FVector3( 2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
-    FVector3(-2.0f,    2,  2.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
+    FVector3( 2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
+    FVector3(-2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
 
-    FVector3( 0.0f,    2,  0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-1
-    FVector3( 0.0f,    2, -1.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-2
-    FVector3( 0.0f,    2, -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-3
-    FVector3( 0.0f,    2, -3.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-1
-    FVector3( 0.0f,    2, -4.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-2
-    FVector3( 0.0f,    2, -5.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock_lod-3
+    FVector3( 0.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-1
+
+    FVector3( 0.0f,    1,  -1.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock001_lod-1
+    FVector3( 0.0f,    1,  -2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock002_lod-1
+    FVector3( 0.0f,    1,  -3.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock003_lod-1
+    FVector3( 0.0f,    1,  -4.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock004_lod-1
+    FVector3( 0.0f,    1,  -5.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock005_lod-1
+    FVector3( 0.0f,    1,  -6.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock006_lod-1
+    FVector3( 0.0f,    1,  -7.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock007_lod-1
+    FVector3( 0.0f,    1,  -8.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock008_lod-1
+    FVector3( 0.0f,    1,  -9.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock009_lod-1
+    FVector3( 0.0f,    1, -10.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock010_lod-1
+    FVector3( 0.0f,    1, -11.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock011_lod-1
+    FVector3( 0.0f,    1,  11.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock012_lod-1
+    FVector3( 0.0f,    1,  10.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock013_lod-1
+    FVector3( 0.0f,    1,   9.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock014_lod-1
+    FVector3( 0.0f,    1,   8.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock015_lod-1
+    FVector3( 0.0f,    1,   7.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock016_lod-1
+    FVector3( 0.0f,    1,   6.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock017_lod-1
+    FVector3( 0.0f,    1,   5.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock018_lod-1
+    FVector3( 0.0f,    1,   4.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock019_lod-1
+    FVector3( 0.0f,    1,   3.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock020_lod-1
+    FVector3( 0.0f,    1,   2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock021_lod-1
+    FVector3( 0.0f,    1,   1.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock022_lod-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
     false, //object_terrain-1
     false, //object_skybox-1
+    false, //object_depth-1
 
     false, //object_cube-1
     false, //object_sphere-1
 
     false, //object_grass_lod-1
-    false, //object_grass_lod-2
-    false, //object_grass_lod-3
-    false, //object_rock_lod-1
-    false, //object_rock_lod-2
-    false, //object_rock_lod-3
+
+    false, //object_rock001_lod-1
+    false, //object_rock002_lod-1
+    false, //object_rock003_lod-1
+    false, //object_rock004_lod-1
+    false, //object_rock005_lod-1
+    false, //object_rock006_lod-1
+    false, //object_rock007_lod-1
+    false, //object_rock008_lod-1
+    false, //object_rock009_lod-1
+    false, //object_rock010_lod-1
+    false, //object_rock011_lod-1
+    false, //object_rock012_lod-1
+    false, //object_rock013_lod-1
+    false, //object_rock014_lod-1
+    false, //object_rock015_lod-1
+    false, //object_rock016_lod-1
+    false, //object_rock017_lod-1
+    false, //object_rock018_lod-1
+    false, //object_rock019_lod-1
+    false, //object_rock020_lod-1
+    false, //object_rock021_lod-1
+    false, //object_rock022_lod-1
+
 };
 static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
 {
     false, //object_terrain-1
     false, //object_skybox-1
+    false, //object_depth-1
 
     true, //object_cube-1
     true, //object_sphere-1
     
     true, //object_grass_lod-1
-    false, //object_grass_lod-2
-    false, //object_grass_lod-3
-    true, //object_rock_lod-1
-    false, //object_rock_lod-2
-    false, //object_rock_lod-3
+    
+    true, //object_rock001_lod-1
+    true, //object_rock002_lod-1
+    true, //object_rock003_lod-1
+    true, //object_rock004_lod-1
+    true, //object_rock005_lod-1
+    true, //object_rock006_lod-1
+    true, //object_rock007_lod-1
+    true, //object_rock008_lod-1
+    true, //object_rock009_lod-1
+    true, //object_rock010_lod-1
+    true, //object_rock011_lod-1
+    true, //object_rock012_lod-1
+    true, //object_rock013_lod-1
+    true, //object_rock014_lod-1
+    true, //object_rock015_lod-1
+    true, //object_rock016_lod-1
+    true, //object_rock017_lod-1
+    true, //object_rock018_lod-1
+    true, //object_rock019_lod-1
+    true, //object_rock020_lod-1
+    true, //object_rock021_lod-1
+    true, //object_rock022_lod-1
 };
 static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] = 
 {
     true, //object_terrain-1
     false, //object_skybox-1
+    false, //object_depth-1
 
     false, //object_cube-1
     false, //object_sphere-1
    
     false, //object_grass_lod-1
-    false, //object_grass_lod-2
-    false, //object_grass_lod-3
-    false, //object_rock_lod-1
-    false, //object_rock_lod-2
-    false, //object_rock_lod-3
+    
+    false, //object_rock001_lod-1
+    false, //object_rock002_lod-1
+    false, //object_rock003_lod-1
+    false, //object_rock004_lod-1
+    false, //object_rock005_lod-1
+    false, //object_rock006_lod-1
+    false, //object_rock007_lod-1
+    false, //object_rock008_lod-1
+    false, //object_rock009_lod-1
+    false, //object_rock010_lod-1
+    false, //object_rock011_lod-1
+    false, //object_rock012_lod-1
+    false, //object_rock013_lod-1
+    false, //object_rock014_lod-1
+    false, //object_rock015_lod-1
+    false, //object_rock016_lod-1
+    false, //object_rock017_lod-1
+    false, //object_rock018_lod-1
+    false, //object_rock019_lod-1
+    false, //object_rock020_lod-1
+    false, //object_rock021_lod-1
+    false, //object_rock022_lod-1
 };
 
 
@@ -681,8 +1297,8 @@ void Vulkan_020_Culling::createCamera()
     {
         VulkanWindow::cameraReset();
 
-        this->pCamera->SetPos(FVector3(0.0f, 12.0f, -10.0f));
-        this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
+        this->pCamera->SetPos(FVector3(0.0f, 18.0f, -18.0f));
+        this->pCamera->SetEulerAngles(FVector3(46.0f, 0.0f, 0.0f));
         this->pCamera->SetFarZ(1000000.0f);
     }
 void Vulkan_020_Culling::createLightMain()
@@ -696,11 +1312,12 @@ void Vulkan_020_Culling::createLightMain()
         this->mainLight.common.x = 0; //Directional Type
         this->mainLight.common.y = 1.0f; //Enable
         this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-        this->mainLight.position = FVector3(0.0f, 12.0f, -10.0f);
-        FVector3 vEulerAngles(45.0f, 00.0f, 0.0f);
+        this->mainLight.position = FVector3(0.0f, 65.0f, -30.0f);
+        FVector3 vEulerAngles(55.0f, 00.0f, 0.0f);
         this->mainLight.direction = FMath::ToDirection(vEulerAngles);
 
         this->shadowMainLight.zNear = 5.0f;
+        this->shadowMainLight.depthSize = 4096;
         //Camera MainLight
         this->pCameraMainLight->SetPos(this->mainLight.position);
         this->pCameraMainLight->SetEulerAngles(vEulerAngles);
