@@ -28,8 +28,10 @@ namespace LostPeterVulkan
         float fLodDistanceMin;
         float fLodDistanceMax;
         
+        Mesh* pMesh;
 
     public:
+        
 
     public:
         

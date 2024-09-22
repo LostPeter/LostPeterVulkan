@@ -13,15 +13,59 @@
 #define _CULL_OBJECT_STATIC_H_
 
 #include "Base.h"
+#include "CullUnitObject.h"
 
 namespace LostPeterVulkan
 {
+    ////////////////////// CullObjectStatic //////////////////////////
     class vulkanExport CullObjectStatic : public FSingleton<CullObjectStatic>
                                         , public Base
     {
     public:
         CullObjectStatic();
         virtual ~CullObjectStatic();
+
+    public:
+        ////////////////////// CullUnitObjectStatic //////////////////////
+        class vulkanExport CullUnitObjectStatic : public CullUnitObject
+        {
+        public:
+            CullUnitObjectStatic(const String& nameUnit, CullObjectStatic* pCullOS);
+            virtual ~CullUnitObjectStatic();
+
+        public:
+            CullObjectStatic* pCullObjectStatic;
+
+            
+        public:
+            virtual void Destroy();
+            virtual void Init();
+
+        public:
+            virtual bool IsCulling();
+            virtual int GetRenderCount();  
+            virtual ComputeBuffer* GetRenderArgsCB();
+
+        public:
+            virtual int GetRenderDataCount();
+            virtual CullRenderData* GetRenderData();
+            
+            virtual int GetClusterDataCount(int index);
+            virtual CullObjectConstantsVector* GetClusterDatas();
+
+            virtual int GetLodCount();
+
+            virtual ComputeBuffer* GetClusterDataCB();
+            virtual ComputeBuffer* GetLodCB();
+
+            virtual ComputeBuffer* GetResultCB();
+            virtual ComputeBuffer* GetClipCB();
+
+            virtual void UpdateBuffer();
+
+        };
+        typedef std::vector<CullUnitObjectStatic*> CullUnitObjectStaticPtrVector;
+        typedef std::map<String, CullUnitObjectStatic*> CullUnitObjectStaticPtrMap;
 
     public:
         static const String s_nameCullObjectStatic;

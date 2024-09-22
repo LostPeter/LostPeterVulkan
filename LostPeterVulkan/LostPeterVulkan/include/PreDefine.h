@@ -528,10 +528,7 @@ namespace LostPeterVulkan
     class CullTerrainStatic;
     class CullUnit;
     class CullUnitObject;
-    class CullUnitObjectDynamic;
-    class CullUnitObjectStatic;
     class CullUnitTerrain;
-    class CullUnitTerrainStatic;
     class EditorBase;
     class EditorCameraAxis;
     class EditorCoordinateAxis;
@@ -551,14 +548,8 @@ namespace LostPeterVulkan
     typedef std::map<String, CullUnit*> CullUnitPtrMap;
     typedef std::vector<CullUnitObject*> CullUnitObjectPtrVector;
     typedef std::map<String, CullUnitObject*> CullUnitObjectPtrMap;
-    typedef std::vector<CullUnitObjectDynamic*> CullUnitObjectDynamicPtrVector;
-    typedef std::map<String, CullUnitObjectDynamic*> CullUnitObjectDynamicPtrMap;
-    typedef std::vector<CullUnitObjectStatic*> CullUnitObjectStaticPtrVector;
-    typedef std::map<String, CullUnitObjectStatic*> CullUnitObjectStaticPtrMap;
     typedef std::vector<CullUnitTerrain*> CullUnitTerrainPtrVector;
     typedef std::map<String, CullUnitTerrain*> CullUnitTerrainPtrMap;
-    typedef std::vector<CullUnitTerrainStatic*> CullUnitTerrainStaticPtrVector;
-    typedef std::map<String, CullUnitTerrainStatic*> CullUnitTerrainStaticPtrMap;
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;

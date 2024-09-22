@@ -11,6 +11,7 @@
 
 #include "../include/CullLodData.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Mesh.h"
 
 namespace LostPeterVulkan
 {
@@ -22,6 +23,8 @@ namespace LostPeterVulkan
         , fLodDistanceMin(10.0f)
         , fLodDistanceMax(50.0f)
         
+        , pMesh(nullptr)
+
     {
 
     }

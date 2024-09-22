@@ -11,12 +11,101 @@
 
 #include "../include/CullObjectStatic.h"
 #include "../include/VulkanWindow.h"
-#include "../include/CullUnitObjectStatic.h"
 
 template<> LostPeterVulkan::CullObjectStatic* LostPeterFoundation::FSingleton<LostPeterVulkan::CullObjectStatic>::ms_Singleton = nullptr;
 
 namespace LostPeterVulkan
 {
+    ////////////////////// CullUnitObjectStatic //////////////////////
+    CullObjectStatic::CullUnitObjectStatic::CullUnitObjectStatic(const String& nameUnit, CullObjectStatic* pCullOS)
+        : CullUnitObject(nameUnit)
+        , pCullObjectStatic(pCullOS)
+    {
+        F_Assert(pCullObjectStatic != nullptr && "CullUnitObjectStatic::CullUnitObjectStatic")
+    }
+
+    CullObjectStatic::CullUnitObjectStatic::~CullUnitObjectStatic()
+    {
+        Destroy();
+    }
+
+    void CullObjectStatic::CullUnitObjectStatic::Destroy()
+    {
+        
+    }
+    
+    void CullObjectStatic::CullUnitObjectStatic::Init()
+    {
+
+    }
+
+    bool CullObjectStatic::CullUnitObjectStatic::IsCulling()
+    {
+        return true;
+    }
+
+    int CullObjectStatic::CullUnitObjectStatic::GetRenderCount()
+    {
+        return 0;
+    }
+
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
+    {
+        return nullptr; 
+    }
+
+    int CullObjectStatic::CullUnitObjectStatic::GetRenderDataCount()
+    {
+        return 0;
+    }
+
+    CullRenderData* CullObjectStatic::CullUnitObjectStatic::GetRenderData()
+    {
+        return nullptr; 
+    }
+
+    int CullObjectStatic::CullUnitObjectStatic::GetClusterDataCount(int index)
+    {
+        return 0;
+    }
+
+    CullObjectConstantsVector* CullObjectStatic::CullUnitObjectStatic::GetClusterDatas()
+    {
+        return nullptr; 
+    }
+
+    int CullObjectStatic::CullUnitObjectStatic::GetLodCount()
+    {
+        return 0;
+    }
+
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetClusterDataCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetLodCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
+    {
+        return nullptr; 
+    }
+
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetClipCB() 
+    { 
+        return nullptr; 
+    }
+
+    void CullObjectStatic::CullUnitObjectStatic::UpdateBuffer()
+    {
+
+    }
+
+
+    ////////////////////// CullObjectStatic //////////////////////////
     CullObjectStatic* CullObjectStatic::GetSingletonPtr()
 	{
 		return ms_Singleton;
