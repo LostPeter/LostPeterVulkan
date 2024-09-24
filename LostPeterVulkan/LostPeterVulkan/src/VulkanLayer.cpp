@@ -119,6 +119,10 @@ namespace LostPeterVulkan
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME,
         VK_KHR_MAINTENANCE1_EXTENSION_NAME,
+    #if F_DEBUG == 1
+        VK_EXT_DEBUG_MARKER_EXTENSION_NAME,
+    #endif
+
 
     #if F_PLATFORM == F_PLATFORM_iOS
         
@@ -403,11 +407,11 @@ namespace LostPeterVulkan
         }
 
         ConstCharPtrVector availableExtensions;
-        for (size_t i = 0; i < deviceLayerExtensions[0].extensionProps.size(); ++i) 
+        for (size_t i = 0; i < foundUniqueExtensions.size(); ++i) 
         {
-            availableExtensions.push_back(deviceLayerExtensions[0].extensionProps[i].extensionName);
+            availableExtensions.push_back(foundUniqueExtensions[i].c_str());
         }
-        
+
         for (size_t i = 0; i < outDeviceLayers.size(); ++i)
         {
             int32 findLayerIndex;

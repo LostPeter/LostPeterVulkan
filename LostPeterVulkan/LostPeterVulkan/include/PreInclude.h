@@ -21,6 +21,7 @@
 #include "VulkanBase.h"
 #include "VulkanWindow.h"
 
+#include "VKDebug.h"
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"

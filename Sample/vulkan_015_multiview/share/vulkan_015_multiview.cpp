@@ -3008,6 +3008,7 @@ void Vulkan_015_MultiView::updateRenderPass_CustomBeforeDefault(VkCommandBuffer&
     void Vulkan_015_MultiView::drawMeshCustom(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass)
     {
         beginRenderPass(commandBuffer,
+                        "[RenderPass-Custom]",
                         pRenderPass->poRenderPass,
                         pRenderPass->poFrameBuffer,
                         this->poOffset,
@@ -3030,6 +3031,7 @@ void Vulkan_015_MultiView::updateRenderPass_CustomBeforeDefault(VkCommandBuffer&
 void Vulkan_015_MultiView::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
 {
     beginRenderPass(commandBuffer,
+                    "[RenderPass-Default]",
                     this->poRenderPass,
                     this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
                     this->poOffset,

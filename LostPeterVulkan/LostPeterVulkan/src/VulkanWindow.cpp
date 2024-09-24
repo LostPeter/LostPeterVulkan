@@ -1511,6 +1511,7 @@ namespace LostPeterVulkan
         , poPhysicalDevice(VK_NULL_HANDLE)
         , poDeviceCreatepNextChain(VK_NULL_HANDLE)
         , poDevice(VK_NULL_HANDLE)
+        , poDebug(nullptr)
         , poMSAASamples(VK_SAMPLE_COUNT_1_BIT)
         , poQueueGraphics(VK_NULL_HANDLE)
         , poQueuePresent(VK_NULL_HANDLE)
@@ -2261,7 +2262,26 @@ namespace LostPeterVulkan
     }
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) 
         {
-            F_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] !", pCallbackData->pMessage);
+            String prefix("");
+
+			if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) 
+            {
+				prefix = "VERBOSE: ";
+			}
+			else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) 
+            {
+				prefix = "INFO: ";
+			}
+			else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) 
+            {
+				prefix = "WARNING: ";
+			}
+			else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) 
+            {
+				prefix = "ERROR: ";
+			}
+
+            F_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] [%d][%s]: [%s]!", prefix.c_str(), pCallbackData->messageIdNumber, pCallbackData->pMessageIdName, pCallbackData->pMessage);
             return VK_FALSE;
         }
         void VulkanWindow::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
@@ -2762,6 +2782,9 @@ namespace LostPeterVulkan
         vkGetDeviceQueue(this->poDevice, this->queueIndexPresent, 0, &this->poQueuePresent);
         if (this->cfg_isUseComputeShader)
             vkGetDeviceQueue(this->poDevice, this->queueIndexCompute, 0, &this->poQueueCompute);
+
+        this->poDebug = new VKDebug();
+        this->poDebug->Init(this->poDevice);
 
         F_LogInfo("<1-2-5> VulkanWindow::createLogicalDevice finish !");
     }
@@ -3452,6 +3475,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
                     return false;
                 }
+                this->poDebug->SetVkRenderPassName(this->poDevice, vkRenderPass, nameRenderPass.c_str());
 
                 F_LogInfo("VulkanWindow::createVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
                 return true;
@@ -8603,6 +8627,7 @@ namespace LostPeterVulkan
                         return;
 
                     beginRenderPass(commandBuffer,
+                                    "[RenderPass-EditorCameraAxis]",
                                     pRenderPass->poRenderPass,
                                     pRenderPass->poFrameBuffer,
                                     this->pEditorCameraAxis->poOffset,
@@ -8628,6 +8653,7 @@ namespace LostPeterVulkan
                     }
 
                     beginRenderPass(commandBuffer,
+                                    "[RenderPass-ShadowMap]",
                                     this->m_pVKRenderPassShadowMap->poRenderPass,
                                     this->m_pVKRenderPassShadowMap->poFrameBuffer,
                                     this->m_pVKRenderPassShadowMap->offset,
@@ -8656,6 +8682,7 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
                     beginRenderPass(commandBuffer,
+                                    "[RenderPass-Default]",
                                     this->poRenderPass,
                                     this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
                                     this->poOffset,
@@ -8764,6 +8791,7 @@ namespace LostPeterVulkan
                 }
 
                     void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                       const String& nameRenderPass,
                                                        const VkRenderPass& renderPass, 
                                                        const VkFramebuffer& frameBuffer,
                                                        const VkOffset2D& offset,
@@ -8782,6 +8810,7 @@ namespace LostPeterVulkan
                             }
                         }
                         beginRenderPass(commandBuffer,
+                                        nameRenderPass,
                                         renderPass,
                                         frameBuffer,
                                         offset,
@@ -8790,7 +8819,8 @@ namespace LostPeterVulkan
                                         depth,
                                         stencil);
                     }
-                    void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                    void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer,  
+                                                       const String& nameRenderPass,
                                                        const VkRenderPass& renderPass, 
                                                        const VkFramebuffer& frameBuffer,
                                                        const VkOffset2D& offset,
@@ -8814,6 +8844,7 @@ namespace LostPeterVulkan
                         clearValues[count].depthStencil = depthStencilValue;
 
                         beginRenderPass(commandBuffer,
+                                        nameRenderPass,
                                         renderPass,
                                         frameBuffer,
                                         offset,
@@ -8821,6 +8852,7 @@ namespace LostPeterVulkan
                                         clearValues);
                     }
                     void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                       const String& nameRenderPass,
                                                        const VkRenderPass& renderPass, 
                                                        const VkFramebuffer& frameBuffer,
                                                        const VkOffset2D& offset,
@@ -8837,6 +8869,11 @@ namespace LostPeterVulkan
                         renderPassInfo.pClearValues = aClearValue.data();
 
                         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+                        VkDebugUtilsLabelEXT label = {};
+                        label.sType =  VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+                        label.pLabelName = nameRenderPass.c_str();
+                        this->poDebug->BeginCmdLabel(commandBuffer, &label);
                     }
                         void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor)
                         {
@@ -8888,6 +8925,8 @@ namespace LostPeterVulkan
                     void VulkanWindow::endRenderPass(VkCommandBuffer& commandBuffer)
                     {
                         vkCmdEndRenderPass(commandBuffer);
+
+                        this->poDebug->EndCmdLabel(commandBuffer);
                     }
 
                     void VulkanWindow::dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ)
@@ -9016,6 +9055,7 @@ namespace LostPeterVulkan
             destroyVkCommandPool(this->poCommandPoolCompute);
             
             //5> Device
+            F_DELETE(this->poDebug)
             destroyVkDevice(this->poDevice);
             this->poDevice = VK_NULL_HANDLE;
             if (s_isEnableValidationLayers)

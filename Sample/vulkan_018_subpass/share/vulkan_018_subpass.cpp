@@ -1614,6 +1614,7 @@ void Vulkan_018_SubPass::updateCBs_Custom()
 void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
 {
     beginRenderPass(commandBuffer,
+                    "[RenderPass-CustomBeforeDefault]",
                     this->m_pSubPassRenderPass->poRenderPass_SubPass,
                     this->m_pSubPassRenderPass->poFrameBuffer_SubPass,
                     this->poOffset,

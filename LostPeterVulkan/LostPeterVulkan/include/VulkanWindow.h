@@ -251,6 +251,7 @@ namespace LostPeterVulkan
         VkPhysicalDeviceFeatures poPhysicalEnabledFeatures;
         void* poDeviceCreatepNextChain;
         VkDevice poDevice;
+        VKDebug* poDebug;
         VkSampleCountFlagBits poMSAASamples;
         VkQueue poQueueGraphics;
         VkQueue poQueuePresent;
@@ -1302,6 +1303,7 @@ namespace LostPeterVulkan
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                     const String& nameRenderPass,
                                                      const VkRenderPass& renderPass, 
                                                      const VkFramebuffer& frameBuffer,
                                                      const VkOffset2D& offset,
@@ -1310,6 +1312,7 @@ namespace LostPeterVulkan
                                                      float depth,
                                                      uint32_t stencil);
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                     const String& nameRenderPass,
                                                      const VkRenderPass& renderPass, 
                                                      const VkFramebuffer& frameBuffer,
                                                      const VkOffset2D& offset,
@@ -1318,6 +1321,7 @@ namespace LostPeterVulkan
                                                      float depth,
                                                      uint32_t stencil);
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                     const String& nameRenderPass,
                                                      const VkRenderPass& renderPass, 
                                                      const VkFramebuffer& frameBuffer,
                                                      const VkOffset2D& offset,

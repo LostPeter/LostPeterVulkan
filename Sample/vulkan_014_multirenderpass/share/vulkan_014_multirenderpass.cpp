@@ -2905,6 +2905,7 @@ void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandB
     void Vulkan_014_MultiRenderPass::drawMeshCustom(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass)
     {
         beginRenderPass(commandBuffer,
+                        "[RenderPass-Custom]",
                         pRenderPass->poRenderPass,
                         pRenderPass->poFrameBuffer,
                         this->poOffset,

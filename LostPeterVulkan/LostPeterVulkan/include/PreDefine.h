@@ -495,6 +495,7 @@ namespace LostPeterVulkan
     class VulkanBase;
     class VulkanWindow;
 
+    class VKDebug;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineCompute;
