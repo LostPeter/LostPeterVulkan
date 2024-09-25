@@ -680,6 +680,10 @@ namespace LostPeterVulkan
     }
     void EditorCameraAxis::destroyPipelineGraphics()
     {
+        if (this->pPipelineGraphics)
+        {
+            F_DELETE(this->pPipelineGraphics->pRenderPass)
+        }
         EditorBase::destroyPipelineGraphics();
 
         //Quad Blit
