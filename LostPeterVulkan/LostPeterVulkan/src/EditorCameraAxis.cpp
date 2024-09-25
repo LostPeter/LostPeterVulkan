@@ -649,6 +649,15 @@ namespace LostPeterVulkan
     }
     void EditorCameraAxis::destroyBufferUniforms()
     {
+        //PassConstants
+        {
+            if (this->poBuffers_PassCB != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
+            }
+            this->poBuffers_PassCB = VK_NULL_HANDLE;
+            this->poBuffersMemory_PassCB = VK_NULL_HANDLE;
+        }
         //CameraAxis
         {
             if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)

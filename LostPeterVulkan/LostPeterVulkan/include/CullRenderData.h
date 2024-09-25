@@ -16,10 +16,10 @@
 
 namespace LostPeterVulkan
 {
-    class vulkanExport CullRenderData : public Base
+    class vulkanExport CullRenderData
     {
     public:
-        CullRenderData(const String& nameRenderData);
+        CullRenderData();
         virtual ~CullRenderData();
 
     public:
@@ -30,7 +30,7 @@ namespace LostPeterVulkan
         InstanceDataVector aInstanceDatas;
         CullObjectConstantsVector aClusterDatas;
 
-
+        ComputeBuffer* pBuffer_Instance;
 
     public:
         void Destroy();
@@ -39,7 +39,7 @@ namespace LostPeterVulkan
         void Clear();
 
     public:
-
+        
 
     };
 

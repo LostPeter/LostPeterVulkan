@@ -19,6 +19,8 @@
 #include "FPreInclude.h"
 using namespace LostPeterFoundation;
 
+#include "ObjectPool.h"
+
 namespace LostPeterVulkan
 {
 ////////////////////////////// Define //////////////////////////////

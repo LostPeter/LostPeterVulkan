@@ -132,6 +132,8 @@ namespace LostPeterVulkan
         : Base(s_nameCullObjectStatic)
     {
         pCullUnitObjectStatic = new CullUnitObjectStatic(s_nameCullUnitObjectStatic, this);
+        pCullRenderDataPool = new ObjectPool<CullRenderData*>();
+        pCullRenderDataPool->Reserve(20);
     }
 
     CullObjectStatic::~CullObjectStatic()
@@ -142,7 +144,7 @@ namespace LostPeterVulkan
     void CullObjectStatic::Destroy()
     {
         F_DELETE(pCullUnitObjectStatic)
-
+        F_DELETE(pCullRenderDataPool)
     }
     
     void CullObjectStatic::Init()

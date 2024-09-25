@@ -76,9 +76,9 @@ namespace LostPeterVulkan
         static int s_nStepRenderCount;
         static int s_nMaxInstanceCount;
 
-
     public:
         CullUnitObjectStatic* pCullUnitObjectStatic;
+        ObjectPool<CullRenderData*>* pCullRenderDataPool; 
 
     public:
         static CullObjectStatic& GetSingleton();
@@ -87,7 +87,7 @@ namespace LostPeterVulkan
     public:
         void Destroy();
         void Init();
-
+    
     };
 
 }; //LostPeterVulkan
