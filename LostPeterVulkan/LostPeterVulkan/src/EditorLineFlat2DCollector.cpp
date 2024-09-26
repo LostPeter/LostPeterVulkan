@@ -44,6 +44,14 @@ namespace LostPeterVulkan
     {
 
     }
+    void EditorLineFlat2DCollector::initDescriptorSetLayout()
+    {
+        
+    }   
+    void EditorLineFlat2DCollector::initPipelineLayout()
+    {
+
+    }
     void EditorLineFlat2DCollector::initPipelineGraphics()
     {
 

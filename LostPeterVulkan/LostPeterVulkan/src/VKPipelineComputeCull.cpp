@@ -102,6 +102,7 @@ namespace LostPeterVulkan
         destroyBufferResult();
         destroyBufferLod();
         destroyBufferArgs();
+        destroyBufferHizDepth();
         destroyBufferCullObject();
         destroyBufferCull();
     }

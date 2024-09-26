@@ -61,10 +61,14 @@ namespace LostPeterVulkan
     }
     void EditorBase::initMeshes()
     {
+        if (this->aMeshInfos.size() <= 0)
+            return;
         Base::GetWindowPtr()->CreateMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
     }
     void EditorBase::initShaders()
     {   
+        if (this->aShaderModuleInfos.size() <= 0)
+            return;
         Base::GetWindowPtr()->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
     }
     void EditorBase::initDescriptorSetLayout()

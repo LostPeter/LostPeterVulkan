@@ -40,9 +40,9 @@ namespace LostPeterVulkan
 
     protected:
         virtual void initConfigs();
-        
         virtual void initBufferUniforms();
-        
+        virtual void initDescriptorSetLayout();
+        virtual void initPipelineLayout();
         virtual void initPipelineGraphics();
         virtual void updateDescriptorSets_Graphics();
 

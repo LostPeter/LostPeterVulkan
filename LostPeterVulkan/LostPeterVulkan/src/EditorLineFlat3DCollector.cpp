@@ -39,6 +39,14 @@ namespace LostPeterVulkan
     }
     void EditorLineFlat3DCollector::initBufferUniforms()
     {
+        
+    }
+    void EditorLineFlat3DCollector::initDescriptorSetLayout()
+    {
+        
+    }   
+    void EditorLineFlat3DCollector::initPipelineLayout()
+    {
 
     }
     void EditorLineFlat3DCollector::initPipelineGraphics()
