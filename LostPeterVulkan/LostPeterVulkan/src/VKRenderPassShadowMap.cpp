@@ -98,7 +98,9 @@ namespace LostPeterVulkan
 
         //1> Depth
         {
-            Base::GetWindowPtr()->createVkImage(width, 
+            String nameTexture = "Texture-ShadowMapDepth";
+            Base::GetWindowPtr()->createVkImage(nameTexture,
+                                                width, 
                                                 height, 
                                                 1,
                                                 1,
@@ -115,7 +117,8 @@ namespace LostPeterVulkan
                                                 this->poDepthImage, 
                                                 this->poDepthImageMemory);
             
-            Base::GetWindowPtr()->createVkImageView(this->poDepthImage, 
+            Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                    this->poDepthImage, 
                                                     VK_IMAGE_VIEW_TYPE_2D,
                                                     format, 
                                                     VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -123,7 +126,8 @@ namespace LostPeterVulkan
                                                     1,
                                                     this->poDepthImageView);
 
-            Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+            Base::GetWindowPtr()->createVkSampler(nameTexture,
+                                                  F_TextureFilter_Bilinear, 
                                                   F_TextureAddressing_Clamp,
                                                   F_TextureBorderColor_OpaqueWhite,
                                                   false,

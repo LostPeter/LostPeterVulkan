@@ -891,13 +891,13 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     this->poIndexBuffer_Data =  &this->indices[0];
 
     //2> createVertexBuffer
-    this->pRend->pModelObject->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+    this->pRend->pModelObject->pWindow->createVertexBuffer("Vertex-" + this->nameObjectRendIndirect, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
 
     //3> createIndexBuffer
     if (this->poIndexBuffer_Size > 0 &&
         this->poIndexBuffer_Data != nullptr)
     {
-        this->pRend->pModelObject->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+        this->pRend->pModelObject->pWindow->createIndexBuffer("Index-" + this->nameObjectRendIndirect, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
     }
 }
 
@@ -914,7 +914,8 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandB
         this->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+            String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
+            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
         }
 
         //MaterialConstants
@@ -923,7 +924,8 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandB
         this->poBuffersMemory_materialCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
+            String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
+            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
         }
 
         //TessellationConstants
@@ -934,7 +936,8 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandB
             this->poBuffersMemory_tessellationCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
+                String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
+                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
             }
         }
     }
@@ -942,7 +945,7 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandB
     //2> IndirectCommand Buffer
     {
         bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
-        this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
+        this->pRend->pModelObject->pWindow->createVkBuffer("VkDrawIndexedIndirectCommand", bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
 }
 
@@ -1378,7 +1381,8 @@ void Vulkan_015_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
             }
 
             //MaterialConstants
@@ -1387,7 +1391,8 @@ void Vulkan_015_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+                String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
             }
 
             //TessellationConstants
@@ -1398,7 +1403,8 @@ void Vulkan_015_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+                    String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
             }
         }
@@ -1541,7 +1547,8 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pRend->nameObjectRend,
+                                                                                      pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       pBindingDescriptions,
                                                                                       pAttributeDescriptions,
@@ -1575,7 +1582,8 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pRend->nameObjectRend,
+                                                                            pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             pBindingDescriptions,
                                                                             pAttributeDescriptions,
@@ -1601,7 +1609,8 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
 
                 //pPipelineGraphics->poPipeline_WireFrame2
-                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + pRend->nameObjectRend,
+                                                                                           pRend->aShaderStageCreateInfos_Graphics,
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            pBindingDescriptions,
                                                                                            pAttributeDescriptions,
@@ -1630,7 +1639,8 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                     blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                     blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                 }
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("GraphicsPipeline-2-" + pRend->nameObjectRend,
+                                                                                 pRend->aShaderStageCreateInfos_Graphics,
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  pBindingDescriptions,
                                                                                  pAttributeDescriptions,
@@ -1708,7 +1718,7 @@ void Vulkan_015_MultiView::createComputePipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
+            p->poPipeline = createVkComputePipeline("ComputePipeline-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_015_MultiView::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
@@ -1924,7 +1934,7 @@ void Vulkan_015_MultiView::createShaderModules()
         String shaderType = g_ShaderModule_Paths[3 * i + 1];
         String shaderPath = g_ShaderModule_Paths[3 * i + 2];
 
-        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         F_LogInfo("Vulkan_015_MultiView::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -1966,7 +1976,7 @@ void Vulkan_015_MultiView::createPipelineLayouts()
 
         VkDescriptorSetLayoutVector aDescriptorSetLayout;
         aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
             F_LogError("*********************** Vulkan_015_MultiView::createPipelineLayouts: createVkPipelineLayout failed !");
@@ -2034,7 +2044,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
@@ -2054,7 +2064,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createVkDescriptorSets(pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
             createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
         }
     }
@@ -2215,11 +2225,11 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
     }
 }
 void Vulkan_015_MultiView::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                                              ModelObjectRend* pRend)
+                                                        ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Compute")
-    createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
+    createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;

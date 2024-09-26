@@ -703,11 +703,13 @@ namespace LostPeterVulkan
                     virtual void loadModel();
                         virtual void loadModel_Default();
                         virtual void loadModel_Custom();
-                    virtual void createVertexBuffer(size_t bufSize, 
+                    virtual void createVertexBuffer(const String& nameBuffer,
+                                                    size_t bufSize, 
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
                                                     VkDeviceMemory& vertexBufferMemory);
-                    virtual void createVertexBuffer(size_t bufSize, 
+                    virtual void createVertexBuffer(const String& nameBuffer,
+                                                    size_t bufSize, 
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
                                                     VkDeviceMemory& vertexBufferMemory,
@@ -716,11 +718,13 @@ namespace LostPeterVulkan
                     virtual void updateVertexBuffer(size_t bufSize, 
                                                     void* pBuf, 
                                                     VkDeviceMemory& vertexBufferMemory);
-                    virtual void createIndexBuffer(size_t bufSize, 
+                    virtual void createIndexBuffer(const String& nameBuffer,
+                                                   size_t bufSize, 
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory);
-                    virtual void createIndexBuffer(size_t bufSize, 
+                    virtual void createIndexBuffer(const String& nameBuffer,
+                                                   size_t bufSize, 
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory,
@@ -729,7 +733,8 @@ namespace LostPeterVulkan
                      virtual void updateIndexBuffer(size_t bufSize, 
                                                     void* pBuf, 
                                                     VkDeviceMemory& indexBufferMemory);
-                        virtual void createVkBuffer(VkDeviceSize size, 
+                        virtual void createVkBuffer(const String& nameBuffer,
+                                                    VkDeviceSize size, 
                                                     VkBufferUsageFlags usage, 
                                                     VkMemoryPropertyFlags properties, 
                                                     VkBuffer& buffer, 
@@ -748,12 +753,14 @@ namespace LostPeterVulkan
                     virtual void destroyVkImageView(VkImageView imageView);
                     virtual void destroyVkImageSampler(VkSampler sampler);
 
-                    virtual void createTexture1D(const String& pathAsset_Tex, 
+                    virtual void createTexture1D(const String& nameTex, 
+                                                 const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
 
-                    virtual void createTexture2D(const String& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& nameTex, 
+                                                 const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
                                                  VkFormat format,
@@ -763,7 +770,8 @@ namespace LostPeterVulkan
                                                  VkDeviceMemory& imageMemory,
                                                  VkBuffer& buffer, 
                                                  VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2D(const String& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& nameTex, 
+                                                 const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
                                                  VkFormat format,
@@ -771,12 +779,14 @@ namespace LostPeterVulkan
                                                  uint32_t& mipMapCount, 
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
-                    virtual void createTexture2D(const String& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& nameTex, 
+                                                 const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -786,7 +796,8 @@ namespace LostPeterVulkan
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -794,12 +805,14 @@ namespace LostPeterVulkan
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex, 
                                                       uint32_t& mipMapCount,
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
 
-                    virtual void createTexture3D(VkFormat format,
+                    virtual void createTexture3D(const String& nameTex, 
+                                                 VkFormat format,
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
                                                  uint32_t width,
@@ -809,7 +822,8 @@ namespace LostPeterVulkan
                                                  VkDeviceMemory& imageMemory,
                                                  VkBuffer& buffer, 
                                                  VkDeviceMemory& bufferMemory);
-                    virtual void createTexture3D(VkFormat format,
+                    virtual void createTexture3D(const String& nameTex, 
+                                                 VkFormat format,
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
                                                  uint32_t width,
@@ -818,7 +832,8 @@ namespace LostPeterVulkan
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex, 
+                    virtual void createTextureCubeMap(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
                                                       bool autoMipMap, 
@@ -827,20 +842,23 @@ namespace LostPeterVulkan
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex, 
+                    virtual void createTextureCubeMap(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
                                                       bool autoMipMap, 
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex,
+                    virtual void createTextureCubeMap(const String& nameTex, 
+                                                      const StringVector& aPathAsset_Tex,
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
 
                     
-                    virtual void createTextureRenderTarget1D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget1D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              bool autoMipMap, 
@@ -854,7 +872,8 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget1D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget1D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              bool autoMipMap, 
@@ -867,7 +886,8 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -883,7 +903,8 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -897,7 +918,8 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
 
-                    virtual void createTextureRenderTarget2D(uint8* pData,
+                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                                                             uint8* pData,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -912,7 +934,8 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2D(uint8* pData,
+                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                                                             uint8* pData,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -925,7 +948,8 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2DArray(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget2DArray(const String& nameTex,
+                                                                  const FVector4& clDefault,
                                                                   bool isSetColor,
                                                                   uint32_t width, 
                                                                   uint32_t height,
@@ -942,7 +966,8 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory,
                                                                   VkBuffer& buffer, 
                                                                   VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2DArray(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget2DArray(const String& nameTex,
+                                                                  const FVector4& clDefault,
                                                                   bool isSetColor,
                                                                   uint32_t width, 
                                                                   uint32_t height,
@@ -957,7 +982,8 @@ namespace LostPeterVulkan
                                                                   VkImage& image, 
                                                                   VkDeviceMemory& imageMemory);
 
-                    virtual void createTextureRenderTarget3D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget3D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -973,7 +999,8 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);                                           
-                    virtual void createTextureRenderTarget3D(const FVector4& clDefault,
+                    virtual void createTextureRenderTarget3D(const String& nameTex,
+                                                             const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -988,7 +1015,8 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTargetCubeMap(uint32_t width, 
+                    virtual void createTextureRenderTargetCubeMap(const String& nameTex,
+                                                                  uint32_t width, 
                                                                   uint32_t height,
                                                                   bool autoMipMap, 
                                                                   uint32_t mipMapCount,
@@ -1001,7 +1029,8 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory,
                                                                   VkBuffer& buffer, 
                                                                   VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTargetCubeMap(uint32_t width, 
+                    virtual void createTextureRenderTargetCubeMap(const String& nameTex,
+                                                                  uint32_t width, 
                                                                   uint32_t height,
                                                                   bool autoMipMap, 
                                                                   uint32_t mipMapCount,
@@ -1014,7 +1043,8 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory);
                     
                         virtual uint32_t getSizeFromFormat(VkFormat format);
-                        virtual void createVkImage(uint32_t width, 
+                        virtual void createVkImage(const String& nameTex,
+                                                   uint32_t width, 
                                                    uint32_t height, 
                                                    uint32_t depth, 
                                                    uint32_t numArray,
@@ -1030,7 +1060,8 @@ namespace LostPeterVulkan
                                                    VkMemoryPropertyFlags properties, 
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory);
-                        virtual void createVkImageView(VkImage image, 
+                        virtual void createVkImageView(const String& nameTex,
+                                                       VkImage image, 
                                                        VkImageViewType type, 
                                                        VkFormat format, 
                                                        VkImageAspectFlags aspectFlags, 
@@ -1038,9 +1069,11 @@ namespace LostPeterVulkan
                                                        uint32_t numArray,
                                                        VkImageView& imageView);
                                                      
-                        virtual void createVkSampler(uint32_t mipMapCount, 
+                        virtual void createVkSampler(const String& nameTex,
+                                                     uint32_t mipMapCount, 
                                                      VkSampler& sampler);
-                        virtual void createVkSampler(FTextureFilterType eTextureFilter,
+                        virtual void createVkSampler(const String& nameTex,
+                                                     FTextureFilterType eTextureFilter,
                                                      FTextureAddressingType eTextureAddressing,
                                                      FTextureBorderColorType eTextureBorderColor,
                                                      bool enableAnisotropy,
@@ -1085,14 +1118,14 @@ namespace LostPeterVulkan
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
 
-                virtual VkShaderModule createVkShaderModule(FShaderType typeShader, const String& pathFile);
-                virtual VkShaderModule createVkShaderModule(const String& strTypeShader, const String& pathFile);
+                virtual VkShaderModule createVkShaderModule(const String& nameShader, FShaderType typeShader, const String& pathFile);
+                virtual VkShaderModule createVkShaderModule(const String& nameShader, const String& strTypeShader, const String& pathFile);
                     virtual void destroyVkShaderModule(VkShaderModule vkShaderModule);
 
-                virtual bool createVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, VkDescriptorSetLayout& vkDescriptorSetLayout);
+                virtual bool createVkDescriptorSetLayout(const String& nameDescriptorSetLayout, const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, VkDescriptorSetLayout& vkDescriptorSetLayout);
                     virtual void destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout);
 
-                virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
+                virtual VkPipelineLayout createVkPipelineLayout(const String& namePipelineLayout, const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
                     virtual void destroyVkPipelineLayout(VkPipelineLayout vkPipelineLayout);
                     virtual void destroyVkPipeline(VkPipeline vkPipeline);
 
@@ -1104,7 +1137,8 @@ namespace LostPeterVulkan
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
                     virtual void createGraphicsPipeline_Custom();
-                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                        virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+                                                                    VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule fragShaderModule, const String& fragMain,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
@@ -1115,7 +1149,8 @@ namespace LostPeterVulkan
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                                     VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
-                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                        virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+                                                                    VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule tescShaderModule, const String& tescMain,
                                                                     VkShaderModule teseShaderModule, const String& teseMain,
                                                                     VkShaderModule fragShaderModule, const String& fragMain,
@@ -1129,7 +1164,8 @@ namespace LostPeterVulkan
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                                     VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
-                        virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                        virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+                                                                    const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                                                     bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
@@ -1140,7 +1176,8 @@ namespace LostPeterVulkan
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                                     VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
-                        virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                        virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+                                                                    const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                                                     bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
@@ -1153,12 +1190,14 @@ namespace LostPeterVulkan
                 virtual void createComputePipeline();
                     virtual void createComputePipeline_Default();
                     virtual void createComputePipeline_Custom();
-                        virtual VkPipeline createVkComputePipeline(VkShaderModule compShaderModule,
+                        virtual VkPipeline createVkComputePipeline(const String& nameComputePipeline,
+                                                                   VkShaderModule compShaderModule,
                                                                    const String& compMain,
                                                                    VkPipelineLayout pipelineLayout, 
                                                                    VkPipelineCreateFlags flags = 0,
                                                                    VkSpecializationInfo* pSpecializationInfo = nullptr);
-                        virtual VkPipeline createVkComputePipeline(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                        virtual VkPipeline createVkComputePipeline(const String& nameComputePipeline,
+                                                                   const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
                                                                    VkPipelineLayout pipelineLayout, 
                                                                    VkPipelineCreateFlags flags = 0);
 
@@ -1169,8 +1208,8 @@ namespace LostPeterVulkan
                     virtual void createDescriptorSets_Custom();
                         virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
 
-                        virtual void createVkDescriptorSet(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
-                        virtual void createVkDescriptorSets(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
+                        virtual void createVkDescriptorSet(const String& nameDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
+                        virtual void createVkDescriptorSets(const String& nameDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
 
                         virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
                                                                                                        VkDescriptorType descriptorType,

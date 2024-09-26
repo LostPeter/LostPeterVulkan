@@ -210,13 +210,13 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
               (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
-    createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
+    createVertexBuffer("Vertex-" + pModelObject->nameModel, pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
 
     //3> createIndexBuffer
     if (pModelObject->poIndexBuffer_Size > 0 &&
         pModelObject->poIndexBuffer_Data != nullptr)
     {
-        createIndexBuffer(pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
+        createIndexBuffer("Index-" + pModelObject->nameModel, pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
     }
 
     return true;
@@ -225,9 +225,12 @@ bool Vulkan_009_Instancing::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
-        createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        String nameTexture;
+        String pathBase;
+        FUtilString::SplitFileName(pModelObject->pathTexture, nameTexture, pathBase);
+        createTexture2D(nameTexture, pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
+        createVkImageView(nameTexture, pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(nameTexture, pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         F_LogInfo("Vulkan_009_Instancing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -268,7 +271,8 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
             }
         }
 
@@ -290,7 +294,8 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pModelObject->poBuffersMemory_materialCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+                    String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
                 }
             }
         }
@@ -313,7 +318,8 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_ObjectCB_Outline.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
+                String nameBuffer = "ObjectConstants_Outline-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
             }
         }
     }
@@ -352,7 +358,8 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
         VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline(vertShaderBase, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+                                                                              vertShaderBase, "main",
                                                                               fragShaderBase, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -395,7 +402,8 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline(vertShaderBase, "main",
+        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+                                                                            vertShaderBase, "main",
                                                                             fragShaderBase, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -419,7 +427,8 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline(vertShaderOutline, "main",
+        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("GraphicsPipeline-Outline-" + pModelObject->nameModel,
+                                                                            vertShaderOutline, "main",
                                                                             fragShaderOutline, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -443,7 +452,7 @@ void Vulkan_009_Instancing::createPipelineLayout_Outline()
 {
     VkDescriptorSetLayoutVector aDescriptorSetLayout;
     aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-    this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
+    this->poPipelineLayout_Outline = createVkPipelineLayout("PipelineLayout-Outline", aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
         String msg = "*********************** Vulkan_009_Instancing::createPipelineLayout_Outline: createVkPipelineLayout failed !";
@@ -464,19 +473,25 @@ void Vulkan_009_Instancing::destroyShaderModules()
 }
 void Vulkan_009_Instancing::createShaderModules()
 {
+    String nameVertexShader;
+    String nameFragmentShader;
+    String namePathBase;
+
     for (int i = 0; i < g_ShaderCount; i++)
     {
         String pathVert = g_pathShaderModules[2 * i + 0];
         String pathFrag = g_pathShaderModules[2 * i + 1];
 
         //vert
-        VkShaderModule vertShaderModule = createVkShaderModule("VertexShader: ", pathVert);
+        FUtilString::SplitFileName(pathVert, nameVertexShader, namePathBase);
+        VkShaderModule vertShaderModule = createVkShaderModule(nameVertexShader, "VertexShader: ", pathVert);
         this->m_aVkShaderModules.push_back(vertShaderModule);
         this->m_mapVkShaderModules[pathVert] = vertShaderModule;
         F_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
-        VkShaderModule fragShaderModule = createVkShaderModule("FragmentShader: ", pathFrag);
+        FUtilString::SplitFileName(pathFrag, nameFragmentShader, namePathBase);
+        VkShaderModule fragShaderModule = createVkShaderModule(nameFragmentShader, "FragmentShader: ", pathFrag);
         this->m_aVkShaderModules.push_back(fragShaderModule);
         this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
         F_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
@@ -500,8 +515,8 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
-        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets_Outline);
+        createVkDescriptorSets("DescriptorSets-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
+        createVkDescriptorSets("DescriptorSets-Outline-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets_Outline);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil

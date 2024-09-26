@@ -32,7 +32,8 @@ namespace LostPeterVulkan
 
     public:
         void Destroy();
-        virtual void Init(uint32_t width, 
+        virtual void Init(const String& nameTex,
+                          uint32_t width, 
                           uint32_t height, 
                           bool _isDepth,
                           bool _isImageArray);

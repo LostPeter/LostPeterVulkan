@@ -758,13 +758,13 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLoc
     }
 
     //2> createVertexBuffer
-    this->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+    this->pWindow->createVertexBuffer("Vertex-" + this->nameMesh, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
 
     //3> createIndexBuffer
     if (this->poIndexBuffer_Size > 0 &&
         this->poIndexBuffer_Data != nullptr)
     {
-        this->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+        this->pWindow->createIndexBuffer("Index-" + this->nameMesh, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
     }
 
     return true;
@@ -1153,7 +1153,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
             }
 
             //MaterialConstants
@@ -1162,7 +1163,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+                String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
             }
 
             //TessellationConstants
@@ -1173,7 +1175,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
+                    String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
                 }
             }
         }
@@ -1249,7 +1252,8 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
-            pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+            pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameObject,
+                                                                                             pModelObject->aShaderStageCreateInfos_Graphics,
                                                                                              pModelObject->isUsedTessellation, 0, 3,
                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
@@ -1283,7 +1287,8 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+            pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameObject,
+                                                                                   pModelObject->aShaderStageCreateInfos_Graphics,
                                                                                    pModelObject->isUsedTessellation, 0, 3,
                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
@@ -1360,7 +1365,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
+            p->poPipeline = createVkComputePipeline("ComputePipeline-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
@@ -1574,7 +1579,7 @@ void Vulkan_011_Texturing::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         F_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -1616,7 +1621,7 @@ void Vulkan_011_Texturing::createPipelineLayouts()
 
         VkDescriptorSetLayoutVector aDescriptorSetLayout;
         aDescriptorSetLayout.push_back(m_aVkDescriptorSetLayouts[i]);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
             F_LogError("*********************** Vulkan_011_Texturing::createPipelineLayouts: createVkPipelineLayout failed !");
@@ -1650,7 +1655,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
         {
             StringVector* pDescriptorSetLayoutNames = pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
-            createVkDescriptorSets(pModelObject->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pPipelineGraphics->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pPipelineGraphics->poDescriptorSets);
             for (size_t j = 0; j < count_sci; j++)
             {   
                 VkWriteDescriptorSetVector descriptorWrites;
@@ -1795,7 +1800,8 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
-            createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
+            String nameDS = "DescriptorSet-" + FUtilString::SavePointI(FPointI(i,j)) + "-" + pModelObject->nameObject;
+            createVkDescriptorSet(nameDS, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
             VkWriteDescriptorSetVector descriptorWrites;
             int nIndexTextureCS = 0;

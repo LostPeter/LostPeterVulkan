@@ -1505,7 +1505,7 @@ namespace LostPeterVulkan
             }
             
             VkDeviceSize bufferSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->createVkBuffer("EditorCoordinateAxis-CoordinateAxisObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
             //Quad
             Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex]; 
@@ -1542,7 +1542,7 @@ namespace LostPeterVulkan
         //1> DescriptorSetLayout 
         this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
         //2> DescriptorSets
-        Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-EditorCoordinateAxis", this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
         updateDescriptorSets_Graphics();
         //3> PipelineLayout
         this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
@@ -1576,7 +1576,8 @@ namespace LostPeterVulkan
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                                                 aShaderStageCreateInfos_Graphics,
                                                                                                  false, 0, 3,
                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -1596,7 +1597,8 @@ namespace LostPeterVulkan
             F_LogInfo("EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                                                                                                           aShaderStageCreateInfos_Graphics,
                                                                                                            false, 0, 3,
                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -1629,7 +1631,8 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics_Wire,
+            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + this->name,
+                                                                                                            aShaderStageCreateInfos_Graphics_Wire,
                                                                                                             false, 0, 3,
                                                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),

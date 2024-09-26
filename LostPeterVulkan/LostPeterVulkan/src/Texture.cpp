@@ -106,11 +106,13 @@ namespace LostPeterVulkan
         {
             if (this->typeTexture == F_Texture_1D)
             {
-                Base::GetWindowPtr()->createTexture1D(this->aPathTexture[0], 
+                Base::GetWindowPtr()->createTexture1D(this->name,
+                                                      this->aPathTexture[0], 
                                                       this->poMipMapCount, 
                                                       this->poTextureImage, 
                                                       this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_1D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -120,14 +122,16 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_2D)
             {
-                Base::GetWindowPtr()->createTexture2D(this->aPathTexture[0], 
+                Base::GetWindowPtr()->createTexture2D(this->name,
+                                                      this->aPathTexture[0], 
                                                       VK_IMAGE_TYPE_2D, 
                                                       VK_SAMPLE_COUNT_1_BIT, 
                                                       this->typeFormat, true, 
                                                       this->poMipMapCount, 
                                                       this->poTextureImage, 
                                                       this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -137,7 +141,8 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_2DArray)
             {
-                Base::GetWindowPtr()->createTexture2DArray(this->aPathTexture, 
+                Base::GetWindowPtr()->createTexture2DArray(this->name,
+                                                           this->aPathTexture, 
                                                            VK_IMAGE_TYPE_2D,
                                                            VK_SAMPLE_COUNT_1_BIT, 
                                                            this->typeFormat, 
@@ -145,7 +150,8 @@ namespace LostPeterVulkan
                                                            this->poMipMapCount, 
                                                            this->poTextureImage, 
                                                            this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -159,7 +165,8 @@ namespace LostPeterVulkan
                 this->pDataRGBA = new uint8[size];
                 memset(this->pDataRGBA, 0, (size_t)size);
                 updateNoiseTextureData();
-                Base::GetWindowPtr()->createTexture3D(this->typeFormat, 
+                Base::GetWindowPtr()->createTexture3D(this->name,
+                                                      this->typeFormat, 
                                                       this->pDataRGBA, 
                                                       size, 
                                                       width, 
@@ -169,7 +176,8 @@ namespace LostPeterVulkan
                                                       this->poTextureImageMemory, 
                                                       this->stagingBuffer, 
                                                       this->stagingBufferMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_3D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -179,11 +187,13 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_CubeMap)
             {
-                Base::GetWindowPtr()->createTextureCubeMap(this->aPathTexture, 
+                Base::GetWindowPtr()->createTextureCubeMap(this->name,
+                                                           this->aPathTexture, 
                                                            this->poMipMapCount, 
                                                            this->poTextureImage, 
                                                            this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_CUBE, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -202,7 +212,8 @@ namespace LostPeterVulkan
         {
             if (this->typeTexture == F_Texture_1D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget1D(this->rtColorDefault, 
+                Base::GetWindowPtr()->createTextureRenderTarget1D(this->name,
+                                                                  this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
                                                                   this->width, 
                                                                   false,
@@ -214,7 +225,8 @@ namespace LostPeterVulkan
                                                                   this->isGraphicsComputeShared,
                                                                   this->poTextureImage, 
                                                                   this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_1D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -224,7 +236,8 @@ namespace LostPeterVulkan
             } 
             else if (this->typeTexture == F_Texture_2D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget2D(this->rtColorDefault, 
+                Base::GetWindowPtr()->createTextureRenderTarget2D(this->name,
+                                                                  this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
                                                                   this->width, 
                                                                   this->height,
@@ -237,7 +250,8 @@ namespace LostPeterVulkan
                                                                   this->isGraphicsComputeShared,
                                                                   this->poTextureImage, 
                                                                   this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -247,7 +261,8 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_2DArray)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget2DArray(this->rtColorDefault, 
+                Base::GetWindowPtr()->createTextureRenderTarget2DArray(this->name,
+                                                                       this->rtColorDefault, 
                                                                        this->rtIsSetColor, 
                                                                        this->width, 
                                                                        this->height,
@@ -261,7 +276,8 @@ namespace LostPeterVulkan
                                                                        this->isGraphicsComputeShared,
                                                                        this->poTextureImage, 
                                                                        this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -271,7 +287,8 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_3D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget3D(this->rtColorDefault, 
+                Base::GetWindowPtr()->createTextureRenderTarget3D(this->name,
+                                                                  this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
                                                                   this->width, 
                                                                   this->height,
@@ -285,7 +302,8 @@ namespace LostPeterVulkan
                                                                   this->isGraphicsComputeShared,
                                                                   this->poTextureImage, 
                                                                   this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_3D, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -295,7 +313,8 @@ namespace LostPeterVulkan
             }
             else if (this->typeTexture == F_Texture_CubeMap)
             {
-                Base::GetWindowPtr()->createTextureRenderTargetCubeMap(this->width, 
+                Base::GetWindowPtr()->createTextureRenderTargetCubeMap(this->name,
+                                                                       this->width, 
                                                                        this->height,
                                                                        false,
                                                                        this->poMipMapCount, 
@@ -306,7 +325,8 @@ namespace LostPeterVulkan
                                                                        this->isGraphicsComputeShared,
                                                                        this->poTextureImage, 
                                                                        this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                Base::GetWindowPtr()->createVkImageView(this->name,
+                                                        this->poTextureImage, 
                                                         VK_IMAGE_VIEW_TYPE_CUBE, 
                                                         this->typeFormat, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -322,7 +342,8 @@ namespace LostPeterVulkan
             }
         }
 
-        Base::GetWindowPtr()->createVkSampler(this->typeFilter, 
+        Base::GetWindowPtr()->createVkSampler(this->name,
+                                              this->typeFilter, 
                                               this->typeAddressing,
                                               this->typeBorderColor,
                                               true,

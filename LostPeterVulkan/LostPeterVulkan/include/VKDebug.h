@@ -64,13 +64,16 @@ namespace LostPeterVulkan
         void InsertCmdLabel(VkCommandBuffer cmdbuffer, const VkDebugUtilsLabelEXT* pDebugLabel);
         void EndCmdLabel(VkCommandBuffer cmdbuffer);
 
+        void SetVkCommandPoolName(VkDevice device, VkCommandPool cmdPool, const char * name);
 		void SetVkCommandBufferName(VkDevice device, VkCommandBuffer cmdBuffer, const char * name);
 		void SetVkQueueName(VkDevice device, VkQueue queue, const char * name);
 		void SetVkImageName(VkDevice device, VkImage image, const char * name);
+        void SetVkImageViewName(VkDevice device, VkImageView imageView, const char * name);
 		void SetVkSamplerName(VkDevice device, VkSampler sampler, const char * name);
 		void SetVkBufferName(VkDevice device, VkBuffer buffer, const char * name);
 		void SetVkDeviceMemoryName(VkDevice device, VkDeviceMemory memory, const char * name);
 		void SetVkShaderModuleName(VkDevice device, VkShaderModule shaderModule, const char * name);
+        void SetVkPipelineCacheName(VkDevice device, VkPipelineCache pipelineCache, const char * name);
 		void SetVkPipelineName(VkDevice device, VkPipeline pipeline, const char * name);
 		void SetVkPipelineLayoutName(VkDevice device, VkPipelineLayout pipelineLayout, const char * name);
 		void SetVkRenderPassName(VkDevice device, VkRenderPass renderPass, const char * name);

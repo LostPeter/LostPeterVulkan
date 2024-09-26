@@ -268,7 +268,7 @@ namespace LostPeterVulkan
         {
             //Pass
             Base::GetWindowPtr()->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            Base::GetWindowPtr()->createVkBuffer(sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
+            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-PassConstants", sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
 
             this->cameraAxisObjectCBs.clear();
             int indexConst = 0;
@@ -329,7 +329,7 @@ namespace LostPeterVulkan
                 indexConst++;
             }
             VkDeviceSize bufferSize = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-CameraAxisObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
             Mesh* pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
             MeshSub* pMeshSub = pMesh->aMeshSubs[0];
@@ -347,7 +347,7 @@ namespace LostPeterVulkan
             this->copyBlitObjectCB.scaleX = 2.0f * s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.scaleY = 2.0f * s_fBlitAreaHeight / height;
             VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
+            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-CopyBlitObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
         }
         SetIsNeedUpdate(true);
     }
@@ -372,7 +372,7 @@ namespace LostPeterVulkan
         {   
             VkDescriptorSetLayoutVector aDescriptorSetLayout;
             aDescriptorSetLayout.push_back(this->poDescriptorSetLayout_CopyBlit);
-            this->poPipelineLayout_CopyBlit = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
+            this->poPipelineLayout_CopyBlit = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-" + this->name, aDescriptorSetLayout);
             if (this->poPipelineLayout_CopyBlit == VK_NULL_HANDLE)
             {
                 String msg = "*********************** EditorCameraAxis::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_CopyBlit;
@@ -394,7 +394,7 @@ namespace LostPeterVulkan
                 this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
                 this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
                 //2> DescriptorSets
-                Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+                Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-EditorCameraAxis", this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
                 //3> VKMultiRenderPass
                 this->pPipelineGraphics->pRenderPass = new VKMultiRenderPass("rp_editor_camera_axis", false, false);
                 this->pPipelineGraphics->pRenderPass->Init(s_fBlitAreaWidth, s_fBlitAreaHeight);
@@ -408,7 +408,7 @@ namespace LostPeterVulkan
                 this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout = this->poDescriptorSetLayout_CopyBlit;
                 this->pPipelineGraphics_CopyBlit->poPipelineLayout = this->poPipelineLayout_CopyBlit;
                 //2> DescriptorSets
-                Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
+                Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-QuadBlit", this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
             }
             updateDescriptorSets_Graphics();
         }
@@ -447,7 +447,8 @@ namespace LostPeterVulkan
                 }
 
                 //pPipelineGraphics->poPipeline
-                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                                                     aShaderStageCreateInfos_Graphics,
                                                                                                      false, 0, 3,
                                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -467,7 +468,8 @@ namespace LostPeterVulkan
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis] Create pipeline graphics success !");
 
                 //pPipelineGraphics->poPipeline_WireFrame
-                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                                                                                                               aShaderStageCreateInfos_Graphics,
                                                                                                                false, 0, 3,
                                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -508,7 +510,8 @@ namespace LostPeterVulkan
                 }
 
                 //pPipelineGraphics_CopyBlit->poPipeline
-                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-CopyBlit-" + this->name,
+                                                                                                              aShaderStageCreateInfos_Graphics,
                                                                                                               false, 0, 3,
                                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -528,7 +531,8 @@ namespace LostPeterVulkan
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis_CopyBlit] Create pipeline graphics success !");
 
                 //pPipelineGraphics_CopyBlit->poPipeline_WireFrame
-                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-CopyBlit-Wire-" + this->name,
+                                                                                                                        aShaderStageCreateInfos_Graphics,
                                                                                                                         false, 0, 3,
                                                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),

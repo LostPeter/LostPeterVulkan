@@ -176,13 +176,13 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
               (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
-    createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
+    createVertexBuffer("Vertex-" + pModelObject->nameModel, pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
 
     //3> createIndexBuffer
     if (pModelObject->poIndexBuffer_Size > 0 &&
         pModelObject->poIndexBuffer_Data != nullptr)
     {
-        createIndexBuffer(pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
+        createIndexBuffer("Index-" + pModelObject->nameModel, pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
     }
 
     return true;
@@ -191,9 +191,12 @@ bool Vulkan_006_Depth::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
-        createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        String nameTexture;
+        String pathBase;
+        FUtilString::SplitFileName(pModelObject->pathTexture, nameTexture, pathBase);
+        createTexture2D(nameTexture, pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
+        createVkImageView(nameTexture, pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(nameTexture, pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         F_LogInfo("Vulkan_006_Depth::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -218,23 +221,30 @@ void Vulkan_006_Depth::createCustomCB()
         pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+            String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
         }
     }
 }
 
 void Vulkan_006_Depth::createGraphicsPipeline_Custom()
 {
+    String namePathBase;
+
     //1> Shader
     VkShaderModule vertShaderModule;
     if (!this->cfg_shaderVertex_Path.empty())
     {
-        vertShaderModule = createVkShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+        String nameVertexShader;
+        FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader, namePathBase);
+        vertShaderModule = createVkShaderModule(nameVertexShader, "VertexShader: ", this->cfg_shaderVertex_Path);
     }
     VkShaderModule fragShaderModule;
     if (!this->cfg_shaderFragment_Path.empty())
     {
-        fragShaderModule = createVkShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+        String nameFragmentShader;
+        FUtilString::SplitFileName(this->cfg_shaderFragment_Path, nameFragmentShader, namePathBase);
+        fragShaderModule = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->cfg_shaderFragment_Path);
     }
 
     //2> Viewport
@@ -250,7 +260,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         //poPipelineGraphics
-        pModelObject->poPipelineGraphics = createVkGraphicsPipeline(vertShaderModule, "main",
+        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+                                                                    vertShaderModule, "main",
                                                                     fragShaderModule, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -269,7 +280,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline(vertShaderModule, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+                                                                              vertShaderModule, "main",
                                                                               fragShaderModule, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -288,7 +300,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthTest
-        pModelObject->poPipelineGraphics_NoDepthTest = createVkGraphicsPipeline(vertShaderModule, "main",
+        pModelObject->poPipelineGraphics_NoDepthTest = createVkGraphicsPipeline("GraphicsPipeline-NoDepthTest-" + pModelObject->nameModel,
+                                                                                vertShaderModule, "main",
                                                                                 fragShaderModule, "main",
                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -307,7 +320,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthWrite
-        pModelObject->poPipelineGraphics_NoDepthWrite = createVkGraphicsPipeline(vertShaderModule, "main",
+        pModelObject->poPipelineGraphics_NoDepthWrite = createVkGraphicsPipeline("GraphicsPipeline-NoDepthWrite-" + pModelObject->nameModel,
+                                                                                 vertShaderModule, "main",
                                                                                  fragShaderModule, "main",
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -326,7 +340,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthTestWrite
-        pModelObject->poPipelineGraphics_NoDepthTestWrite = createVkGraphicsPipeline(vertShaderModule, "main",
+        pModelObject->poPipelineGraphics_NoDepthTestWrite = createVkGraphicsPipeline("GraphicsPipeline-NoDepthTestWrite-" + pModelObject->nameModel,
+                                                                                     vertShaderModule, "main",
                                                                                      fragShaderModule, "main",
                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -358,7 +373,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
+        createVkDescriptorSets("DescriptorSets-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
         for (size_t j = 0; j < count_sci; j++)
         {
             VkWriteDescriptorSetVector descriptorWrites;

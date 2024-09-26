@@ -64,7 +64,9 @@ namespace LostPeterVulkan
 
             //HizDepth
             {
-                Base::GetWindowPtr()->createTextureRenderTarget2D(nullptr,
+                String nameTexture = "Texture-HizDepth";
+                Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
+                                                                  nullptr,
                                                                   s_nHizDepthWidth,
                                                                   s_nHizDepthHeight,
                                                                   true,
@@ -77,7 +79,8 @@ namespace LostPeterVulkan
                                                                   this->poHizDepthImage,
                                                                   this->poHizDepthImageMemory);
                 F_LogInfo("VKRenderPassCull::setupCullTexture: createTextureRenderTarget2D !");
-                Base::GetWindowPtr()->createVkImageView(this->poHizDepthImage, 
+                Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                        this->poHizDepthImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D, 
                                                         VK_FORMAT_R32_SFLOAT, 
                                                         VK_IMAGE_ASPECT_COLOR_BIT,
@@ -85,7 +88,8 @@ namespace LostPeterVulkan
                                                         1, 
                                                         this->poHizDepthImageView);
                 F_LogInfo("VKRenderPassCull::setupCullTexture: createVkImageView !");
-                Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                Base::GetWindowPtr()->createVkSampler(nameTexture,
+                                                      F_TextureFilter_Bilinear, 
                                                       F_TextureAddressing_Clamp,
                                                       F_TextureBorderColor_OpaqueBlack,
                                                       true,

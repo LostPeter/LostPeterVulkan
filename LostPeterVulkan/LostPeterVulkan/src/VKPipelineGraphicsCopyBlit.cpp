@@ -87,7 +87,8 @@ namespace LostPeterVulkan
                 VK_DYNAMIC_STATE_SCISSOR
             };
             
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                              aShaderStageCreateInfos,
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -106,7 +107,8 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics_CopyBlit] Create pipeline graphics success !");
             
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
+            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                                                                                        aShaderStageCreateInfos,
                                                                                         false, 0, 3,
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -127,7 +129,7 @@ namespace LostPeterVulkan
         }
 
         //3> VkDescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSets(this->poDescriptorSetLayout, this->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
         if (this->poDescriptorSets.empty())
         {
             F_LogError("*********************** VKPipelineGraphicsCopyBlit::Init: createVkDescriptorSets failed !");
@@ -143,7 +145,7 @@ namespace LostPeterVulkan
             this->m_objectCB_CopyBlit.scaleX = 2.0f;
             this->m_objectCB_CopyBlit.scaleY = 2.0f;
             VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
+            Base::GetWindowPtr()->createVkBuffer("CopyBlitObjectConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
             UpdateBuffer(this->m_objectCB_CopyBlit);
             return true;
         }

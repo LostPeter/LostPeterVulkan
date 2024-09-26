@@ -154,7 +154,8 @@ namespace LostPeterVulkan
             VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
             VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                              aShaderStageCreateInfos,
                                                                               false, 0, 0,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
@@ -173,7 +174,8 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VKPipelineGraphicsTerrain::Init: [PipelineGraphics_Terrain] Create pipeline graphics success !");
             
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
+            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                                                                                        aShaderStageCreateInfos,
                                                                                         false, 0, 0,
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
@@ -194,7 +196,7 @@ namespace LostPeterVulkan
         }
 
         //3> VkDescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSets(this->poDescriptorSetLayout, this->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
         if (this->poDescriptorSets.empty())
         {
             F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createVkDescriptorSets failed !");
@@ -225,7 +227,7 @@ namespace LostPeterVulkan
             }
             F_Assert(this->terrainObjectCBs.size() < MAX_OBJECT_TERRAIN_COUNT && "VKPipelineGraphicsTerrain::createBufferTerrainObject")
             VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainObjectCB, this->poBufferMemory_TerrainObjectCB);
+            Base::GetWindowPtr()->createVkBuffer("TerrainObjectConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainObjectCB, this->poBufferMemory_TerrainObjectCB);
             Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainObjectCBs[0], this->poBufferMemory_TerrainObjectCB);
             return true;
         }
@@ -238,7 +240,7 @@ namespace LostPeterVulkan
                 this->materialCBs.push_back(mcWhole);
             }
             VkDeviceSize bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_MaterialCB, this->poBufferMemory_MaterialCB);
+            Base::GetWindowPtr()->createVkBuffer("MaterialConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_MaterialCB, this->poBufferMemory_MaterialCB);
             Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->materialCBs[0], this->poBufferMemory_MaterialCB);
             return true;
         }
@@ -254,7 +256,7 @@ namespace LostPeterVulkan
             this->terrainCB.terrainSizeZ = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
 
             VkDeviceSize bufferSize = sizeof(TerrainConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainCB, this->poBufferMemory_TerrainCB);
+            Base::GetWindowPtr()->createVkBuffer("TerrainConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainCB, this->poBufferMemory_TerrainCB);
             Base::GetWindowPtr()->updateVKBuffer(0, bufferSize, &this->terrainCB, this->poBufferMemory_TerrainCB);
             return true;
         }

@@ -179,13 +179,13 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
               (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
-    createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
+    createVertexBuffer("Vertex-" + pModelObject->nameModel, pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
 
     //3> createIndexBuffer
     if (pModelObject->poIndexBuffer_Size > 0 &&
         pModelObject->poIndexBuffer_Data != nullptr)
     {
-        createIndexBuffer(pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
+        createIndexBuffer("Index-" + pModelObject->nameModel, pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
     }
 
     return true;
@@ -194,9 +194,12 @@ bool Vulkan_007_Stencil::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
-        createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        String nameTexture;
+        String pathBase;
+        FUtilString::SplitFileName(pModelObject->pathTexture, nameTexture, pathBase);
+        createTexture2D(nameTexture, pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
+        createVkImageView(nameTexture, pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(nameTexture, pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         F_LogInfo("Vulkan_007_Stencil::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -222,7 +225,8 @@ void Vulkan_007_Stencil::createCustomCB()
         pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+            String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
         }
 
         //2> Outline
@@ -237,34 +241,43 @@ void Vulkan_007_Stencil::createCustomCB()
         pModelObject->poBuffersMemory_ObjectCB_Outline.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
+            String nameBuffer = "ObjectConstants_Outline-" + FUtilString::SavePointI(FPointI(i,j));
+            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
         }
     }
 }
 
 void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 {
+    String nameVertexShader;
+    String nameFragmentShader;
+    String namePathBase;
+
     //1> Shader
     VkShaderModule vertShaderModule_Stencil;
     if (!this->cfg_shaderVertex_Path.empty())
     {
-        vertShaderModule_Stencil = createVkShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+        FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader, namePathBase);
+        vertShaderModule_Stencil = createVkShaderModule(nameVertexShader, "VertexShader: ", this->cfg_shaderVertex_Path);
     }
     VkShaderModule fragShaderModule_Stencil;
     if (!this->cfg_shaderFragment_Path.empty())
     {
-        fragShaderModule_Stencil = createVkShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+        FUtilString::SplitFileName(this->cfg_shaderFragment_Path, nameFragmentShader, namePathBase);
+        fragShaderModule_Stencil = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->cfg_shaderFragment_Path);
     }
 
     VkShaderModule vertShaderModule_Outline;
     if (!this->pathShaderVertex_Outline.empty())
     {
-        vertShaderModule_Outline = createVkShaderModule("VertexShader: ", this->pathShaderVertex_Outline);
+        FUtilString::SplitFileName(this->pathShaderVertex_Outline, nameVertexShader, namePathBase);
+        vertShaderModule_Outline = createVkShaderModule(nameVertexShader, "VertexShader: ", this->pathShaderVertex_Outline);
     }
     VkShaderModule fragShaderModule_Outline;
     if (!this->pathShaderFragment_Outline.empty())
     {
-        fragShaderModule_Outline = createVkShaderModule("FragmentShader: ", this->pathShaderFragment_Outline);
+        FUtilString::SplitFileName(this->pathShaderFragment_Outline, nameFragmentShader, namePathBase);
+        fragShaderModule_Outline = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->pathShaderFragment_Outline);
     }
 
     //2> Viewport
@@ -283,7 +296,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline(vertShaderModule_Stencil, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+                                                                              vertShaderModule_Stencil, "main",
                                                                               fragShaderModule_Stencil, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -311,7 +325,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
         back.writeMask = 0xFF;
         back.reference = 1;
         VkStencilOpState front = back;
-        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline(vertShaderModule_Stencil, "main",
+        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+                                                                            vertShaderModule_Stencil, "main",
                                                                             fragShaderModule_Stencil, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
@@ -335,7 +350,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline(vertShaderModule_Outline, "main",
+        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("GraphicsPipeline-Outline-" + pModelObject->nameModel,
+                                                                            vertShaderModule_Outline, "main",
                                                                             fragShaderModule_Outline, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
@@ -364,7 +380,7 @@ void Vulkan_007_Stencil::createPipelineLayout_Outline()
 {
     VkDescriptorSetLayoutVector aDescriptorSetLayout;
     aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-    this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
+    this->poPipelineLayout_Outline = createVkPipelineLayout("PipelineLayout-Outline", aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
         String msg = "*********************** Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
@@ -381,8 +397,8 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
-        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets_Outline);
+        createVkDescriptorSets("DescriptorSets-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
+        createVkDescriptorSets("DescriptorSets-Outline-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets_Outline);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil

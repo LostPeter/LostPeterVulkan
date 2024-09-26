@@ -70,7 +70,8 @@ namespace LostPeterVulkan
 
             VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
 
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos,
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                              aShaderStageCreateInfos,
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
@@ -89,7 +90,7 @@ namespace LostPeterVulkan
         }
 
         //2> VkDescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSets(this->poDescriptorSetLayout, this->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
         if (this->poDescriptorSets.empty())
         {
             F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::Init: createVkDescriptorSets failed !");

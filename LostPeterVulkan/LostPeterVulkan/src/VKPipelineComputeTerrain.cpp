@@ -83,7 +83,7 @@ namespace LostPeterVulkan
         shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
         shaderStageInfo.module = vkShaderModule;
         shaderStageInfo.pName = "main";
-        this->poPipeline = Base::GetWindowPtr()->createVkComputePipeline(shaderStageInfo, vkPipelineLayout);
+        this->poPipeline = Base::GetWindowPtr()->createVkComputePipeline("PipelineCompute-Terrain", shaderStageInfo, vkPipelineLayout);
         if (this->poPipeline == VK_NULL_HANDLE)
         {
             F_LogError("*********************** VKPipelineComputeTerrain::Init: createVkComputePipeline failed !");
@@ -91,7 +91,7 @@ namespace LostPeterVulkan
         }
 
         //3> VkDescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSet(this->poDescriptorSetLayout, this->poDescriptorSet);
+        Base::GetWindowPtr()->createVkDescriptorSet(descriptorSetLayout, this->poDescriptorSetLayout, this->poDescriptorSet);
         if (this->poDescriptorSet == VK_NULL_HANDLE)
         {
             F_LogError("*********************** VKPipelineComputeTerrain::Init: createVkDescriptorSet failed !");
@@ -108,7 +108,7 @@ namespace LostPeterVulkan
             this->pTextureCopy->texInfo.x = nHeightMapSize;
             this->pTextureCopy->texInfo.y = nHeightMapSize;
             VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+            Base::GetWindowPtr()->createVkBuffer("TextureCopyConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
             Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TextureCopyConstants), this->pTextureCopy, this->poBufferMemory_TextureCopy);
             return true;
         }

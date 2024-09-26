@@ -284,7 +284,8 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
                                                  int countColorAttachment)
 {
     //1> Attachment
-    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+    Base::GetWindowPtr()->createVkSampler("Texture-Color-" + this->name,
+                                          F_TextureFilter_Bilinear, 
                                           F_TextureAddressing_Clamp,
                                           F_TextureBorderColor_OpaqueWhite,
                                           false,
@@ -299,7 +300,9 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         VkDeviceMemory vkColorImageMemory;
         VkImageView vkColorImageView;
 
-        Base::GetWindowPtr()->createVkImage(width, 
+        String nameTexture = "Texture-Color-" + FUtilString::SaveInt(i) + "-" + this->name;
+        Base::GetWindowPtr()->createVkImage(nameTexture,
+                                            width, 
                                             height, 
                                             1,
                                             1,
@@ -322,7 +325,8 @@ void Vulkan_018_SubPass::SubPassRenderPass::Init(uint32_t width,
         else
             this->aColors.push_back(FVector4(0.0f, 0.0f, 0.0f, 1.0f));
 
-        Base::GetWindowPtr()->createVkImageView(vkColorImage, 
+        Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                vkColorImage, 
                                                 VK_IMAGE_VIEW_TYPE_2D,
                                                 Base::GetWindowPtr()->poSwapChainImageFormat, 
                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -840,7 +844,8 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
             }
 
             //MaterialConstants
@@ -849,7 +854,8 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+                String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
             }
 
             //TessellationConstants
@@ -860,7 +866,8 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+                    String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
             }
         }
@@ -966,7 +973,8 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
             //pPipelineGraphics->poPipeline_WireFrame
             VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState = g_ObjectRend_ColorBlendAttachmentStates[i];
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pRend->nameObjectRend,
+                                                                                      pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -998,7 +1006,8 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pRend->nameObjectRend,
+                                                                            pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1046,7 +1055,8 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
                 //pPipelineGraphics->poPipeline_WireFrame2
                 VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentStateNextSubpass = g_ObjectRend_ColorBlendAttachmentStatesNextSubpass[i];
-                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline(aShaderStageCreateInfos_GraphicsNextSubpass,
+                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + pRend->nameObjectRend,
+                                                                                           aShaderStageCreateInfos_GraphicsNextSubpass,
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1079,7 +1089,8 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                     blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                     blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                 }
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline(aShaderStageCreateInfos_GraphicsNextSubpass,
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("GraphicsPipeline-2-" + pRend->nameObjectRend,
+                                                                                 aShaderStageCreateInfos_GraphicsNextSubpass,
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1309,7 +1320,7 @@ void Vulkan_018_SubPass::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         F_LogInfo("Vulkan_018_SubPass::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -1351,7 +1362,7 @@ void Vulkan_018_SubPass::createPipelineLayouts()
 
         VkDescriptorSetLayoutVector aDescriptorSetLayout;
         aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDSL, aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
             F_LogError("*********************** Vulkan_018_SubPass::createPipelineLayouts: createVkPipelineLayout failed !");
@@ -1384,14 +1395,14 @@ void Vulkan_018_SubPass::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames, pRend->pPipelineGraphics->poDescriptorSets, pRend);
         }   
 
         //poPipeline2 Graphics
         if (pRend->pPipelineGraphics->hasNextSubpass)
         {
-            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout2, pRend->pPipelineGraphics->poDescriptorSets2);
+            createVkDescriptorSets("DescriptorSets-2-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout2, pRend->pPipelineGraphics->poDescriptorSets2);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames2, pRend->pPipelineGraphics->poDescriptorSets2, pRend);
         }
     }

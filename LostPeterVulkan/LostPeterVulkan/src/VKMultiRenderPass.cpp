@@ -67,9 +67,10 @@ namespace LostPeterVulkan
         {
             //1> Attachment
             {
-                this->framebufferColor.Init(width, height, false, this->isMultiView2);
-                this->framebufferDepth.Init(width, height, true, this->isMultiView2);
-                Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                this->framebufferColor.Init("Texture-Color-" + this->name, width, height, false, this->isMultiView2);
+                this->framebufferDepth.Init("Texture-Depth-" + this->name, width, height, true, this->isMultiView2);
+                Base::GetWindowPtr()->createVkSampler("Texture-" + this->name,
+                                                      F_TextureFilter_Bilinear, 
                                                       F_TextureAddressing_Clamp,
                                                       F_TextureBorderColor_OpaqueWhite,
                                                       false,

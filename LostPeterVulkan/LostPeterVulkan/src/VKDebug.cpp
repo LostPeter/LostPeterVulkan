@@ -183,6 +183,11 @@ namespace LostPeterVulkan
         }
     }
 
+    void VKDebug::SetVkCommandPoolName(VkDevice device, VkCommandPool cmdPool, const char * name)
+    {
+        SetVkObjectName(device, (uint64_t)cmdPool, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, name);
+    }
+
     void VKDebug::SetVkCommandBufferName(VkDevice device, VkCommandBuffer cmdBuffer, const char * name)
     {
         SetVkObjectName(device, (uint64_t)cmdBuffer, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, name);
@@ -196,6 +201,11 @@ namespace LostPeterVulkan
     void VKDebug::SetVkImageName(VkDevice device, VkImage image, const char * name)
     {
         SetVkObjectName(device, (uint64_t)image, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, name);
+    }
+
+    void VKDebug::SetVkImageViewName(VkDevice device, VkImageView imageView, const char * name)
+    {
+        SetVkObjectName(device, (uint64_t)imageView, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, name);
     }
 
     void VKDebug::SetVkSamplerName(VkDevice device, VkSampler sampler, const char * name)
@@ -216,6 +226,11 @@ namespace LostPeterVulkan
     void VKDebug::SetVkShaderModuleName(VkDevice device, VkShaderModule shaderModule, const char * name)
     {
         SetVkObjectName(device, (uint64_t)shaderModule, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, name);
+    }
+
+    void VKDebug::SetVkPipelineCacheName(VkDevice device, VkPipelineCache pipelineCache, const char * name)
+    {
+        SetVkObjectName(device, (uint64_t)pipelineCache, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, name);
     }
 
     void VKDebug::SetVkPipelineName(VkDevice device, VkPipeline pipeline, const char * name)

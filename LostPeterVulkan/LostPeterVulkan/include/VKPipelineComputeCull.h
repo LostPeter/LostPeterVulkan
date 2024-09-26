@@ -155,7 +155,8 @@ namespace LostPeterVulkan
         bool createBufferLod();
         bool createBufferResult();
         bool createBufferClip();
-        bool createVkComputePipeline(const String& descriptorSetLayout,
+        bool createVkComputePipeline(const String& nameComputePipeline,
+                                     const String& descriptorSetLayout,
                                      StringVector* pDescriptorSetLayoutNames,
                                      const VkDescriptorSetLayout& vkDescriptorSetLayout,
                                      const VkPipelineLayout& vkPipelineLayout,

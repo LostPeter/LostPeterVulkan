@@ -96,7 +96,7 @@ namespace LostPeterVulkan
     void EditorGrid::initBufferUniforms()
     {
         VkDeviceSize bufferSize = sizeof(GridObjectConstants);
-        Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+        Base::GetWindowPtr()->createVkBuffer("EditorGrid-GridObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
         SetIsNeedUpdate(true);
     }
     void EditorGrid::initPipelineGraphics()
@@ -108,7 +108,7 @@ namespace LostPeterVulkan
         //1> DescriptorSetLayout 
         this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
         //2> DescriptorSets
-        Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + GetName(), this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
         updateDescriptorSets_Graphics();
         //3> PipelineLayout
         this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
@@ -142,7 +142,8 @@ namespace LostPeterVulkan
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                                                                                                 aShaderStageCreateInfos_Graphics,
                                                                                                  false, 0, 3,
                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
@@ -162,7 +163,8 @@ namespace LostPeterVulkan
             F_LogInfo("EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                                                                                                           aShaderStageCreateInfos_Graphics,
                                                                                                            false, 0, 3,
                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),

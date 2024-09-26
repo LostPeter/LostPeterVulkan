@@ -308,13 +308,15 @@ namespace LostPeterVulkan
                       (int)this->poTerrain_Indices.size());
 
             //2> createVertexBuffer
-            Base::GetWindowPtr()->createVertexBuffer(this->poTerrainVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-Whole-" + this->name,
+                                                     this->poTerrainVertexBuffer_Size, 
                                                      this->poTerrainVertexBuffer_Data, 
                                                      this->poTerrainVertexBuffer, 
                                                      this->poTerrainVertexBufferMemory);
 
             //3> createIndexBuffer
-            Base::GetWindowPtr()->createIndexBuffer(this->poTerrainIndexBuffer_Size, 
+            Base::GetWindowPtr()->createIndexBuffer("Index-Whole-" + this->name,
+                                                    this->poTerrainIndexBuffer_Size, 
                                                     this->poTerrainIndexBuffer_Data, 
                                                     this->poTerrainIndexBuffer, 
                                                     this->poTerrainIndexBufferMemory);
@@ -376,13 +378,15 @@ namespace LostPeterVulkan
                       (int)c_nInstanceGridVertexCount);
 
             //2> createVertexBuffer
-            Base::GetWindowPtr()->createVertexBuffer(this->poTerrainVertexBuffer_Size_Instance, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-Instance-" + this->name,
+                                                     this->poTerrainVertexBuffer_Size_Instance, 
                                                      this->poTerrainVertexBuffer_Data_Instance, 
                                                      this->poTerrainVertexBuffer_Instance, 
                                                      this->poTerrainVertexBufferMemory_Instance);
 
             //3> createIndexBuffer
-            Base::GetWindowPtr()->createIndexBuffer(this->poTerrainIndexBuffer_Size_Instance, 
+            Base::GetWindowPtr()->createIndexBuffer("Index-Instance-" + this->name,
+                                                    this->poTerrainIndexBuffer_Size_Instance, 
                                                     this->poTerrainIndexBuffer_Data_Instance, 
                                                     this->poTerrainIndexBuffer_Instance, 
                                                     this->poTerrainIndexBufferMemory_Instance);
@@ -393,7 +397,9 @@ namespace LostPeterVulkan
             {
                 //1> TerrainHeightMap Texture
                 {
-                    Base::GetWindowPtr()->createTextureRenderTarget2D(this->poTerrainHeightMapData,
+                    String nameTexture = "Texture-TerrainHeightMap";
+                    Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
+                                                                      this->poTerrainHeightMapData,
                                                                       this->poTerrainHeightMapSize,
                                                                       this->poTerrainHeightMapSize,
                                                                       false,
@@ -405,7 +411,8 @@ namespace LostPeterVulkan
                                                                       true,
                                                                       this->poTerrainHeightMapImage,
                                                                       this->poTerrainHeightMapImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(this->poTerrainHeightMapImage, 
+                    Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                            this->poTerrainHeightMapImage, 
                                                             VK_IMAGE_VIEW_TYPE_2D, 
                                                             VK_FORMAT_R16_UNORM, 
                                                             VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -417,7 +424,9 @@ namespace LostPeterVulkan
                 }
                 //2> TerrainNormalMap Texture
                 {
-                    Base::GetWindowPtr()->createTextureRenderTarget2D(nullptr,
+                    String nameTexture = "Texture-TerrainNormalMap";
+                    Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
+                                                                      nullptr,
                                                                       this->poTerrainHeightMapSize,
                                                                       this->poTerrainHeightMapSize,
                                                                       false,
@@ -429,7 +438,8 @@ namespace LostPeterVulkan
                                                                       true,
                                                                       this->poTerrainNormalMapImage,
                                                                       this->poTerrainNormalMapImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(this->poTerrainNormalMapImage, 
+                    Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                            this->poTerrainNormalMapImage, 
                                                             VK_IMAGE_VIEW_TYPE_2D, 
                                                             VK_FORMAT_R8G8B8A8_UNORM, 
                                                             VK_IMAGE_ASPECT_COLOR_BIT, 
@@ -441,7 +451,8 @@ namespace LostPeterVulkan
                 }
                 //3> Terrain ImageSampler
                 {
-                    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                    Base::GetWindowPtr()->createVkSampler("Texture-Terrain",
+                                                          F_TextureFilter_Bilinear, 
                                                           F_TextureAddressing_Clamp,
                                                           F_TextureBorderColor_OpaqueBlack,
                                                           true,
@@ -480,8 +491,10 @@ namespace LostPeterVulkan
                 uint32_t mipMapCount = 1;
                 //1> Terrain Diffuse
                 {
+                    String nameTexture = "Texture-Terrain-Diffuse";
                     StringVector aPathTextureDiffuse = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureDiffuse_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(aPathTextureDiffuse, 
+                    Base::GetWindowPtr()->createTexture2DArray(nameTexture,
+                                                               aPathTextureDiffuse, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
                                                                VK_FORMAT_R8G8B8A8_SRGB, 
@@ -489,14 +502,16 @@ namespace LostPeterVulkan
                                                                mipMapCount, 
                                                                this->poTerrainDiffuseImage, 
                                                                this->poTerrainDiffuseImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(this->poTerrainDiffuseImage, 
+                    Base::GetWindowPtr()->createVkImageView(nameTexture,
+                                                            this->poTerrainDiffuseImage, 
                                                             VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
                                                             VK_FORMAT_R8G8B8A8_SRGB, 
                                                             VK_IMAGE_ASPECT_COLOR_BIT, 
                                                             mipMapCount, 
                                                             (int)aPathTextureDiffuse.size(), 
                                                             this->poTerrainDiffuseImageView);
-                    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                    Base::GetWindowPtr()->createVkSampler(nameTexture,
+                                                          F_TextureFilter_Bilinear, 
                                                           F_TextureAddressing_Clamp,
                                                           F_TextureBorderColor_OpaqueBlack,
                                                           true,
@@ -516,8 +531,10 @@ namespace LostPeterVulkan
                 }
                 //2> Terrain Normal
                 {
+                    String nameTexture = "Texture-Terrain-Normal";
                     StringVector aPathTextureNormal = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureNormal_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(aPathTextureNormal, 
+                    Base::GetWindowPtr()->createTexture2DArray(nameTexture, 
+                                                               aPathTextureNormal, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
                                                                VK_FORMAT_R8G8B8A8_UNORM, 
@@ -525,14 +542,16 @@ namespace LostPeterVulkan
                                                                mipMapCount, 
                                                                this->poTerrainNormalImage, 
                                                                this->poTerrainNormalImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(this->poTerrainNormalImage, 
+                    Base::GetWindowPtr()->createVkImageView(nameTexture, 
+                                                            this->poTerrainNormalImage, 
                                                             VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
                                                             VK_FORMAT_R8G8B8A8_UNORM, 
                                                             VK_IMAGE_ASPECT_COLOR_BIT, 
                                                             mipMapCount, 
                                                             (int)aPathTextureNormal.size(), 
                                                             this->poTerrainNormalImageView);
-                    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                    Base::GetWindowPtr()->createVkSampler(nameTexture,
+                                                          F_TextureFilter_Bilinear, 
                                                           F_TextureAddressing_Clamp,
                                                           F_TextureBorderColor_OpaqueBlack,
                                                           true,
@@ -552,8 +571,10 @@ namespace LostPeterVulkan
                 }
                 //3> Terrain Control
                 {
+                    String nameTexture = "Texture-Terrain-Control";
                     StringVector aPathTextureControl = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureControl_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(aPathTextureControl, 
+                    Base::GetWindowPtr()->createTexture2DArray(nameTexture, 
+                                                               aPathTextureControl, 
                                                                VK_IMAGE_TYPE_2D,
                                                                VK_SAMPLE_COUNT_1_BIT, 
                                                                VK_FORMAT_R8G8B8A8_UNORM, 
@@ -561,14 +582,16 @@ namespace LostPeterVulkan
                                                                mipMapCount, 
                                                                this->poTerrainControlImage, 
                                                                this->poTerrainControlImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(this->poTerrainControlImage, 
+                    Base::GetWindowPtr()->createVkImageView(nameTexture, 
+                                                            this->poTerrainControlImage, 
                                                             VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
                                                             VK_FORMAT_R8G8B8A8_UNORM, 
                                                             VK_IMAGE_ASPECT_COLOR_BIT, 
                                                             mipMapCount, 
                                                             (int)aPathTextureControl.size(), 
                                                             this->poTerrainControlImageView);
-                    Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                    Base::GetWindowPtr()->createVkSampler(nameTexture,
+                                                          F_TextureFilter_Bilinear, 
                                                           F_TextureAddressing_Clamp,
                                                           F_TextureBorderColor_OpaqueBlack,
                                                           true,

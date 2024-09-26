@@ -58,7 +58,7 @@ namespace LostPeterVulkan
         DestroyTextureCopy();
         this->pTextureCopy = new TextureCopyConstants();
         VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-        Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+        Base::GetWindowPtr()->createVkBuffer("TextureCopyConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
     }
     void VKPipelineCompute::DestroyTextureCopy()
     {

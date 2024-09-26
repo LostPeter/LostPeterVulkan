@@ -257,7 +257,8 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_CullClearArgs = vkDescriptorSetLayout;
         this->poPipelineLayout_CullClearArgs = vkPipelineLayout;
 
-        if (!createVkComputePipeline(descriptorSetLayout,
+        if (!createVkComputePipeline("PipelineCompute-CullClearArgs",
+                                     descriptorSetLayout,
                                      pDescriptorSetLayoutNames,
                                      vkDescriptorSetLayout,
                                      vkPipelineLayout,
@@ -282,7 +283,8 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_CullFrustum = vkDescriptorSetLayout;
         this->poPipelineLayout_CullFrustum = vkPipelineLayout;
 
-        if (!createVkComputePipeline(descriptorSetLayout,
+        if (!createVkComputePipeline("PipelineCompute-CullFrustum",
+                                     descriptorSetLayout,
                                      pDescriptorSetLayoutNames,
                                      vkDescriptorSetLayout,
                                      vkPipelineLayout,
@@ -307,7 +309,8 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_CullFrustumDepthHiz = vkDescriptorSetLayout;
         this->poPipelineLayout_CullFrustumDepthHiz = vkPipelineLayout;
 
-        if (!createVkComputePipeline(descriptorSetLayout,
+        if (!createVkComputePipeline("PipelineCompute-CullFrustumDepthHiz",
+                                     descriptorSetLayout,
                                      pDescriptorSetLayoutNames,
                                      vkDescriptorSetLayout,
                                      vkPipelineLayout,
@@ -332,7 +335,8 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_CullFrustumDepthHizClip = vkDescriptorSetLayout;
         this->poPipelineLayout_CullFrustumDepthHizClip = vkPipelineLayout;
 
-        if (!createVkComputePipeline(descriptorSetLayout,
+        if (!createVkComputePipeline("PipelineCompute-CullFrustumDepthHizClip",
+                                     descriptorSetLayout,
                                      pDescriptorSetLayoutNames,
                                      vkDescriptorSetLayout,
                                      vkPipelineLayout,
@@ -357,7 +361,8 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_HizDepthGenerate = vkDescriptorSetLayout;
         this->poPipelineLayout_HizDepthGenerate = vkPipelineLayout;
 
-        if (!createVkComputePipeline(descriptorSetLayout,
+        if (!createVkComputePipeline("PipelineCompute-HizDepthGenerate",
+                                     descriptorSetLayout,
                                      pDescriptorSetLayoutNames,
                                      vkDescriptorSetLayout,
                                      vkPipelineLayout,
@@ -376,7 +381,7 @@ namespace LostPeterVulkan
             destroyBufferCull();
 
             VkDeviceSize bufferSize = sizeof(CullConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_CullCB, this->poBufferMemory_CullCB);
+            Base::GetWindowPtr()->createVkBuffer("CullConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_CullCB, this->poBufferMemory_CullCB);
             Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CullConstants), &this->cullCB, this->poBufferMemory_CullCB);
             return true;
         }
@@ -385,7 +390,7 @@ namespace LostPeterVulkan
             destroyBufferCullObject();
 
             VkDeviceSize bufferSize = sizeof(CullObjectConstants) * MAX_OBJECT_CULL_COUNT;
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_CullObjectCB, this->poBufferMemory_CullObjectCB);
+            Base::GetWindowPtr()->createVkBuffer("CullObjectConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_CullObjectCB, this->poBufferMemory_CullObjectCB);
             return true;
         }
         bool VKPipelineComputeCull::createBufferHizDepth()
@@ -393,7 +398,7 @@ namespace LostPeterVulkan
             destroyBufferHizDepth();
 
             VkDeviceSize bufferSize = sizeof(HizDepthConstants);
-            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
+            Base::GetWindowPtr()->createVkBuffer("HizDepthConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
             Base::GetWindowPtr()->updateVKBuffer(0, sizeof(HizDepthConstants), &this->hizDepthCB, this->poBufferMemory_HizDepthCB);
             return true;
         } 
@@ -418,7 +423,8 @@ namespace LostPeterVulkan
             
             return true;
         }
-        bool VKPipelineComputeCull::createVkComputePipeline(const String& descriptorSetLayout,
+        bool VKPipelineComputeCull::createVkComputePipeline(const String& nameComputePipeline,
+                                                            const String& descriptorSetLayout,
                                                             StringVector* pDescriptorSetLayoutNames,
                                                             const VkDescriptorSetLayout& vkDescriptorSetLayout,
                                                             const VkPipelineLayout& vkPipelineLayout,
@@ -432,7 +438,7 @@ namespace LostPeterVulkan
             shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
             shaderStageInfo.module = vkShaderModule;
             shaderStageInfo.pName = "main";
-            vkPipeline = Base::GetWindowPtr()->createVkComputePipeline(shaderStageInfo, vkPipelineLayout);
+            vkPipeline = Base::GetWindowPtr()->createVkComputePipeline(nameComputePipeline, shaderStageInfo, vkPipelineLayout);
             if (vkPipeline == VK_NULL_HANDLE)
             {
                 F_LogError("*********************** VKPipelineComputeCull::createVkComputePipeline: createVkComputePipeline failed !");
@@ -440,7 +446,7 @@ namespace LostPeterVulkan
             }
 
             //2> VkDescriptorSet
-            Base::GetWindowPtr()->createVkDescriptorSet(vkDescriptorSetLayout, vkDescriptorSet);
+            Base::GetWindowPtr()->createVkDescriptorSet(descriptorSetLayout, vkDescriptorSetLayout, vkDescriptorSet);
             if (vkDescriptorSet == VK_NULL_HANDLE)
             {
                 F_LogError("*********************** VKPipelineComputeCull::createVkComputePipeline: createVkDescriptorSet failed !");

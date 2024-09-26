@@ -39,7 +39,8 @@ namespace LostPeterVulkan
         this->view = VK_NULL_HANDLE;
     }
 
-    void VKFrameBufferAttachment::Init(uint32_t width, 
+    void VKFrameBufferAttachment::Init(const String& nameTex,
+                                       uint32_t width, 
                                        uint32_t height, 
                                        bool _isDepth,
                                        bool _isImageArray)
@@ -74,7 +75,8 @@ namespace LostPeterVulkan
             imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
         }
 
-        Base::GetWindowPtr()->createVkImage(width, 
+        Base::GetWindowPtr()->createVkImage(nameTex,
+                                            width, 
                                             height, 
                                             depth,
                                             numArray,
@@ -91,7 +93,8 @@ namespace LostPeterVulkan
                                             this->image, 
                                             this->memory);
         
-        Base::GetWindowPtr()->createVkImageView(this->image, 
+        Base::GetWindowPtr()->createVkImageView(nameTex,
+                                                this->image, 
                                                 imageViewType,
                                                 format, 
                                                 aspectFlags, 

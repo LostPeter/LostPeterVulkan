@@ -167,14 +167,16 @@ namespace LostPeterVulkan
         //2> createVertexBuffer
         if (!this->isNeedUpdate_VertexBuffer)
         {
-            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
+                                                     this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory);
         }
         else
         {
-            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
+                                                     this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory,
@@ -188,14 +190,16 @@ namespace LostPeterVulkan
         {
             if (!this->isNeedUpdate_VertexBuffer)
             {
-                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
+                                                        this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory);
             }   
             else
             {
-                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
+                                                        this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory,
@@ -423,14 +427,16 @@ namespace LostPeterVulkan
         //2> createVertexBuffer
         if (!this->isNeedUpdate_VertexBuffer)
         {
-            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
+                                                     this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory);
         }
         else
         {
-            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
+                                                     this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory,
@@ -444,14 +450,16 @@ namespace LostPeterVulkan
         {
             if (!this->isNeedUpdate_VertexBuffer)
             {
-                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
+                                                        this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory);
             }   
             else
             {
-                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
+                                                        this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory,

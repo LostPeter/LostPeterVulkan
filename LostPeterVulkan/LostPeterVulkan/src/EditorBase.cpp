@@ -81,7 +81,7 @@ namespace LostPeterVulkan
     {
         VkDescriptorSetLayoutVector aDescriptorSetLayout;
         aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-        this->poPipelineLayout = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
+        this->poPipelineLayout = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-" + this->name, aDescriptorSetLayout);
         if (this->poPipelineLayout == VK_NULL_HANDLE)
         {
             String msg = "*********************** EditorBase::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout;
