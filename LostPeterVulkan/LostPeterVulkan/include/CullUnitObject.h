@@ -27,15 +27,15 @@ namespace LostPeterVulkan
 
     public:
         virtual int GetRenderDataCount() = 0;
-        virtual CullRenderData* GetRenderData() = 0;
+        virtual CullRenderData* GetRenderData(int index) = 0;
         
-        virtual int GetClusterDataCount(int index) = 0;
-        virtual CullObjectConstantsVector* GetClusterDatas() = 0;
+        virtual int GetObjectDataCount() = 0;
+        virtual CullObjectConstantsVector* GetObjectDatas() = 0;
 
         virtual int GetLodCount() = 0;
 
-        virtual ComputeBuffer* GetClusterDataCB() = 0;
-        virtual ComputeBuffer* GetLodCB() = 0;
+        virtual ComputeBuffer* GetObjectDataCB() = 0;
+        virtual ComputeBuffer* GetLodArgsCB() = 0;
 
         virtual ComputeBuffer* GetResultCB() = 0;
         virtual ComputeBuffer* GetClipCB() { return nullptr; }

@@ -547,7 +547,8 @@ namespace LostPeterVulkan
     typedef std::map<String, CullLodData*> CullLodDataPtrMap;
     typedef std::vector<CullRenderData*> CullRenderDataPtrVector;
     typedef std::map<String, CullRenderData*> CullRenderDataPtrMap;
-    typedef std::vector<CullUnit*> CullUnitPtrVector;
+    typedef std::map<CullRenderData*, int> CullRenderDataPtr2IndexMap;
+    typedef std::vector<CullUnit*> CullUnitPtrVector;   
     typedef std::map<String, CullUnit*> CullUnitPtrMap;
     typedef std::vector<CullUnitObject*> CullUnitObjectPtrVector;
     typedef std::map<String, CullUnitObject*> CullUnitObjectPtrMap;

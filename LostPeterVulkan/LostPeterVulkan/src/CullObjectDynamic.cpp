@@ -59,17 +59,17 @@ namespace LostPeterVulkan
         return 0;
     }
 
-    CullRenderData* CullObjectDynamic::CullUnitObjectDynamic::GetRenderData()
+    CullRenderData* CullObjectDynamic::CullUnitObjectDynamic::GetRenderData(int index)
     {
         return nullptr; 
     }
 
-    int CullObjectDynamic::CullUnitObjectDynamic::GetClusterDataCount(int index)
+    int CullObjectDynamic::CullUnitObjectDynamic::GetObjectDataCount()
     {
         return 0;
     }
 
-    CullObjectConstantsVector* CullObjectDynamic::CullUnitObjectDynamic::GetClusterDatas()
+    CullObjectConstantsVector* CullObjectDynamic::CullUnitObjectDynamic::GetObjectDatas()
     {
         return nullptr; 
     }
@@ -79,12 +79,12 @@ namespace LostPeterVulkan
         return 0;
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetClusterDataCB()
+    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetObjectDataCB()
     {
         return nullptr; 
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetLodCB()
+    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetLodArgsCB()
     {
         return nullptr; 
     }

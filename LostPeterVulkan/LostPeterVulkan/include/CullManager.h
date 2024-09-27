@@ -24,7 +24,16 @@ namespace LostPeterVulkan
         virtual ~CullManager();
 
     public:
+        static int s_nRenderCount_Init;
+        static int s_nRenderCount_Max;
+        static int s_nRenderCount_Step;
+        static int s_nInstanceCount_Init;
+        static int s_nInstanceCount_Max;
+        static int s_nInstanceCount_Step;
 
+        ObjectPool<CullRenderData>* pCullRenderDataPool;
+        ObjectPool<CullObjectConstants>* pCullObjectConstantsPool;
+        ObjectPool<CullObjectInstanceConstants>* pCullObjectInstanceConstantsPool;
 
     public:
         VKPipelineComputeCull* pVKPipelineComputeCull;
@@ -49,13 +58,27 @@ namespace LostPeterVulkan
         void Destroy();
         void Init(VKPipelineComputeCull* pPipelineComputeCull);
 
+    protected:  
+        void destroyCullObjects();
+        void destroyPools();
+
+        void createPools();
+        void createCullObjects();
+
     public:
         void AddCullUnit(CullUnit* pCullUnit);
         void RemoveCullUnit(CullUnit* pCullUnit);
         void RemoveAllCullUnit();
 
     public:
+        CullRenderData* GetCullRenderData();
+        void BackCullRenderData(CullRenderData* pCullRenderData);
 
+        CullObjectConstants* GetCullObjectConstants();
+        void BackCullObjectConstants(CullObjectConstants* pCullObject);
+
+        CullObjectInstanceConstants* GetCullObjectInstanceConstants();
+        void BackCullObjectInstanceConstants(CullObjectInstanceConstants* pCullObjectInstance);
     };
 
 }; //LostPeterVulkan

@@ -36,10 +36,34 @@ namespace LostPeterVulkan
         public:
             CullObjectStatic* pCullObjectStatic;
 
-            
+            int nLodCount;
+            CullRenderDataPtrVector aCullRenderData;
+            CullRenderDataPtr2IndexMap mapCullRenderData2Index;
+
+            int nObjectCount;
+            CullObjectConstantsVector aCullObjectConstants;
+
+            int nRenderArgsCount;
+
+            ComputeBuffer* pCB_CullObjects;
+            ComputeBuffer* pCB_LodArgs;
+            ComputeBuffer* pCB_RenderArgs;
+            ComputeBuffer* pCB_Result;
+            float* pLodArgs;
+			uint* pRenderArgs;
+			uint* pResult;
+
+            bool isRender;
+
         public:
             virtual void Destroy();
             virtual void Init();
+
+        protected:
+            void destroyComputeBuffers();
+            void destroyDatas();
+            
+            void createComputeBuffers();
 
         public:
             virtual bool IsCulling();
@@ -48,21 +72,23 @@ namespace LostPeterVulkan
 
         public:
             virtual int GetRenderDataCount();
-            virtual CullRenderData* GetRenderData();
+            virtual CullRenderData* GetRenderData(int index);
             
-            virtual int GetClusterDataCount(int index);
-            virtual CullObjectConstantsVector* GetClusterDatas();
+            virtual int GetObjectDataCount();
+            virtual CullObjectConstantsVector* GetObjectDatas();
 
             virtual int GetLodCount();
 
-            virtual ComputeBuffer* GetClusterDataCB();
-            virtual ComputeBuffer* GetLodCB();
-
+            virtual ComputeBuffer* GetObjectDataCB();
+            virtual ComputeBuffer* GetLodArgsCB();
             virtual ComputeBuffer* GetResultCB();
-            virtual ComputeBuffer* GetClipCB();
 
             virtual void UpdateBuffer();
 
+        public:
+            void AddCullRenderData(CullRenderData* pData);
+            void RemoveCullRenderData(CullRenderData* pData);
+            void RefreshCullRenderData();
         };
         typedef std::vector<CullUnitObjectStatic*> CullUnitObjectStaticPtrVector;
         typedef std::map<String, CullUnitObjectStatic*> CullUnitObjectStaticPtrMap;
@@ -72,13 +98,13 @@ namespace LostPeterVulkan
         static const String s_nameCullUnitObjectStatic;
 
         static float s_aLodMaxDistance[6];
-        static int s_nMaxRenderCount;
-        static int s_nStepRenderCount;
-        static int s_nMaxInstanceCount;
+        
+        static int s_nRenderCountMax;
+        static int s_nInstanceCountMax;
 
     public:
         CullUnitObjectStatic* pCullUnitObjectStatic;
-        ObjectPool<CullRenderData*>* pCullRenderDataPool; 
+        
 
     public:
         static CullObjectStatic& GetSingleton();

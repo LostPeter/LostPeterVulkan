@@ -17,7 +17,7 @@ namespace LostPeterVulkan
 {
     CullRenderData::CullRenderData()
         : nRenderIndex(0)
-        , nClusterOffset(0)
+        , nObjectOffset(0)
         , nMaxMaterialCount(0)
         , pBuffer_Instance(nullptr) 
     {
@@ -43,10 +43,10 @@ namespace LostPeterVulkan
     {
         this->aLodDatas.clear();
         this->nRenderIndex = 0;
-        this->nClusterOffset = 0;
+        this->nObjectOffset = 0;
         this->nMaxMaterialCount = 0;
         this->aInstanceDatas.clear();
-        this->aClusterDatas.clear();
+        this->aObjectDatas.clear();
         F_DELETE(pBuffer_Instance)
     }
     

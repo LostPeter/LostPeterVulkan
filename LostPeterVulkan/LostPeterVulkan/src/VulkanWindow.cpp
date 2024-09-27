@@ -274,8 +274,8 @@ namespace LostPeterVulkan
                                             g_TextureBorderColors_Internal[i],
                                             isRenderTarget,
                                             isGraphicsComputeShared);
-            pTexture->texChunkMaxX = g_TextureAnimChunks_Internal[i * 2 + 0];
-            pTexture->texChunkMaxY = g_TextureAnimChunks_Internal[i * 2 + 1];
+            pTexture->texChunkMaxX = (int)g_TextureAnimChunks_Internal[i * 2 + 0];
+            pTexture->texChunkMaxY = (int)g_TextureAnimChunks_Internal[i * 2 + 1];
             if (pTexture->texChunkMaxX > 0 && 
                 pTexture->texChunkMaxY > 0)
             {
@@ -1343,8 +1343,8 @@ namespace LostPeterVulkan
     {
         VkDescriptorSetLayout vkDescriptorSetLayout;
         VkDescriptorSetLayoutBindingVector bindings;
-        size_t count_layout = pNamesDescriptorSetLayout->size();
-        for (size_t i = 0; i < count_layout; i++)
+        uint32_t count_layout = (uint32_t)pNamesDescriptorSetLayout->size();
+        for (uint32_t i = 0; i < count_layout; i++)
         {
             const String& strLayout = (*pNamesDescriptorSetLayout)[i];
             if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
@@ -3029,8 +3029,8 @@ namespace LostPeterVulkan
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
-        this->poFramebufferSize.x = width;
-        this->poFramebufferSize.y = height;
+        this->poFramebufferSize.x = (float)width;
+        this->poFramebufferSize.y = (float)height;
         float scaleX, scaleY;
         glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
         this->poWindowContentScale.x = scaleX;
@@ -3118,8 +3118,8 @@ namespace LostPeterVulkan
             offset.x = 0;
             offset.y = 0;
             VkExtent2D extent;
-            extent.width = (float)width;
-            extent.height = (float)height;
+            extent.width = width;
+            extent.height = height;
             poScissor.offset = offset;
             poScissor.extent = extent;
         }
@@ -8302,7 +8302,7 @@ namespace LostPeterVulkan
                                             {
                                                 if (canChangeType)
                                                 {
-                                                    lc.common.x = (int)s_aLightDescs[j].Value;
+                                                    lc.common.x = (float)((int)(s_aLightDescs[j].Value));
                                                 }
                                                 break;
                                             }
@@ -8328,7 +8328,7 @@ namespace LostPeterVulkan
                                         {
                                             if (ImGui::Selectable(s_aLightingDescs[j].Name, nIndex == j))
                                             {
-                                                lc.common.z = (int)s_aLightingDescs[j].Value;
+                                                lc.common.z = (float)((int)(s_aLightingDescs[j].Value));
                                                 break;
                                             }
                                         }

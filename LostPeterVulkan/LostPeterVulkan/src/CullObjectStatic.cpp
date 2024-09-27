@@ -11,6 +11,9 @@
 
 #include "../include/CullObjectStatic.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullManager.h"
+#include "../include/ComputeBuffer.h"
+#include "../include/CullRenderData.h"
 
 template<> LostPeterVulkan::CullObjectStatic* LostPeterFoundation::FSingleton<LostPeterVulkan::CullObjectStatic>::ms_Singleton = nullptr;
 
@@ -20,6 +23,17 @@ namespace LostPeterVulkan
     CullObjectStatic::CullUnitObjectStatic::CullUnitObjectStatic(const String& nameUnit, CullObjectStatic* pCullOS)
         : CullUnitObject(nameUnit)
         , pCullObjectStatic(pCullOS)
+        , nLodCount((int)Vulkan_Lod_Count)
+        , nObjectCount(0)
+        , nRenderArgsCount(0)
+        , pCB_CullObjects(nullptr)
+        , pCB_LodArgs(nullptr)
+        , pCB_RenderArgs(nullptr)
+        , pCB_Result(nullptr)
+        , pLodArgs(nullptr)
+        , pRenderArgs(nullptr)
+        , pResult(nullptr)
+        , isRender(true)
     {
         F_Assert(pCullObjectStatic != nullptr && "CullUnitObjectStatic::CullUnitObjectStatic")
     }
@@ -31,75 +45,142 @@ namespace LostPeterVulkan
 
     void CullObjectStatic::CullUnitObjectStatic::Destroy()
     {
-        
+        destroyComputeBuffers();
+        destroyDatas();
     }
-    
+        void CullObjectStatic::CullUnitObjectStatic::destroyComputeBuffers()
+        {
+            F_DELETE(this->pCB_CullObjects)
+            F_DELETE(this->pCB_LodArgs)
+            F_DELETE(this->pCB_RenderArgs)
+            F_DELETE(this->pCB_Result)
+            F_DELETE_T(this->pLodArgs)
+            F_DELETE_T(this->pRenderArgs)
+            F_DELETE_T(this->pResult)
+        }
+        void CullObjectStatic::CullUnitObjectStatic::destroyDatas()
+        {
+            size_t count = this->aCullRenderData.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                CullRenderData* pData = this->aCullRenderData[i];
+                CullManager::GetSingleton().BackCullRenderData(pData);
+            }
+            this->aCullRenderData.clear();
+            this->mapCullRenderData2Index.clear();
+
+            this->nObjectCount = 0;
+            this->aCullObjectConstants.clear();
+
+            this->nRenderArgsCount = 0;
+        }       
+
     void CullObjectStatic::CullUnitObjectStatic::Init()
     {
+        createComputeBuffers();
 
     }
+        void CullObjectStatic::CullUnitObjectStatic::createComputeBuffers()
+        {
+            //pCB_CullObjects
+            {
+                this->pCB_CullObjects = new ComputeBuffer("ComputeBuffer-Static-CullObjects", CullObjectStatic::s_nInstanceCountMax, sizeof(CullObjectConstants));
+            }
+            //pCB_LodArgs
+            {
+                int count_lodArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 2;
+                this->pCB_LodArgs = new ComputeBuffer("ComputeBuffer-Static-LodArgs", count_lodArgs, sizeof(float));
+                this->pLodArgs = new float[count_lodArgs];
+            }
+            //pCB_RenderArgs
+            {
+                int count_renderArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 5;
+                this->pCB_RenderArgs = new ComputeBuffer("ComputeBuffer-Static-RenderArgs", count_renderArgs, sizeof(uint));
+                this->pRenderArgs = new uint[count_renderArgs];
+            }
+            //pCB_Result
+            {
+                int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax * 5;
+                this->pCB_Result = new ComputeBuffer("ComputeBuffer-Static-Result", count_result, sizeof(uint));
+                this->pResult = new uint[count_result];
+            }
+        }
 
     bool CullObjectStatic::CullUnitObjectStatic::IsCulling()
     {
-        return true;
+        if (this->isRender)
+        {
+            return true;
+        }
+        return false;
     }
 
     int CullObjectStatic::CullUnitObjectStatic::GetRenderCount()
     {
-        return 0;
+        return this->nRenderArgsCount;
     }
 
     ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
     {
-        return nullptr; 
+        return this->pCB_RenderArgs; 
     }
 
     int CullObjectStatic::CullUnitObjectStatic::GetRenderDataCount()
     {
-        return 0;
+        return (int)this->aCullRenderData.size();
     }
 
-    CullRenderData* CullObjectStatic::CullUnitObjectStatic::GetRenderData()
+    CullRenderData* CullObjectStatic::CullUnitObjectStatic::GetRenderData(int index)
     {
-        return nullptr; 
+        if (index < 0 || index >= this->aCullRenderData.size())
+            return nullptr;
+        return this->aCullRenderData[index];
     }
 
-    int CullObjectStatic::CullUnitObjectStatic::GetClusterDataCount(int index)
+    int CullObjectStatic::CullUnitObjectStatic::GetObjectDataCount()
     {
-        return 0;
+        return (int)this->aCullObjectConstants.size();
     }
 
-    CullObjectConstantsVector* CullObjectStatic::CullUnitObjectStatic::GetClusterDatas()
+    CullObjectConstantsVector* CullObjectStatic::CullUnitObjectStatic::GetObjectDatas()
     {
-        return nullptr; 
+        return &this->aCullObjectConstants; 
     }
 
     int CullObjectStatic::CullUnitObjectStatic::GetLodCount()
     {
-        return 0;
+        return this->nLodCount;
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetClusterDataCB()
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetObjectDataCB()
     {
-        return nullptr; 
+        return this->pCB_CullObjects; 
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetLodCB()
+    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetLodArgsCB()
     {
-        return nullptr; 
+        return this->pCB_LodArgs; 
     }
 
     ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
     {
-        return nullptr; 
-    }
-
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetClipCB() 
-    { 
-        return nullptr; 
+        return this->pCB_Result;
     }
 
     void CullObjectStatic::CullUnitObjectStatic::UpdateBuffer()
+    {
+
+    }
+
+    void CullObjectStatic::CullUnitObjectStatic::AddCullRenderData(CullRenderData* pData)
+    {
+
+    }
+    void CullObjectStatic::CullUnitObjectStatic::RemoveCullRenderData(CullRenderData* pData)
+    {
+
+    }
+    void CullObjectStatic::CullUnitObjectStatic::RefreshCullRenderData()
     {
 
     }
@@ -124,16 +205,15 @@ namespace LostPeterVulkan
 		128.0f,   256.0f,
 		256.0f,   512.0f
     };
-    int CullObjectStatic::s_nMaxRenderCount = 200;
-    int CullObjectStatic::s_nStepRenderCount = 20;
-    int CullObjectStatic::s_nMaxInstanceCount = 100000;
+    int CullObjectStatic::s_nRenderCountMax = 200;
+    int CullObjectStatic::s_nInstanceCountMax = 100000;
     
     CullObjectStatic::CullObjectStatic()
         : Base(s_nameCullObjectStatic)
+        , pCullUnitObjectStatic(nullptr)
+        
     {
-        pCullUnitObjectStatic = new CullUnitObjectStatic(s_nameCullUnitObjectStatic, this);
-        pCullRenderDataPool = new ObjectPool<CullRenderData*>();
-        pCullRenderDataPool->Reserve(20);
+        
     }
 
     CullObjectStatic::~CullObjectStatic()
@@ -144,12 +224,13 @@ namespace LostPeterVulkan
     void CullObjectStatic::Destroy()
     {
         F_DELETE(pCullUnitObjectStatic)
-        F_DELETE(pCullRenderDataPool)
+        
     }
     
     void CullObjectStatic::Init()
     {
-        
+        this->pCullUnitObjectStatic = new CullUnitObjectStatic(s_nameCullUnitObjectStatic, this);
+        this->pCullUnitObjectStatic->Init();
     }
 
 }; //LostPeterVulkan

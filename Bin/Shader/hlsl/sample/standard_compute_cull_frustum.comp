@@ -27,7 +27,7 @@
 [numthreads(64, 1, 1)]
 void main(uint id : SV_DispatchThreadID)
 {
-	if (id >= cullConsts.nMaxClusterCount)
+	if (id >= cullConsts.nMaxObjectCount)
         return;
 		
     CullObjectConstants currentObject = cullObjectConstsCB[id];
@@ -48,7 +48,7 @@ void main(uint id : SV_DispatchThreadID)
 						  currentObject.vPos.xyz, 
 						  currentObject.vExt.xyz)))
         {
-            uint indexBaseResult = index * cullConsts.nMaxClusterCount;
+            uint indexBaseResult = index * cullConsts.nMaxObjectCount;
             uint indexBaseRender = index * cullConsts.nMaxRenderCount * 5;
 
             uint currentIndex = 0;
@@ -56,7 +56,7 @@ void main(uint id : SV_DispatchThreadID)
             {
                 InterlockedAdd(argsCB[indexBaseRender + (currentObject.nRenderIndex + j) * 5 + 1], 1, currentIndex);
             }
-            resultCB[indexBaseResult + currentObject.nClusterOffset + currentIndex] = id - currentObject.nClusterOffset;
+            resultCB[indexBaseResult + currentObject.nObjectOffset + currentIndex] = id - currentObject.nObjectOffset;
 
             break;
         }

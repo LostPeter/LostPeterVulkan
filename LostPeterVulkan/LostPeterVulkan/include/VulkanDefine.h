@@ -1485,7 +1485,7 @@ namespace LostPeterVulkan
     {
         uint32 nMaxLodCount; //Max Lod Count
         uint32 nMaxRenderCount; //Max Render Count
-        uint32 nMaxClusterCount; //Max Cluster Count
+        uint32 nMaxObjectCount; //Max Object Count
         uint32 nIsNoCulling; //Is No Culling?
 
         FMatrix4 mat4VPLast;  //VP Last
@@ -1496,11 +1496,11 @@ namespace LostPeterVulkan
     };
     struct vulkanExport CullObjectConstants
     {
-        FVector4 vPos; //xyz = pos, w = cluster offset 
+        FVector4 vPos; //xyz = pos, w = object offset 
         FVector4 vExt; //xyz = ext, w = isNoHizTest
         uint32 nRenderIndex; //Render Index
         uint32 nRenderCount; //Render Count
-        uint32 nClusterOffset; //Cluster Offset
+        uint32 nObjectOffset; //Object Offset
         uint32 nIsNoHizTest; //IsNoHizTest
 
         CullObjectConstants()
@@ -1508,26 +1508,28 @@ namespace LostPeterVulkan
             , vExt(FMath::ms_v4Zero)
             , nRenderIndex(0)
             , nRenderCount(0)
-            , nClusterOffset(0)
+            , nObjectOffset(0)
             , nIsNoHizTest(0)
         {
 
         }
     };
     typedef std::vector<CullObjectConstants> CullObjectConstantsVector;
-    struct vulkanExport InstanceData
+    typedef std::vector<CullObjectConstants*> CullObjectConstantsPtrVector;
+    struct vulkanExport CullObjectInstanceConstants
     {
         FMatrix4 mat4Object2World;
         FMatrix4 mat4World2Object;
 
-        InstanceData()
+        CullObjectInstanceConstants()
             : mat4Object2World(FMath::Identity4x4())
             , mat4World2Object(FMath::Identity4x4())
         {
 
         }
     };
-    typedef std::vector<InstanceData> InstanceDataVector;
+    typedef std::vector<CullObjectInstanceConstants> CullObjectInstanceConstantsVector;
+    typedef std::vector<CullObjectInstanceConstants*> CullObjectInstanceConstantsPtrVector;
     
     //////////////////////////////// HizDepthConstants //////////////////////////////
     struct vulkanExport HizDepthConstants

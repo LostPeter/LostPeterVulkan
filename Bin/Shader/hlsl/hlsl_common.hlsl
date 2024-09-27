@@ -269,7 +269,7 @@ struct CullConstants
 {
     uint nMaxLodCount; //Max Lod Count
     uint nMaxRenderCount; //Max Render Count
-    uint nMaxClusterCount; //Max Cluster Count
+    uint nMaxObjectCount; //Max Object Count
     uint nIsNoCulling; //Is No Culling?
 
     float4x4 mat4VPLast;  //VP Last
@@ -280,11 +280,11 @@ struct CullConstants
 };
 struct CullObjectConstants
 {
-    float4 vPos; //xyz = pos, w = cluster offset
+    float4 vPos; //xyz = pos, w = object offset
     float4 vExt; //xyz = ext, w = isNoHizTest
     uint nRenderIndex; //Render Index
     uint nRenderCount; //Render Count
-    uint nClusterOffset; //Cluster Offset
+    uint nObjectOffset; //Object Offset
     uint nIsNoHizTest; //IsNoHizTest
 };
 

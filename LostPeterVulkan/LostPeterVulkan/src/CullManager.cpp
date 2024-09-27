@@ -11,6 +11,7 @@
 
 #include "../include/CullManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullRenderData.h"
 #include "../include/CullUnit.h"
 #include "../include/CullUnitObject.h"
 #include "../include/CullUnitTerrain.h"
@@ -32,12 +33,24 @@ namespace LostPeterVulkan
 		return (*ms_Singleton);     
 	}
 
-    
+    int CullManager::s_nRenderCount_Init = 20;
+    int CullManager::s_nRenderCount_Max = 200;
+    int CullManager::s_nRenderCount_Step = 20;
+    int CullManager::s_nInstanceCount_Init = 1000;
+    int CullManager::s_nInstanceCount_Max = 100000;
+    int CullManager::s_nInstanceCount_Step = 100;
+
     CullManager::CullManager()
         : Base("CullManager")
         , pVKPipelineComputeCull(nullptr)
+
+        , pCullRenderDataPool(nullptr)
+        , pCullObjectConstantsPool(nullptr)
+        , pCullObjectInstanceConstantsPool(nullptr)
+
         , pCullObjectStatic(nullptr)
         , pCullObjectDynamic(nullptr)
+
         , isInit(false)
     {
 
@@ -50,25 +63,53 @@ namespace LostPeterVulkan
     void CullManager::Destroy()
     {
         RemoveAllCullUnit();
-        F_DELETE(this->pCullObjectStatic)
-        F_DELETE(this->pCullObjectDynamic)
+        destroyCullObjects();
+        destroyPools();
     }
+        void CullManager::destroyCullObjects()
+        {
+            F_DELETE(this->pCullObjectStatic)
+            F_DELETE(this->pCullObjectDynamic)
+        }
+        void CullManager::destroyPools()
+        {
+            F_DELETE(pCullRenderDataPool)
+            F_DELETE(pCullObjectConstantsPool)
+            F_DELETE(pCullObjectInstanceConstantsPool)
+        }
 
     void CullManager::Init(VKPipelineComputeCull* pPipelineComputeCull)
     {
         this->pVKPipelineComputeCull = pPipelineComputeCull;
 
-        //CullObjectStatic
-        this->pCullObjectStatic = new CullObjectStatic();
-        this->pCullObjectStatic->Init();
-        AddCullUnit(this->pCullObjectStatic->pCullUnitObjectStatic);
-        //CullObjectDynamic
-        this->pCullObjectDynamic = new CullObjectDynamic();
-        this->pCullObjectDynamic->Init();
-        AddCullUnit(this->pCullObjectDynamic->pCullUnitObjectDynamic);
-
-        
+        createPools();
+        createCullObjects();
     }
+        void CullManager::createPools()
+        {
+            this->pCullRenderDataPool = new ObjectPool<CullRenderData>();
+            this->pCullRenderDataPool->stepCount = s_nRenderCount_Step;
+            this->pCullRenderDataPool->Reserve(s_nRenderCount_Init);
+
+            this->pCullObjectConstantsPool = new ObjectPool<CullObjectConstants>();
+            this->pCullObjectConstantsPool->stepCount = s_nInstanceCount_Step;
+            this->pCullObjectConstantsPool->Reserve(s_nInstanceCount_Init);
+
+            this->pCullObjectInstanceConstantsPool = new ObjectPool<CullObjectInstanceConstants>();
+            this->pCullObjectInstanceConstantsPool->stepCount = s_nInstanceCount_Step;
+            this->pCullObjectInstanceConstantsPool->Reserve(s_nInstanceCount_Init);
+        }
+        void CullManager::createCullObjects()
+        {
+            //CullObjectStatic
+            this->pCullObjectStatic = new CullObjectStatic();
+            this->pCullObjectStatic->Init();
+            AddCullUnit(this->pCullObjectStatic->pCullUnitObjectStatic);
+            //CullObjectDynamic
+            this->pCullObjectDynamic = new CullObjectDynamic();
+            this->pCullObjectDynamic->Init();
+            AddCullUnit(this->pCullObjectDynamic->pCullUnitObjectDynamic);
+        }
 
     void CullManager::AddCullUnit(CullUnit* pCullUnit)
     {
@@ -118,6 +159,34 @@ namespace LostPeterVulkan
         this->aCullUnits.clear();
         this->aCullUnitObjects.clear();
         this->aCullUnitTerrains.clear();
+    }
+
+    CullRenderData* CullManager::GetCullRenderData()
+    {
+        return pCullRenderDataPool->Get();
+    }
+    void CullManager::BackCullRenderData(CullRenderData* pCullRenderData)
+    {
+        pCullRenderData->Destroy();
+        pCullRenderDataPool->Back(pCullRenderData);
+    }
+
+    CullObjectConstants* CullManager::GetCullObjectConstants()
+    {
+        return pCullObjectConstantsPool->Get();
+    }
+    void CullManager::BackCullObjectConstants(CullObjectConstants* pCullObject)
+    {
+        pCullObjectConstantsPool->Back(pCullObject);
+    }
+
+    CullObjectInstanceConstants* CullManager::GetCullObjectInstanceConstants()
+    {
+        return pCullObjectInstanceConstantsPool->Get();
+    }
+    void CullManager::BackCullObjectInstanceConstants(CullObjectInstanceConstants* pCullObjectInstance)
+    {
+        pCullObjectInstanceConstantsPool->Back(pCullObjectInstance);
     }
 
 }; //LostPeterVulkan

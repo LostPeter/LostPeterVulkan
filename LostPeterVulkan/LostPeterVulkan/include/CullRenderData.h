@@ -25,10 +25,11 @@ namespace LostPeterVulkan
     public:
         CullLodDataPtrVector aLodDatas;
         int nRenderIndex;
-        int nClusterOffset;
+        int nObjectOffset;
         int nMaxMaterialCount;
-        InstanceDataVector aInstanceDatas;
-        CullObjectConstantsVector aClusterDatas;
+        
+        CullObjectConstantsPtrVector aObjectDatas;
+        CullObjectInstanceConstantsPtrVector aInstanceDatas;
 
         ComputeBuffer* pBuffer_Instance;
 

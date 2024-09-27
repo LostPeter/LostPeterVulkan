@@ -22,6 +22,7 @@ namespace LostPeterVulkan
     public:
         ObjectPointerPool() 
             : listFree() 
+            , stepCount(5)
         { 
 
         }
@@ -32,12 +33,23 @@ namespace LostPeterVulkan
 
     public:
         std::list<T*> listFree;
+        int stepCount;
 
     public:
         T* Get() 
         {
             if (listFree.empty())  
-                return New();
+            {
+                if (stepCount > 0)
+                {
+                    for (int i = 0; i < stepCount; i++)
+                        listFree.push_back(New());
+                }
+                else
+                {
+                    return New();
+                }
+            }
             auto obj = listFree.back();
             listFree.pop_back();
             return obj;
