@@ -36,10 +36,31 @@ namespace LostPeterVulkan
         public:
             CullObjectDynamic* pCullObjectDynamic;
             
+            int nLodCount;
+            CullRenderDataPtrVector aCullRenderData;
+            CullRenderDataPtr2IndexMap mapCullRenderData2Index;
+
+            int nObjectCount;
+            CullObjectConstantsVector aCullObjectConstants;
+
+            int nRenderArgsCount;
+
+            ComputeBuffer* pCB_CullObjects;
+            ComputeBuffer* pCB_LodArgs;
+            ComputeBuffer* pCB_RenderArgs;
+            ComputeBuffer* pCB_Result;
+
+            bool isRender;
 
         public:
             void Destroy();
             virtual void Init();
+
+        protected:
+            void destroyComputeBuffers();
+            void destroyDatas();
+            
+            void createComputeBuffers();
 
         public:
             virtual bool IsCulling();
@@ -57,11 +78,15 @@ namespace LostPeterVulkan
 
             virtual ComputeBuffer* GetObjectDataCB();
             virtual ComputeBuffer* GetLodArgsCB();
-
             virtual ComputeBuffer* GetResultCB();
-            virtual ComputeBuffer* GetClipCB();
 
             virtual void UpdateBuffer();
+
+        public:
+            bool HasCullRenderData(CullRenderData* pCullRenderData);
+            void AddCullRenderData(CullRenderData* pCullRenderData);
+            void RemoveCullRenderData(CullRenderData* pCullRenderData);
+            void RefreshCullRenderData();
         };
         typedef std::vector<CullUnitObjectDynamic*> CullUnitObjectDynamicPtrVector;
         typedef std::map<String, CullUnitObjectDynamic*> CullUnitObjectDynamicPtrMap;
@@ -71,6 +96,10 @@ namespace LostPeterVulkan
         static const String s_nameCullObjectDynamic;
         static const String s_nameCullUnitObjectDynamic;
         
+        static float s_aLodMaxDistance[6];
+        
+        static int s_nRenderCountMax;
+        static int s_nInstanceCountMax;
 
     public:
         CullUnitObjectDynamic* pCullUnitObjectDynamic;
@@ -82,6 +111,12 @@ namespace LostPeterVulkan
     public:
         void Destroy();
         void Init();
+
+    public: 
+        CullRenderData* AddDynamicCullRenderData(CullLodData* pCullLodData);
+        bool AddDynamicCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData);
+        void RemoveDynamicCullRenderData(CullRenderData* pCullRenderData);
+
     };
 
 }; //LostPeterVulkan

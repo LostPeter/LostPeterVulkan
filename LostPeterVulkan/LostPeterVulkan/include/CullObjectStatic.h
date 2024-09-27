@@ -49,9 +49,6 @@ namespace LostPeterVulkan
             ComputeBuffer* pCB_LodArgs;
             ComputeBuffer* pCB_RenderArgs;
             ComputeBuffer* pCB_Result;
-            float* pLodArgs;
-			uint* pRenderArgs;
-			uint* pResult;
 
             bool isRender;
 
@@ -86,8 +83,9 @@ namespace LostPeterVulkan
             virtual void UpdateBuffer();
 
         public:
-            void AddCullRenderData(CullRenderData* pData);
-            void RemoveCullRenderData(CullRenderData* pData);
+            bool HasCullRenderData(CullRenderData* pCullRenderData);
+            void AddCullRenderData(CullRenderData* pCullRenderData);
+            void RemoveCullRenderData(CullRenderData* pCullRenderData);
             void RefreshCullRenderData();
         };
         typedef std::vector<CullUnitObjectStatic*> CullUnitObjectStaticPtrVector;
@@ -113,7 +111,12 @@ namespace LostPeterVulkan
     public:
         void Destroy();
         void Init();
-    
+
+    public: 
+        CullRenderData* AddStaticCullRenderData(CullLodData* pCullLodData);
+        bool AddStaticCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData);
+        void RemoveStaticCullRenderData(CullRenderData* pCullRenderData);
+
     };
 
 }; //LostPeterVulkan

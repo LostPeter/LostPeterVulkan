@@ -105,8 +105,8 @@ namespace LostPeterVulkan
         {
             destroyBufferTextureCopy();
             this->pTextureCopy = new TextureCopyConstants();
-            this->pTextureCopy->texInfo.x = nHeightMapSize;
-            this->pTextureCopy->texInfo.y = nHeightMapSize;
+            this->pTextureCopy->texInfo.x = (float)nHeightMapSize;
+            this->pTextureCopy->texInfo.y = (float)nHeightMapSize;
             VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
             Base::GetWindowPtr()->createVkBuffer("TextureCopyConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
             Base::GetWindowPtr()->updateVKBuffer(0, sizeof(TextureCopyConstants), this->pTextureCopy, this->poBufferMemory_TextureCopy);

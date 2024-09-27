@@ -1338,6 +1338,8 @@ namespace LostPeterVulkan
             mc.alpha = FMath::RandF(0.2f, 0.9f);
         }
     };
+    typedef std::vector<MaterialConstants> MaterialConstantsVector;
+    typedef std::vector<MaterialConstants*> MaterialConstantsPtrVector;
 
     //////////////////////////////// InstanceConstants //////////////////////////////
     struct vulkanExport InstanceConstants

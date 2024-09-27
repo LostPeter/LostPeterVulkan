@@ -11,6 +11,7 @@
 
 #include "../include/CullManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/CullUnit.h"
 #include "../include/CullUnitObject.h"
@@ -44,6 +45,7 @@ namespace LostPeterVulkan
         : Base("CullManager")
         , pVKPipelineComputeCull(nullptr)
 
+        , pCullLodDataPool(nullptr)
         , pCullRenderDataPool(nullptr)
         , pCullObjectConstantsPool(nullptr)
         , pCullObjectInstanceConstantsPool(nullptr)
@@ -73,6 +75,7 @@ namespace LostPeterVulkan
         }
         void CullManager::destroyPools()
         {
+            F_DELETE(pCullLodDataPool)
             F_DELETE(pCullRenderDataPool)
             F_DELETE(pCullObjectConstantsPool)
             F_DELETE(pCullObjectInstanceConstantsPool)
@@ -87,6 +90,10 @@ namespace LostPeterVulkan
     }
         void CullManager::createPools()
         {
+            this->pCullLodDataPool = new ObjectPool<CullLodData>();
+            this->pCullLodDataPool->stepCount = s_nRenderCount_Step;
+            this->pCullLodDataPool->Reserve(s_nRenderCount_Init);
+            
             this->pCullRenderDataPool = new ObjectPool<CullRenderData>();
             this->pCullRenderDataPool->stepCount = s_nRenderCount_Step;
             this->pCullRenderDataPool->Reserve(s_nRenderCount_Init);
@@ -161,6 +168,25 @@ namespace LostPeterVulkan
         this->aCullUnitTerrains.clear();
     }
 
+    CullLodData* CullManager::GetCullLodData()
+    {
+        return pCullLodDataPool->Get();
+    }
+    void CullManager::BackCullLodData(CullLodData* pCullLodData)
+    {
+        pCullLodData->Clear();
+        pCullLodDataPool->Back(pCullLodData);
+    }   
+    void CullManager::BackCullLodDatas(const CullLodDataPtrVector& aLodDatas)
+    {
+        size_t count = aLodDatas.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            CullLodData* pCullLodData = aLodDatas[i];
+            BackCullLodData(pCullLodData);
+        }
+    }
+
     CullRenderData* CullManager::GetCullRenderData()
     {
         return pCullRenderDataPool->Get();
@@ -169,6 +195,15 @@ namespace LostPeterVulkan
     {
         pCullRenderData->Destroy();
         pCullRenderDataPool->Back(pCullRenderData);
+    }
+    void CullManager::BackCullLodDatas(const CullRenderDataPtrVector& aCullRenderDatas)
+    {
+        size_t count = aCullRenderDatas.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            CullRenderData* pCullRenderData = aCullRenderDatas[i];
+            BackCullRenderData(pCullRenderData);
+        }
     }
 
     CullObjectConstants* CullManager::GetCullObjectConstants()

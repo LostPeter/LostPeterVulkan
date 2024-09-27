@@ -54,6 +54,17 @@ namespace LostPeterVulkan
         this->mapMeshSubs.clear();
     }
 
+    int Mesh::GetMeshSubCount() const 
+    { 
+        return (int)aMeshSubs.size();
+    }
+
+    MeshSub* Mesh::GetMeshSub(int index) const
+    {
+        F_Assert(index >= 0 && index < (int)aMeshSubs.size() && "Mesh::GetMeshSub")
+        return aMeshSubs[index];
+    }
+
     bool Mesh::AddMeshSub(MeshSub* pMeshSub)
     {
         MeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);

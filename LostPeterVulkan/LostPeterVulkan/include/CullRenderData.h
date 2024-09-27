@@ -20,28 +20,25 @@ namespace LostPeterVulkan
     {
     public:
         CullRenderData();
-        virtual ~CullRenderData();
+        ~CullRenderData();
 
     public:
-        CullLodDataPtrVector aLodDatas;
         int nRenderIndex;
         int nObjectOffset;
         int nMaxMaterialCount;
-        
-        CullObjectConstantsPtrVector aObjectDatas;
-        CullObjectInstanceConstantsPtrVector aInstanceDatas;
+
+        CullLodData* pCullLodData;
 
         ComputeBuffer* pBuffer_Instance;
 
     public:
         void Destroy();
-        void Init();
-
-        void Clear();
+        void Init(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
 
     public:
-        
-
+        void RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
+        void RefreshParam(int renderIndex, int objectOffset);
+        void RefreshInstance();
     };
 
 }; //LostPeterVulkan

@@ -38,6 +38,10 @@ namespace LostPeterVulkan
         MeshSubPtrMap mapMeshSubs;
 
     public:
+        int GetMeshSubCount() const;
+        MeshSub* GetMeshSub(int index) const;
+
+    public:
         void Destroy();
 
         virtual bool AddMeshSub(MeshSub* pMeshSub);

@@ -253,14 +253,14 @@ namespace LostPeterVulkan
         }
         void EditorCameraAxis::initViewport()
         {
-            Base::GetWindowPtr()->createViewport(s_fBlitAreaWidth,
-                                                 s_fBlitAreaHeight,
+            Base::GetWindowPtr()->createViewport((uint32_t)s_fBlitAreaWidth,
+                                                 (uint32_t)s_fBlitAreaHeight,
                                                  this->poViewport,
                                                  this->poScissor);
-            this->poOffset.x = 0.0f;
-            this->poOffset.y = 0.0f;
-            this->poExtent.width = s_fBlitAreaWidth;
-            this->poExtent.height = s_fBlitAreaHeight;
+            this->poOffset.x = 0;
+            this->poOffset.y = 0;
+            this->poExtent.width = (uint32_t)s_fBlitAreaWidth;
+            this->poExtent.height = (uint32_t)s_fBlitAreaHeight;
         }
     void EditorCameraAxis::initBufferUniforms()
     {
@@ -397,7 +397,7 @@ namespace LostPeterVulkan
                 Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-EditorCameraAxis", this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
                 //3> VKMultiRenderPass
                 this->pPipelineGraphics->pRenderPass = new VKMultiRenderPass("rp_editor_camera_axis", false, false);
-                this->pPipelineGraphics->pRenderPass->Init(s_fBlitAreaWidth, s_fBlitAreaHeight);
+                this->pPipelineGraphics->pRenderPass->Init((uint32_t)s_fBlitAreaWidth, (uint32_t)s_fBlitAreaHeight);
             }
             //Quad Blit
             {
@@ -559,13 +559,13 @@ namespace LostPeterVulkan
         {
             StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorCameraAxis::updateDescriptorSets_Graphics")
-            size_t count_ds = this->pPipelineGraphics->poDescriptorSets.size();
-            for (size_t i = 0; i < count_ds; i++)
+            uint32_t count_ds = (uint32_t)this->pPipelineGraphics->poDescriptorSets.size();
+            for (uint32_t i = 0; i < count_ds; i++)
             {
                 VkWriteDescriptorSetVector descriptorWrites;
 
-                size_t count_names = pDescriptorSetLayoutNames->size();
-                for (size_t j = 0; j < count_names; j++)
+                uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+                for (uint32_t j = 0; j < count_names; j++)
                 {
                     String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
@@ -608,13 +608,13 @@ namespace LostPeterVulkan
         {
             StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorCameraAxis::updateDescriptorSets_Graphics")
-            size_t count_ds = this->pPipelineGraphics_CopyBlit->poDescriptorSets.size();
-            for (size_t i = 0; i < count_ds; i++)
+            uint32_t count_ds = (uint32_t)this->pPipelineGraphics_CopyBlit->poDescriptorSets.size();
+            for (uint32_t i = 0; i < count_ds; i++)
             {
                 VkWriteDescriptorSetVector descriptorWrites;
 
-                size_t count_names = pDescriptorSetLayoutNames->size();
-                for (size_t j = 0; j < count_names; j++)
+                uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+                for (uint32_t j = 0; j < count_names; j++)
                 {
                     String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit

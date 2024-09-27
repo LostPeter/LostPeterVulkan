@@ -86,12 +86,12 @@ namespace LostPeterVulkan
 
             this->viewPort.x = 0.0f;
             this->viewPort.y = 0.0f;
-            this->viewPort.width = width;
-            this->viewPort.height = height;
+            this->viewPort.width = (float)width;
+            this->viewPort.height = (float)height;
             this->viewPort.minDepth = 0.0f;
             this->viewPort.maxDepth = 1.0f;
-            this->rtScissor.offset.x = 0.0f;
-            this->rtScissor.offset.y = 0.0f;
+            this->rtScissor.offset.x = 0;
+            this->rtScissor.offset.y = 0;
             this->rtScissor.extent.width = width;
             this->rtScissor.extent.height = height;
         }

@@ -16,11 +16,11 @@
 
 namespace LostPeterVulkan
 {
-    class vulkanExport CullLodData : public Base
+    class vulkanExport CullLodData
     {
     public:
-        CullLodData(const String& nameLodData);
-        virtual ~CullLodData();
+        CullLodData();
+        ~CullLodData();
 
     public:
         bool isRender;
@@ -29,15 +29,11 @@ namespace LostPeterVulkan
         float fLodDistanceMax;
         
         Mesh* pMesh;
+        MaterialConstantsVector aMaterialConstants;
+        CullObjectInstanceConstantsVector aInstanceDatas;
 
     public:
-        
-
-    public:
-        
-
-    public:
-
+        void Clear();
 
     };
 

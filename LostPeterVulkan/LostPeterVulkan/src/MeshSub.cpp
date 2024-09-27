@@ -490,9 +490,9 @@ namespace LostPeterVulkan
             {
                 FVertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
                 aPos3Color4Normal3Tex2.push_back(FVertex_Pos3Color4Normal3Tex2(vSrc.pos,
-                                                vSrc.color,
-                                                vSrc.normal,
-                                                FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                                 vSrc.color,
+                                                 vSrc.normal,
+                                                 FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
             }
         }   
         else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
@@ -511,10 +511,10 @@ namespace LostPeterVulkan
             {
                 FVertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
                 aPos3Color4Normal3Tangent3Tex2.push_back(FVertex_Pos3Color4Normal3Tangent3Tex2(vSrc.pos,
-                                                        vSrc.color,
-                                                        vSrc.normal,
-                                                        vSrc.tangent,
-                                                        FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                                         vSrc.color,
+                                                         vSrc.normal,
+                                                         vSrc.tangent,
+                                                         FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
             }
         }
     }

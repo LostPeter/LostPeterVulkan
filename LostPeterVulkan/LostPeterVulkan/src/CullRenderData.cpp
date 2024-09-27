@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/CullRenderData.h"
-#include "../include/VulkanWindow.h"
+#include "../include/CullManager.h"
 #include "../include/ComputeBuffer.h"
 
 namespace LostPeterVulkan
@@ -19,6 +19,9 @@ namespace LostPeterVulkan
         : nRenderIndex(0)
         , nObjectOffset(0)
         , nMaxMaterialCount(0)
+
+        , pCullLodData(nullptr)
+
         , pBuffer_Instance(nullptr) 
     {
         
@@ -31,23 +34,44 @@ namespace LostPeterVulkan
 
     void CullRenderData::Destroy()
     {
-        Clear();
-    }
-
-    void CullRenderData::Init()
-    {
-
-    }
-
-    void CullRenderData::Clear()
-    {
-        this->aLodDatas.clear();
         this->nRenderIndex = 0;
         this->nObjectOffset = 0;
         this->nMaxMaterialCount = 0;
-        this->aInstanceDatas.clear();
-        this->aObjectDatas.clear();
+
+        if (this->pCullLodData != nullptr)
+        {
+             CullManager::GetSingleton().BackCullLodData(this->pCullLodData);
+        }
+        this->pCullLodData = nullptr;
+
         F_DELETE(pBuffer_Instance)
+    }
+
+    void CullRenderData::Init(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax)
+    {
+        RefreshNew(pCLD, renderIndex, objectOffset, objectMax);
+    }   
+
+    void CullRenderData::RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax)
+    {
+        if (pCLD != this->pCullLodData)
+        {
+            Destroy();
+        }
+        this->pCullLodData = pCLD;
+        RefreshParam(renderIndex, objectOffset);
+        RefreshInstance();
+    }
+
+    void CullRenderData::RefreshParam(int renderIndex, int objectOffset)
+    {
+        this->nRenderIndex = renderIndex;
+        this->nObjectOffset = objectOffset;
+    }
+
+    void CullRenderData::RefreshInstance()
+    {
+
     }
     
 }; //LostPeterVulkan

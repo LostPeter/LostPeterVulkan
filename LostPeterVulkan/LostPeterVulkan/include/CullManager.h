@@ -31,6 +31,7 @@ namespace LostPeterVulkan
         static int s_nInstanceCount_Max;
         static int s_nInstanceCount_Step;
 
+        ObjectPool<CullLodData>* pCullLodDataPool;
         ObjectPool<CullRenderData>* pCullRenderDataPool;
         ObjectPool<CullObjectConstants>* pCullObjectConstantsPool;
         ObjectPool<CullObjectInstanceConstants>* pCullObjectInstanceConstantsPool;
@@ -71,8 +72,13 @@ namespace LostPeterVulkan
         void RemoveAllCullUnit();
 
     public:
+        CullLodData* GetCullLodData();
+        void BackCullLodData(CullLodData* pCullLodData);
+        void BackCullLodDatas(const CullLodDataPtrVector& aLodDatas);
+
         CullRenderData* GetCullRenderData();
         void BackCullRenderData(CullRenderData* pCullRenderData);
+        void BackCullLodDatas(const CullRenderDataPtrVector& aCullRenderDatas);
 
         CullObjectConstants* GetCullObjectConstants();
         void BackCullObjectConstants(CullObjectConstants* pCullObject);

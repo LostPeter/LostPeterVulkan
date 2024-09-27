@@ -10,30 +10,32 @@
 ****************************************************************************/
 
 #include "../include/CullLodData.h"
-#include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 
 namespace LostPeterVulkan
 {
-    CullLodData::CullLodData(const String& nameLodData)
-        : Base(nameLodData)
-
-        , isRender(true)
+    CullLodData::CullLodData()
+        : isRender(true)
         , isCastShadow(false)
         , fLodDistanceMin(10.0f)
         , fLodDistanceMax(50.0f)
-        
-        , pMesh(nullptr)
 
+        , pMesh(nullptr)
     {
 
     }
 
     CullLodData::~CullLodData()
     {
-
+        Clear();
     }
 
-    
+    void CullLodData::Clear()
+    {
+        this->isRender = true;
+        this->pMesh = nullptr;
+        this->aMaterialConstants.clear();
+        this->aInstanceDatas.clear();
+    }
     
 }; //LostPeterVulkan

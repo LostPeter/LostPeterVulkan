@@ -379,7 +379,7 @@ namespace LostPeterVulkan
                     float ny = (float)y / (float)this->height;
                     float nz = (float)z / (float)this->depth;
 
-                    float n = 20.0f * modulePerlin.GetValue(nx, ny, nz);
+                    float n = 20.0f * (float)(modulePerlin.GetValue(nx, ny, nz));
                     n = n - floor(n);
                     this->pDataRGBA[x + y * this->width + z * this->width * this->height] = static_cast<uint8>(floor(n * 255));
                 }

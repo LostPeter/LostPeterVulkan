@@ -173,13 +173,13 @@ namespace LostPeterVulkan
     {
         StringVector* pDescriptorSetLayoutNames = this->poDescriptorSetLayoutNames;
         F_Assert(pDescriptorSetLayoutNames != nullptr && "VKPipelineGraphicsCopyBlit::UpdateDescriptorSets")
-        size_t count_ds = this->poDescriptorSets.size();
-        for (size_t i = 0; i < count_ds; i++)
+        uint32_t count_ds = (uint32_t)this->poDescriptorSets.size();
+        for (uint32_t i = 0; i < count_ds; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
 
-            size_t count_names = pDescriptorSetLayoutNames->size();
-            for (size_t j = 0; j < count_names; j++)
+            uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+            for (uint32_t j = 0; j < count_names; j++)
             {
                 String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit

@@ -33,7 +33,8 @@ namespace LostPeterVulkan
 
     public:
         F_FORCEINLINE int GetBufferSize() const { return nCount * nStride; }
-
+        F_FORCEINLINE void* GetBuffer() const { return pBuffer_Compute; }
+        
     public:
         void Destroy();
         void Init(int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);

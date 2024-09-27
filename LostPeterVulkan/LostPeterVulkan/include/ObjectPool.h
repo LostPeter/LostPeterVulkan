@@ -13,6 +13,7 @@
 #define _OBJECT_POOL_H_
 
 #include <list>
+#include <vector>
 
 namespace LostPeterVulkan
 {
@@ -59,6 +60,20 @@ namespace LostPeterVulkan
         { 
             listFree.emplace_back(obj); 
         }
+        inline void Back(const std::vector<T*>& objs)
+        {
+            size_t count = objs.size();
+            for (size_t i = 0; i < count; i++)
+                Back(objs[i]);
+        } 
+        inline void Back(const std::list<T*>& objs)
+        {
+            for (auto it = objs.begin();
+                 it != objs.end(); ++it)
+            {
+                Back(*it);
+            }
+        } 
 
         T* New()
         {
@@ -67,7 +82,7 @@ namespace LostPeterVulkan
 
         void Reserve(int count)
         {
-            int count_free = listFree.size();
+            int count_free = (int)listFree.size();
             if (count_free >= count)
                 return;
             int count_new = count_free - count;

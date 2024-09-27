@@ -13,7 +13,10 @@
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
 #include "../include/ComputeBuffer.h"
+#include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
+#include "../include/Mesh.h"
+#include "../include/MeshSub.h"
 
 template<> LostPeterVulkan::CullObjectStatic* LostPeterFoundation::FSingleton<LostPeterVulkan::CullObjectStatic>::ms_Singleton = nullptr;
 
@@ -30,9 +33,7 @@ namespace LostPeterVulkan
         , pCB_LodArgs(nullptr)
         , pCB_RenderArgs(nullptr)
         , pCB_Result(nullptr)
-        , pLodArgs(nullptr)
-        , pRenderArgs(nullptr)
-        , pResult(nullptr)
+
         , isRender(true)
     {
         F_Assert(pCullObjectStatic != nullptr && "CullUnitObjectStatic::CullUnitObjectStatic")
@@ -54,9 +55,6 @@ namespace LostPeterVulkan
             F_DELETE(this->pCB_LodArgs)
             F_DELETE(this->pCB_RenderArgs)
             F_DELETE(this->pCB_Result)
-            F_DELETE_T(this->pLodArgs)
-            F_DELETE_T(this->pRenderArgs)
-            F_DELETE_T(this->pResult)
         }
         void CullObjectStatic::CullUnitObjectStatic::destroyDatas()
         {
@@ -90,19 +88,16 @@ namespace LostPeterVulkan
             {
                 int count_lodArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 2;
                 this->pCB_LodArgs = new ComputeBuffer("ComputeBuffer-Static-LodArgs", count_lodArgs, sizeof(float));
-                this->pLodArgs = new float[count_lodArgs];
             }
             //pCB_RenderArgs
             {
                 int count_renderArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 5;
                 this->pCB_RenderArgs = new ComputeBuffer("ComputeBuffer-Static-RenderArgs", count_renderArgs, sizeof(uint));
-                this->pRenderArgs = new uint[count_renderArgs];
             }
             //pCB_Result
             {
                 int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax * 5;
                 this->pCB_Result = new ComputeBuffer("ComputeBuffer-Static-Result", count_result, sizeof(uint));
-                this->pResult = new uint[count_result];
             }
         }
 
@@ -172,17 +167,192 @@ namespace LostPeterVulkan
 
     }
 
-    void CullObjectStatic::CullUnitObjectStatic::AddCullRenderData(CullRenderData* pData)
+    bool CullObjectStatic::CullUnitObjectStatic::HasCullRenderData(CullRenderData* pCullRenderData)
     {
-
+        if (pCullRenderData == nullptr)
+            return false;
+        CullRenderDataPtr2IndexMap::iterator itFind = this->mapCullRenderData2Index.find(pCullRenderData);
+        return itFind != this->mapCullRenderData2Index.end();
     }
-    void CullObjectStatic::CullUnitObjectStatic::RemoveCullRenderData(CullRenderData* pData)
+    void CullObjectStatic::CullUnitObjectStatic::AddCullRenderData(CullRenderData* pCullRenderData)
     {
+        if (HasCullRenderData(pCullRenderData))
+            return;
+        CullLodData* pLodData = pCullRenderData->pCullLodData;
+        int count_lod = this->nLodCount;
+        int count_instance = (int)pLodData->aInstanceDatas.size();
+        int count_material = (int)pLodData->aMaterialConstants.size();
 
+        //Render
+        int index = (int)this->aCullRenderData.size();
+        this->aCullRenderData.push_back(pCullRenderData);
+        this->mapCullRenderData2Index[pCullRenderData] = index;
+
+        //Object
+        for (int i = 0; i < count_instance; i++)
+        {
+            CullObjectInstanceConstants& instanceData = pLodData->aInstanceDatas[i];
+
+            CullObjectConstants cullObject;
+            MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(0);
+            FVector3 vCenter = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetCenter());
+            FVector3 vSize = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetHalfSize());
+            cullObject.vPos = FVector4(vCenter.x, vCenter.y, vCenter.z, 1.0f);
+            cullObject.vExt = FVector4(vSize.x, vSize.y, vSize.z, 1.0f);
+            cullObject.nRenderIndex = (uint)pCullRenderData->nRenderIndex;
+            cullObject.nRenderCount = (uint)pLodData->aMaterialConstants.size();
+            cullObject.nObjectOffset = (uint)pCullRenderData->nObjectOffset;
+            cullObject.nIsNoHizTest = 0;
+            this->aCullObjectConstants.push_back(cullObject);
+        }
+
+        //Buffer
+        float* pLodArgs = (float*)this->pCB_LodArgs->GetBuffer();
+        uint* pRenderArgs = (uint*)this->pCB_RenderArgs->GetBuffer();
+        uint* pResult = (uint*)this->pCB_Result->GetBuffer();
+        for (int i = 0; i < count_lod; i++)
+        {
+             MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(i);
+
+            int baseIndexLod = CullObjectStatic::s_nRenderCountMax * i * 2;
+            int baseIndexRender = CullObjectStatic::s_nRenderCountMax * i * 5;
+            int baseIndexResult = CullObjectStatic::s_nInstanceCountMax * i;
+            int nIndexRenderArgs = pCullRenderData->nRenderIndex;
+
+            for (int j = 0; j < count_material; j++)
+            {
+                pRenderArgs[baseIndexRender + nIndexRenderArgs * 5 + 0] = pMeshSub->poIndexCount;
+                pRenderArgs[baseIndexRender + nIndexRenderArgs * 5 + 1] = (uint)count_instance;
+                pRenderArgs[baseIndexRender + nIndexRenderArgs * 5 + 2] = 0;
+                pRenderArgs[baseIndexRender + nIndexRenderArgs * 5 + 3] = 0;
+                pRenderArgs[baseIndexRender + nIndexRenderArgs * 5 + 4] = 0;
+
+                pLodArgs[baseIndexLod + nIndexRenderArgs * 2 + 0] = pLodData->fLodDistanceMin;
+                pLodArgs[baseIndexLod + nIndexRenderArgs * 2 + 1] = pLodData->fLodDistanceMax;
+
+                nIndexRenderArgs++;
+            }
+
+            int nIndexResult = pCullRenderData->nObjectOffset;
+            for (int j = 0; j < count_instance; j++)
+            {
+                pResult[baseIndexResult + nIndexResult] = (uint)j;
+                nIndexResult++;
+            }
+        }
+        this->nObjectCount += count_instance;
+        this->nRenderArgsCount += count_material;
+
+        this->pCB_LodArgs->UpdateBuffer();
+        this->pCB_RenderArgs->UpdateBuffer();
+        this->pCB_Result->UpdateBuffer();
+        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), this->aCullObjectConstants.data());
+    }
+    void CullObjectStatic::CullUnitObjectStatic::RemoveCullRenderData(CullRenderData* pCullRenderData)
+    {
+        CullRenderDataPtr2IndexMap::iterator itFindIndex = mapCullRenderData2Index.find(pCullRenderData);
+        if (itFindIndex == mapCullRenderData2Index.end())
+            return;
+        mapCullRenderData2Index.erase(itFindIndex);
+
+        CullRenderDataPtrVector::iterator itFind = std::find(aCullRenderData.begin(), aCullRenderData.end(), pCullRenderData);
+        if (itFind != aCullRenderData.end())
+            aCullRenderData.erase(itFind);
+        
+        CullObjectConstantsVector::iterator it = aCullObjectConstants.begin();
+        CullObjectConstantsVector::iterator itEnd = aCullObjectConstants.end();
+        CullObjectConstantsVector::iterator itNext = it;
+        while (itNext != itEnd)
+        {
+            it = itNext;
+            ++ itNext;
+            if (it->nObjectOffset == pCullRenderData->nObjectOffset)
+            {
+                aCullObjectConstants.erase(it);
+            }
+        }
+
+        CullManager::GetSingleton().BackCullRenderData(pCullRenderData);
     }
     void CullObjectStatic::CullUnitObjectStatic::RefreshCullRenderData()
     {
+        this->nObjectCount = 0;
+        this->nRenderArgsCount = 0;
 
+        this->aCullObjectConstants.clear();
+        size_t count_renderdata = this->aCullRenderData.size();
+        for (size_t i = 0; i < count_renderdata; i++)
+        {
+            //Render
+            CullRenderData* pCullRenderData = this->aCullRenderData[i];
+            pCullRenderData->RefreshParam(this->nRenderArgsCount, this->nObjectCount);
+            CullLodData* pLodData = pCullRenderData->pCullLodData;
+            int count_lod = this->nLodCount;
+            int nIndexRenderArgsCur = pCullRenderData->nRenderIndex;
+            int nIndexResultCur = pCullRenderData->nObjectOffset;
+            int count_instance = (int)pLodData->aInstanceDatas.size();
+            int count_mat = (int)pLodData->aMaterialConstants.size();
+
+            //Object
+            for (int j = 0; j < count_instance; j++)
+            {
+                CullObjectInstanceConstants& instanceData = pLodData->aInstanceDatas[j];
+
+                CullObjectConstants cullObject;
+                MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(0);
+                FVector3 vCenter = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetCenter());
+                FVector3 vSize = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetHalfSize());
+                cullObject.vPos = FVector4(vCenter.x, vCenter.y, vCenter.z, 1.0f);
+                cullObject.vExt = FVector4(vSize.x, vSize.y, vSize.z, 1.0f);
+                cullObject.nRenderIndex = (uint)pCullRenderData->nRenderIndex;
+                cullObject.nRenderCount = (uint)pLodData->aMaterialConstants.size();
+                cullObject.nObjectOffset = (uint)pCullRenderData->nObjectOffset;
+                cullObject.nIsNoHizTest = 0;
+                this->aCullObjectConstants.push_back(cullObject);
+            }
+
+            //Buffer
+            float* pLodArgs = (float*)this->pCB_LodArgs->GetBuffer();
+            uint* pRenderArgs = (uint*)this->pCB_RenderArgs->GetBuffer();
+            uint* pResult = (uint*)this->pCB_Result->GetBuffer();
+            for (int p = 0; p < count_lod; p++)
+            {
+                MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(p);
+
+                nIndexRenderArgsCur = pCullRenderData->nRenderIndex;
+                nIndexResultCur = pCullRenderData->nObjectOffset;
+                int baseIndexLod = CullObjectStatic::s_nRenderCountMax * p * 2;
+                int baseIndexRender = CullObjectStatic::s_nRenderCountMax * p * 5;
+                int baseIndexResult = CullObjectStatic::s_nRenderCountMax * p;
+               
+                for (int q = 0; q < count_mat; q++)
+                {
+                    pRenderArgs[baseIndexRender + nIndexRenderArgsCur * 5 + 0] = pMeshSub->poIndexCount;
+                    pRenderArgs[baseIndexRender + nIndexRenderArgsCur * 5 + 1] = (uint)count_instance;
+                    pRenderArgs[baseIndexRender + nIndexRenderArgsCur * 5 + 2] = 0;
+                    pRenderArgs[baseIndexRender + nIndexRenderArgsCur * 5 + 3] = 0;
+                    pRenderArgs[baseIndexRender + nIndexRenderArgsCur * 5 + 4] = 0;
+
+                    pLodArgs[baseIndexLod + nIndexRenderArgsCur * 2 + 0] = pLodData->fLodDistanceMin;
+                    pLodArgs[baseIndexLod + nIndexRenderArgsCur * 2 + 1] = pLodData->fLodDistanceMax;
+
+                    nIndexRenderArgsCur++;
+                }
+
+                for (int q = 0; q < count_instance; q++)
+                {
+                    pResult[baseIndexResult + nIndexResultCur] = (uint)q;
+                    nIndexResultCur++;
+                }
+            }
+            this->nObjectCount += count_instance;
+            this->nRenderArgsCount += count_mat;
+        }
+
+        this->pCB_LodArgs->UpdateBuffer();
+        this->pCB_RenderArgs->UpdateBuffer();
+        this->pCB_Result->UpdateBuffer();
+        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), this->aCullObjectConstants.data());
     }
 
 
@@ -223,7 +393,7 @@ namespace LostPeterVulkan
 
     void CullObjectStatic::Destroy()
     {
-        F_DELETE(pCullUnitObjectStatic)
+        F_DELETE(this->pCullUnitObjectStatic)
         
     }
     
@@ -231,6 +401,80 @@ namespace LostPeterVulkan
     {
         this->pCullUnitObjectStatic = new CullUnitObjectStatic(s_nameCullUnitObjectStatic, this);
         this->pCullUnitObjectStatic->Init();
+    }
+
+    CullRenderData* CullObjectStatic::AddStaticCullRenderData(CullLodData* pLodData)
+    {
+        if (pLodData == nullptr)
+            return nullptr;
+
+        CullLodDataPtrVector aLodDatas;
+        aLodDatas.push_back(pLodData);
+        CullRenderDataPtrVector aCullRenderData;
+        if (AddStaticCullRenderDatas(aLodDatas, aCullRenderData))
+        {
+            if (aCullRenderData.size() > 0)
+                return aCullRenderData[0];
+        }
+        return nullptr;
+    }
+    bool CullObjectStatic::AddStaticCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData)
+    {
+        int count_lod = (int)aLodDatas.size();
+        if (count_lod <= 0)
+        {
+            F_LogError("*********************** CullObjectStatic::AddStaticCullRenderDatas: Lod data count <= 0 !");
+            return false;
+        }
+
+        int count_render = 0;
+        int count_instance = 0;
+        for (int i = 0; i < count_lod; i++)
+        {
+            CullLodData* pLodData = aLodDatas[i];
+            if (pLodData->pMesh == nullptr)
+            {
+                F_LogError("*********************** CullObjectStatic::AddStaticCullRenderDatas: Mesh is null !");
+                return false;
+            }
+            int countMeshSub = pLodData->pMesh->GetMeshSubCount();
+            if (countMeshSub != this->pCullUnitObjectStatic->nLodCount)
+            {
+                F_LogError("*********************** CullObjectStatic::AddStaticCullRenderDatas: Lod data count is wrong, src: [%d], dst: [%d] !", countMeshSub, this->pCullUnitObjectStatic->nLodCount);
+                return false;
+            }
+            count_render += countMeshSub;
+            count_instance += (int)pLodData->aInstanceDatas.size();
+        }
+
+        if (this->pCullUnitObjectStatic->nRenderArgsCount + count_render >= CullObjectStatic::s_nRenderCountMax)
+        {
+            F_LogError("*********************** CullObjectStatic::AddStaticCullRenderDatas: Render count is >= [%d] !", CullObjectStatic::s_nRenderCountMax);
+            return false;
+        }
+        if (this->pCullUnitObjectStatic->nObjectCount + count_instance >= CullObjectStatic::s_nInstanceCountMax)
+        {
+            F_LogError("*********************** CullObjectStatic::AddStaticCullRenderDatas: Render count is >= [%d] !", CullObjectStatic::s_nRenderCountMax);
+            return false;
+        }
+
+        for (int i = 0; i < count_lod; i++)
+        {
+            CullLodData* pLodData = aLodDatas[i];
+
+            CullRenderData* pCullRenderData = CullManager::GetSingleton().GetCullRenderData();
+            pCullRenderData->Destroy();
+            pCullRenderData->Init(pLodData, this->pCullUnitObjectStatic->nRenderArgsCount, this->pCullUnitObjectStatic->nObjectCount, CullObjectStatic::s_nInstanceCountMax);
+            this->pCullUnitObjectStatic->AddCullRenderData(pCullRenderData);
+
+            aCullRenderData.push_back(pCullRenderData);
+        }
+        return true;
+    }
+    void CullObjectStatic::RemoveStaticCullRenderData(CullRenderData* pCullRenderData)
+    {
+        this->pCullUnitObjectStatic->RemoveCullRenderData(pCullRenderData);
+        this->pCullUnitObjectStatic->RefreshCullRenderData();
     }
 
 }; //LostPeterVulkan
