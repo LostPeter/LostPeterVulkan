@@ -21,10 +21,7 @@ namespace LostPeterVulkan
     public:
         VKPipelineComputeCull(const String& namePipelineCompute, VKRenderPassCull* pVKRenderPassCull);
         virtual ~VKPipelineComputeCull();
-
-    public:
-    
-
+        
     public:
         VKRenderPassCull* m_pVKRenderPassCull;
         CullManager* m_pCullManager;

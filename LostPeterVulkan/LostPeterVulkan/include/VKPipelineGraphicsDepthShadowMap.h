@@ -25,26 +25,83 @@ namespace LostPeterVulkan
     public:
         VKRenderPassShadowMap* m_pVKRenderPassShadowMap;
 
-        String nameDescriptorSetLayout;
-        StringVector* poDescriptorSetLayoutNames;
-        VkDescriptorSetLayout poDescriptorSetLayout;
-        VkPipelineLayout poPipelineLayout;
-        VkPipeline poPipeline;
-        VkDescriptorSetVector poDescriptorSets;
+        //PipelineGraphics-ShadowMapDepth
+        String nameDescriptorSetLayout_ShadowMapDepth;
+        StringVector* poDescriptorSetLayoutNames_ShadowMapDepth;
+        VkDescriptorSetLayout poDescriptorSetLayout_ShadowMapDepth;
+        VkPipelineLayout poPipelineLayout_ShadowMapDepth;
+        VkPipeline poPipeline_ShadowMapDepth;
+        VkDescriptorSetVector poDescriptorSets_ShadowMapDepth;
 
+        //PipelineGraphics-ShadowMapDepthCull
+        String nameDescriptorSetLayout_ShadowMapDepthCull;
+        StringVector* poDescriptorSetLayoutNames_ShadowMapDepthCull;
+        VkDescriptorSetLayout poDescriptorSetLayout_ShadowMapDepthCull;
+        VkPipelineLayout poPipelineLayout_ShadowMapDepthCull;
+        VkPipeline poPipeline_ShadowMapDepthCull;
+        VkDescriptorSetVector poDescriptorSets_ShadowMapDepthCull;
+
+        //ObjectConstants
+        std::vector<ObjectConstants> objectWorldCBs;
+        VkBuffer poBuffer_ObjectWorldCB;
+        VkDeviceMemory poBufferMemory_ObjectWorldCB;
+
+        //InstanceConstants
+        std::vector<InstanceConstants> instanceCBs;
+        VkBuffer poBuffer_InstanceCB;
+        VkDeviceMemory poBufferMemory_InstanceCB;
+            
 
     public:
         void Destroy();
-        virtual bool Init(const String& descriptorSetLayout,
-                          StringVector* pDescriptorSetLayoutNames,
-                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                          const VkPipelineLayout& vkPipelineLayout,
-                          const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+
+        virtual bool Init();
+
+        virtual bool InitShadowMapDepth(const String& descriptorSetLayout,
+                                        StringVector* pDescriptorSetLayoutNames,
+                                        const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                        const VkPipelineLayout& vkPipelineLayout,
+                                        const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+        virtual bool InitShadowMapDepthCull(const String& descriptorSetLayout,
+                                            StringVector* pDescriptorSetLayoutNames,
+                                            const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                            const VkPipelineLayout& vkPipelineLayout,
+                                            const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+
+    protected:
+        virtual void destroyBufferInstanceCB();
+        virtual void destroyBufferObjectWorldCB();
+
+        virtual bool createBufferObjectWorldCB();
+        virtual bool createBufferInstanceCB();
+        bool createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+                                      const String& descriptorSetLayout,
+                                      StringVector* pDescriptorSetLayoutNames,
+                                      const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                      const VkPipelineLayout& vkPipelineLayout,
+                                      const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                      VkPipeline& vkPipeline,
+                                      VkDescriptorSetVector& vkDescriptorSets);
 
     public:
         virtual void CleanupSwapChain();
-        
-        virtual void UpdateDescriptorSets(const VkBufferVector& poBuffersObject);
+
+        virtual void UpdateBuffer_ObjectWorld_Clear();
+        virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
+        virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
+        virtual void UpdateBuffer_ObjectWorld_Update();
+
+        virtual void UpdateDescriptorSet_ShadowMapDepth();
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(ComputeBuffer* pCB_CullInstances,
+                                                            ComputeBuffer* pCB_Result);
+
+    protected:
+        virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
+                                          StringVector* poDescriptorSetLayoutNames,
+                                          VkBuffer vkBuffer_ObjectWorldCB,
+                                          VkBuffer vkBuffer_InstanceCB,
+                                          ComputeBuffer* pCB_CullInstances,
+                                          ComputeBuffer* pCB_Result);
     };  
 
 }; //LostPeterVulkan

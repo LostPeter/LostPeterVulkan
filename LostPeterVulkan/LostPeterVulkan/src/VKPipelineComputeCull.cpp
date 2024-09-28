@@ -28,6 +28,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_CullClearArgs(VK_NULL_HANDLE)
         , poPipelineLayout_CullClearArgs(VK_NULL_HANDLE)
         , poPipeline_CullClearArgs(VK_NULL_HANDLE)
+        , poDescriptorSet_CullClearArgs(VK_NULL_HANDLE)
 
         //PipelineCompute-CullFrustum
         , nameDescriptorSetLayout_CullFrustum("")
@@ -35,6 +36,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_CullFrustum(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustum(VK_NULL_HANDLE)
         , poPipeline_CullFrustum(VK_NULL_HANDLE)
+        , poDescriptorSet_CullFrustum(VK_NULL_HANDLE)
 
         //PipelineCompute-CullFrustumDepthHiz
         , nameDescriptorSetLayout_CullFrustumDepthHiz("")
@@ -42,6 +44,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_CullFrustumDepthHiz(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustumDepthHiz(VK_NULL_HANDLE)
         , poPipeline_CullFrustumDepthHiz(VK_NULL_HANDLE)
+        , poDescriptorSet_CullFrustumDepthHiz(VK_NULL_HANDLE)
 
         //PipelineCompute-CullFrustumDepthHizClip
         , nameDescriptorSetLayout_CullFrustumDepthHizClip("")
@@ -49,6 +52,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_CullFrustumDepthHizClip(VK_NULL_HANDLE)
         , poPipelineLayout_CullFrustumDepthHizClip(VK_NULL_HANDLE)
         , poPipeline_CullFrustumDepthHizClip(VK_NULL_HANDLE)
+        , poDescriptorSet_CullFrustumDepthHizClip(VK_NULL_HANDLE)
 
         //PipelineCompute-HizDepthGenerate
         , nameDescriptorSetLayout_HizDepthGenerate("")
@@ -56,6 +60,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_HizDepthGenerate(VK_NULL_HANDLE)
         , poPipelineLayout_HizDepthGenerate(VK_NULL_HANDLE)
         , poPipeline_HizDepthGenerate(VK_NULL_HANDLE)
+        , poDescriptorSet_HizDepthGenerate(VK_NULL_HANDLE)
 
         //CullConstants
         , poBuffer_CullCB(VK_NULL_HANDLE)

@@ -28,6 +28,7 @@ namespace LostPeterVulkan
     #define MAX_TEXTURE_COUNT 16
     #define MAX_OBJECT_COUNT 1024
     #define MAX_OBJECT_WORLD_COUNT 2048
+    #define MAX_OBJECT_INSTANCE_COUNT 50000
     #define MAX_OBJECT_TERRAIN_COUNT 8196
     #define MAX_OBJECT_LINEFLAT_2D_COUNT 2048
     #define MAX_OBJECT_LINEFLAT_3D_COUNT 512
@@ -292,6 +293,7 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_BufferRWLodCB,                 //32: BufferRWLodCB
         Vulkan_DescriptorSet_BufferRWResultCB,              //33: BufferRWResultCB
         Vulkan_DescriptorSet_BufferRWClipCB,                //34: BufferRWClipCB
+        Vulkan_DescriptorSet_BufferRWObjectCullInstance,    //35: BufferRWObjectCullInstance
 
         Vulkan_DescriptorSet_Count,
     };

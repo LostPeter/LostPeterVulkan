@@ -18,7 +18,7 @@
     PassConstants passConsts;
 }
 
-#define MAX_OBJECT_INSTANCE_COUNT 2048
+#define MAX_OBJECT_INSTANCE_COUNT 500000
 [[vk::binding(1)]]cbuffer instanceConsts            : register(b1) 
 {
     InstanceConstants instanceConsts[MAX_OBJECT_INSTANCE_COUNT];
@@ -41,7 +41,7 @@ VSOutput main(VSInput_Pos3Color4Normal3TexCood2 input,
     InstanceConstants ins = instanceConsts[instanceIndex];
     uint index = resultCB[ins.offsetObject + instanceIndex];
     CullObjectInstanceConstants obj = instanceCB[index];
-    
+
     output.outPosition = mul(passConsts.g_MainLight.depthMVP, mul(obj.mat4Object2World, float4(input.inPosition, 1.0)));
 
     return output;

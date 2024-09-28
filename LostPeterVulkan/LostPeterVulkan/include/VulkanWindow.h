@@ -35,10 +35,6 @@ namespace LostPeterVulkan
         VkBufferVector poBuffers_PassCB;
         VkDeviceMemoryVector poBuffersMemory_PassCB;
 
-        std::vector<ObjectConstants> objectWorldCBs;
-        VkBufferVector poBuffers_ObjectWorldCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectWorldCB;
-
         //PipelineCompute
         VKPipelineComputeCull* m_pPipelineCompute_Cull;
         VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
@@ -101,7 +97,6 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_DepthShadowMap
-        virtual void UpdateDescriptorSets_Graphics_DepthShadowMap(const VkBufferVector& poBuffersObject);
         virtual void UpdateBuffer_ObjectWorld_Begin();
             virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
             virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
@@ -151,10 +146,8 @@ namespace LostPeterVulkan
         //Uniform ConstantBuffer
         virtual void destroyUniformCB_Internal();
             virtual void destroyUniform_PassCB();
-            virtual void destroyUniform_ObjectWorldCB();
         virtual void createUniformCB_Internal();
             virtual void createUniform_PassCB();
-            virtual void createUniform_ObjectWorldCB();
 
         //PipelineCompute
         virtual void destroyPipelineCompute_Internal();

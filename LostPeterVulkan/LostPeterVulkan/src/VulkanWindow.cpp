@@ -311,11 +311,12 @@ namespace LostPeterVulkan
     }
 
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 10;
+    static const int g_DescriptorSetLayoutCount_Internal = 11;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
         "Pass-Object",
+        "Pass-Instance-BufferRWObjectCullInstance-BufferRWResultCB",
         "ObjectCopyBlit-TextureFrameColor",
         "Cull-BufferRWArgsCB",
         "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB",
@@ -384,7 +385,7 @@ namespace LostPeterVulkan
         "vert_standard_copy_blit",                                "vert",              "Assets/Shader/standard_copy_blit.vert.spv", //standard_copy_blit vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
         "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
-        
+
         "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
@@ -499,8 +500,6 @@ namespace LostPeterVulkan
     {
         //1> PassCB
         destroyUniform_PassCB();
-        //2> ObjectWorldCB
-        destroyUniform_ObjectWorldCB();
     }
         void VulkanWindow::destroyUniform_PassCB()
         {
@@ -512,24 +511,11 @@ namespace LostPeterVulkan
             this->poBuffers_PassCB.clear();
             this->poBuffersMemory_PassCB.clear();
         }
-        void VulkanWindow::destroyUniform_ObjectWorldCB()
-        {
-            size_t count = this->poBuffers_ObjectWorldCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-                destroyVkBuffer(this->poBuffers_ObjectWorldCB[i], this->poBuffersMemory_ObjectWorldCB[i]);
-            }
-            this->poBuffers_ObjectWorldCB.clear();
-            this->poBuffersMemory_ObjectWorldCB.clear();
-            this->objectWorldCBs.clear();
-        }
         
     void VulkanWindow::createUniformCB_Internal()
     {
         //1> PassCB
         createUniform_PassCB();
-        //2> ObjectWorldCB
-        createUniform_ObjectWorldCB();
     }
         void VulkanWindow::createUniform_PassCB()
         {
@@ -549,25 +535,6 @@ namespace LostPeterVulkan
                                this->poBuffersMemory_PassCB[i]);
             }
             F_LogInfo("VulkanWindow::createUniform_PassCB: Create Uniform Pass constant buffer success !");
-        }
-        void VulkanWindow::createUniform_ObjectWorldCB()
-        {
-            VkDeviceSize bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_WORLD_COUNT;
-            size_t count = this->poSwapChainImages.size();
-            this->poBuffers_ObjectWorldCB.resize(count);
-            this->poBuffersMemory_ObjectWorldCB.resize(count);
-
-            for (size_t i = 0; i < count; i++) 
-            {
-                String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(i);
-                createVkBuffer(nameBuffer,
-                               bufferSize, 
-                               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                               this->poBuffers_ObjectWorldCB[i], 
-                               this->poBuffersMemory_ObjectWorldCB[i]);
-            }
-            F_LogInfo("VulkanWindow::createUniform_ObjectWorldCB: Create Uniform ObjectWorld constant buffer success !");
         }
 
     //PipelineCompute
@@ -896,76 +863,105 @@ namespace LostPeterVulkan
         void VulkanWindow::createPipelineGraphics_DepthShadowMap()
         {
             this->m_pPipelineGraphics_DepthShadowMap = new VKPipelineGraphicsDepthShadowMap("PipelineGraphics-DepthShadowMap", this->m_pVKRenderPassShadowMap);
-            String descriptorSetLayout = "Pass-Object";
-            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-            F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                     vkDescriptorSetLayout != nullptr &&
-                     vkPipelineLayout != nullptr &&
-                     "VulkanWindow::createPipelineGraphics_DepthShadowMap")
-
-            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
-            String nameShaderVert = "vert_standard_renderpass_shadowmap";
-            if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
-                                                      "",
-                                                      "",
-                                                      "",
-                                                      "",
-                                                      this->m_mapVkShaderModules_Internal,
-                                                      aShaderStageCreateInfos_DepthShadowMap))
+            if (!this->m_pPipelineGraphics_DepthShadowMap->Init())
             {
-                String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: Can not find shader used !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-
-            if (!this->m_pPipelineGraphics_DepthShadowMap->Init(descriptorSetLayout,
-                                                                pDescriptorSetLayoutNames,
-                                                                vkDescriptorSetLayout,
-                                                                vkPipelineLayout,
-                                                                aShaderStageCreateInfos_DepthShadowMap))
-            {
-                F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: PipelineGraphics_DepthShadowMap->Init failed !");
+                F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: m_pPipelineGraphics_DepthShadowMap->Init failed !");
                 return;
             }
-            F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics_DepthShadowMap] create success !");
-        }
-    void VulkanWindow::UpdateDescriptorSets_Graphics_DepthShadowMap(const VkBufferVector& poBuffersObject)
-    {
-        if (this->m_pPipelineGraphics_DepthShadowMap == nullptr ||
-            !this->cfg_isRenderPassShadowMap)
-            return;
+            
+            //PipelineGraphics-ShadowMapDepth
+            {
+                String descriptorSetLayout = "Pass-Object";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
 
-        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSets(poBuffersObject);
-    }
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-ShadowMapDepth]")
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
+                String nameShaderVert = "vert_standard_renderpass_shadowmap";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_DepthShadowMap))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepth(descriptorSetLayout,
+                                                                                  pDescriptorSetLayoutNames,
+                                                                                  vkDescriptorSetLayout,
+                                                                                  vkPipelineLayout,
+                                                                                  aShaderStageCreateInfos_DepthShadowMap))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] PipelineGraphics_DepthShadowMap->Init failed !");
+                    return;
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] create success !");
+            }
+
+            //PipelineGraphics-ShadowMapDepthCull
+            {
+                String descriptorSetLayout = "Pass-Instance-BufferRWObjectCullInstance-BufferRWResultCB";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-ShadowMapDepthCull]")
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
+                String nameShaderVert = "vert_standard_renderpass_shadowmap_cull";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_DepthShadowMap))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepthCull(descriptorSetLayout,
+                                                                                      pDescriptorSetLayoutNames,
+                                                                                      vkDescriptorSetLayout,
+                                                                                      vkPipelineLayout,
+                                                                                      aShaderStageCreateInfos_DepthShadowMap))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] PipelineGraphics_DepthShadowMap->Init failed !");
+                    return;
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] create success !");
+            }
+        }
     void VulkanWindow::UpdateBuffer_ObjectWorld_Begin()
     {
-        this->objectWorldCBs.clear();
+        this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_Clear();
     }
         void VulkanWindow::UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object)
         {
-            this->objectWorldCBs.push_back(object);
+            this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_AddOne(object);
         }
         void VulkanWindow::UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects)
         {
-            size_t count = objects.size();
-            for (size_t i = 0; i < count; i++)
-            {
-                this->objectWorldCBs.push_back(objects[i]);
-            }
+            this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_AddList(objects);
         }
     void VulkanWindow::UpdateBuffer_ObjectWorld_End()
     {
-        if (this->objectWorldCBs.size() <= 0)
-            return;
-
-        size_t count = this->poBuffersMemory_ObjectWorldCB.size();
-        for (size_t i = 0; i < count; i++)
-        {
-            updateVKBuffer(0, sizeof(ObjectConstants) * this->objectWorldCBs.size(), this->objectWorldCBs.data(), this->poBuffersMemory_ObjectWorldCB[i]);
-        }
+        this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_Update();
     }
     bool VulkanWindow::Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer)
     {
@@ -973,8 +969,8 @@ namespace LostPeterVulkan
             !this->cfg_isRenderPassShadowMap)
             return false;
 
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline_ShadowMapDepth);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepth, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepth[this->poSwapChainImageIndex], 0, nullptr);
 
         return true;
     }
@@ -1495,6 +1491,10 @@ namespace LostPeterVulkan
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWClipCB)) //BufferRWClipCB
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
