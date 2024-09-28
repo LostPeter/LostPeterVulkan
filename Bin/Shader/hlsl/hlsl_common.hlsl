@@ -12,7 +12,6 @@
 #ifndef _HLSL_COMMON_
 #define _HLSL_COMMON_
 
-
 #include "./hlsl_constant.hlsl"
 
 
@@ -287,7 +286,11 @@ struct CullObjectConstants
     uint nObjectOffset; //Object Offset
     uint nIsNoHizTest; //IsNoHizTest
 };
-
+struct CullObjectInstanceConstants
+{
+    float4x4 mat4Object2World;
+    float4x4 mat4World2Object;
+};
 
 //////////////////////////////// HizDepthConstants //////////////////////////////
 struct HizDepthConstants

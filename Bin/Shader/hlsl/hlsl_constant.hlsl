@@ -34,6 +34,11 @@
 //Static
 static const float c_fOscillateDelta = 0.05;
 
+static const float4x4 c_mat4Bias = float4x4(0.5, 0.0, 0.0, 0.5,
+                                            0.0, 0.5, 0.0, 0.5,
+                                            0.0, 0.0, 0.5, 0.5,
+                                            0.0, 0.0, 0.0, 1.0);
+
 static const float3 c_aAggressiveExtentArray[8] =
 {
     float3( 1,       1,      1),

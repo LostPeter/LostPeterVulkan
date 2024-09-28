@@ -18,8 +18,8 @@
     CullConstants cullConsts;
 }
 
-[[vk::binding(1)]] RWStructuredBuffer<uint> argsCB              				: register(u0);
-[[vk::binding(2)]] RWStructuredBuffer<CullObjectConstants> cullObjectConstsCB 	: register(u1);
+[[vk::binding(1)]] RWStructuredBuffer<CullObjectConstants> cullObjectConstsCB 	: register(u0);
+[[vk::binding(2)]] RWStructuredBuffer<uint> argsCB              				: register(u1);
 [[vk::binding(3)]] RWStructuredBuffer<float> lodCB								: register(u2);
 [[vk::binding(4)]] RWStructuredBuffer<uint> resultCB							: register(u3);
 [[vk::binding(5)]] RWStructuredBuffer<uint> clipCB								: register(u4);

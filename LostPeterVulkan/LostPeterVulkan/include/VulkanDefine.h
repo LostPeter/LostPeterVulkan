@@ -1495,6 +1495,15 @@ namespace LostPeterVulkan
         FVector4 v4ParamComon[4]; ///Param common (0: CameraPos; 1: Min FrustumPlanes; 2: Max FrustumPlanes; 3: Hiz ScreenRes)
         FVector4 v4ParamRender; //Param Render
         FVector4 v4PosPlayer; //Pos Player
+
+        CullConstants()
+            : nMaxLodCount((int)Vulkan_Lod_Count)
+            , nMaxRenderCount(200)
+            , nMaxObjectCount(10000)
+            , nIsNoCulling(0)
+        {
+
+        }
     };
     struct vulkanExport CullObjectConstants
     {

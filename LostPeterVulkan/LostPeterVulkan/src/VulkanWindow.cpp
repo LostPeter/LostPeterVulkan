@@ -376,13 +376,15 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 14;
+    static const int g_ShaderCount_Internal = 15;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
         ///////////////////////////////////////// vert /////////////////////////////////////////
         "vert_standard_copy_blit",                                "vert",              "Assets/Shader/standard_copy_blit.vert.spv", //standard_copy_blit vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
+        "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
+        
         "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
@@ -732,6 +734,15 @@ namespace LostPeterVulkan
 
             F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create PipelineCompute_Cull success !");
         }
+    void VulkanWindow::Update_Compute_Cull(VkCommandBuffer& commandBuffer)
+    {
+        if (!this->cfg_isRenderPassCull ||
+            this->m_pPipelineCompute_Cull == nullptr)
+            return;
+
+        
+    }
+
         void VulkanWindow::createPipelineCompute_Terrain()
         {
             if (!this->cfg_isRenderPassTerrain)
@@ -1385,7 +1396,7 @@ namespace LostPeterVulkan
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCull)) //ObjectCull
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {

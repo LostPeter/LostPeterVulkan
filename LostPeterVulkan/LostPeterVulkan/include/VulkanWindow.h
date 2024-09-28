@@ -87,6 +87,9 @@ namespace LostPeterVulkan
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
 
         //PipelineCompute
+        //PipelineCompute-Cull
+        virtual void Update_Compute_Cull(VkCommandBuffer& commandBuffer);
+
         //PipelineCompute_Terrain
         virtual void UpdateDescriptorSets_Compute_Terrain();
         virtual void Update_Compute_Terrain(VkCommandBuffer& commandBuffer);

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-06-30
+* Time:     2024-09-28
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -37,6 +37,10 @@
 }
 
 
+[[vk::binding(4)]] RWStructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(u0);
+[[vk::binding(5)]] RWStructuredBuffer<uint> resultCB	                        : register(u1);
+
+
 VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 main(VSInput_Pos3Color4Normal3TexCood2 input, 
                                                     uint viewIndex : SV_ViewID,
                                                     uint instanceIndex : SV_InstanceID)
@@ -44,16 +48,18 @@ VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 main(VSInput_Pos3Color4Normal3Tex
     VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 output = (VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
-    ObjectConstants obj = objectConsts[instanceIndex];
+    InstanceConstants ins = instanceConsts[instanceIndex];
+    uint index = resultCB[ins.offsetObject + instanceIndex];
+    CullObjectInstanceConstants obj = instanceCB[index];
 
-    output.outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
+    output.outWorldPos = mul(obj.mat4Object2World, float4(input.inPosition, 1.0));
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
     output.outColor = input.inColor;
-    output.outWorldNormal = mul((float3x3)obj.g_MatWorld, input.inNormal);
+    output.outWorldNormal = mul((float3x3)obj.mat4Object2World, input.inNormal);
     output.outTexCoord = input.inTexCoord;
-    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, mul(obj.g_MatWorld, float4(input.inPosition, 1.0))));
+    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, mul(obj.mat4Object2World, float4(input.inPosition, 1.0))));
     
     return output;
 }

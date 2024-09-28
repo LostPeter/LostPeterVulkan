@@ -59,6 +59,9 @@ namespace LostPeterVulkan
         void Destroy();
         void Init(VKPipelineComputeCull* pPipelineComputeCull);
 
+        void ExecuteHizCullTest();
+        void ExecuteHizDepthGenerate();
+
     protected:  
         void destroyCullObjects();
         void destroyPools();

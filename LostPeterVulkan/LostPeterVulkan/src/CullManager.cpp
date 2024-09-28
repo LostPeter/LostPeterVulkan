@@ -35,7 +35,7 @@ namespace LostPeterVulkan
 	}
 
     int CullManager::s_nRenderCount_Init = 20;
-    int CullManager::s_nRenderCount_Max = 200;
+    int CullManager::s_nRenderCount_Max = 1000;
     int CullManager::s_nRenderCount_Step = 20;
     int CullManager::s_nInstanceCount_Init = 1000;
     int CullManager::s_nInstanceCount_Max = 100000;
@@ -117,6 +117,15 @@ namespace LostPeterVulkan
             this->pCullObjectDynamic->Init();
             AddCullUnit(this->pCullObjectDynamic->pCullUnitObjectDynamic);
         }
+
+    void CullManager::ExecuteHizCullTest()
+    {
+        
+    }
+    void CullManager::ExecuteHizDepthGenerate()
+    {
+
+    }
 
     void CullManager::AddCullUnit(CullUnit* pCullUnit)
     {

@@ -23,7 +23,6 @@ namespace LostPeterVulkan
         , poDescriptorSetLayoutNames(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poPipelineLayout(VK_NULL_HANDLE)
-        , poPipeline_WireFrame(VK_NULL_HANDLE)
         , poPipeline(VK_NULL_HANDLE)
         
 
@@ -106,12 +105,6 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayoutNames = nullptr;
         this->poDescriptorSetLayout = VK_NULL_HANDLE;
         this->poPipelineLayout = VK_NULL_HANDLE;
-        if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame);
-        }
-        this->poPipeline_WireFrame = VK_NULL_HANDLE;
-
         if (this->poPipeline != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline);
@@ -119,7 +112,7 @@ namespace LostPeterVulkan
         this->poPipeline = VK_NULL_HANDLE;
         this->poDescriptorSets.clear();
     }  
-
+    
     void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSets(const VkBufferVector& poBuffersObject)
     {
         StringVector* pDescriptorSetLayoutNames = this->poDescriptorSetLayoutNames;

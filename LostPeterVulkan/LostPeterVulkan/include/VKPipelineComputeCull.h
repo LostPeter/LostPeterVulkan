@@ -76,35 +76,10 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_CullCB;  
         VkDeviceMemory poBufferMemory_CullCB;
 
-        //CullObjectConstants
-        CullObjectConstantsVector cullObjectCBs;
-        VkBuffer poBuffer_CullObjectCB;
-        VkDeviceMemory poBufferMemory_CullObjectCB;
-
         //HizDepthConstants
         HizDepthConstants hizDepthCB;
         VkBuffer poBuffer_HizDepthCB;  
         VkDeviceMemory poBufferMemory_HizDepthCB;
-
-        //Args
-        Uint32Vector aArgsCB;
-        VkBuffer poBuffer_ArgsCB;  
-        VkDeviceMemory poBufferMemory_ArgsCB;
-
-        //Lod
-        FloatVector aLodCB;
-        VkBuffer poBuffer_LodCB;  
-        VkDeviceMemory poBufferMemory_LodCB;
-
-        //Result
-        Uint32Vector aResultCB;
-        VkBuffer poBuffer_ResultCB;  
-        VkDeviceMemory poBufferMemory_ResultCB;
-
-        //Clip
-        Uint32Vector aClipCB;
-        VkBuffer poBuffer_ClipCB;  
-        VkDeviceMemory poBufferMemory_ClipCB;
 
 
     public:
@@ -139,22 +114,12 @@ namespace LostPeterVulkan
                                           const VkShaderModule& vkShaderModule);
 
     protected:
-        void destroyBufferClip();
-        void destroyBufferResult();
-        void destroyBufferLod();
-        void destroyBufferArgs();
         void destroyBufferHizDepth();
-        void destroyBufferCullObject();
         void destroyBufferCull();
         void destroyVkComputePipeline(VkPipeline& poPipeline);
         
         bool createBufferCull();
-        bool createBufferCullObject();
         bool createBufferHizDepth();
-        bool createBufferArgs();
-        bool createBufferLod();
-        bool createBufferResult();
-        bool createBufferClip();
         bool createVkComputePipeline(const String& nameComputePipeline,
                                      const String& descriptorSetLayout,
                                      StringVector* pDescriptorSetLayoutNames,
@@ -167,9 +132,34 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
-        virtual void UpdateDescriptorSet(VkDescriptorSet& descriptorSet,
-                                         StringVector* poDescriptorSetLayoutNames);
+        virtual void Dispatch_Cull();
+        virtual void Dispatch_HizDepthGenerate();
 
+    public:
+        virtual void UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs);
+        virtual void UpdateDescriptorSet_CullFrustum(ComputeBuffer* pCB_CullObjects,
+                                                     ComputeBuffer* pCB_RenderArgs,
+                                                     ComputeBuffer* pCB_LodArgs,
+                                                     ComputeBuffer* pCB_Result);
+        virtual void UpdateDescriptorSet_CullFrustumDepthHiz(ComputeBuffer* pCB_CullObjects,
+                                                             ComputeBuffer* pCB_RenderArgs,
+                                                             ComputeBuffer* pCB_LodArgs,
+                                                             ComputeBuffer* pCB_Result);
+        virtual void UpdateDescriptorSet_CullFrustumDepthHizClip(ComputeBuffer* pCB_CullObjects,
+                                                                 ComputeBuffer* pCB_RenderArgs,
+                                                                 ComputeBuffer* pCB_LodArgs,
+                                                                 ComputeBuffer* pCB_Result,
+                                                                 ComputeBuffer* pCB_Clip);
+        virtual void UpdateDescriptorSet_HizDepthGenerate();
+
+    protected:
+        virtual void updateDescriptorSet(VkDescriptorSet& descriptorSet,
+                                         StringVector* poDescriptorSetLayoutNames,
+                                         ComputeBuffer* pCB_CullObjects,
+                                         ComputeBuffer* pCB_RenderArgs,
+                                         ComputeBuffer* pCB_LodArgs,
+                                         ComputeBuffer* pCB_Result,
+                                         ComputeBuffer* pCB_Clip);
     };
 
 }; //LostPeterVulkan

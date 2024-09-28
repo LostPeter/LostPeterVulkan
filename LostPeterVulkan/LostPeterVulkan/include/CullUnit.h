@@ -35,6 +35,7 @@ namespace LostPeterVulkan
         virtual int GetRenderCount() = 0;  
         virtual ComputeBuffer* GetRenderArgsCB() = 0;
 
+        
     };
 
 }; //LostPeterVulkan

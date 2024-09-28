@@ -29,7 +29,6 @@ namespace LostPeterVulkan
         StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
-        VkPipeline poPipeline_WireFrame;
         VkPipeline poPipeline;
         VkDescriptorSetVector poDescriptorSets;
 
@@ -44,7 +43,7 @@ namespace LostPeterVulkan
 
     public:
         virtual void CleanupSwapChain();
-
+        
         virtual void UpdateDescriptorSets(const VkBufferVector& poBuffersObject);
     };  
 
