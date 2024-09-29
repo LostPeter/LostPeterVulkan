@@ -1229,7 +1229,20 @@ namespace LostPeterVulkan
                                                                               VkShaderStageFlags stageFlags,
                                                                               VkSampler* pImmutableSamplers);
 
+                        virtual void pushVkDescriptorSet_Buffer(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                VkDescriptorSet dstSet,
+                                                                uint32_t dstBinding,
+                                                                uint32_t dstArrayElement,
+                                                                uint32_t descriptorCount,
+                                                                VkDescriptorType type,
+                                                                VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                 VkDescriptorSet dstSet,
+                                                                 uint32_t dstBinding,
+                                                                 uint32_t dstArrayElement,
+                                                                 uint32_t descriptorCount,
+                                                                 VkDescriptorBufferInfo& bufferInfo);
+                        virtual void pushVkDescriptorSet_Storage(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                  VkDescriptorSet dstSet,
                                                                  uint32_t dstBinding,
                                                                  uint32_t dstArrayElement,

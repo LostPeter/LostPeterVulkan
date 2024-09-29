@@ -2296,7 +2296,7 @@ namespace LostPeterVulkan
 				prefix = "ERROR: ";
 			}
 
-            F_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] [%d][%s]: [%s]!", prefix.c_str(), pCallbackData->messageIdNumber, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+            F_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] [%d] - [%s]: [%s]!", prefix.c_str(), pCallbackData->messageIdNumber, pCallbackData->pMessageIdName, pCallbackData->pMessage);
             return VK_FALSE;
         }
         void VulkanWindow::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
@@ -2403,7 +2403,7 @@ namespace LostPeterVulkan
                 F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU");
             else if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)
                 F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_CPU");
-            F_LogInfo("  deviceName: [%s] \n", this->poPhysicalDeviceProperties.deviceName);
+            F_LogInfo("  deviceName: [%s]", this->poPhysicalDeviceProperties.deviceName);
 
             F_LogInfo("  maxImageDimension1D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension1D);
             F_LogInfo("  maxImageDimension2D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension2D);
@@ -2600,6 +2600,11 @@ namespace LostPeterVulkan
         {
             if (pFuncGetPhysicalDeviceFeatures2KHR != nullptr)
             {
+                if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
+                {
+                    this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
+                }
+
                 F_LogInfo("  multiview: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiview ? "true" : "false");
                 F_LogInfo("  multiviewGeometryShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewGeometryShader ? "true" : "false");
                 F_LogInfo("  multiviewTessellationShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewTessellationShader ? "true" : "false");
@@ -3649,7 +3654,7 @@ namespace LostPeterVulkan
                                             VK_ATTACHMENT_STORE_OP_STORE,
                                             VK_ATTACHMENT_LOAD_OP_DONT_CARE,
                                             VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
                 aAttachmentDescription.push_back(attachmentImgui_Color);
                 
@@ -7317,12 +7322,13 @@ namespace LostPeterVulkan
                 descriptorSetLayoutBinding.pImmutableSamplers = pImmutableSamplers;
             }
 
-            void VulkanWindow::pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
-                                                           VkDescriptorSet dstSet,
-                                                           uint32_t dstBinding,
-                                                           uint32_t dstArrayElement,
-                                                           uint32_t descriptorCount,
-                                                           VkDescriptorBufferInfo& bufferInfo)
+            void VulkanWindow::pushVkDescriptorSet_Buffer(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                          VkDescriptorSet dstSet,
+                                                          uint32_t dstBinding,
+                                                          uint32_t dstArrayElement,
+                                                          uint32_t descriptorCount,
+                                                          VkDescriptorType type,
+                                                          VkDescriptorBufferInfo& bufferInfo)
             {
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -7330,10 +7336,40 @@ namespace LostPeterVulkan
                 ds.dstBinding = dstBinding;
                 ds.dstArrayElement = dstArrayElement;
                 ds.descriptorCount = descriptorCount;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorType = type;
                 ds.pBufferInfo = &bufferInfo;
 
                 aWriteDescriptorSets.push_back(ds);
+            }
+            void VulkanWindow::pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                           VkDescriptorSet dstSet,
+                                                           uint32_t dstBinding,
+                                                           uint32_t dstArrayElement,
+                                                           uint32_t descriptorCount,
+                                                           VkDescriptorBufferInfo& bufferInfo)
+            {
+                pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
+                                           dstSet,
+                                           dstBinding,
+                                           dstArrayElement,
+                                           descriptorCount,
+                                           VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                           bufferInfo);
+            }
+            void VulkanWindow::pushVkDescriptorSet_Storage(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                           VkDescriptorSet dstSet,
+                                                           uint32_t dstBinding,
+                                                           uint32_t dstArrayElement,
+                                                           uint32_t descriptorCount,
+                                                           VkDescriptorBufferInfo& bufferInfo)
+            {
+                pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
+                                           dstSet,
+                                           dstBinding,
+                                           dstArrayElement,
+                                           descriptorCount,
+                                           VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                                           bufferInfo);
             }
             void VulkanWindow::pushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                          VkDescriptorSet dstSet,

@@ -1019,10 +1019,7 @@ Vulkan_015_MultiView::Vulkan_015_MultiView(int width, int height, String name)
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
-
-    this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
-
+    
     this->passCB.g_Pad1 = 0.2f;
 }
 
@@ -1038,11 +1035,6 @@ void Vulkan_015_MultiView::setUpEnabledFeatures()
     {
         this->m_isDrawIndirectMulti = false;
         F_LogError("*********************** Vulkan_015_MultiView::setUpEnabledFeatures: multiDrawIndirect is not supported !");
-    }
-    
-    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
-    {
-        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
     }
 }
 

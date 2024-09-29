@@ -289,7 +289,10 @@ struct CullObjectConstants
 struct CullObjectInstanceConstants
 {
     float4x4 mat4Object2World;
-    float4x4 mat4World2Object;
+};
+struct CullInstanceConstants
+{
+    uint nObjectOffset;
 };
 
 //////////////////////////////// HizDepthConstants //////////////////////////////

@@ -458,8 +458,8 @@ namespace LostPeterVulkan
                                                     ComputeBuffer* pCB_Clip)
     {
         VkWriteDescriptorSetVector descriptorWrites;
-        size_t count = poDescriptorSetLayoutNames->size();
-        for (size_t i = 0; i < count; i++)
+        uint32_t count = (uint32_t)poDescriptorSetLayoutNames->size();
+        for (uint32_t i = 0; i < count; i++)
         {
             const String& nameDescriptor = poDescriptorSetLayoutNames->at(i);
 
@@ -471,7 +471,7 @@ namespace LostPeterVulkan
                 bufferInfo_Cull.range = sizeof(CullConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                   descriptorSet,
-                                                                  (uint32_t)i,
+                                                                  i,
                                                                   0,
                                                                   1,
                                                                   bufferInfo_Cull);
@@ -484,7 +484,7 @@ namespace LostPeterVulkan
                 bufferInfo_HizDepth.range = sizeof(HizDepthConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                   descriptorSet,
-                                                                  (uint32_t)i,
+                                                                  i,
                                                                   0,
                                                                   1,
                                                                   bufferInfo_HizDepth);
@@ -497,9 +497,9 @@ namespace LostPeterVulkan
                     bufferInfo_ObjectCull.buffer = pCB_CullObjects->poBuffer_Compute;
                     bufferInfo_ObjectCull.offset = 0;
                     bufferInfo_ObjectCull.range = (VkDeviceSize)pCB_CullObjects->GetBufferSize();
-                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       descriptorSet,
-                                                                      (uint32_t)i,
+                                                                      i,
                                                                       0,
                                                                       1,
                                                                       bufferInfo_ObjectCull);
@@ -513,9 +513,9 @@ namespace LostPeterVulkan
                     bufferInfo_RenderArgs.buffer = pCB_RenderArgs->poBuffer_Compute;
                     bufferInfo_RenderArgs.offset = 0;
                     bufferInfo_RenderArgs.range = (VkDeviceSize)pCB_RenderArgs->GetBufferSize();
-                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       descriptorSet,
-                                                                      (uint32_t)i,
+                                                                      i,
                                                                       0,
                                                                       1,
                                                                       bufferInfo_RenderArgs);
@@ -529,9 +529,9 @@ namespace LostPeterVulkan
                     bufferInfo_LodArgs.buffer = pCB_LodArgs->poBuffer_Compute;
                     bufferInfo_LodArgs.offset = 0;
                     bufferInfo_LodArgs.range = (VkDeviceSize)pCB_LodArgs->GetBufferSize();
-                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       descriptorSet,
-                                                                      (uint32_t)i,
+                                                                      i,
                                                                       0,
                                                                       1,
                                                                       bufferInfo_LodArgs);
@@ -545,9 +545,9 @@ namespace LostPeterVulkan
                     bufferInfo_Result.buffer = pCB_Result->poBuffer_Compute;
                     bufferInfo_Result.offset = 0;
                     bufferInfo_Result.range = (VkDeviceSize)pCB_Result->GetBufferSize();
-                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       descriptorSet,
-                                                                      (uint32_t)i,
+                                                                      i,
                                                                       0,
                                                                       1,
                                                                       bufferInfo_Result);
@@ -561,9 +561,9 @@ namespace LostPeterVulkan
                     bufferInfo_Clip.buffer = pCB_Clip->poBuffer_Compute;
                     bufferInfo_Clip.offset = 0;
                     bufferInfo_Clip.range = (VkDeviceSize)pCB_Clip->GetBufferSize();
-                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       descriptorSet,
-                                                                      (uint32_t)i,
+                                                                      i,
                                                                       0,
                                                                       1,
                                                                       bufferInfo_Clip);
@@ -573,7 +573,7 @@ namespace LostPeterVulkan
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 descriptorSet,
-                                                                (uint32_t)i,
+                                                                i,
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
@@ -583,7 +583,7 @@ namespace LostPeterVulkan
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 descriptorSet,
-                                                                (uint32_t)i,
+                                                                i,
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
@@ -593,7 +593,7 @@ namespace LostPeterVulkan
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 descriptorSet,
-                                                                (uint32_t)i,
+                                                                i,
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,

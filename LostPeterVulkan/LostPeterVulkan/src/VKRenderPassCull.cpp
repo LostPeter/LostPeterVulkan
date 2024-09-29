@@ -54,11 +54,15 @@ namespace LostPeterVulkan
 
     bool VKRenderPassCull::Init()
     {
-        setupCullTexture();
+        if (!setupCullTexture())
+        {
+            F_LogError("VKRenderPassCull::Init: Failed to setup cull texture !");
+            return false;
+        }
         
         return true;
     }
-        void VKRenderPassCull::setupCullTexture()
+        bool VKRenderPassCull::setupCullTexture()
         {
             F_LogInfo("VKRenderPassCull::setupCullTexture: Start setup cull texture !");
 
@@ -113,6 +117,7 @@ namespace LostPeterVulkan
             }
 
             F_LogInfo("VKRenderPassCull::setupCullTexture: End setup cull texture !");
+            return true;
         }
 
     void VKRenderPassCull::CleanupSwapChain()

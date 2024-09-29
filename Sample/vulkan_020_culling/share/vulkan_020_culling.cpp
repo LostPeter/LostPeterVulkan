@@ -1259,6 +1259,8 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
 {
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
+    this->cfg_isUseComputeShader = true;
+
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;

@@ -43,7 +43,7 @@ namespace LostPeterVulkan
         virtual bool Init();
 
     protected:
-        virtual void setupCullTexture();
+        virtual bool setupCullTexture();
 
 
     public: 

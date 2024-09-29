@@ -38,7 +38,7 @@ namespace LostPeterVulkan
         , poBuffer_ObjectWorldCB(VK_NULL_HANDLE)
         , poBufferMemory_ObjectWorldCB(VK_NULL_HANDLE)
 
-        //InstanceConstants
+        //CullInstanceConstants
         , poBuffer_InstanceCB(VK_NULL_HANDLE)
         , poBufferMemory_InstanceCB(VK_NULL_HANDLE)
 
@@ -90,7 +90,7 @@ namespace LostPeterVulkan
             }
         }
 
-        //InstanceConstants
+        //CullInstanceConstants
         if (this->poBuffer_InstanceCB == VK_NULL_HANDLE)
         {
             if (!createBufferInstanceCB())
@@ -169,7 +169,7 @@ namespace LostPeterVulkan
         bool VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB()
         {
             Base::GetWindowPtr()->createVkBuffer("ObjectConstants-" + this->name,
-                                                 sizeof(ObjectConstants) * MAX_OBJECT_WORLD_COUNT, 
+                                                 sizeof(ObjectConstants) * MAX_OBJECT_COUNT, 
                                                  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
                                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
                                                  this->poBuffer_ObjectWorldCB, 
@@ -179,8 +179,8 @@ namespace LostPeterVulkan
         }
         bool VKPipelineGraphicsDepthShadowMap::createBufferInstanceCB()
         {
-            Base::GetWindowPtr()->createVkBuffer("InstanceConstants-" + this->name,
-                                                 sizeof(InstanceConstants) * MAX_OBJECT_INSTANCE_COUNT, 
+            Base::GetWindowPtr()->createVkBuffer("CullInstanceConstants-" + this->name,
+                                                 sizeof(CullInstanceConstants) * MAX_CULL_INSTANCE_COUNT, 
                                                  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
                                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
                                                  this->poBuffer_InstanceCB, 
@@ -324,12 +324,12 @@ namespace LostPeterVulkan
                                                                 ComputeBuffer* pCB_CullInstances,
                                                                 ComputeBuffer* pCB_Result)
     {
-        size_t count_descriptorsets = vkDescriptorSets.size();
-        for (size_t i = 0; i < count_descriptorsets; i++)
+        uint32_t count_descriptorsets = (uint32_t)vkDescriptorSets.size();
+        for (uint32_t i = 0; i < count_descriptorsets; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
-            size_t count_name = poDescriptorSetLayoutNames->size();
-            for (size_t j = 0; j < count_name; j++)
+            uint32_t count_name = (uint32_t)poDescriptorSetLayoutNames->size();
+            for (uint32_t j = 0; j < count_name; j++)
             {
                 String& nameDescriptorSet = poDescriptorSetLayoutNames->at(j);
 
@@ -353,7 +353,7 @@ namespace LostPeterVulkan
                         VkDescriptorBufferInfo bufferInfo_Object = {};
                         bufferInfo_Object.buffer = vkBuffer_ObjectWorldCB;
                         bufferInfo_Object.offset = 0;
-                        bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_WORLD_COUNT;
+                        bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
@@ -369,7 +369,7 @@ namespace LostPeterVulkan
                         VkDescriptorBufferInfo bufferInfo_Instance = {};
                         bufferInfo_Instance.buffer = vkBuffer_InstanceCB;
                         bufferInfo_Instance.offset = 0;
-                        bufferInfo_Instance.range = sizeof(InstanceConstants) * MAX_OBJECT_INSTANCE_COUNT;
+                        bufferInfo_Instance.range = sizeof(CullInstanceConstants) * MAX_CULL_INSTANCE_COUNT;
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
@@ -386,7 +386,7 @@ namespace LostPeterVulkan
                         bufferInfo_CullInstance.buffer = pCB_CullInstances->poBuffer_Compute;
                         bufferInfo_CullInstance.offset = 0;
                         bufferInfo_CullInstance.range = (VkDeviceSize)pCB_CullInstances->GetBufferSize();
-                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
                                                                           0,
@@ -402,7 +402,7 @@ namespace LostPeterVulkan
                         bufferInfo_Result.buffer = pCB_Result->poBuffer_Compute;
                         bufferInfo_Result.offset = 0;
                         bufferInfo_Result.range = (VkDeviceSize)pCB_Result->GetBufferSize();
-                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
                                                                           0,

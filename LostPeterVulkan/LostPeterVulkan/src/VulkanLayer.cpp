@@ -89,10 +89,10 @@ namespace LostPeterVulkan
     static const char* g_szInstanceExtensions[] =
     {
         VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
 
     #if F_PLATFORM == F_PLATFORM_iOS
         "VK_MVK_ios_surface",
-
         "MoltenVK",
 
     #elif F_PLATFORM == F_PLATFORM_ANDROID
@@ -104,8 +104,7 @@ namespace LostPeterVulkan
     #elif F_PLATFORM == F_PLATFORM_MAC
         "VK_MVK_macos_surface",
         VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
-        VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
-
+        
     #elif F_PLATFORM == F_PLATFORM_LINUX
         
     #else
@@ -119,6 +118,8 @@ namespace LostPeterVulkan
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME,
         VK_KHR_MAINTENANCE1_EXTENSION_NAME,
+        VK_KHR_MULTIVIEW_EXTENSION_NAME,
+
     #if F_DEBUG == 1
         VK_EXT_DEBUG_MARKER_EXTENSION_NAME,
     #endif

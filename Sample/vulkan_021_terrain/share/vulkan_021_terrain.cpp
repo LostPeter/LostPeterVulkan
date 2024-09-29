@@ -901,11 +901,6 @@ void Vulkan_021_Terrain::setUpEnabledFeatures()
         this->m_isDrawIndirectMulti = false;
         F_LogError("*********************** Vulkan_021_Terrain::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
-
-    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
-    {
-        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
-    }
 }
 
 void Vulkan_021_Terrain::createDescriptorSetLayout_Custom()

@@ -46,8 +46,8 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_ObjectWorldCB;
         VkDeviceMemory poBufferMemory_ObjectWorldCB;
 
-        //InstanceConstants
-        std::vector<InstanceConstants> instanceCBs;
+        //CullInstanceConstants
+        std::vector<CullInstanceConstants> instanceCBs;
         VkBuffer poBuffer_InstanceCB;
         VkDeviceMemory poBufferMemory_InstanceCB;
             

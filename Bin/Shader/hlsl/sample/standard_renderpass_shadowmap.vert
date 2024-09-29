@@ -18,10 +18,10 @@
     PassConstants passConsts;
 }
 
-#define MAX_OBJECT_WORLD_COUNT 2048
+
 [[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
 {
-    ObjectConstants objectConsts[MAX_OBJECT_WORLD_COUNT];
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
 }
 
 
