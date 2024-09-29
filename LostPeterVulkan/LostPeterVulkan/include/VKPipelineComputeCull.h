@@ -78,6 +78,7 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_HizDepthCB;  
         VkDeviceMemory poBufferMemory_HizDepthCB;
 
+        FMatrix4 mat4VPLast; 
 
     public:
         void Destroy();
@@ -129,8 +130,12 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
-        virtual void Dispatch_Cull();
-        virtual void Dispatch_HizDepthGenerate();
+        virtual void Dispatch_Cull(VkCommandBuffer& commandBuffer);
+        virtual void Dispatch_HizDepthGenerate(VkCommandBuffer& commandBuffer);
+
+    public:
+        virtual void UpdateMatrixVP();
+        virtual void UpdateBuffer_Cull();
 
     public:
         virtual void UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs);

@@ -53,7 +53,7 @@ namespace LostPeterVulkan
         , pCullObjectStatic(nullptr)
         , pCullObjectDynamic(nullptr)
 
-        , isInit(false)
+        , isEnable(false)
     {
 
     }
@@ -87,6 +87,8 @@ namespace LostPeterVulkan
 
         createPools();
         createCullObjects();
+
+        RefreshEnable();
     }
         void CullManager::createPools()
         {
@@ -118,11 +120,88 @@ namespace LostPeterVulkan
             AddCullUnit(this->pCullObjectDynamic->pCullUnitObjectDynamic);
         }
 
-    void CullManager::ExecuteHizCullTest()
+    void CullManager::RefreshEnable()
     {
-        
+        this->isEnable = false;
+        if (this->pVKPipelineComputeCull != nullptr && 
+            (Base::GetWindowPtr()->isComputeCullFrustum || 
+            Base::GetWindowPtr()->isComputeCullFrustumHizDepth))
+        {
+            this->isEnable = true;
+        }
     }
-    void CullManager::ExecuteHizDepthGenerate()
+
+    void CullManager::ExecuteHizCullTest(VkCommandBuffer& commandBuffer)
+    {
+        if (!this->isEnable)
+            return;
+
+        int count_unit = (int)this->aCullUnits.size();
+        if (count_unit <= 0)
+            return;
+        VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
+        this->pVKPipelineComputeCull->UpdateBuffer_Cull();
+
+        //Unit Object
+        int count_unit_object = (int)this->aCullUnitObjects.size();
+        for (int i = 0; i < count_unit_object; i++)
+        {
+            CullUnitObject* pUnitObject = this->aCullUnitObjects[i];
+            if (!pUnitObject->IsCulling())
+                continue;
+            int count_render = pUnitObject->GetRenderCount();
+            if (count_render <= 0)
+                continue;
+
+            int count_object = pUnitObject->GetObjectDataCount();
+            int count_lod = pUnitObject->GetLodCount();
+            if (count_object <= 0 || count_lod <= 0)
+                continue;
+            pUnitObject->UpdateBuffer();
+
+            //Clear
+            ComputeBuffer* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
+            this->pVKPipelineComputeCull->UpdateDescriptorSet_CullClearArgs(pCB_RenderArgs);
+            pVulkanWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipeline_CullClearArgs);
+            pVulkanWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipelineLayout_CullClearArgs, 0, 1, &this->pVKPipelineComputeCull->poDescriptorSet_CullClearArgs, 0, 0);
+            int x = FMath::CeilI(count_render / 64.0f);
+            pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
+
+            //Test
+            ComputeBuffer* pCB_CullObjects = pUnitObject->GetObjectDataCB();
+            ComputeBuffer* pCB_LodArgs = pUnitObject->GetLodArgsCB();
+            ComputeBuffer* pCB_Result = pUnitObject->GetResultCB();
+            if (pVulkanWindow->isComputeCullFrustumHizDepth)
+            {
+                ComputeBuffer* pCB_Clip = pUnitObject->GetClipCB();
+                if (pCB_Clip != nullptr)
+                {   
+                    this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHizClip(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result, pCB_Clip);
+
+                }
+                else
+                {
+                    this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHiz(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
+
+                }
+            }
+            else if (pVulkanWindow->isComputeCullFrustum)
+            {
+                this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustum(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
+
+            }
+        }
+
+        //Unit Terrain
+        int count_unit_terrain = (int)this->aCullUnitTerrains.size();
+        for (int i = 0; i < count_unit_terrain; i++)
+        {
+            CullUnitTerrain* pUnitTerrain = this->aCullUnitTerrains[i];
+
+
+        }
+    }
+    void CullManager::ExecuteHizDepthGenerate(VkCommandBuffer& commandBuffer)
     {
 
     }

@@ -12,6 +12,7 @@
 #include "../include/FCamera.h"
 #include "../include/FMath.h"
 #include "../include/FRay.h"
+#include "../include/FPlane.h"
 
 namespace LostPeterFoundation
 {
@@ -173,6 +174,103 @@ namespace LostPeterFoundation
 		pOutRay->SetOrigin(vRayOrigin);
 		pOutRay->SetDirection(FMath::Normalize(vRayTarget - vRayOrigin));
 		return true;
+	}
+
+	void FCamera::CalculateProjectionParameters(float& fLeft, float& fRight, float& fTop, float& fBottom) const
+	{
+		if (m_typeCamera == F_Camera_Perspective)
+		{
+			float tanThetaY = FMath::Tan(m_fFovY * 0.5f);
+			float tanThetaX = tanThetaY * m_fAspect;
+
+			float half_w = tanThetaX * m_fNearZ;
+			float half_h = tanThetaY * m_fNearZ;
+
+			fLeft   = - half_w;
+			fRight  = + half_w;
+			fTop    = + half_h;
+			fBottom = - half_h;
+		}
+		else
+		{
+			float half_w = GetNearWindowWidth() * 0.5f;
+			float half_h = GetNearWindowHeight() * 0.5f;
+
+			fLeft   = - half_w;
+			fRight  = + half_w;
+			fTop    = + half_h;
+			fBottom = - half_h;
+		}
+	}
+
+	void FCamera::GetWorldFrustumCorners(FVector3 aWorldFrustumCorners[8])
+	{
+		FMatrix4 eyeToWorld = FMath::AffineInverse(m_mat4View);
+		
+		float fNearLeft, fNearRight, fNearTop, fNearBottom;
+		CalculateProjectionParameters(fNearLeft, fNearRight, fNearTop, fNearBottom);
+
+		float fNearZ = m_fNearZ;
+		float fFarZ = (m_fFarZ == 0) ? 100000 : m_fFarZ;
+
+		//Calculate far palne corners
+		float fRadio = m_typeCamera == F_Camera_Perspective ? fFarZ / fNearZ : 1;
+		float fFarLeft = fNearLeft * fRadio;
+		float fFarRight = fNearRight * fRadio;
+		float fFarTop = fNearTop * fRadio;
+		float fFarBottom = fNearBottom * fRadio;
+
+		//Near
+		aWorldFrustumCorners[0] = FMath::TransformAffine(eyeToWorld, FVector3(fNearRight, fNearTop,    -fNearZ));
+		aWorldFrustumCorners[1] = FMath::TransformAffine(eyeToWorld, FVector3(fNearLeft,  fNearTop,    -fNearZ));
+		aWorldFrustumCorners[2] = FMath::TransformAffine(eyeToWorld, FVector3(fNearLeft,  fNearBottom, -fNearZ));
+		aWorldFrustumCorners[3] = FMath::TransformAffine(eyeToWorld, FVector3(fNearRight, fNearBottom, -fNearZ));
+		//Far
+		aWorldFrustumCorners[4] = FMath::TransformAffine(eyeToWorld, FVector3(fFarRight,  fFarTop,     -fFarZ));
+		aWorldFrustumCorners[5] = FMath::TransformAffine(eyeToWorld, FVector3(fFarLeft,   fFarTop,     -fFarZ));
+		aWorldFrustumCorners[6] = FMath::TransformAffine(eyeToWorld, FVector3(fFarLeft,   fFarBottom,  -fFarZ));
+		aWorldFrustumCorners[7] = FMath::TransformAffine(eyeToWorld, FVector3(fFarRight,  fFarBottom,  -fFarZ));
+	}
+
+	void FCamera::GetWorldFrustumPlanes(FPlane aWorldFrustumPlanes[6])
+	{
+		FMatrix4 matVP = m_mat4Projection * m_mat4View;
+
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.x = matVP[3][0] + matVP[2][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.y = matVP[3][1] + matVP[2][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.z = matVP[3][2] + matVP[2][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_fDistance = matVP[3][3] + matVP[2][3];
+
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.x = matVP[3][0] - matVP[2][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.y = matVP[3][1] - matVP[2][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.z = matVP[3][2] - matVP[2][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_fDistance = matVP[3][3] - matVP[2][3];
+
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.x = matVP[3][0] + matVP[0][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.y = matVP[3][1] + matVP[0][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.z = matVP[3][2] + matVP[0][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_fDistance = matVP[3][3] + matVP[0][3];
+
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.x = matVP[3][0] - matVP[0][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.y = matVP[3][1] - matVP[0][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.z = matVP[3][2] - matVP[0][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_fDistance = matVP[3][3] - matVP[0][3];
+
+		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.x = matVP[3][0] - matVP[1][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.y = matVP[3][1] - matVP[1][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.z = matVP[3][2] - matVP[1][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Top].m_fDistance = matVP[3][3] - matVP[1][3];
+
+		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.x = matVP[3][0] + matVP[1][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.y = matVP[3][1] + matVP[1][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.z = matVP[3][2] + matVP[1][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_fDistance = matVP[3][3] + matVP[1][3];
+
+		for (int i = 0; i < 6; i++) 
+		{
+			float length = FMath::Length(aWorldFrustumPlanes[i].m_vNormal);
+			aWorldFrustumPlanes[i].m_fDistance /= length;
+		}
 	}
 
 	void FCamera::LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& worldUp)

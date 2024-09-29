@@ -86,12 +86,12 @@ namespace LostPeterVulkan
         //PipelineCompute-Cull
         virtual void Update_Compute_Cull(VkCommandBuffer& commandBuffer);
 
-        //PipelineCompute_Terrain
+        //PipelineCompute-Terrain
         virtual void UpdateDescriptorSets_Compute_Terrain();
         virtual void Update_Compute_Terrain(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics
-        //PipelineGraphics_CopyBlit
+        //PipelineGraphics-CopyBlit
         virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
         virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
         virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
@@ -343,6 +343,9 @@ namespace LostPeterVulkan
         uint32_t queueIndexCompute;
         
         bool isFrameBufferResized;
+        bool isComputeCullFrustum;
+        bool isComputeCullFrustumHizDepth;
+
         //Config
         FVector4 cfg_colorBackground;
         FVector4Vector cfg_colorValues;
@@ -357,7 +360,6 @@ namespace LostPeterVulkan
         bool cfg_isNegativeViewport;
         bool cfg_isUseComputeShader;
         bool cfg_isCreateRenderComputeSycSemaphore;
-        bool cfg_isCullHizDepthComputeShader;
         VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;

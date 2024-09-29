@@ -1501,6 +1501,8 @@ namespace LostPeterVulkan
             , nMaxRenderCount(200)
             , nMaxObjectCount(10000)
             , nIsNoCulling(0)
+
+            , mat4VPLast(FMath::Identity4x4())
         {
 
         }

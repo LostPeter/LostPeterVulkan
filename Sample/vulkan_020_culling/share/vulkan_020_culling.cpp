@@ -1268,8 +1268,6 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = true;
     this->cfg_editorGrid_Color.a = 0.2f;
-
-    //this->cfg_isCullHizDepthComputeShader = true;
 }
 
 void Vulkan_020_Culling::setUpEnabledFeatures()

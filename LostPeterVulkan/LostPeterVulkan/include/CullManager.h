@@ -46,21 +46,23 @@ namespace LostPeterVulkan
         CullObjectStatic* pCullObjectStatic;
         CullObjectDynamic* pCullObjectDynamic;
 
-        bool isInit;
+        bool isEnable;
 
     public:
         static CullManager& GetSingleton();
 		static CullManager* GetSingletonPtr();
 
     public:
-        F_FORCEINLINE bool IsInit() const { return isInit; }
+        F_FORCEINLINE bool IsEnable() const { return isEnable; }
 
     public:
         void Destroy();
         void Init(VKPipelineComputeCull* pPipelineComputeCull);
 
-        void ExecuteHizCullTest();
-        void ExecuteHizDepthGenerate();
+        void RefreshEnable();
+
+        void ExecuteHizCullTest(VkCommandBuffer& commandBuffer);
+        void ExecuteHizDepthGenerate(VkCommandBuffer& commandBuffer);
 
     protected:  
         void destroyCullObjects();

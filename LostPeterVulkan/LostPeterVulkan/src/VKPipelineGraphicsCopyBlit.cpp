@@ -101,11 +101,11 @@ namespace LostPeterVulkan
                                                                               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics for [PipelineGraphics_CopyBlit] !";
+                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics for [PipelineGraphics-CopyBlit] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics_CopyBlit] Create pipeline graphics success !");
+            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics-CopyBlit] Create pipeline graphics success !");
             
             this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
                                                                                         aShaderStageCreateInfos,
@@ -121,11 +121,11 @@ namespace LostPeterVulkan
                                                                                         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics wire frame for [PipelineGraphics_CopyBlit] !";
+                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics wire frame for [PipelineGraphics-CopyBlit] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics_CopyBlit] Create pipeline graphics wire frame success !");
+            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics-CopyBlit] Create pipeline graphics wire frame success !");
         }
 
         //3> VkDescriptorSet

@@ -70,6 +70,8 @@ namespace LostPeterVulkan
         , poBuffer_HizDepthCB(VK_NULL_HANDLE)
         , poBufferMemory_HizDepthCB(VK_NULL_HANDLE)
 
+        , mat4VPLast(FMath::Identity4x4())
+
     {
 
     }
@@ -134,6 +136,7 @@ namespace LostPeterVulkan
         }
         //CullManager
         m_pCullManager->Init(this);
+        UpdateMatrixVP();
 
         return true;
     }
@@ -373,19 +376,35 @@ namespace LostPeterVulkan
 
     }  
 
-    void VKPipelineComputeCull::Dispatch_Cull()
+    void VKPipelineComputeCull::Dispatch_Cull(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pCullManager)
         {
-            this->m_pCullManager->ExecuteHizCullTest();
+            this->m_pCullManager->ExecuteHizCullTest(commandBuffer);
         }
     }
-    void VKPipelineComputeCull::Dispatch_HizDepthGenerate()
+    void VKPipelineComputeCull::Dispatch_HizDepthGenerate(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pCullManager)
         {
-            this->m_pCullManager->ExecuteHizDepthGenerate();
+            this->m_pCullManager->ExecuteHizDepthGenerate(commandBuffer);
         }
+    }
+
+    void VKPipelineComputeCull::UpdateMatrixVP()
+    {
+        FCamera* pCamera = Base::GetWindowPtr()->GetCamera();
+        FMatrix4 matView = pCamera->GetMatrix4View();
+        FMatrix4 matProj = pCamera->GetMatrix4Projection();
+        this->mat4VPLast = matProj * matView;
+    }
+    void VKPipelineComputeCull::UpdateBuffer_Cull()
+    {
+        VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
+        FCamera* pCamera = pVulkanWindow->GetCamera();
+
+        this->cullCB.mat4VPLast = this->mat4VPLast;
+        
     }
 
     void VKPipelineComputeCull::UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs)
@@ -576,7 +595,7 @@ namespace LostPeterVulkan
                                                                 i,
                                                                 0,
                                                                 1,
-                                                                VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                                                 this->m_pVKRenderPassCull->poHizDepthImageInfo_Sampler);
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWSrc)) //TextureCSRWSrc

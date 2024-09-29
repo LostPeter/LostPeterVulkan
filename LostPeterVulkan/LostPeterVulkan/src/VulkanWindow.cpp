@@ -592,7 +592,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullClearArgs failed !");
                     return;
                 }
-                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullClearArgs] success !");
+                F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullClearArgs] success !");
             }
 
             //PipelineCompute-CullFrustum
@@ -618,7 +618,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustum failed !");
                     return;
                 }
-                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustum] success !");
+                F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustum] success !");
             }
 
             //PipelineCompute-CullFrustumDepthHiz
@@ -644,7 +644,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHiz failed !");
                     return;
                 }
-                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHiz] success !");
+                F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHiz] success !");
             }
 
             //PipelineCompute-CullFrustumDepthHizClip
@@ -670,7 +670,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip failed !");
                     return;
                 }
-                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHizClip] success !");
+                F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-CullFrustumDepthHizClip] success !");
             }
 
             //PipelineCompute-HizDepthGenerate
@@ -696,7 +696,7 @@ namespace LostPeterVulkan
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitHizDepthGenerate failed !");
                     return;
                 }
-                F_LogInfo("*********************** VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-HizDepthGenerate] success !");
+                F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create [PipelineCompute-HizDepthGenerate] success !");
             }
 
             F_LogInfo("VulkanWindow::createPipelineCompute_Cull: Create PipelineCompute_Cull success !");
@@ -1580,6 +1580,8 @@ namespace LostPeterVulkan
         , queueIndexCompute(0)
 
         , isFrameBufferResized(false)
+        , isComputeCullFrustum(false)
+        , isComputeCullFrustumHizDepth(false)
 
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
         , cfg_isRenderPassDefaultCustom(false)
@@ -1593,7 +1595,6 @@ namespace LostPeterVulkan
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
-        , cfg_isCullHizDepthComputeShader(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
@@ -3408,7 +3409,7 @@ namespace LostPeterVulkan
         {
             if (m_pVKRenderPassShadowMap == nullptr)
             {
-                m_pVKRenderPassShadowMap = new VKRenderPassShadowMap("RenderPass_ShadowMap");
+                m_pVKRenderPassShadowMap = new VKRenderPassShadowMap("RenderPass-ShadowMap");
             }
             m_pVKRenderPassShadowMap->Init(this->shadowMainLight.depthSize,
                                            this->shadowMainLight.depthSize,
@@ -3455,7 +3456,7 @@ namespace LostPeterVulkan
 
             if (m_pVKRenderPassCull == nullptr)
             {
-                m_pVKRenderPassCull = new VKRenderPassCull("RenderPass_Cull");
+                m_pVKRenderPassCull = new VKRenderPassCull("RenderPass-Cull");
             }
             m_pVKRenderPassCull->Init();
         }
@@ -3466,7 +3467,7 @@ namespace LostPeterVulkan
 
             if (m_pVKRenderPassTerrain == nullptr)
             {
-                m_pVKRenderPassTerrain = new VKRenderPassTerrain("RenderPass_Terrain");
+                m_pVKRenderPassTerrain = new VKRenderPassTerrain("RenderPass-Terrain");
             }
             m_pVKRenderPassTerrain->Init();
         }
@@ -3596,19 +3597,20 @@ namespace LostPeterVulkan
                 aSubpassDependency.push_back(subpassDependency_SceneRender);
 
                 //5> createVkRenderPass
-                if (!createVkRenderPass("RenderPass_Default_KhrDepth",
+                String nameRenderPass = "RenderPass-Default-KhrDepth";
+                if (!createVkRenderPass(nameRenderPass,
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
                                         nullptr,
                                         vkRenderPass))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
+                    String msg = "*********************** VulkanWindow::createRenderPass_KhrDepth: Failed to create [" + nameRenderPass + "] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                F_LogInfo("VulkanWindow::createRenderPass_KhrDepth: Success to create RenderPass_Default_KhrDepth !");
+                F_LogInfo("VulkanWindow::createRenderPass_KhrDepth: Success to create [%s] !", nameRenderPass.c_str());
             }
             void VulkanWindow::createRenderPass_KhrDepthImgui(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkRenderPass& vkRenderPass)
             {
@@ -3713,19 +3715,20 @@ namespace LostPeterVulkan
                 aSubpassDependency.push_back(subpassDependency_Imgui);
 
                 //8> createVkRenderPass
-                if (!createVkRenderPass("RenderPass_Default_KhrDepthImgui",
+                String nameRenderPass = "RenderPass-Default-KhrDepthImgui";
+                if (!createVkRenderPass(nameRenderPass,
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
                                         nullptr,
                                         vkRenderPass))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
+                    String msg = "*********************** VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create [" + nameRenderPass + "] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                F_LogInfo("VulkanWindow::createRenderPass_KhrDepthImgui: Success to create RenderPass_Default_KhrDepthImgui !");
+                F_LogInfo("VulkanWindow::createRenderPass_KhrDepthImgui: Success to create [%s] !", nameRenderPass.c_str());
             }
             void VulkanWindow::createRenderPass_ColorDepthMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
             {
@@ -3808,19 +3811,20 @@ namespace LostPeterVulkan
                 aSubpassDependency.push_back(subpassDependency_SceneRender);
 
                 //6> createVkRenderPass
-                if (!createVkRenderPass("RenderPass_Default_ColorDepthMSAA",
+                String nameRenderPass = "RenderPass-Default-ColorDepthMSAA";
+                if (!createVkRenderPass(nameRenderPass,
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
                                         nullptr,
                                         vkRenderPass))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
+                    String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create [" + nameRenderPass + "] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthMSAA: Success to create RenderPass_Default_ColorDepthMSAA !");
+                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthMSAA: Success to create [%s] !", nameRenderPass.c_str());
             }
             void VulkanWindow::createRenderPass_ColorDepthImguiMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
             {
@@ -3948,19 +3952,20 @@ namespace LostPeterVulkan
                 aSubpassDependency.push_back(subpassDependency_Imgui);
 
                 //9> createVkRenderPass
-                if (!createVkRenderPass("RenderPass_Default_ColorDepthImguiMSAA",
+                String nameRenderPass = "RenderPass-Default-ColorDepthImguiMSAA";
+                if (!createVkRenderPass(nameRenderPass,
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
                                         nullptr,
                                         vkRenderPass))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
+                    String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create [" + nameRenderPass + "] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Success to create RenderPass_Default_ColorDepthImguiMSAA !");
+                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Success to create [%s] !", nameRenderPass.c_str());
             }
 
         void VulkanWindow::createFramebuffers()

@@ -93,6 +93,9 @@ namespace LostPeterFoundation
 		bool ConvertScreenPos2ToWorldRay(const FVector2& vPosSceen2, const FVector4& vViewport, FRay* pOutRay) const;
 		bool ConvertScreenPos2ToWorldRay(float screenX, float screenY, const FVector4& vViewport, FRay* pOutRay) const;
 		
+		void CalculateProjectionParameters(float& fLeft, float& fRight, float& fTop, float& fBottom) const;
+		void GetWorldFrustumCorners(FVector3 aWorldFrustumCorners[8]);
+		void GetWorldFrustumPlanes(FPlane aWorldFrustumPlanes[6]);
 
 	public:
 		virtual void LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& vUp);
