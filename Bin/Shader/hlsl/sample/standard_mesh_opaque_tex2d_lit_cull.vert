@@ -37,8 +37,8 @@
 }
 
 
-[[vk::binding(5)]] RWStructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(u0);
-[[vk::binding(6)]] RWStructuredBuffer<uint> resultCB	                        : register(u1);
+[[vk::binding(5)]] StructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(t0);
+[[vk::binding(6)]] StructuredBuffer<uint> resultCB	                        : register(t1);
 
 
 VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input, 
