@@ -722,7 +722,7 @@ namespace LostPeterFoundation
 
     bool FMath::IsAffine(const FMatrix4& mat4)
     {
-        return mat4[3][0] == 0.0f && mat4[3][1] == 0.0f && mat4[3][2] == 0.0f && mat4[3][3] == 1.0f;
+        return mat4[0][3] == 0.0f && mat4[1][3] == 0.0f && mat4[2][3] == 0.0f && mat4[3][3] == 1.0f;
     }
     FVector3 FMath::TransformAffine(const FMatrix4& mat4, const FVector3& v)
     {

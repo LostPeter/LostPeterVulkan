@@ -707,7 +707,7 @@ namespace LostPeterVulkan
             this->m_pPipelineCompute_Cull == nullptr)
             return;
 
-        
+        this->m_pPipelineCompute_Cull->Dispatch_Cull(commandBuffer);
     }
 
         void VulkanWindow::createPipelineCompute_Terrain()
@@ -2734,6 +2734,9 @@ namespace LostPeterVulkan
             this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
         if (this->poPhysicalDeviceFeatures.multiDrawIndirect)
             this->poPhysicalEnabledFeatures.multiDrawIndirect = VK_TRUE;
+
+        if (this->poPhysicalDeviceFeatures.vertexPipelineStoresAndAtomics)
+            this->poPhysicalEnabledFeatures.vertexPipelineStoresAndAtomics = VK_TRUE;
     }
     void VulkanWindow::createLogicalDevice()
     {
@@ -7631,9 +7634,7 @@ namespace LostPeterVulkan
     bool VulkanWindow::beginCompute()
     {
         if (this->poQueueCompute == VK_NULL_HANDLE ||
-            this->poCommandBufferCompute == VK_NULL_HANDLE) //||
-            //this->poGraphicsWaitSemaphore == VK_NULL_HANDLE ||
-            //this->poComputeWaitSemaphore == VK_NULL_HANDLE)
+            this->poCommandBufferCompute == VK_NULL_HANDLE)
         {
             return false;
         }
@@ -7666,6 +7667,7 @@ namespace LostPeterVulkan
                         updateCompute_Default(commandBuffer);
                         updateCompute_Terrain(commandBuffer);
                         updateCompute_Custom(commandBuffer);
+                        updateCompute_Cull(commandBuffer);
                     }
                     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                     {
@@ -7680,8 +7682,8 @@ namespace LostPeterVulkan
                     }
                     void VulkanWindow::updateCompute_Terrain(VkCommandBuffer& commandBuffer)
                     {
-                        if (!cfg_isRenderPassTerrain ||
-                            m_pPipelineCompute_Terrain == nullptr)
+                        if (!this->cfg_isRenderPassTerrain ||
+                            this->m_pPipelineCompute_Terrain == nullptr)
                             return;
                         
                         Update_Compute_Terrain(commandBuffer);
@@ -7689,6 +7691,14 @@ namespace LostPeterVulkan
                     void VulkanWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                     {
 
+                    }
+                    void VulkanWindow::updateCompute_Cull(VkCommandBuffer& commandBuffer)
+                    {
+                        if (!this->cfg_isRenderPassCull ||
+                            this->m_pPipelineCompute_Cull == nullptr)
+                            return;
+
+                        Update_Compute_Cull(commandBuffer);
                     }
 
         void VulkanWindow::compute()
@@ -8590,9 +8600,48 @@ namespace LostPeterVulkan
                         {
 
                         }
+                    void VulkanWindow::cullConfig()
+                    {
+                        if (!this->cfg_isRenderPassCull ||
+                            this->m_pVKRenderPassCull == nullptr ||
+                            this->m_pPipelineCompute_Cull == nullptr)
+                        {
+                            return;
+                        }
+
+                        if (ImGui::CollapsingHeader("Cull Settings"))
+                        {
+                            bool isChanged = false;
+
+                            //isComputeCullFrustum
+                            if (ImGui::Checkbox("Is ComputeCull Frustum", &this->isComputeCullFrustum))
+                            {   
+                                isChanged = true;
+                            }
+                            ImGui::Spacing();
+                            
+                            //isComputeCullFrustumHizDepth
+                            if (ImGui::Checkbox("Is ComputeCull Frustum HizDepth", &this->isComputeCullFrustumHizDepth))
+                            {   
+                                isChanged = true;
+                            }
+                            ImGui::Spacing();
+
+                            if (isChanged)
+                            {
+                                if (this->m_pPipelineCompute_Cull != nullptr &&
+                                    this->m_pPipelineCompute_Cull->m_pCullManager != nullptr)
+                                {
+                                    this->m_pPipelineCompute_Cull->m_pCullManager->RefreshEnable();
+                                }
+                            }
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
                     void VulkanWindow::terrainConfig()
                     {
-                        if (!cfg_isRenderPassTerrain ||
+                        if (!this->cfg_isRenderPassTerrain ||
                             this->m_pVKRenderPassTerrain == nullptr ||
                             this->m_pPipelineGraphics_Terrain == nullptr)
                         {

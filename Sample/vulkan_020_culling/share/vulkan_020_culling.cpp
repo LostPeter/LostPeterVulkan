@@ -447,10 +447,11 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 5;
+static const int g_DescriptorSetLayoutCount = 6;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
+    "Pass-Object-Material-Instance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB",
     "Pass-Object-Material-Instance-TextureDepthShadow",
     "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
 
@@ -460,12 +461,13 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 14;
+static const int g_ShaderCount = 15;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
     "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_tex2d_lit_cull",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_cull.vert.spv", //standard_mesh_opaque_tex2d_lit_cull vert
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2d_lit_shadow",              "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit_shadow.vert.spv", //standard_mesh_opaque_tex2d_lit_shadow vert
     
@@ -496,6 +498,15 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
+
+};
+
+
+/////////////////////////// CullInfo ////////////////////////////
+static const int g_ObjectRend_CullInfo_Count = 1;
+static const char* g_ObjectRend_CullingDesc[4 * g_ObjectRend_CullInfo_Count] = 
+{
+    "vert_standard_mesh_opaque_tex2d_lit",      "vert_standard_mesh_opaque_tex2d_lit_cull",     "Pass-Object-Material-Instance-TextureFS",      "Pass-Object-Material-Instance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB", 
 
 };
 
@@ -1017,7 +1028,40 @@ static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] =
     false, //object_rock021_lod-1
     false, //object_rock022_lod-1
 };
+static bool g_ObjectRend_IsCanCullings[g_ObjectRend_Count] = 
+{
+    false, //object_terrain-1
+    false, //object_skybox-1
+    false, //object_depth-1
 
+    false, //object_cube-1
+    false, //object_sphere-1
+    
+    true, //object_grass_lod-1
+    
+    true, //object_rock001_lod-1
+    true, //object_rock002_lod-1
+    true, //object_rock003_lod-1
+    true, //object_rock004_lod-1
+    true, //object_rock005_lod-1
+    true, //object_rock006_lod-1
+    true, //object_rock007_lod-1
+    true, //object_rock008_lod-1
+    true, //object_rock009_lod-1
+    true, //object_rock010_lod-1
+    true, //object_rock011_lod-1
+    true, //object_rock012_lod-1
+    true, //object_rock013_lod-1
+    true, //object_rock014_lod-1
+    true, //object_rock015_lod-1
+    true, //object_rock016_lod-1
+    true, //object_rock017_lod-1
+    true, //object_rock018_lod-1
+    true, //object_rock019_lod-1
+    true, //object_rock020_lod-1
+    true, //object_rock021_lod-1
+    true, //object_rock022_lod-1
+};
 
 
 /////////////////////////// ModelObjectRend /////////////////////
@@ -1257,9 +1301,13 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
+    this->isComputeCullFrustum = true;
+    this->isComputeCullFrustumHizDepth = true;
+
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
     this->cfg_isUseComputeShader = true;
+    this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -1341,6 +1389,7 @@ void Vulkan_020_Culling::loadModel_Custom()
 {
     createMeshes();
     createTextures();
+    createCullInfos();
 
     int nIndexObjectRend = 0;
     for (int i = 0; i < g_Object_Count; i++)
@@ -1844,6 +1893,103 @@ void Vulkan_020_Culling::createGraphicsPipeline_Custom()
                 }
                 F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics pcf success !", pRend->nameObjectRend.c_str());
             }
+
+            //pPipelineGraphics->poPipeline_Cull
+            CullInfo* pCullInfo = findCullInfo(nameShaderVert);
+            if (pCullInfo != nullptr)
+            {
+                if (!CreatePipelineShaderStageCreateInfos(pCullInfo->nameShaderCull,
+                                                          nameShaderTesc,
+                                                          nameShaderTese,
+                                                          nameShaderGeom,
+                                                          nameShaderFrag,
+                                                          m_mapVkShaderModules,
+                                                          pRend->aShaderStageCreateInfos_GraphicsCull))
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                pRend->pPipelineGraphics->nameDescriptorSetLayout_Cull = pCullInfo->nameDescriptorSetLayoutCull;
+                pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull = findDescriptorSetLayoutNames(pCullInfo->nameDescriptorSetLayoutCull);
+                if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull == nullptr)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Can not find DescriptorSetLayoutNames by name: " + pCullInfo->nameDescriptorSetLayoutCull;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                pRend->pPipelineGraphics->poDescriptorSetLayout_Cull = findDescriptorSetLayout(pCullInfo->nameDescriptorSetLayoutCull);
+                if (pRend->pPipelineGraphics->poDescriptorSetLayout_Cull == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Can not find DescriptorSetLayout by name: " + pCullInfo->nameDescriptorSetLayoutCull;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                pRend->pPipelineGraphics->poPipelineLayout_Cull = findPipelineLayout(pCullInfo->nameDescriptorSetLayoutCull);
+                if (pRend->pPipelineGraphics->poPipelineLayout_Cull == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Can not find PipelineLayout by name: " + pCullInfo->nameDescriptorSetLayoutCull;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                //pPipelineGraphics->poPipeline_WireFrame_Cull
+                pRend->pPipelineGraphics->poPipeline_WireFrame_Cull = createVkGraphicsPipeline("GraphicsPipeline-Cull-Wire-" + pRend->nameObjectRend,
+                                                                                               pRend->aShaderStageCreateInfos_GraphicsCull,
+                                                                                               pRend->isUsedTessellation, 0, 3,
+                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                               this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout_Cull, aViewports, aScissors, this->cfg_aDynamicStates,
+                                                                                               pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
+                                                                                               pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
+                                                                                               pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                               pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                               pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                               pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline_WireFrame_Cull == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [Cull] [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+
+                //pPipelineGraphics->poPipeline_Cull
+                VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
+                VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
+                VkBool32 isBlend = pRend->cfg_isBlend;
+                VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
+                VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+                if (pRend->isTransparent)
+                {
+                    isDepthTestEnable = VK_FALSE;
+                    isDepthWriteEnable = VK_FALSE;
+
+                    isBlend = VK_TRUE;
+                    blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
+                    blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+                }
+                pRend->pPipelineGraphics->poPipeline_Cull = createVkGraphicsPipeline("GraphicsPipeline-Cull-" + pRend->nameObjectRend,
+                                                                                     pRend->aShaderStageCreateInfos_GraphicsCull,
+                                                                                     pRend->isUsedTessellation, 0, 3,
+                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
+                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                     this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout_Cull, aViewports, aScissors, this->cfg_aDynamicStates,
+                                                                                     pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
+                                                                                     isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
+                                                                                     pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                     isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                     pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                     pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline_Cull == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** Vulkan_020_Culling::createGraphicsPipeline_Custom: [Cull] Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                F_LogInfo("Vulkan_020_Culling::createGraphicsPipeline_Custom: Object: [Cull] [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            }
         }
     }
 }
@@ -2049,6 +2195,42 @@ Texture* Vulkan_020_Culling::findTexture(const String& nameTexture)
 }
 
 
+void Vulkan_020_Culling::destroyCullInfos()
+{
+    size_t count = this->m_aCullInfo.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        CullInfo* pCullInfo = this->m_aCullInfo[i];
+        delete pCullInfo;
+    }
+    this->m_aCullInfo.clear();
+    this->m_mapCullInfo.clear();
+}
+void Vulkan_020_Culling::createCullInfos()
+{
+    for (int i = 0; i < g_ObjectRend_CullInfo_Count; i++)
+    {
+        CullInfo* pCullInfo = new CullInfo();
+        pCullInfo->nameShader = g_ObjectRend_CullingDesc[4 * i + 0];
+        pCullInfo->nameShaderCull = g_ObjectRend_CullingDesc[4 * i + 1];
+        pCullInfo->nameDescriptorSetLayout = g_ObjectRend_CullingDesc[4 * i + 2];
+        pCullInfo->nameDescriptorSetLayoutCull = g_ObjectRend_CullingDesc[4 * i + 3];
+
+        this->m_aCullInfo.push_back(pCullInfo);
+        this->m_mapCullInfo[pCullInfo->nameShader] = pCullInfo;
+    }
+}
+Vulkan_020_Culling::CullInfo* Vulkan_020_Culling::findCullInfo(const String& nameShader)
+{
+    CullInfoPtrMap::iterator itFind = this->m_mapCullInfo.find(nameShader);
+    if (itFind == this->m_mapCullInfo.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
+}
+
+
 void Vulkan_020_Culling::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
@@ -2195,7 +2377,25 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
         //Pipeline Graphics
         {
             createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
-            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
+            updateDescriptorSets_Graphics(pRend,
+                                          pRend->pPipelineGraphics->poDescriptorSets, 
+                                          pRend->pPipelineGraphics->poDescriptorSetLayoutNames,
+                                          pRend->poBuffers_ObjectCB,
+                                          pRend->poBuffers_materialCB,
+                                          nullptr,
+                                          nullptr);
+
+            if (pRend->pPipelineGraphics->poPipeline_Cull != nullptr)
+            {
+                createVkDescriptorSets("DescriptorSets-Cull-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout_Cull, pRend->pPipelineGraphics->poDescriptorSets_Cull);
+                // updateDescriptorSets_Graphics(pRend,
+                //                               pRend->pPipelineGraphics->poDescriptorSets_Cull, 
+                //                               pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull, 
+                //                               pRend->poBuffers_ObjectCB,
+                //                               pRend->poBuffers_materialCB,
+                //                               nullptr,
+                //                               nullptr);
+            }
         }   
         
         //Pipeline Computes
@@ -2203,7 +2403,8 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
         for (int j = 0; j < count_comp_rend; j++)
         {       
             VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            createDescriptorSets_Compute(pPipelineCompute, pRend);
+            createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
+            updateDescriptorSets_Compute(pRend, pPipelineCompute);
         }
     }
 
@@ -2214,30 +2415,36 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
-            createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
+            createVkDescriptorSets("DescriptorSets-Indirect-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
+            updateDescriptorSets_Graphics(pModelObject->pRendIndirect->pRend,
+                                          pModelObject->pRendIndirect->poDescriptorSets,    
+                                          pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayoutNames, 
+                                          pModelObject->pRendIndirect->poBuffers_ObjectCB,
+                                          pModelObject->pRendIndirect->poBuffers_materialCB,
+                                          nullptr,
+                                          nullptr);
         }
     }
 }
-void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                         ModelObjectRend* pRend, 
-                                                         ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
+                                                       VkDescriptorSetVector& poDescriptorSets, 
+                                                       StringVector* poDescriptorSetLayoutNames,
+                                                       const VkBufferVector& poBuffersObjectCB,
+                                                       const VkBufferVector& poBuffersMaterialCB,
+                                                       ComputeBuffer* pCB_CullInstances,
+                                                       ComputeBuffer* pCB_Result)
 {
-    StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::createDescriptorSets_Graphics")
+    F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::updateDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
         VkWriteDescriptorSetVector descriptorWrites;
-        int nIndexTextureVS = 0;
-        int nIndexTextureTESC = 0;
-        int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
 
-        size_t count_names = pDescriptorSetLayoutNames->size();
+        size_t count_names = poDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
         {
-            String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+            String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -2245,7 +2452,7 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -2254,11 +2461,11 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = poBuffersObjectCB[j];
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -2267,11 +2474,11 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = poBuffersMaterialCB[j];
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -2284,67 +2491,18 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
                                             bufferInfo_Instance);
-            }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
-            {
-                VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
-                bufferInfo_Tessellation.offset = 0;
-                bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
-                                            p,
-                                            0,
-                                            1,
-                                            bufferInfo_Tessellation);
-            }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
-            {
-                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
-                nIndexTextureVS ++;
-                pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
-                                          p,
-                                          0,
-                                          1,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          pTexture->poTextureImageInfo);
-            }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
-            {
-                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
-                nIndexTextureTESC ++;
-                pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
-                                          p,
-                                          0,
-                                          1,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          pTexture->poTextureImageInfo);
-            }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
-            {
-                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
-                nIndexTextureTESE ++;
-                pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
-                                          p,
-                                          0,
-                                          1,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          pTexture->poTextureImageInfo);
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -2353,18 +2511,49 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureDepthShadow)) //TextureDepthShadow
             {
-                F_Assert(m_pVKRenderPassShadowMap && "Vulkan_020_Culling::createDescriptorSets_Graphics")
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           m_pVKRenderPassShadowMap->imageInfo);
             }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
+            {
+                if (pCB_CullInstances != nullptr)
+                {
+                    VkDescriptorBufferInfo bufferInfo_InstanceCull = {};
+                    bufferInfo_InstanceCull.buffer = pCB_CullInstances->poBuffer_Compute;
+                    bufferInfo_InstanceCull.offset = 0;
+                    bufferInfo_InstanceCull.range = (VkDeviceSize)pCB_CullInstances->GetBufferSize();
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
+                                                                      poDescriptorSets[j],
+                                                                      p,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_InstanceCull);
+                }
+            }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWResultCB)) //BufferRWResultCB
+            {
+                if (pCB_Result != nullptr)
+                {
+                    VkDescriptorBufferInfo bufferInfo_Result = {};
+                    bufferInfo_Result.buffer = pCB_Result->poBuffer_Compute;
+                    bufferInfo_Result.offset = 0;
+                    bufferInfo_Result.range = (VkDeviceSize)pCB_Result->GetBufferSize();
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
+                                                                      poDescriptorSets[j],
+                                                                      p,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_Result);
+                }
+            }
             else
             {
-                String msg = "*********************** Vulkan_020_Culling::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_020_Culling::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2372,19 +2561,18 @@ void Vulkan_020_Culling::createDescriptorSets_Graphics(VkDescriptorSetVector& po
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_020_Culling::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                                      ModelObjectRend* pRend)
+void Vulkan_020_Culling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
+                                                      VKPipelineCompute* pPipelineCompute)
 {
-    StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::createDescriptorSets_Compute")
-    createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
+    StringVector* poDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
+    F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::updateDescriptorSets_Compute")
 
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
-    size_t count_names = pDescriptorSetLayoutNames->size();
+    size_t count_names = poDescriptorSetLayoutNames->size();
     for (size_t p = 0; p < count_names; p++)
     {
-        String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+        String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
         if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
         {
             pPipelineCompute->CreateTextureCopy();
@@ -2695,10 +2883,13 @@ bool Vulkan_020_Culling::beginRenderImgui()
         //3> Shadow
         shadowConfig();
 
-        //4> PassConstants
+        //4> Cull
+        cullConfig();
+
+        //5> PassConstants
         passConstantsConfig();
 
-        //5> Model
+        //6> Model
         modelConfig();
 
     }
@@ -2961,6 +3152,14 @@ void Vulkan_020_Culling::modelConfig()
                                     
                                 }
                             }
+
+                            //isCanCulling
+                            String nameIsCanCulling = "Is CanCulling - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsCanCulling.c_str(), &pRend->isCanCulling))
+                            {
+                                
+                            }
+                            
 
 
                             String nameWorld = "Model Object - " + nameObjectRend;
@@ -3259,6 +3458,24 @@ void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
             drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
         }
     }
+
+    if (this->isComputeCullFrustum ||
+        this->isComputeCullFrustumHizDepth)
+    {
+        drawModelObjectRendCull(commandBuffer);
+    }
+}
+void Vulkan_020_Culling::drawModelObjectRendCull(VkCommandBuffer& commandBuffer)
+{
+    size_t count = this->m_aModelObjectRends_All.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
+        if (!pRend->isCanCulling)
+            continue;
+
+        
+    }
 }
 void Vulkan_020_Culling::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
@@ -3339,7 +3556,8 @@ void Vulkan_020_Culling::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mo
     {
         ModelObjectRend* pRend = aRends[i];
         if (!pRend->isShow ||
-            !pRend->pModelObject->isShow)
+            !pRend->pModelObject->isShow ||
+            (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr))
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }
@@ -3396,6 +3614,7 @@ void Vulkan_020_Culling::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mod
 
 void Vulkan_020_Culling::cleanupCustom()
 {   
+    destroyCullInfos();
     destroyTextures();
     destroyMeshes();
 

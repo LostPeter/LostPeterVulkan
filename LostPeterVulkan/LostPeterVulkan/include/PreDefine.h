@@ -34,6 +34,7 @@ namespace LostPeterVulkan
     #define MAX_INSTANCE_COUNT 4096
     #define MAX_CULL_INSTANCE_COUNT 16384
     #define MAX_TERRAIN_SPLAT_COUNT 16
+    #define MAX_FRUSTUM_CORNER_COUNT 8
     #define MAX_FRUSTUM_PLANE_COUNT 6
     #define MAX_OBJECT_CULL_COUNT 8196
 

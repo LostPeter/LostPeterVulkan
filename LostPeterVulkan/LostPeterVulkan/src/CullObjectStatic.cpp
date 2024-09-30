@@ -473,6 +473,9 @@ namespace LostPeterVulkan
     }
     void CullObjectStatic::RemoveStaticCullRenderData(CullRenderData* pCullRenderData)
     {
+        if (pCullRenderData == nullptr)
+            return;
+        
         this->pCullUnitObjectStatic->RemoveCullRenderData(pCullRenderData);
         this->pCullUnitObjectStatic->RefreshCullRenderData();
     }

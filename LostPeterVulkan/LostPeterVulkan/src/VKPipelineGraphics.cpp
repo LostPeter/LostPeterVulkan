@@ -32,6 +32,13 @@ namespace LostPeterVulkan
         , poPipeline_WireFrame2(VK_NULL_HANDLE)
         , poPipeline2(VK_NULL_HANDLE)
 
+        , nameDescriptorSetLayout_Cull("")
+        , poDescriptorSetLayoutNames_Cull(nullptr)
+        , poDescriptorSetLayout_Cull(VK_NULL_HANDLE)
+        , poPipelineLayout_Cull(VK_NULL_HANDLE)
+        , poPipeline_WireFrame_Cull(VK_NULL_HANDLE)
+        , poPipeline_Cull(VK_NULL_HANDLE)
+
         , pRenderPass(nullptr)
     {
 
@@ -79,6 +86,24 @@ namespace LostPeterVulkan
         this->poPipeline2 = VK_NULL_HANDLE;
         this->poDescriptorSets2.clear();
 
+        //3> poPipeline_Cull
+        this->poDescriptorSetLayoutNames_Cull = nullptr;
+        this->poDescriptorSetLayout_Cull = VK_NULL_HANDLE;
+        this->poPipelineLayout_Cull = VK_NULL_HANDLE;
+        if (this->poPipeline_WireFrame_Cull != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame_Cull);
+        }
+        this->poPipeline_WireFrame_Cull = VK_NULL_HANDLE;
+
+        if (this->poPipeline_Cull != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Cull);
+        }
+        this->poPipeline_Cull = VK_NULL_HANDLE;
+        this->poDescriptorSets_Cull.clear();
+
+        //4> RenderPass
         this->pRenderPass = nullptr;
     }  
 

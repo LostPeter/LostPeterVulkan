@@ -90,6 +90,17 @@ namespace LostPeterVulkan
 
         CullObjectInstanceConstants* GetCullObjectInstanceConstants();
         void BackCullObjectInstanceConstants(CullObjectInstanceConstants* pCullObjectInstance);
+
+    public:
+        //Object Static
+        CullRenderData* AddStaticCullRenderData(CullLodData* pCullLodData);
+        bool AddStaticCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData);
+        void RemoveStaticCullRenderData(CullRenderData* pCullRenderData);
+
+        //Object Dynamic
+        CullRenderData* AddDynamicCullRenderData(CullLodData* pCullLodData);
+        bool AddDynamicCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData);
+        void RemoveDynamicCullRenderData(CullRenderData* pCullRenderData);
     };
 
 }; //LostPeterVulkan

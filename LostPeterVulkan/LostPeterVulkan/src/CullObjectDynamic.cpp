@@ -500,6 +500,9 @@ namespace LostPeterVulkan
     }
     void CullObjectDynamic::RemoveDynamicCullRenderData(CullRenderData* pCullRenderData)
     {
+        if (pCullRenderData == nullptr)
+            return;
+
         this->pCullUnitObjectDynamic->RemoveCullRenderData(pCullRenderData);
         this->pCullUnitObjectDynamic->RefreshCullRenderData();
     }

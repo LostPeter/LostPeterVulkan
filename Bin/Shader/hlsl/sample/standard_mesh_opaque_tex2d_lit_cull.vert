@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2024-09-28
+* Time:     2024-09-30
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -37,15 +37,15 @@
 }
 
 
-[[vk::binding(6)]] RWStructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(u0);
-[[vk::binding(7)]] RWStructuredBuffer<uint> resultCB	                        : register(u1);
+[[vk::binding(5)]] RWStructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(u0);
+[[vk::binding(6)]] RWStructuredBuffer<uint> resultCB	                        : register(u1);
 
 
-VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 main(VSInput_Pos3Color4Normal3TexCood2 input, 
-                                                    uint viewIndex : SV_ViewID,
-                                                    uint instanceIndex : SV_InstanceID)
+VSOutput_Pos4Color4Normal3TexCood2 main(VSInput_Pos3Color4Normal3TexCood2 input, 
+                                        uint viewIndex : SV_ViewID,
+                                        uint instanceIndex : SV_InstanceID)
 {
-    VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 output = (VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4)0;
+    VSOutput_Pos4Color4Normal3TexCood2 output = (VSOutput_Pos4Color4Normal3TexCood2)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     CullInstanceConstants ins = instanceConsts[instanceIndex];
@@ -59,7 +59,6 @@ VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 main(VSInput_Pos3Color4Normal3Tex
     output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)obj.mat4Object2World, input.inNormal);
     output.outTexCoord = input.inTexCoord;
-    output.outShadowCoord = mul(c_mat4Bias, mul(passConsts.g_MainLight.depthMVP, mul(obj.mat4Object2World, float4(input.inPosition, 1.0))));
-    
+
     return output;
 }

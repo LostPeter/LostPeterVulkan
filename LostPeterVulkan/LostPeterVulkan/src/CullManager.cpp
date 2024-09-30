@@ -177,19 +177,18 @@ namespace LostPeterVulkan
                 if (pCB_Clip != nullptr)
                 {   
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHizClip(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result, pCB_Clip);
-
                 }
                 else
                 {
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHiz(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
-
                 }
             }
             else if (pVulkanWindow->isComputeCullFrustum)
             {
                 this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustum(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
-
             }
+            x = FMath::CeilI(count_object / 64.0f); 
+            pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
         }
 
         //Unit Terrain
@@ -197,7 +196,15 @@ namespace LostPeterVulkan
         for (int i = 0; i < count_unit_terrain; i++)
         {
             CullUnitTerrain* pUnitTerrain = this->aCullUnitTerrains[i];
+            bool isCulling = pUnitTerrain->IsCulling();
+            int count_render = pUnitTerrain->GetRenderCount();
+            if (count_render <= 0)
+                continue;
 
+            //Clear
+
+
+            //Test
 
         }
     }
@@ -311,5 +318,33 @@ namespace LostPeterVulkan
     {
         pCullObjectInstanceConstantsPool->Back(pCullObjectInstance);
     }
+
+    //Object Static
+    CullRenderData* CullManager::AddStaticCullRenderData(CullLodData* pCullLodData)
+    {
+        return this->pCullObjectStatic->AddStaticCullRenderData(pCullLodData);
+    }
+    bool CullManager::AddStaticCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData)
+    {
+        return this->pCullObjectStatic->AddStaticCullRenderDatas(aLodDatas, aCullRenderData);
+    }
+    void CullManager::RemoveStaticCullRenderData(CullRenderData* pCullRenderData)
+    {
+        this->pCullObjectStatic->RemoveStaticCullRenderData(pCullRenderData);
+    }   
+
+    //Object Dynamic
+    CullRenderData* CullManager::AddDynamicCullRenderData(CullLodData* pCullLodData)
+    {
+        return this->pCullObjectDynamic->AddDynamicCullRenderData(pCullLodData);
+    }
+    bool CullManager::AddDynamicCullRenderDatas(const CullLodDataPtrVector& aLodDatas, CullRenderDataPtrVector& aCullRenderData)
+    {
+        return this->pCullObjectDynamic->AddDynamicCullRenderDatas(aLodDatas, aCullRenderData);
+    }
+    void CullManager::RemoveDynamicCullRenderData(CullRenderData* pCullRenderData)
+    {   
+        this->pCullObjectDynamic->RemoveDynamicCullRenderData(pCullRenderData);
+    }   
 
 }; //LostPeterVulkan

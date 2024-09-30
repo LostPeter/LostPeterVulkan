@@ -402,9 +402,32 @@ namespace LostPeterVulkan
     {
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         FCamera* pCamera = pVulkanWindow->GetCamera();
+        FVector3 vCameraPos = pCamera->GetPos();
 
         this->cullCB.mat4VPLast = this->mat4VPLast;
-        
+        pCamera->GetWorldFrustumCorners(this->aWorldFrustumCorners);
+        FVector3 vMinFP = this->aWorldFrustumCorners[0];
+        FVector3 vMaxFP = this->aWorldFrustumCorners[0];
+        for (int i = 1; i < MAX_FRUSTUM_CORNER_COUNT; i++)
+        {
+            FMath::Min(vMinFP, this->aWorldFrustumCorners[i]);
+            FMath::Max(vMaxFP, this->aWorldFrustumCorners[i]);
+        }
+        pCamera->GetWorldFrustumPlanes(this->aWorldFrustumPlanes);
+        for (int i = 0; i < MAX_FRUSTUM_PLANE_COUNT; i++)
+        {
+            FPlane& plane = this->aWorldFrustumPlanes[i];
+            this->cullCB.v4FrustumPlanes[i] = FVector4(-plane.m_vNormal.x, -plane.m_vNormal.y, -plane.m_vNormal.z, -plane.m_fDistance);
+        }
+        this->cullCB.v4ParamComon[0] = FVector4(vCameraPos.x, vCameraPos.y, vCameraPos.z, 0);
+        this->cullCB.v4ParamComon[1] = FVector4(vMinFP.x, vMinFP.y, vMinFP.z, 0);
+        this->cullCB.v4ParamComon[2] = FVector4(vMaxFP.x, vMaxFP.y, vMaxFP.z, 0);
+        this->cullCB.v4ParamComon[3] = FVector4(m_pVKRenderPassCull->nHizDepthWidth, m_pVKRenderPassCull->nHizDepthHeight, m_pVKRenderPassCull->nHizDepthMinmapCount - 0.5f, m_pVKRenderPassCull->nHizDepthMinmapCount - 1.0f);
+
+        this->cullCB.v4ParamRender = FVector4(0, 0, 0, 0);
+        this->cullCB.v4PosPlayer = FVector4(vCameraPos.x, vCameraPos.y, vCameraPos.z, 0);
+
+        pVulkanWindow->updateVKBuffer(0, sizeof(CullConstants), &this->cullCB, this->poBufferMemory_CullCB);
     }
 
     void VKPipelineComputeCull::UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs)

@@ -37,6 +37,10 @@ namespace LostPeterVulkan
         VkDescriptorImageInfo poHizDepthImageInfo_NoSampler;
         VkDescriptorImageInfo poHizDepthImageInfo_Sampler;
 
+        int nHizDepthWidth;
+        int nHizDepthHeight;
+        int nHizDepthMinmapCount;
+
 
     public:
         void Destroy();
@@ -45,13 +49,13 @@ namespace LostPeterVulkan
     protected:
         virtual bool setupCullTexture();
 
-
     public: 
         void CleanupSwapChain();
         void RecreateSwapChain();
 
     protected:
-
+        void updateHizDepthRTSize();
+        void getHizDepthRTSizeFromScreen(int screenWidth, int& w, int& mip);
     };
 
 }; //LostPeterVulkan

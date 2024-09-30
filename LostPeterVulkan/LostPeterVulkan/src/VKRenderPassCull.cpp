@@ -68,13 +68,15 @@ namespace LostPeterVulkan
 
             //HizDepth
             {
+                updateHizDepthRTSize();
+
                 String nameTexture = "Texture-HizDepth";
                 Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
                                                                   nullptr,
-                                                                  s_nHizDepthWidth,
-                                                                  s_nHizDepthHeight,
+                                                                  (uint32_t)this->nHizDepthWidth,
+                                                                  (uint32_t)this->nHizDepthHeight,
                                                                   true,
-                                                                  9,
+                                                                  (uint32_t)this->nHizDepthMinmapCount,
                                                                   VK_SAMPLE_COUNT_1_BIT,
                                                                   VK_FORMAT_R32_SFLOAT,
                                                                   VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
@@ -93,7 +95,7 @@ namespace LostPeterVulkan
                                                         this->poHizDepthImageView);
                 F_LogInfo("VKRenderPassCull::setupCullTexture: createVkImageView !");
                 Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                      F_TextureFilter_Bilinear, 
+                                                      F_TextureFilter_None, 
                                                       F_TextureAddressing_Clamp,
                                                       F_TextureBorderColor_OpaqueBlack,
                                                       true,
@@ -113,7 +115,8 @@ namespace LostPeterVulkan
                 this->poHizDepthImageInfo_Sampler.imageView = this->poHizDepthImageView;
                 this->poHizDepthImageInfo_Sampler.sampler = this->poHizDepthSampler;
 
-                F_LogInfo("VKRenderPassCull::setupCullTexture: Compute: Create render texture [HizDepth] - [%d, %d] success !", s_nHizDepthWidth, s_nHizDepthHeight);
+                F_LogInfo("VKRenderPassCull::setupCullTexture: Compute: Create render texture: [%s] - (w,h): [%d, %d], mip: [%d] success !", 
+                          nameTexture.c_str(), this->nHizDepthWidth, this->nHizDepthHeight, this->nHizDepthMinmapCount);
             }
 
             F_LogInfo("VKRenderPassCull::setupCullTexture: End setup cull texture !");
@@ -128,6 +131,34 @@ namespace LostPeterVulkan
     void VKRenderPassCull::RecreateSwapChain()
     {
 
+    }
+
+    void VKRenderPassCull::updateHizDepthRTSize()
+    {
+        int nScreenWith = (int)Base::GetWindowPtr()->poSwapChainExtent.width;
+
+        this->nHizDepthWidth = s_nHizDepthWidth;
+        this->nHizDepthMinmapCount = 9;
+        getHizDepthRTSizeFromScreen(nScreenWith, this->nHizDepthWidth, this->nHizDepthMinmapCount);
+        this->nHizDepthHeight = this->nHizDepthWidth / 2;
+    }
+    void VKRenderPassCull::getHizDepthRTSizeFromScreen(int screenWidth, int& w, int& mip)
+    {
+        if (screenWidth >= 2048)
+        {
+            w = 2048;
+            mip = 10;
+            return;
+        }
+        else if (screenWidth >= 1024)
+        {
+            w = 1024;
+            mip = 9;
+            return;
+        }
+
+        w = 512;
+        mip = 8;
     }
 
 }; //LostPeterVulkan

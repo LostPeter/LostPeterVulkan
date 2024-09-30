@@ -1288,6 +1288,7 @@ namespace LostPeterVulkan
                     virtual void updateCompute_Default(VkCommandBuffer& commandBuffer);
                     virtual void updateCompute_Terrain(VkCommandBuffer& commandBuffer);
                     virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_Cull(VkCommandBuffer& commandBuffer);
 
             virtual void compute();
         virtual void endCompute();
@@ -1322,6 +1323,8 @@ namespace LostPeterVulkan
                         virtual void shadowConfig();
                             virtual void shadowConfigItem(ShadowConstants& sc, const String& name, bool bIsMainLight);
                             virtual void shadowReset();
+                         //Cull
+                        virtual void cullConfig();
                         //Terrain
                         virtual void terrainConfig();
                             virtual void terrainConfigItem(TerrainConstants& tc, const String& name);

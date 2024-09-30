@@ -37,12 +37,18 @@ public:
         bool isCastShadow;
         bool isReceiveShadow;
         bool isShadowPCF;
+        bool isCanCulling;
+
+        //Cull
+        CullLodData* pCullLodData;
+        CullRenderData* pCullRenderData;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
 
         //Shader
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_GraphicsCull;
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Computes;
         VkPipelineShaderStageCreateInfoMap mapShaderStageCreateInfos_Computes;
 
@@ -110,6 +116,11 @@ public:
             , isCastShadow(false)
             , isReceiveShadow(false)
             , isShadowPCF(false)
+            , isCanCulling(false)
+
+            //Cull
+            , pCullLodData(nullptr)
+            , pCullRenderData(nullptr)
 
             //Uniform
             , countInstance(1)
@@ -162,6 +173,10 @@ public:
 
         void CleanupSwapChain()
         {
+            //Cull
+            F_DELETE(this->pCullLodData)
+            this->pCullRenderData = nullptr;
+
             //Uniform
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -192,6 +207,7 @@ public:
 
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();
+            this->aShaderStageCreateInfos_GraphicsCull.clear();
             this->aShaderStageCreateInfos_Computes.clear();
             this->mapShaderStageCreateInfos_Computes.clear();
 
@@ -430,7 +446,7 @@ public:
         }
         ~ModelObject()
         {
-            
+            Destroy();
         }
 
         void Destroy()
@@ -499,12 +515,29 @@ public:
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
+
+    /////////////////////////// CullInfo ////////////////////////////
+    struct CullInfo
+    {
+        String nameShader;
+        String nameShaderCull;
+        
+        String nameDescriptorSetLayout;
+        String nameDescriptorSetLayoutCull;
+    };
+    typedef std::vector<CullInfo*> CullInfoPtrVector;
+    typedef std::map<String, CullInfo*> CullInfoPtrMap;
+
+
 public:
     MeshPtrVector m_aModelMesh;
     MeshPtrMap m_mapModelMesh;    
 
     TexturePtrVector m_aModelTexture;
     TexturePtrMap m_mapModelTexture;
+    
+    CullInfoPtrVector m_aCullInfo;
+    CullInfoPtrMap m_mapCullInfo;
 
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
@@ -551,11 +584,15 @@ protected:
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();
-            void createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                               ModelObjectRend* pRend, 
-                                               ModelObjectRendIndirect* pRendIndirect);
-            void createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                              ModelObjectRend* pRend);
+            void updateDescriptorSets_Graphics(ModelObjectRend* pRend,
+                                               VkDescriptorSetVector& poDescriptorSets, 
+                                               StringVector* poDescriptorSetLayoutNames,
+                                               const VkBufferVector& poBuffersObjectCB,
+                                               const VkBufferVector& poBuffersMaterialCB,
+                                               ComputeBuffer* pCB_CullInstances,
+                                               ComputeBuffer* pCB_Result);
+            void updateDescriptorSets_Compute(ModelObjectRend* pRend,
+                                              VKPipelineCompute* pPipelineCompute);
 
     //Compute/Update
         virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
@@ -595,6 +632,11 @@ private:
     void createTextures();
     Texture* findTexture(const String& nameTexture);
 
+////CullInfo
+    void destroyCullInfos();
+    void createCullInfos();
+    CullInfo* findCullInfo(const String& nameShader);
+
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
@@ -610,6 +652,9 @@ private:
     void destroyPipelineLayouts();
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
+
+////Draw
+    void drawModelObjectRendCull(VkCommandBuffer& commandBuffer);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);

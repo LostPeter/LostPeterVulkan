@@ -78,7 +78,10 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_HizDepthCB;  
         VkDeviceMemory poBufferMemory_HizDepthCB;
 
-        FMatrix4 mat4VPLast; 
+        FMatrix4 mat4VPLast;
+        FVector3 aWorldFrustumCorners[MAX_FRUSTUM_CORNER_COUNT];
+        FPlane aWorldFrustumPlanes[MAX_FRUSTUM_PLANE_COUNT];
+
 
     public:
         void Destroy();
