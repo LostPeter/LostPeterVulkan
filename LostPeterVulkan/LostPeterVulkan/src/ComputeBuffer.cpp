@@ -81,7 +81,7 @@ namespace LostPeterVulkan
     void ComputeBuffer::UpdateBuffer(size_t offset, size_t bufSize, void* pBuf)
     {
         size_t size = GetBufferSize();
-        F_Assert(offset > 0 && offset < size && bufSize < size && "ComputeBuffer::UpdateBuffer")
+        F_Assert(offset >= 0 && offset < size && bufSize <= size && "ComputeBuffer::UpdateBuffer")
 
         uint8* pBuffer = this->pBuffer_Compute + offset;
         memcpy(pBuffer, pBuf, bufSize);

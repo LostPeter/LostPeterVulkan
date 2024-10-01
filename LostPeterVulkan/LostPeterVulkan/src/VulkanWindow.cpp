@@ -7364,6 +7364,21 @@ namespace LostPeterVulkan
                                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
                                            bufferInfo);
             }
+            void VulkanWindow::pushVkDescriptorSet_UniformDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                  VkDescriptorSet dstSet,
+                                                                  uint32_t dstBinding,
+                                                                  uint32_t dstArrayElement,
+                                                                  uint32_t descriptorCount,
+                                                                  VkDescriptorBufferInfo& bufferInfo)
+            {
+                pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
+                                           dstSet,
+                                           dstBinding,
+                                           dstArrayElement,
+                                           descriptorCount,
+                                           VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+                                           bufferInfo);
+            }
             void VulkanWindow::pushVkDescriptorSet_Storage(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                            VkDescriptorSet dstSet,
                                                            uint32_t dstBinding,
@@ -7377,6 +7392,21 @@ namespace LostPeterVulkan
                                            dstArrayElement,
                                            descriptorCount,
                                            VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                                           bufferInfo);
+            }
+            void VulkanWindow::pushVkDescriptorSet_StorageDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                  VkDescriptorSet dstSet,
+                                                                  uint32_t dstBinding,
+                                                                  uint32_t dstArrayElement,
+                                                                  uint32_t descriptorCount,
+                                                                  VkDescriptorBufferInfo& bufferInfo)
+            {
+                pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
+                                           dstSet,
+                                           dstBinding,
+                                           dstArrayElement,
+                                           descriptorCount,
+                                           VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
                                            bufferInfo);
             }
             void VulkanWindow::pushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,

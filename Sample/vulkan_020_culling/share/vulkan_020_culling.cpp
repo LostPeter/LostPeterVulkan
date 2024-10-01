@@ -1561,6 +1561,7 @@ void Vulkan_020_Culling::loadModel_Custom()
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
                 pRend->isCastShadow = g_ObjectRend_IsCastShadows[nIndexObjectRend];
                 pRend->isReceiveShadow = g_ObjectRend_IsReceiveShadows[nIndexObjectRend];
+                pRend->isCanCulling = g_ObjectRend_IsCanCullings[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -1615,59 +1616,66 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
         bool isObjectLighting = g_Object_IsLightings[indexObject];
         bool isObjectCastShadow = pRend->isCastShadow;
         bool isObjectReceiveShadow = pRend->isReceiveShadow;
+        bool isCanCulling = pRend->isCanCulling;
 
+        F_DELETE(pRend->pCullLodData)
+        pRend->pCullRenderData = nullptr;
+        if (isCanCulling)
+        {
+            pRend->pCullLodData = new CullLodData();
+            pRend->pCullLodData->isRender = true;
+            pRend->pCullLodData->isCastShadow = isObjectCastShadow;
+            pRend->pCullLodData->pMesh = pRend->pMeshSub->pMesh;
+        }
+        
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
         pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
-            {
-                ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                            g_ObjectRend_Tranforms[3 * i + 1],
-                                                            g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
-            }
+            ObjectConstants objectConstants;
+            objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                        g_ObjectRend_Tranforms[3 * i + 1],
+                                                        g_ObjectRend_Tranforms[3 * i + 2]);
+            pRend->objectCBs.push_back(objectConstants);
+            pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
 
             //MaterialConstants
+            MaterialConstants materialConstants;
+            materialConstants.factorAmbient = FMath::RandomColor(false);
+            materialConstants.factorDiffuse = FMath::RandomColor(false);
+            materialConstants.factorSpecular = FMath::RandomColor(false);
+            materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
+            materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
+            materialConstants.lighting = isObjectLighting;
+            materialConstants.castshadow = isObjectCastShadow;
+            materialConstants.receiveshadow = isObjectReceiveShadow;
+            //Texture VS
             {
-                MaterialConstants materialConstants;
-                materialConstants.factorAmbient = FMath::RandomColor(false);
-                materialConstants.factorDiffuse = FMath::RandomColor(false);
-                materialConstants.factorSpecular = FMath::RandomColor(false);
-                materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
-                materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
-                materialConstants.lighting = isObjectLighting;
-                materialConstants.castshadow = isObjectCastShadow;
-                materialConstants.receiveshadow = isObjectReceiveShadow;
-                //Texture VS
+                TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
+                if (pTextureVSs != nullptr)
                 {
-                    TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
-                    if (pTextureVSs != nullptr)
-                    {
 
-                    }
                 }
-                //Texture FS
-                {
-                    TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
-                    if (pTextureFSs != nullptr)
-                    {
-
-                    }
-                }
-                //Texture CS
-                {
-                    TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
-                    if (pTextureCSs != nullptr)
-                    {
-
-                    }
-                }
-                pRend->materialCBs.push_back(materialConstants);
             }
+            //Texture FS
+            {
+                TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
+                if (pTextureFSs != nullptr)
+                {
+
+                }
+            }
+            //Texture CS
+            {
+                TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
+                if (pTextureCSs != nullptr)
+                {
+
+                }
+            }
+            pRend->materialCBs.push_back(materialConstants);
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
@@ -1677,6 +1685,17 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
                 pRend->tessellationCBs.push_back(tessellationConstants);
+            }
+
+            //Cull
+            if (pRend->pCullLodData != nullptr)
+            {
+                if (j == 0)
+                    pRend->pCullLodData->aMaterialConstants.push_back(materialConstants);
+
+                CullObjectInstanceConstants instanceConstants;
+                instanceConstants.mat4Object2World = objectConstants.g_MatWorld;
+                pRend->pCullLodData->aInstanceDatas.push_back(instanceConstants);
             }
         }
         
@@ -1714,6 +1733,12 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                     createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
             }
+        }
+
+        //Cull
+        if (pRend->pCullLodData != nullptr)
+        {
+            pRend->pCullRenderData = CullManager::GetSingleton().AddStaticCullRenderData(pRend->pCullLodData);
         }
     }
 
@@ -3459,8 +3484,8 @@ void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 
-    if (this->isComputeCullFrustum ||
-        this->isComputeCullFrustumHizDepth)
+    CullManager* pCullManager = CullManager::GetSingletonPtr();
+    if (pCullManager && pCullManager->isEnable)
     {
         drawModelObjectRendCull(commandBuffer);
     }
@@ -3551,13 +3576,17 @@ void Vulkan_020_Culling::drawModelObjectRendIndirect(VkCommandBuffer& commandBuf
 
 void Vulkan_020_Culling::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
+    CullManager* pCullManager = CullManager::GetSingletonPtr();
+    bool isCulling = false;
+    if (pCullManager)
+        isCulling = pCullManager->isEnable;
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
         if (!pRend->isShow ||
             !pRend->pModelObject->isShow ||
-            (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr))
+            (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
             continue;
         drawModelObjectRend(commandBuffer, pRend);
     }

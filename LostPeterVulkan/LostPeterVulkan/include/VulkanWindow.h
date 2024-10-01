@@ -1244,12 +1244,24 @@ namespace LostPeterVulkan
                                                                  uint32_t dstArrayElement,
                                                                  uint32_t descriptorCount,
                                                                  VkDescriptorBufferInfo& bufferInfo);
+                        virtual void pushVkDescriptorSet_UniformDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                        VkDescriptorSet dstSet,
+                                                                        uint32_t dstBinding,
+                                                                        uint32_t dstArrayElement,
+                                                                        uint32_t descriptorCount,
+                                                                        VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_Storage(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                  VkDescriptorSet dstSet,
                                                                  uint32_t dstBinding,
                                                                  uint32_t dstArrayElement,
                                                                  uint32_t descriptorCount,
                                                                  VkDescriptorBufferInfo& bufferInfo);
+                        virtual void pushVkDescriptorSet_StorageDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                        VkDescriptorSet dstSet,
+                                                                        uint32_t dstBinding,
+                                                                        uint32_t dstArrayElement,
+                                                                        uint32_t descriptorCount,
+                                                                        VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                VkDescriptorSet dstSet,
                                                                uint32_t dstBinding,

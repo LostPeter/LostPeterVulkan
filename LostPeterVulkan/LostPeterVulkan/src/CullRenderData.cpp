@@ -11,7 +11,9 @@
 
 #include "../include/CullRenderData.h"
 #include "../include/CullManager.h"
+#include "../include/CullLodData.h"
 #include "../include/ComputeBuffer.h"
+#include "../include/Mesh.h"
 
 namespace LostPeterVulkan
 {
@@ -21,7 +23,6 @@ namespace LostPeterVulkan
         , nMaxMaterialCount(0)
 
         , pCullLodData(nullptr)
-
         , pBuffer_Instance(nullptr) 
     {
         
@@ -71,7 +72,13 @@ namespace LostPeterVulkan
 
     void CullRenderData::RefreshInstance()
     {
-
+        int count_instance = (int)this->pCullLodData->aInstanceDatas.size();
+        if (this->pBuffer_Instance == nullptr)
+        {
+            String nameCB = "ComputeBuffer-CullObjectInstances-" + this->pCullLodData->pMesh->GetName();
+            this->pBuffer_Instance = new ComputeBuffer(nameCB, count_instance, sizeof(CullObjectInstanceConstants));
+        }
+        this->pBuffer_Instance->UpdateBuffer(0, count_instance * sizeof(CullObjectInstanceConstants), &this->pCullLodData->aInstanceDatas[0]);
     }
     
 }; //LostPeterVulkan
