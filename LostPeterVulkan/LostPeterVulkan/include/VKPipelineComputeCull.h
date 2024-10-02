@@ -141,30 +141,30 @@ namespace LostPeterVulkan
         virtual void UpdateBuffer_Cull();
 
     public:
-        virtual void UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs);
-        virtual void UpdateDescriptorSet_CullFrustum(ComputeBuffer* pCB_CullObjects,
-                                                     ComputeBuffer* pCB_RenderArgs,
-                                                     ComputeBuffer* pCB_LodArgs,
-                                                     ComputeBuffer* pCB_Result);
-        virtual void UpdateDescriptorSet_CullFrustumDepthHiz(ComputeBuffer* pCB_CullObjects,
-                                                             ComputeBuffer* pCB_RenderArgs,
-                                                             ComputeBuffer* pCB_LodArgs,
-                                                             ComputeBuffer* pCB_Result);
-        virtual void UpdateDescriptorSet_CullFrustumDepthHizClip(ComputeBuffer* pCB_CullObjects,
-                                                                 ComputeBuffer* pCB_RenderArgs,
-                                                                 ComputeBuffer* pCB_LodArgs,
-                                                                 ComputeBuffer* pCB_Result,
-                                                                 ComputeBuffer* pCB_Clip);
+        virtual void UpdateDescriptorSet_CullClearArgs(BufferCompute* pCB_RenderArgs);
+        virtual void UpdateDescriptorSet_CullFrustum(BufferCompute* pCB_CullObjects,
+                                                     BufferCompute* pCB_RenderArgs,
+                                                     BufferCompute* pCB_LodArgs,
+                                                     BufferCompute* pCB_Result);
+        virtual void UpdateDescriptorSet_CullFrustumDepthHiz(BufferCompute* pCB_CullObjects,
+                                                             BufferCompute* pCB_RenderArgs,
+                                                             BufferCompute* pCB_LodArgs,
+                                                             BufferCompute* pCB_Result);
+        virtual void UpdateDescriptorSet_CullFrustumDepthHizClip(BufferCompute* pCB_CullObjects,
+                                                                 BufferCompute* pCB_RenderArgs,
+                                                                 BufferCompute* pCB_LodArgs,
+                                                                 BufferCompute* pCB_Result,
+                                                                 BufferCompute* pCB_Clip);
         virtual void UpdateDescriptorSet_HizDepthGenerate();
 
     protected:
         virtual void updateDescriptorSet(VkDescriptorSet& descriptorSet,
                                          StringVector* poDescriptorSetLayoutNames,
-                                         ComputeBuffer* pCB_CullObjects,
-                                         ComputeBuffer* pCB_RenderArgs,
-                                         ComputeBuffer* pCB_LodArgs,
-                                         ComputeBuffer* pCB_Result,
-                                         ComputeBuffer* pCB_Clip);
+                                         BufferCompute* pCB_CullObjects,
+                                         BufferCompute* pCB_RenderArgs,
+                                         BufferCompute* pCB_LodArgs,
+                                         BufferCompute* pCB_Result,
+                                         BufferCompute* pCB_Clip);
     };
 
 }; //LostPeterVulkan

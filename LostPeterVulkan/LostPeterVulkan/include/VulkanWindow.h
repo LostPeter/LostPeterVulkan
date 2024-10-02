@@ -97,6 +97,7 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_DepthShadowMap
+        //ObjectWorld
         virtual void UpdateBuffer_ObjectWorld_Begin();
             virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
             virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
@@ -104,6 +105,12 @@ namespace LostPeterVulkan
         virtual bool Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart);
         virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
+        //CullInstance
+        virtual bool Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer);
+            virtual void Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer);
+            virtual void Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub);
+        virtual void Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer);
+
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();

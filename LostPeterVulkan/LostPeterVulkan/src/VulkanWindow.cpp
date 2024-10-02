@@ -316,7 +316,7 @@ namespace LostPeterVulkan
     {
         "Pass",
         "Pass-Object",
-        "Pass-Instance-BufferRWObjectCullInstance-BufferRWResultCB",
+        "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB",
         "ObjectCopyBlit-TextureFrameColor",
         "Cull-BufferRWArgsCB",
         "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB",
@@ -910,7 +910,7 @@ namespace LostPeterVulkan
 
             //PipelineGraphics-ShadowMapDepthCull
             {
-                String descriptorSetLayout = "Pass-Instance-BufferRWObjectCullInstance-BufferRWResultCB";
+                String descriptorSetLayout = "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
@@ -994,6 +994,47 @@ namespace LostPeterVulkan
         }
     }
     void VulkanWindow::Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer)
+    {
+
+    }
+
+    bool VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer)
+    {
+        CullManager* pCullManager = CullManager::GetSingletonPtr();
+        bool isCulling = false;
+        if (pCullManager)
+            isCulling = pCullManager->isEnable;
+        if (this->m_pPipelineGraphics_DepthShadowMap == nullptr ||
+            !this->cfg_isRenderPassShadowMap ||
+            !isCulling)
+            return false;
+
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline_ShadowMapDepthCull);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepthCull[this->poSwapChainImageIndex], 0, nullptr);
+
+        return true;
+    }
+    void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer)
+    {
+        CullManager* pCullManager = CullManager::GetSingletonPtr();
+        if (pCullManager->isEnable)
+        {
+            pCullManager->ExecuteShadowMapDraw(commandBuffer);
+        }
+    }
+    void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub)
+    {
+        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        if (pMeshSub->poIndexBuffer != nullptr)
+        {
+            bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        }
+        
+        drawIndexedIndirect(commandBuffer, bufferIndirectCmd, index * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+    }
+    void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer)
     {
 
     }
@@ -1497,6 +1538,10 @@ namespace LostPeterVulkan
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_CullInstance)) //CullInstance
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
             else
             {

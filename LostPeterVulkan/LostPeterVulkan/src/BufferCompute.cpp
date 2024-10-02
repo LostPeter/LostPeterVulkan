@@ -9,12 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/ComputeBuffer.h"
+#include "../include/BufferCompute.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeterVulkan
 {
-    ComputeBuffer::ComputeBuffer(const String& nameComputeBuffer)
+    BufferCompute::BufferCompute(const String& nameComputeBuffer)
         : Base(nameComputeBuffer)
     
         , nCount(0)
@@ -27,7 +27,7 @@ namespace LostPeterVulkan
 
     }
 
-    ComputeBuffer::ComputeBuffer(const String& nameComputeBuffer, int count, int stride, VkBufferUsageFlagBits usage /*= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT*/)
+    BufferCompute::BufferCompute(const String& nameComputeBuffer, int count, int stride, VkBufferUsageFlagBits usage /*= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT*/)
         : Base(nameComputeBuffer)
 
         , nCount(count)
@@ -37,17 +37,17 @@ namespace LostPeterVulkan
         , poBuffer_Compute(VK_NULL_HANDLE)
         , poBufferMemory_Compute(VK_NULL_HANDLE)
     {
-        F_Assert(nCount > 0 && nStride > 0 && "ComputeBuffer::ComputeBuffer")
+        F_Assert(nCount > 0 && nStride > 0 && "BufferCompute::BufferCompute")
 
         Init(count, stride, usage);
     }
     
-    ComputeBuffer::~ComputeBuffer()
+    BufferCompute::~BufferCompute()
     {
         Destroy();
     }
 
-    void ComputeBuffer::Destroy()
+    void BufferCompute::Destroy()
     {
         F_DELETE_T(pBuffer_Compute)
         if (this->poBuffer_Compute != VK_NULL_HANDLE)
@@ -58,7 +58,7 @@ namespace LostPeterVulkan
         this->poBufferMemory_Compute = VK_NULL_HANDLE;
     }
 
-    void ComputeBuffer::Init(int count, int stride, VkBufferUsageFlagBits usage /*= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT*/)
+    void BufferCompute::Init(int count, int stride, VkBufferUsageFlagBits usage /*= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT*/)
     {
         Destroy();
 
@@ -69,7 +69,7 @@ namespace LostPeterVulkan
         UpdateBuffer();
     }
     
-    void ComputeBuffer::UpdateBuffer()
+    void BufferCompute::UpdateBuffer()
     {
         if (this->pBuffer_Compute == nullptr ||
             this->poBufferMemory_Compute == VK_NULL_HANDLE)
@@ -78,10 +78,10 @@ namespace LostPeterVulkan
         }
         Base::GetWindowPtr()->updateVKBuffer(0, (size_t)GetBufferSize(), this->pBuffer_Compute, this->poBufferMemory_Compute);
     }
-    void ComputeBuffer::UpdateBuffer(size_t offset, size_t bufSize, void* pBuf)
+    void BufferCompute::UpdateBuffer(size_t offset, size_t bufSize, void* pBuf)
     {
         size_t size = GetBufferSize();
-        F_Assert(offset >= 0 && offset < size && bufSize <= size && "ComputeBuffer::UpdateBuffer")
+        F_Assert(offset >= 0 && offset < size && bufSize <= size && "BufferCompute::UpdateBuffer")
 
         uint8* pBuffer = this->pBuffer_Compute + offset;
         memcpy(pBuffer, pBuf, bufSize);

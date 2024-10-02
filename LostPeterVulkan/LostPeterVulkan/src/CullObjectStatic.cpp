@@ -12,7 +12,7 @@
 #include "../include/CullObjectStatic.h"
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
-#include "../include/ComputeBuffer.h"
+#include "../include/BufferCompute.h"
 #include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/Mesh.h"
@@ -82,22 +82,22 @@ namespace LostPeterVulkan
         {
             //pCB_CullObjects
             {
-                this->pCB_CullObjects = new ComputeBuffer("ComputeBuffer-Static-CullObjects", CullObjectStatic::s_nInstanceCountMax, sizeof(CullObjectConstants));
+                this->pCB_CullObjects = new BufferCompute("BufferCompute-Static-CullObjects", CullObjectStatic::s_nInstanceCountMax, sizeof(CullObjectConstants));
             }
             //pCB_LodArgs
             {
                 int count_lodArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 2;
-                this->pCB_LodArgs = new ComputeBuffer("ComputeBuffer-Static-LodArgs", count_lodArgs, sizeof(float));
+                this->pCB_LodArgs = new BufferCompute("BufferCompute-Static-LodArgs", count_lodArgs, sizeof(float));
             }
             //pCB_RenderArgs
             {
                 int count_renderArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 5;
-                this->pCB_RenderArgs = new ComputeBuffer("ComputeBuffer-Static-RenderArgs", count_renderArgs, sizeof(uint));
+                this->pCB_RenderArgs = new BufferCompute("BufferCompute-Static-RenderArgs", count_renderArgs, sizeof(uint));
             }
             //pCB_Result
             {
                 int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax * 5;
-                this->pCB_Result = new ComputeBuffer("ComputeBuffer-Static-Result", count_result, sizeof(uint));
+                this->pCB_Result = new BufferCompute("BufferCompute-Static-Result", count_result, sizeof(uint));
             }
         }
 
@@ -115,7 +115,7 @@ namespace LostPeterVulkan
         return this->nRenderArgsCount;
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
+    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
     {
         return this->pCB_RenderArgs; 
     }
@@ -147,17 +147,17 @@ namespace LostPeterVulkan
         return this->nLodCount;
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetObjectDataCB()
+    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetObjectDataCB()
     {
         return this->pCB_CullObjects; 
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetLodArgsCB()
+    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetLodArgsCB()
     {
         return this->pCB_LodArgs; 
     }
 
-    ComputeBuffer* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
+    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
     {
         return this->pCB_Result;
     }

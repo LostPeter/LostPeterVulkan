@@ -12,7 +12,7 @@
 #include "../include/CullObjectDynamic.h"
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
-#include "../include/ComputeBuffer.h"
+#include "../include/BufferCompute.h"
 #include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/Mesh.h"
@@ -82,22 +82,22 @@ namespace LostPeterVulkan
         {
             //pCB_CullObjects
             {
-                this->pCB_CullObjects = new ComputeBuffer("ComputeBuffer-Dynamic-CullObjects", CullObjectDynamic::s_nInstanceCountMax, sizeof(CullObjectConstants));
+                this->pCB_CullObjects = new BufferCompute("BufferCompute-Dynamic-CullObjects", CullObjectDynamic::s_nInstanceCountMax, sizeof(CullObjectConstants));
             }
             //pCB_LodArgs
             {
                 int count_lodArgs = this->nLodCount * CullObjectDynamic::s_nRenderCountMax * 2;
-                this->pCB_LodArgs = new ComputeBuffer("ComputeBuffer-Dynamic-LodArgs", count_lodArgs, sizeof(float));
+                this->pCB_LodArgs = new BufferCompute("BufferCompute-Dynamic-LodArgs", count_lodArgs, sizeof(float));
             }
             //pCB_RenderArgs
             {
                 int count_renderArgs = this->nLodCount * CullObjectDynamic::s_nRenderCountMax * 5;
-                this->pCB_RenderArgs = new ComputeBuffer("ComputeBuffer-Dynamic-RenderArgs", count_renderArgs, sizeof(uint));
+                this->pCB_RenderArgs = new BufferCompute("BufferCompute-Dynamic-RenderArgs", count_renderArgs, sizeof(uint));
             }
             //pCB_Result
             {
                 int count_result = this->nLodCount * CullObjectDynamic::s_nInstanceCountMax;
-                this->pCB_Result = new ComputeBuffer("ComputeBuffer-Dynamic-Result", count_result, sizeof(uint));
+                this->pCB_Result = new BufferCompute("BufferCompute-Dynamic-Result", count_result, sizeof(uint));
             }
         }
 
@@ -116,7 +116,7 @@ namespace LostPeterVulkan
         return this->nRenderArgsCount;
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetRenderArgsCB()
+    BufferCompute* CullObjectDynamic::CullUnitObjectDynamic::GetRenderArgsCB()
     {
         return this->pCB_RenderArgs; 
     }
@@ -148,17 +148,17 @@ namespace LostPeterVulkan
         return this->nLodCount;
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetObjectDataCB()
+    BufferCompute* CullObjectDynamic::CullUnitObjectDynamic::GetObjectDataCB()
     {
         return this->pCB_CullObjects; 
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetLodArgsCB()
+    BufferCompute* CullObjectDynamic::CullUnitObjectDynamic::GetLodArgsCB()
     {
         return this->pCB_LodArgs; 
     }
 
-    ComputeBuffer* CullObjectDynamic::CullUnitObjectDynamic::GetResultCB()
+    BufferCompute* CullObjectDynamic::CullUnitObjectDynamic::GetResultCB()
     {
         return this->pCB_Result;
     }
@@ -170,7 +170,7 @@ namespace LostPeterVulkan
         {
             CullRenderData* pRenderData = this->aCullRenderData[i];
             CullLodData* pLodData = pRenderData->pCullLodData;
-            pRenderData->RefreshInstance();
+            pRenderData->RefreshCullObjectInstances();
             int count_instance = (int)pLodData->aInstanceDatas.size();
 
             for (int j = 0; j < count_instance; j++)

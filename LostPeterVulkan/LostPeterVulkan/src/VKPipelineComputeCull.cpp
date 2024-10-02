@@ -13,7 +13,7 @@
 #include "../include/VKRenderPassCull.h"
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
-#include "../include/ComputeBuffer.h"
+#include "../include/BufferCompute.h"
 
 namespace LostPeterVulkan
 {
@@ -430,7 +430,7 @@ namespace LostPeterVulkan
         pVulkanWindow->updateVKBuffer(0, sizeof(CullConstants), &this->cullCB, this->poBufferMemory_CullCB);
     }
 
-    void VKPipelineComputeCull::UpdateDescriptorSet_CullClearArgs(ComputeBuffer* pCB_RenderArgs)
+    void VKPipelineComputeCull::UpdateDescriptorSet_CullClearArgs(BufferCompute* pCB_RenderArgs)
     {
         updateDescriptorSet(this->poDescriptorSet_CullClearArgs, 
                             this->poDescriptorSetLayoutNames_CullClearArgs,
@@ -440,10 +440,10 @@ namespace LostPeterVulkan
                             nullptr,
                             nullptr);
     }
-    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustum(ComputeBuffer* pCB_CullObjects,
-                                                                ComputeBuffer* pCB_RenderArgs,
-                                                                ComputeBuffer* pCB_LodArgs,
-                                                                ComputeBuffer* pCB_Result)
+    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustum(BufferCompute* pCB_CullObjects,
+                                                                BufferCompute* pCB_RenderArgs,
+                                                                BufferCompute* pCB_LodArgs,
+                                                                BufferCompute* pCB_Result)
     {
         updateDescriptorSet(this->poDescriptorSet_CullFrustum, 
                             this->poDescriptorSetLayoutNames_CullFrustum,
@@ -453,10 +453,10 @@ namespace LostPeterVulkan
                             pCB_Result,
                             nullptr);
     }
-    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustumDepthHiz(ComputeBuffer* pCB_CullObjects,
-                                                                        ComputeBuffer* pCB_RenderArgs,
-                                                                        ComputeBuffer* pCB_LodArgs,
-                                                                        ComputeBuffer* pCB_Result)
+    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustumDepthHiz(BufferCompute* pCB_CullObjects,
+                                                                        BufferCompute* pCB_RenderArgs,
+                                                                        BufferCompute* pCB_LodArgs,
+                                                                        BufferCompute* pCB_Result)
     {
         updateDescriptorSet(this->poDescriptorSet_CullFrustumDepthHiz, 
                             this->poDescriptorSetLayoutNames_CullFrustumDepthHiz,
@@ -466,11 +466,11 @@ namespace LostPeterVulkan
                             pCB_Result,
                             nullptr);
     }
-    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustumDepthHizClip(ComputeBuffer* pCB_CullObjects,
-                                                                            ComputeBuffer* pCB_RenderArgs,
-                                                                            ComputeBuffer* pCB_LodArgs,
-                                                                            ComputeBuffer* pCB_Result,
-                                                                            ComputeBuffer* pCB_Clip)
+    void VKPipelineComputeCull::UpdateDescriptorSet_CullFrustumDepthHizClip(BufferCompute* pCB_CullObjects,
+                                                                            BufferCompute* pCB_RenderArgs,
+                                                                            BufferCompute* pCB_LodArgs,
+                                                                            BufferCompute* pCB_Result,
+                                                                            BufferCompute* pCB_Clip)
     {
         updateDescriptorSet(this->poDescriptorSet_CullFrustumDepthHizClip, 
                             this->poDescriptorSetLayoutNames_CullFrustumDepthHizClip,
@@ -493,11 +493,11 @@ namespace LostPeterVulkan
 
     void VKPipelineComputeCull::updateDescriptorSet(VkDescriptorSet& descriptorSet,
                                                     StringVector* poDescriptorSetLayoutNames,
-                                                    ComputeBuffer* pCB_CullObjects,
-                                                    ComputeBuffer* pCB_RenderArgs,
-                                                    ComputeBuffer* pCB_LodArgs,
-                                                    ComputeBuffer* pCB_Result,
-                                                    ComputeBuffer* pCB_Clip)
+                                                    BufferCompute* pCB_CullObjects,
+                                                    BufferCompute* pCB_RenderArgs,
+                                                    BufferCompute* pCB_LodArgs,
+                                                    BufferCompute* pCB_Result,
+                                                    BufferCompute* pCB_Clip)
     {
         VkWriteDescriptorSetVector descriptorWrites;
         uint32_t count = (uint32_t)poDescriptorSetLayoutNames->size();

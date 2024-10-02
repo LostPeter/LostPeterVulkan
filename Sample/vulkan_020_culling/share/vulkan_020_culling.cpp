@@ -451,7 +451,7 @@ static const int g_DescriptorSetLayoutCount = 6;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB",
+    "Pass-Object-Material-CullInstance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB",
     "Pass-Object-Material-Instance-TextureDepthShadow",
     "Pass-Object-Material-Instance-TextureFS-TextureDepthShadow",
 
@@ -506,7 +506,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 static const int g_ObjectRend_CullInfo_Count = 1;
 static const char* g_ObjectRend_CullingDesc[4 * g_ObjectRend_CullInfo_Count] = 
 {
-    "vert_standard_mesh_opaque_tex2d_lit",      "vert_standard_mesh_opaque_tex2d_lit_cull",     "Pass-Object-Material-Instance-TextureFS",      "Pass-Object-Material-Instance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB", 
+    "vert_standard_mesh_opaque_tex2d_lit",      "vert_standard_mesh_opaque_tex2d_lit_cull",     "Pass-Object-Material-Instance-TextureFS",      "Pass-Object-Material-CullInstance-TextureFS-BufferRWObjectCullInstance-BufferRWResultCB", 
 
 };
 
@@ -2456,8 +2456,8 @@ void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
                                                        StringVector* poDescriptorSetLayoutNames,
                                                        const VkBufferVector& poBuffersObjectCB,
                                                        const VkBufferVector& poBuffersMaterialCB,
-                                                       ComputeBuffer* pCB_CullInstances,
-                                                       ComputeBuffer* pCB_Result)
+                                                       BufferCompute* pCB_CullInstances,
+                                                       BufferCompute* pCB_Result)
 {
     F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::updateDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
@@ -2850,6 +2850,11 @@ void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
             return;
         int instanceStart = 0;
         
+        CullManager* pCullManager = CullManager::GetSingletonPtr();
+        bool isCulling = false;
+        if (pCullManager)
+            isCulling = pCullManager->isEnable;
+
         //1> Update Object World
         UpdateBuffer_ObjectWorld_Begin();
         {
@@ -2857,7 +2862,8 @@ void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
             {
                 ModelObjectRend* pRend = m_aModelObjectRends_All[i];
                 if (!pRend->isShow ||
-                    !pRend->isCastShadow)
+                    !pRend->isCastShadow ||
+                    (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
                     continue;
                 
                 int instanceCount = (int)pRend->objectCBs.size();
@@ -2876,7 +2882,8 @@ void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
             {
                 ModelObjectRend* pRend = m_aModelObjectRends_All[i];
                 if (!pRend->isShow ||
-                    !pRend->isCastShadow)
+                    !pRend->isCastShadow ||
+                    (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
                     continue;
 
                 int instanceCount = (int)pRend->objectCBs.size();
@@ -2886,6 +2893,17 @@ void Vulkan_020_Culling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& c
             }
             Draw_Graphics_DepthShadowMapEnd(commandBuffer);
         }
+
+        //3> Cull Instance
+        if (isCulling)
+        {
+            //Draw Depth
+            if (Draw_Graphics_CullInstance_DepthShadowMapCullBegin(commandBuffer))
+            {
+                Draw_Graphics_CullInstance_DepthShadowMapCull(commandBuffer);
+                Draw_Graphics_CullInstance_DepthShadowMapCullEnd(commandBuffer);
+            }
+        }   
     }
 
 bool Vulkan_020_Culling::beginRenderImgui()

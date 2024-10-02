@@ -45,12 +45,7 @@ namespace LostPeterVulkan
         std::vector<ObjectConstants> objectWorldCBs;
         VkBuffer poBuffer_ObjectWorldCB;
         VkDeviceMemory poBufferMemory_ObjectWorldCB;
-
-        //CullInstanceConstants
-        std::vector<CullInstanceConstants> instanceCBs;
-        VkBuffer poBuffer_InstanceCB;
-        VkDeviceMemory poBufferMemory_InstanceCB;
-            
+        
 
     public:
         void Destroy();
@@ -69,11 +64,9 @@ namespace LostPeterVulkan
                                             const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     protected:
-        virtual void destroyBufferInstanceCB();
         virtual void destroyBufferObjectWorldCB();
 
         virtual bool createBufferObjectWorldCB();
-        virtual bool createBufferInstanceCB();
         bool createVkGraphicsPipeline(const String& nameGraphicsPipeline,
                                       const String& descriptorSetLayout,
                                       StringVector* pDescriptorSetLayoutNames,
@@ -86,22 +79,27 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
+        //ObjectWorld
         virtual void UpdateBuffer_ObjectWorld_Clear();
         virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
         virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
         virtual void UpdateBuffer_ObjectWorld_Update();
 
         virtual void UpdateDescriptorSet_ShadowMapDepth();
-        virtual void UpdateDescriptorSet_ShadowMapDepthCull(ComputeBuffer* pCB_CullInstances,
-                                                            ComputeBuffer* pCB_Result);
+
+        //Cull Instance
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance,
+                                                            BufferCompute* pCB_CullObjectInstances,
+                                                            BufferCompute* pCB_Result);
+
 
     protected:
         virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                           StringVector* poDescriptorSetLayoutNames,
                                           VkBuffer vkBuffer_ObjectWorldCB,
-                                          VkBuffer vkBuffer_InstanceCB,
-                                          ComputeBuffer* pCB_CullInstances,
-                                          ComputeBuffer* pCB_Result);
+                                          BufferUniform* pCB_CullInstance,
+                                          BufferCompute* pCB_CullObjectInstances,
+                                          BufferCompute* pCB_Result);
     };  
 
 }; //LostPeterVulkan

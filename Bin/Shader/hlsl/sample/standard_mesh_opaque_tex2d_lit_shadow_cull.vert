@@ -31,9 +31,9 @@
 }
 
 
-[[vk::binding(3)]]cbuffer instanceConsts          : register(b3) 
+[[vk::binding(3)]]cbuffer instanceConst          : register(b3) 
 {
-    CullInstanceConstants instanceConsts[MAX_CULL_INSTANCE_COUNT];
+    CullInstanceConstants instanceConst;
 }
 
 
@@ -48,8 +48,7 @@ VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 main(VSInput_Pos3Color4Normal3Tex
     VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4 output = (VSOutput_Pos4Color4Normal3TexCood2ShadowCoord4)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
-    CullInstanceConstants ins = instanceConsts[instanceIndex];
-    uint index = resultCB[ins.nObjectOffset + instanceIndex];
+    uint index = resultCB[instanceConst.nObjectOffset + instanceIndex];
     CullObjectInstanceConstants obj = instanceCB[index];
 
     output.outWorldPos = mul(obj.mat4Object2World, float4(input.inPosition, 1.0));

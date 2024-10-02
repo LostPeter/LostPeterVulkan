@@ -12,7 +12,8 @@
 #include "../include/VKPipelineGraphicsDepthShadowMap.h"
 #include "../include/VKRenderPassShadowMap.h"
 #include "../include/VulkanWindow.h"
-#include "../include/ComputeBuffer.h"
+#include "../include/BufferCompute.h"
+#include "../include/BufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -38,10 +39,6 @@ namespace LostPeterVulkan
         , poBuffer_ObjectWorldCB(VK_NULL_HANDLE)
         , poBufferMemory_ObjectWorldCB(VK_NULL_HANDLE)
 
-        //CullInstanceConstants
-        , poBuffer_InstanceCB(VK_NULL_HANDLE)
-        , poBufferMemory_InstanceCB(VK_NULL_HANDLE)
-
     {
 
     }   
@@ -54,19 +51,8 @@ namespace LostPeterVulkan
     void VKPipelineGraphicsDepthShadowMap::Destroy()
     {
         CleanupSwapChain();
-        destroyBufferInstanceCB();
         destroyBufferObjectWorldCB();
     }
-        void VKPipelineGraphicsDepthShadowMap::destroyBufferInstanceCB()
-        {
-            if (this->poBuffer_InstanceCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_InstanceCB, this->poBufferMemory_InstanceCB);
-            }
-            this->poBuffer_InstanceCB = VK_NULL_HANDLE;
-            this->poBufferMemory_InstanceCB = VK_NULL_HANDLE;
-            this->instanceCBs.clear();
-        }
         void VKPipelineGraphicsDepthShadowMap::destroyBufferObjectWorldCB()
         {
             if (this->poBuffer_ObjectWorldCB != VK_NULL_HANDLE)
@@ -86,16 +72,6 @@ namespace LostPeterVulkan
             if (!createBufferObjectWorldCB())
             {
                 F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::Init: createBufferObjectWorldCB failed !");
-                return false;
-            }
-        }
-
-        //CullInstanceConstants
-        if (this->poBuffer_InstanceCB == VK_NULL_HANDLE)
-        {
-            if (!createBufferInstanceCB())
-            {
-                F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::Init: createBufferInstanceCB failed !");
                 return false;
             }
         }
@@ -175,17 +151,6 @@ namespace LostPeterVulkan
                                                  this->poBuffer_ObjectWorldCB, 
                                                  this->poBufferMemory_ObjectWorldCB);
             F_LogInfo("VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB: Create Uniform ObjectWorld constant buffer success !");
-            return true;
-        }
-        bool VKPipelineGraphicsDepthShadowMap::createBufferInstanceCB()
-        {
-            Base::GetWindowPtr()->createVkBuffer("CullInstanceConstants-" + this->name,
-                                                 sizeof(CullInstanceConstants) * MAX_CULL_INSTANCE_COUNT, 
-                                                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                                                 this->poBuffer_InstanceCB, 
-                                                 this->poBufferMemory_InstanceCB);
-            F_LogInfo("VKPipelineGraphicsDepthShadowMap::createBufferInstanceCB: Create Uniform Instance constant buffer success !");
             return true;
         }
         bool VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
@@ -306,23 +271,25 @@ namespace LostPeterVulkan
                              nullptr,
                              nullptr);
     }
-    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepthCull(ComputeBuffer* pCB_CullInstances,
-                                                                                  ComputeBuffer* pCB_Result)
+
+    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance,
+                                                                                  BufferCompute* pCB_CullObjectInstances,
+                                                                                  BufferCompute* pCB_Result)
     {
         updateDescriptorSets(this->poDescriptorSets_ShadowMapDepthCull, 
                              poDescriptorSetLayoutNames_ShadowMapDepthCull,
                              VK_NULL_HANDLE,
-                             this->poBuffer_InstanceCB,
-                             pCB_CullInstances,
+                             pCB_CullInstance,
+                             pCB_CullObjectInstances,
                              pCB_Result);
     }
 
     void VKPipelineGraphicsDepthShadowMap::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                                                 StringVector* poDescriptorSetLayoutNames,
                                                                 VkBuffer vkBuffer_ObjectWorldCB,
-                                                                VkBuffer vkBuffer_InstanceCB,
-                                                                ComputeBuffer* pCB_CullInstances,
-                                                                ComputeBuffer* pCB_Result)
+                                                                BufferUniform* pCB_CullInstance,
+                                                                BufferCompute* pCB_CullObjectInstances,
+                                                                BufferCompute* pCB_Result)
     {
         uint32_t count_descriptorsets = (uint32_t)vkDescriptorSets.size();
         for (uint32_t i = 0; i < count_descriptorsets; i++)
@@ -362,36 +329,36 @@ namespace LostPeterVulkan
                                                                           bufferInfo_Object);
                     }
                 }
-                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_CullInstance)) //CullInstance
                 {
-                    if (vkBuffer_InstanceCB != VK_NULL_HANDLE)
+                    if (pCB_CullInstance != VK_NULL_HANDLE)
                     {
-                        VkDescriptorBufferInfo bufferInfo_Instance = {};
-                        bufferInfo_Instance.buffer = vkBuffer_InstanceCB;
-                        bufferInfo_Instance.offset = 0;
-                        bufferInfo_Instance.range = sizeof(CullInstanceConstants) * MAX_CULL_INSTANCE_COUNT;
+                        VkDescriptorBufferInfo bufferInfo_CullInstance = {};
+                        bufferInfo_CullInstance.buffer = pCB_CullInstance->poBuffer_Uniform;
+                        bufferInfo_CullInstance.offset = 0;
+                        bufferInfo_CullInstance.range = sizeof(CullInstanceConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
                                                                           0,
                                                                           1,
-                                                                          bufferInfo_Instance);
+                                                                          bufferInfo_CullInstance);
                     }
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
                 {
-                    if (pCB_CullInstances != nullptr)
+                    if (pCB_CullObjectInstances != nullptr)
                     {
-                        VkDescriptorBufferInfo bufferInfo_CullInstance = {};
-                        bufferInfo_CullInstance.buffer = pCB_CullInstances->poBuffer_Compute;
-                        bufferInfo_CullInstance.offset = 0;
-                        bufferInfo_CullInstance.range = (VkDeviceSize)pCB_CullInstances->GetBufferSize();
+                        VkDescriptorBufferInfo bufferInfo_CullObjectInstance = {};
+                        bufferInfo_CullObjectInstance.buffer = pCB_CullObjectInstances->poBuffer_Compute;
+                        bufferInfo_CullObjectInstance.offset = 0;
+                        bufferInfo_CullObjectInstance.range = (VkDeviceSize)pCB_CullObjectInstances->GetBufferSize();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                           vkDescriptorSets[i],
                                                                           j,
                                                                           0,
                                                                           1,
-                                                                          bufferInfo_CullInstance);
+                                                                          bufferInfo_CullObjectInstance);
                     }
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWResultCB)) //BufferRWResultCB

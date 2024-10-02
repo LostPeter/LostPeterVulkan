@@ -9,19 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _CULL_COMPUTE_BUFFER_H_
-#define _CULL_COMPUTE_BUFFER_H_
+#ifndef _CULL_BUFFER_COMPUTE_H_
+#define _CULL_BUFFER_COMPUTE_H_
 
 #include "Base.h"
 
 namespace LostPeterVulkan
 {
-    class vulkanExport ComputeBuffer : public Base
+    class vulkanExport BufferCompute : public Base
     {
     public:
-        ComputeBuffer(const String& nameComputeBuffer);
-        ComputeBuffer(const String& nameComputeBuffer, int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-        virtual ~ComputeBuffer();
+        BufferCompute(const String& nameComputeBuffer);
+        BufferCompute(const String& nameComputeBuffer, int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+        virtual ~BufferCompute();
 
     public:
         int nCount;

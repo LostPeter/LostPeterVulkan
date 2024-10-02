@@ -36,7 +36,9 @@
 #include "VKRenderPassTerrain.h"
 
 #include "Base.h"
-#include "ComputeBuffer.h"
+#include "BufferCompute.h"
+#include "BufferIndirectCommand.h"
+#include "BufferUniform.h"
 #include "CullLodData.h"
 #include "CullRenderData.h"
 #include "CullManager.h"

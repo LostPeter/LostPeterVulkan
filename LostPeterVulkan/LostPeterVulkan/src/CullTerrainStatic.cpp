@@ -49,7 +49,7 @@ namespace LostPeterVulkan
         return 0;
     }
 
-    ComputeBuffer* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
+    BufferCompute* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
     {
         return nullptr; 
     }

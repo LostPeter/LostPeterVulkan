@@ -19,13 +19,13 @@
 }
 
 
-[[vk::binding(1)]]cbuffer instanceConsts            : register(b1) 
+[[vk::binding(1)]]cbuffer instanceConst             : register(b1) 
 {
-    CullInstanceConstants instanceConsts[MAX_CULL_INSTANCE_COUNT];
+    CullInstanceConstants instanceConst;
 }
 
-[[vk::binding(2)]] RWStructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(u0);
-[[vk::binding(3)]] RWStructuredBuffer<uint> resultCB	                        : register(u1);
+[[vk::binding(2)]] StructuredBuffer<CullObjectInstanceConstants> instanceCB	: register(t0);
+[[vk::binding(3)]] StructuredBuffer<uint> resultCB	                        : register(t1);
 
 struct VSOutput
 {
@@ -38,8 +38,7 @@ VSOutput main(VSInput_Pos3Color4Normal3TexCood2 input,
 {
     VSOutput output = (VSOutput)0;
 
-    CullInstanceConstants ins = instanceConsts[instanceIndex];
-    uint index = resultCB[ins.nObjectOffset + instanceIndex];
+    uint index = resultCB[instanceConst.nObjectOffset + instanceIndex];
     CullObjectInstanceConstants obj = instanceCB[index];
 
     output.outPosition = mul(passConsts.g_MainLight.depthMVP, mul(obj.mat4Object2World, float4(input.inPosition, 1.0)));

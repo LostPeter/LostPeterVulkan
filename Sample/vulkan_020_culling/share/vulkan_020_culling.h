@@ -589,8 +589,8 @@ protected:
                                                StringVector* poDescriptorSetLayoutNames,
                                                const VkBufferVector& poBuffersObjectCB,
                                                const VkBufferVector& poBuffersMaterialCB,
-                                               ComputeBuffer* pCB_CullInstances,
-                                               ComputeBuffer* pCB_Result);
+                                               BufferCompute* pCB_CullInstances,
+                                               BufferCompute* pCB_Result);
             void updateDescriptorSets_Compute(ModelObjectRend* pRend,
                                               VKPipelineCompute* pPipelineCompute);
 

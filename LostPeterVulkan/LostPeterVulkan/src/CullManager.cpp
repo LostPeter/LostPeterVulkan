@@ -19,6 +19,9 @@
 #include "../include/CullObjectStatic.h"
 #include "../include/CullObjectDynamic.h"
 #include "../include/VKPipelineComputeCull.h"
+#include "../include/BufferCompute.h"
+#include "../include/Mesh.h"
+#include "../include/MeshSub.h"
 
 template<> LostPeterVulkan::CullManager* LostPeterFoundation::FSingleton<LostPeterVulkan::CullManager>::ms_Singleton = nullptr;
 
@@ -160,7 +163,7 @@ namespace LostPeterVulkan
             pUnitObject->UpdateBuffer();
 
             //Clear
-            ComputeBuffer* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
+            BufferCompute* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
             this->pVKPipelineComputeCull->UpdateDescriptorSet_CullClearArgs(pCB_RenderArgs);
             pVulkanWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipeline_CullClearArgs);
             pVulkanWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipelineLayout_CullClearArgs, 0, 1, &this->pVKPipelineComputeCull->poDescriptorSet_CullClearArgs, 0, 0);
@@ -168,12 +171,12 @@ namespace LostPeterVulkan
             pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
 
             //Test
-            ComputeBuffer* pCB_CullObjects = pUnitObject->GetObjectDataCB();
-            ComputeBuffer* pCB_LodArgs = pUnitObject->GetLodArgsCB();
-            ComputeBuffer* pCB_Result = pUnitObject->GetResultCB();
+            BufferCompute* pCB_CullObjects = pUnitObject->GetObjectDataCB();
+            BufferCompute* pCB_LodArgs = pUnitObject->GetLodArgsCB();
+            BufferCompute* pCB_Result = pUnitObject->GetResultCB();
             if (pVulkanWindow->isComputeCullFrustumHizDepth)
             {
-                ComputeBuffer* pCB_Clip = pUnitObject->GetClipCB();
+                BufferCompute* pCB_Clip = pUnitObject->GetClipCB();
                 if (pCB_Clip != nullptr)
                 {   
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHizClip(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result, pCB_Clip);
@@ -210,7 +213,69 @@ namespace LostPeterVulkan
     }
     void CullManager::ExecuteHizDepthGenerate(VkCommandBuffer& commandBuffer)
     {
+        
+    }
 
+    void CullManager::ExecuteShadowMapDraw(VkCommandBuffer& commandBuffer)
+    {
+        if (!this->isEnable)
+            return;
+
+        int count_unit = (int)this->aCullUnits.size();
+        if (count_unit <= 0)
+            return;
+        VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
+
+        //Unit Object
+        int index = 0;
+        int count_unit_object = (int)this->aCullUnitObjects.size();
+        for (int i = 0; i < count_unit_object; i++)
+        {
+            CullUnitObject* pUnitObject = this->aCullUnitObjects[i];
+            if (!pUnitObject->IsCulling())
+                continue;
+            int count_render = pUnitObject->GetRenderCount();
+            if (count_render <= 0)
+                continue;
+
+            BufferCompute* pRenderArg = pUnitObject->GetRenderArgsCB();
+            BufferCompute* pResult = pUnitObject->GetResultCB();
+
+            for (int j = 0; j < count_render; j++)
+            {
+                CullRenderData* pRenderData = pUnitObject->GetRenderData(j);
+                CullLodData* pLodData = pRenderData->pCullLodData;
+                if (!pLodData->isCastShadow)
+                {
+                    index ++;
+                    continue;
+                }
+
+                pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
+                                                                                 pRenderArg->poBuffer_Compute,
+                                                                                 index,
+                                                                                 pLodData->pMesh->GetMeshSub(0));
+
+                index ++;
+            }
+        }
+
+        //Unit Terrain
+        int count_unit_terrain = (int)this->aCullUnitTerrains.size();
+        for (int i = 0; i < count_unit_terrain; i++)
+        {
+            CullUnitTerrain* pUnitTerrain = this->aCullUnitTerrains[i];
+            bool isCulling = pUnitTerrain->IsCulling();
+            int count_render = pUnitTerrain->GetRenderCount();
+            if (count_render <= 0)
+                continue;
+
+            //Clear
+
+
+            //Test
+
+        }
     }
 
     void CullManager::AddCullUnit(CullUnit* pCullUnit)

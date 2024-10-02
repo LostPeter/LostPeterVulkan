@@ -34,11 +34,11 @@ namespace LostPeterVulkan
 
         virtual int GetLodCount() = 0;
 
-        virtual ComputeBuffer* GetObjectDataCB() = 0;
-        virtual ComputeBuffer* GetLodArgsCB() = 0;
+        virtual BufferCompute* GetObjectDataCB() = 0;
+        virtual BufferCompute* GetLodArgsCB() = 0;
 
-        virtual ComputeBuffer* GetResultCB() = 0;
-        virtual ComputeBuffer* GetClipCB() { return nullptr; }
+        virtual BufferCompute* GetResultCB() = 0;
+        virtual BufferCompute* GetClipCB() { return nullptr; }
 
         virtual void UpdateBuffer() = 0;
     };

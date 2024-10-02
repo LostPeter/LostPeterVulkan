@@ -294,6 +294,7 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_BufferRWResultCB,              //33: BufferRWResultCB
         Vulkan_DescriptorSet_BufferRWClipCB,                //34: BufferRWClipCB
         Vulkan_DescriptorSet_BufferRWObjectCullInstance,    //35: BufferRWObjectCullInstance
+        Vulkan_DescriptorSet_CullInstance,                  //36: CullInstance
 
         Vulkan_DescriptorSet_Count,
     };
@@ -524,7 +525,9 @@ namespace LostPeterVulkan
 
 
     class Base;
-    class ComputeBuffer;
+    class BufferCompute;
+    class BufferIndirectCommand;
+    class BufferUniform;
     class CullLodData;
     class CullRenderData;
     class CullManager;

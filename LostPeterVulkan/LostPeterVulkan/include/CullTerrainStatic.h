@@ -44,7 +44,7 @@ namespace LostPeterVulkan
         public:
             virtual bool IsCulling();
             virtual int GetRenderCount();  
-            virtual ComputeBuffer* GetRenderArgsCB();
+            virtual BufferCompute* GetRenderArgsCB();
         };
         typedef std::vector<CullUnitTerrainStatic*> CullUnitTerrainStaticPtrVector;
         typedef std::map<String, CullUnitTerrainStatic*> CullUnitTerrainStaticPtrMap;

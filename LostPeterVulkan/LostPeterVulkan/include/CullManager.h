@@ -64,6 +64,8 @@ namespace LostPeterVulkan
         void ExecuteHizCullTest(VkCommandBuffer& commandBuffer);
         void ExecuteHizDepthGenerate(VkCommandBuffer& commandBuffer);
 
+        void ExecuteShadowMapDraw(VkCommandBuffer& commandBuffer);
+
     protected:  
         void destroyCullObjects();
         void destroyPools();

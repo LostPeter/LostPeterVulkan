@@ -468,6 +468,7 @@ namespace LostPeterVulkan
         "BufferRWResultCB",                 //33:  BufferRWResultCB
         "BufferRWClipCB",                   //34:  BufferRWClipCB
         "BufferRWObjectCullInstance",       //35:  BufferRWObjectCullInstance
+        "CullInstance",                     //36:  CullInstance
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

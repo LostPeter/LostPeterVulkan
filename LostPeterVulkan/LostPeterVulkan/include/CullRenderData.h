@@ -28,8 +28,11 @@ namespace LostPeterVulkan
         int nMaxMaterialCount;
 
         CullLodData* pCullLodData;
-        ComputeBuffer* pBuffer_Instance;
-        
+        BufferCompute* pBuffer_CullObjectInstances;
+
+        CullInstanceConstants cullInstance;
+        BufferUniform* pBuffer_CullInstance;
+
     public:
         void Destroy();
         void Init(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
@@ -37,7 +40,8 @@ namespace LostPeterVulkan
     public:
         void RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
         void RefreshParam(int renderIndex, int objectOffset);
-        void RefreshInstance();
+        void RefreshCullObjectInstances();
+        void RefreshCullInstance();
     };
 
 }; //LostPeterVulkan
