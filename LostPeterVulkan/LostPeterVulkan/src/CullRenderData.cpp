@@ -40,11 +40,7 @@ namespace LostPeterVulkan
         this->nRenderIndex = 0;
         this->nObjectOffset = 0;
         this->nMaxMaterialCount = 0;
-
-        if (this->pCullLodData != nullptr)
-        {
-             CullManager::GetSingleton().BackCullLodData(this->pCullLodData);
-        }
+        
         this->pCullLodData = nullptr;
 
         F_DELETE(pBuffer_CullObjectInstances)

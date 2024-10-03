@@ -61,8 +61,8 @@ namespace LostPeterVulkan
             size_t count = this->aCullRenderData.size();
             for (size_t i = 0; i < count; i++)
             {
-                CullRenderData* pData = this->aCullRenderData[i];
-                CullManager::GetSingleton().BackCullRenderData(pData);
+                CullRenderData* pRenderData = this->aCullRenderData[i];
+                CullManager::GetSingleton().BackCullRenderData(pRenderData);
             }
             this->aCullRenderData.clear();
             this->mapCullRenderData2Index.clear();
