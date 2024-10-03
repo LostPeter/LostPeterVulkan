@@ -142,7 +142,7 @@ namespace LostPeterVulkan
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
                                                                                                  aShaderStageCreateInfos_Graphics,
                                                                                                  false, 0, 3,
                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -163,7 +163,7 @@ namespace LostPeterVulkan
             F_LogInfo("EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
                                                                                                            aShaderStageCreateInfos_Graphics,
                                                                                                            false, 0, 3,
                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 

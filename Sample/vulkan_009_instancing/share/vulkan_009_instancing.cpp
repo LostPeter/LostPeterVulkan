@@ -358,7 +358,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
         VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
                                                                               vertShaderBase, "main",
                                                                               fragShaderBase, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
@@ -402,7 +402,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
                                                                             vertShaderBase, "main",
                                                                             fragShaderBase, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -427,7 +427,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("GraphicsPipeline-Outline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("PipelineGraphics-Outline-" + pModelObject->nameModel,
                                                                             vertShaderOutline, "main",
                                                                             fragShaderOutline, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 

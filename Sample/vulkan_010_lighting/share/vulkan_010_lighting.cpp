@@ -332,7 +332,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
         VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
                                                                               vertShaderBase, "main",
                                                                               fragShaderBase, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
@@ -366,7 +366,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
                                                                     vertShaderBase, "main",
                                                                     fragShaderBase, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 

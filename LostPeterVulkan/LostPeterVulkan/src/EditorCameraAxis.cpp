@@ -447,7 +447,7 @@ namespace LostPeterVulkan
                 }
 
                 //pPipelineGraphics->poPipeline
-                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
                                                                                                      aShaderStageCreateInfos_Graphics,
                                                                                                      false, 0, 3,
                                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -468,7 +468,7 @@ namespace LostPeterVulkan
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis] Create pipeline graphics success !");
 
                 //pPipelineGraphics->poPipeline_WireFrame
-                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
                                                                                                                aShaderStageCreateInfos_Graphics,
                                                                                                                false, 0, 3,
                                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -510,7 +510,7 @@ namespace LostPeterVulkan
                 }
 
                 //pPipelineGraphics_CopyBlit->poPipeline
-                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-CopyBlit-" + this->name,
+                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-CopyBlit-" + this->name,
                                                                                                               aShaderStageCreateInfos_Graphics,
                                                                                                               false, 0, 3,
                                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -531,7 +531,7 @@ namespace LostPeterVulkan
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis_CopyBlit] Create pipeline graphics success !");
 
                 //pPipelineGraphics_CopyBlit->poPipeline_WireFrame
-                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-CopyBlit-Wire-" + this->name,
+                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-CopyBlit-Wire-" + this->name,
                                                                                                                         aShaderStageCreateInfos_Graphics,
                                                                                                                         false, 0, 3,
                                                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 

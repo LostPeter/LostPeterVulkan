@@ -296,7 +296,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
                                                                               vertShaderModule_Stencil, "main",
                                                                               fragShaderModule_Stencil, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
@@ -325,7 +325,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
         back.writeMask = 0xFF;
         back.reference = 1;
         VkStencilOpState front = back;
-        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
                                                                             vertShaderModule_Stencil, "main",
                                                                             fragShaderModule_Stencil, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -350,7 +350,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("GraphicsPipeline-Outline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("PipelineGraphics-Outline-" + pModelObject->nameModel,
                                                                             vertShaderModule_Outline, "main",
                                                                             fragShaderModule_Outline, "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 

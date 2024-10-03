@@ -1574,7 +1574,7 @@ namespace LostPeterVulkan
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
                                                                                                  aShaderStageCreateInfos_Graphics,
                                                                                                  false, 0, 3,
                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -1595,7 +1595,7 @@ namespace LostPeterVulkan
             F_LogInfo("EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
                                                                                                            aShaderStageCreateInfos_Graphics,
                                                                                                            false, 0, 3,
                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -1629,7 +1629,7 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + this->name,
+            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire2-" + this->name,
                                                                                                             aShaderStageCreateInfos_Graphics_Wire,
                                                                                                             false, 0, 3,
                                                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 

@@ -260,7 +260,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         //poPipelineGraphics
-        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
                                                                     vertShaderModule, "main",
                                                                     fragShaderModule, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -280,7 +280,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
                                                                               vertShaderModule, "main",
                                                                               fragShaderModule, "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
@@ -300,7 +300,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthTest
-        pModelObject->poPipelineGraphics_NoDepthTest = createVkGraphicsPipeline("GraphicsPipeline-NoDepthTest-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_NoDepthTest = createVkGraphicsPipeline("PipelineGraphics-NoDepthTest-" + pModelObject->nameModel,
                                                                                 vertShaderModule, "main",
                                                                                 fragShaderModule, "main",
                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -320,7 +320,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthWrite
-        pModelObject->poPipelineGraphics_NoDepthWrite = createVkGraphicsPipeline("GraphicsPipeline-NoDepthWrite-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_NoDepthWrite = createVkGraphicsPipeline("PipelineGraphics-NoDepthWrite-" + pModelObject->nameModel,
                                                                                  vertShaderModule, "main",
                                                                                  fragShaderModule, "main",
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -340,7 +340,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         }
 
         //poPipelineGraphics_NoDepthTestWrite
-        pModelObject->poPipelineGraphics_NoDepthTestWrite = createVkGraphicsPipeline("GraphicsPipeline-NoDepthTestWrite-" + pModelObject->nameModel,
+        pModelObject->poPipelineGraphics_NoDepthTestWrite = createVkGraphicsPipeline("PipelineGraphics-NoDepthTestWrite-" + pModelObject->nameModel,
                                                                                      vertShaderModule, "main",
                                                                                      fragShaderModule, "main",
                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 

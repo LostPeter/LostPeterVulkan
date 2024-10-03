@@ -1539,7 +1539,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
                                                                                       pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       pBindingDescriptions,
@@ -1574,7 +1574,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
                                                                             pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             pBindingDescriptions,
@@ -1601,7 +1601,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
 
                 //pPipelineGraphics->poPipeline_WireFrame2
-                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + pRend->nameObjectRend,
+                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("PipelineGraphics-Wire2-" + pRend->nameObjectRend,
                                                                                            pRend->aShaderStageCreateInfos_Graphics,
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            pBindingDescriptions,
@@ -1631,7 +1631,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                     blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                     blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                 }
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("GraphicsPipeline-2-" + pRend->nameObjectRend,
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("PipelineGraphics-2-" + pRend->nameObjectRend,
                                                                                  pRend->aShaderStageCreateInfos_Graphics,
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  pBindingDescriptions,
@@ -1710,7 +1710,7 @@ void Vulkan_015_MultiView::createComputePipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("ComputePipeline-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
+            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_015_MultiView::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;

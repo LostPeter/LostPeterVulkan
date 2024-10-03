@@ -87,7 +87,7 @@ namespace LostPeterVulkan
                 VK_DYNAMIC_STATE_SCISSOR
             };
             
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
                                                                               aShaderStageCreateInfos,
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -107,7 +107,7 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics-CopyBlit] Create pipeline graphics success !");
             
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
                                                                                         aShaderStageCreateInfos,
                                                                                         false, 0, 3,
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 

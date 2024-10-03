@@ -154,7 +154,7 @@ namespace LostPeterVulkan
             VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
             VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
                                                                               aShaderStageCreateInfos,
                                                                               false, 0, 0,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
@@ -174,7 +174,7 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VKPipelineGraphicsTerrain::Init: [PipelineGraphics_Terrain] Create pipeline graphics success !");
             
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-Wire-" + this->name,
+            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
                                                                                         aShaderStageCreateInfos,
                                                                                         false, 0, 0,
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),

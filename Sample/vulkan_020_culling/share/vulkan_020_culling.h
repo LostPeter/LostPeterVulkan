@@ -175,6 +175,10 @@ public:
         {
             //Cull
             F_DELETE(this->pCullLodData)
+            if (this->pCullLodData != nullptr)
+            {
+                CullManager::GetSingleton().RemoveStaticCullRenderData(this->pCullRenderData);
+            }
             this->pCullRenderData = nullptr;
 
             //Uniform

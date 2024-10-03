@@ -69,6 +69,7 @@ namespace LostPeterVulkan
         virtual bool createBufferObjectWorldCB();
         bool createVkGraphicsPipeline(const String& nameGraphicsPipeline,
                                       const String& descriptorSetLayout,
+                                      const String& nameDescriptorSets,
                                       StringVector* pDescriptorSetLayoutNames,
                                       const VkDescriptorSetLayout& vkDescriptorSetLayout,
                                       const VkPipelineLayout& vkPipelineLayout,

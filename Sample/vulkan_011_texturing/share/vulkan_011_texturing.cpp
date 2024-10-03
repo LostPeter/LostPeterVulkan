@@ -1252,7 +1252,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
-            pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pModelObject->nameObject,
+            pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameObject,
                                                                                              pModelObject->aShaderStageCreateInfos_Graphics,
                                                                                              pModelObject->isUsedTessellation, 0, 3,
                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
@@ -1287,7 +1287,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pModelObject->nameObject,
+            pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameObject,
                                                                                    pModelObject->aShaderStageCreateInfos_Graphics,
                                                                                    pModelObject->isUsedTessellation, 0, 3,
                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
@@ -1365,7 +1365,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("ComputePipeline-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
+            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;

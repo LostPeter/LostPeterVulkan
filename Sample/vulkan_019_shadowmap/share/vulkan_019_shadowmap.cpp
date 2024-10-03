@@ -1090,7 +1090,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
                                                                                       pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1132,7 +1132,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
                 VkSpecializationInfo specializationInfo = CreateSpecializationInfo(1, &specializationMapEntry, sizeof(uint32_t), &enablePCF);  
                 pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
                                                                             pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
@@ -1157,7 +1157,7 @@ void Vulkan_019_ShadowMap::createGraphicsPipeline_Custom()
             {
                 enablePCF = 1;
 
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("GraphicsPipeline-2-" + pRend->nameObjectRend,
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("PipelineGraphics-2-" + pRend->nameObjectRend,
                                                                                  pRend->aShaderStageCreateInfos_Graphics,
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
@@ -1236,7 +1236,7 @@ void Vulkan_019_ShadowMap::createComputePipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("ComputePipeline-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
+            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** Vulkan_019_ShadowMap::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;

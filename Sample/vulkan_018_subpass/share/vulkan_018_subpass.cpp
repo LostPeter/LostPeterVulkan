@@ -973,7 +973,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
             //pPipelineGraphics->poPipeline_WireFrame
             VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState = g_ObjectRend_ColorBlendAttachmentStates[i];
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
                                                                                       pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1006,7 +1006,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("GraphicsPipeline-" + pRend->nameObjectRend,
+            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
                                                                             pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
@@ -1055,7 +1055,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
                 //pPipelineGraphics->poPipeline_WireFrame2
                 VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentStateNextSubpass = g_ObjectRend_ColorBlendAttachmentStatesNextSubpass[i];
-                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("GraphicsPipeline-Wire2-" + pRend->nameObjectRend,
+                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("PipelineGraphics-Wire2-" + pRend->nameObjectRend,
                                                                                            aShaderStageCreateInfos_GraphicsNextSubpass,
                                                                                            pRend->isUsedTessellation, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
@@ -1089,7 +1089,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                     blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                     blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                 }
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("GraphicsPipeline-2-" + pRend->nameObjectRend,
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("PipelineGraphics-2-" + pRend->nameObjectRend,
                                                                                  aShaderStageCreateInfos_GraphicsNextSubpass,
                                                                                  pRend->isUsedTessellation, 0, 3,
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 

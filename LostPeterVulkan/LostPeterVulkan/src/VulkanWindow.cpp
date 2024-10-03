@@ -6677,7 +6677,7 @@ namespace LostPeterVulkan
             }
 
             //4> poPipelineGraphics
-            this->poPipelineGraphics = createVkGraphicsPipeline("GraphicsPipeline-Default",
+            this->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-Default",
                                                                 vertShaderModule, "main",
                                                                 fragShaderModule, "main",
                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
@@ -6696,7 +6696,7 @@ namespace LostPeterVulkan
             }
 
             //5> poPipelineGraphics_WireFrame
-            this->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("GraphicsPipeline-Wire-Default",
+            this->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-Default",
                                                                           vertShaderModule, "main",
                                                                           fragShaderModule, "main",
                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 

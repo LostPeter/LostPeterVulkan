@@ -89,8 +89,9 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_ShadowMapDepth = vkDescriptorSetLayout;
         this->poPipelineLayout_ShadowMapDepth = vkPipelineLayout;
 
-        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepth",
+        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepth-" + this->name,
                                       descriptorSetLayout,
+                                      "DescriptorSets-" + this->name,
                                       pDescriptorSetLayoutNames,
                                       vkDescriptorSetLayout,
                                       vkPipelineLayout,
@@ -121,8 +122,9 @@ namespace LostPeterVulkan
         this->poDescriptorSetLayout_ShadowMapDepthCull = vkDescriptorSetLayout;
         this->poPipelineLayout_ShadowMapDepthCull = vkPipelineLayout;
 
-        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepthCull",
+        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepth-Cull-" + this->name,
                                       descriptorSetLayout,
+                                      "DescriptorSets-Cull-" + this->name,
                                       pDescriptorSetLayoutNames,
                                       vkDescriptorSetLayout,
                                       vkPipelineLayout,
@@ -155,6 +157,7 @@ namespace LostPeterVulkan
         }
         bool VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
                                                                         const String& descriptorSetLayout,
+                                                                        const String& nameDescriptorSets,
                                                                         StringVector* pDescriptorSetLayoutNames,
                                                                         const VkDescriptorSetLayout& vkDescriptorSetLayout,
                                                                         const VkPipelineLayout& vkPipelineLayout,
@@ -180,7 +183,7 @@ namespace LostPeterVulkan
 
                 VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
 
-                vkPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("GraphicsPipeline-" + this->name,
+                vkPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(nameGraphicsPipeline,
                                                                             aShaderStageCreateInfos,
                                                                             false, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
@@ -200,7 +203,7 @@ namespace LostPeterVulkan
             }
 
             //2> VkDescriptorSets
-            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, vkDescriptorSetLayout, vkDescriptorSets);
+            Base::GetWindowPtr()->createVkDescriptorSets(nameDescriptorSets, vkDescriptorSetLayout, vkDescriptorSets);
             if (vkDescriptorSets.empty())
             {
                 F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline: createVkDescriptorSets failed !");
