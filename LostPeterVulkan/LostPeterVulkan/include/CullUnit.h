@@ -33,7 +33,7 @@ namespace LostPeterVulkan
     public:
         virtual bool IsCulling() = 0;
         virtual int GetRenderCount() = 0;  
-        virtual BufferCompute* GetRenderArgsCB() = 0;
+        virtual BufferIndirectCommand* GetRenderArgsCB() = 0;
 
         
     };

@@ -141,17 +141,17 @@ namespace LostPeterVulkan
         virtual void UpdateBuffer_Cull();
 
     public:
-        virtual void UpdateDescriptorSet_CullClearArgs(BufferCompute* pCB_RenderArgs);
+        virtual void UpdateDescriptorSet_CullClearArgs(BufferIndirectCommand* pCB_RenderArgs);
         virtual void UpdateDescriptorSet_CullFrustum(BufferCompute* pCB_CullObjects,
-                                                     BufferCompute* pCB_RenderArgs,
+                                                     BufferIndirectCommand* pCB_RenderArgs,
                                                      BufferCompute* pCB_LodArgs,
                                                      BufferCompute* pCB_Result);
         virtual void UpdateDescriptorSet_CullFrustumDepthHiz(BufferCompute* pCB_CullObjects,
-                                                             BufferCompute* pCB_RenderArgs,
+                                                             BufferIndirectCommand* pCB_RenderArgs,
                                                              BufferCompute* pCB_LodArgs,
                                                              BufferCompute* pCB_Result);
         virtual void UpdateDescriptorSet_CullFrustumDepthHizClip(BufferCompute* pCB_CullObjects,
-                                                                 BufferCompute* pCB_RenderArgs,
+                                                                 BufferIndirectCommand* pCB_RenderArgs,
                                                                  BufferCompute* pCB_LodArgs,
                                                                  BufferCompute* pCB_Result,
                                                                  BufferCompute* pCB_Clip);
@@ -161,7 +161,7 @@ namespace LostPeterVulkan
         virtual void updateDescriptorSet(VkDescriptorSet& descriptorSet,
                                          StringVector* poDescriptorSetLayoutNames,
                                          BufferCompute* pCB_CullObjects,
-                                         BufferCompute* pCB_RenderArgs,
+                                         BufferIndirectCommand* pCB_RenderArgs,
                                          BufferCompute* pCB_LodArgs,
                                          BufferCompute* pCB_Result,
                                          BufferCompute* pCB_Clip);

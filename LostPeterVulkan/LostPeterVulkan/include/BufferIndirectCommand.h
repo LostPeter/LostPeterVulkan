@@ -30,7 +30,8 @@ namespace LostPeterVulkan
 
     public:
         F_FORCEINLINE int GetBufferSize() const { return (int)this->indirectCommandCBs.size() * sizeof(VkDrawIndexedIndirectCommand); }
-        
+        F_FORCEINLINE void* GetBuffer() const { return (void*)&this->indirectCommandCBs[0]; }
+
     public:
         void Destroy();
         void Init(int count);

@@ -11,6 +11,13 @@
 
 #include "../include/CullTerrainStatic.h"
 #include "../include/VulkanWindow.h"
+#include "../include/CullManager.h"
+#include "../include/BufferCompute.h"
+#include "../include/BufferIndirectCommand.h"
+#include "../include/CullLodData.h"
+#include "../include/CullRenderData.h"
+#include "../include/Mesh.h"
+#include "../include/MeshSub.h"
 
 template<> LostPeterVulkan::CullTerrainStatic* LostPeterFoundation::FSingleton<LostPeterVulkan::CullTerrainStatic>::ms_Singleton = nullptr;
 
@@ -49,7 +56,7 @@ namespace LostPeterVulkan
         return 0;
     }
 
-    BufferCompute* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
+    BufferIndirectCommand* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
     {
         return nullptr; 
     }

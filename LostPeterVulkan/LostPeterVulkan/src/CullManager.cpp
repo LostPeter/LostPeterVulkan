@@ -20,6 +20,7 @@
 #include "../include/CullObjectDynamic.h"
 #include "../include/VKPipelineComputeCull.h"
 #include "../include/BufferCompute.h"
+#include "../include/BufferIndirectCommand.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
 
@@ -163,7 +164,7 @@ namespace LostPeterVulkan
             pUnitObject->UpdateBuffer();
 
             //Clear
-            BufferCompute* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
+            BufferIndirectCommand* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
             this->pVKPipelineComputeCull->UpdateDescriptorSet_CullClearArgs(pCB_RenderArgs);
             pVulkanWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipeline_CullClearArgs);
             pVulkanWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipelineLayout_CullClearArgs, 0, 1, &this->pVKPipelineComputeCull->poDescriptorSet_CullClearArgs, 0, 0);
@@ -238,7 +239,7 @@ namespace LostPeterVulkan
             if (count_render <= 0)
                 continue;
 
-            BufferCompute* pRenderArg = pUnitObject->GetRenderArgsCB();
+            BufferIndirectCommand* pRenderArg = pUnitObject->GetRenderArgsCB();
             BufferCompute* pResult = pUnitObject->GetResultCB();
 
             for (int j = 0; j < count_render; j++)
@@ -253,7 +254,7 @@ namespace LostPeterVulkan
 
                 pVulkanWindow->UpdateDescriptorSet_ShadowMapDepthCull(pRenderData->pBuffer_CullInstance, pRenderData->pBuffer_CullObjectInstances, pResult);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
-                                                                                 pRenderArg->poBuffer_Compute,
+                                                                                 pRenderArg->poBuffer_IndirectCommand,
                                                                                  index,
                                                                                  pLodData->pMesh->GetMeshSub(0));
 

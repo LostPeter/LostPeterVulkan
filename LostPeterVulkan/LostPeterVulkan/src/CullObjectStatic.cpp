@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
 #include "../include/BufferCompute.h"
+#include "../include/BufferIndirectCommand.h"
 #include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/Mesh.h"
@@ -91,8 +92,8 @@ namespace LostPeterVulkan
             }
             //pCB_RenderArgs
             {
-                int count_renderArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 5;
-                this->pCB_RenderArgs = new BufferCompute("BufferCompute-Static-RenderArgs", count_renderArgs, sizeof(uint));
+                int count_render = this->nLodCount * CullObjectStatic::s_nRenderCountMax;
+                this->pCB_RenderArgs = new BufferIndirectCommand("BufferIndirectCommand-Static-RenderArgs", count_render);
             }
             //pCB_Result
             {
@@ -115,7 +116,7 @@ namespace LostPeterVulkan
         return this->nRenderArgsCount;
     }
 
-    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
+    BufferIndirectCommand* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
     {
         return this->pCB_RenderArgs; 
     }

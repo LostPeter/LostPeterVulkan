@@ -47,7 +47,7 @@ namespace LostPeterVulkan
 
             BufferCompute* pCB_CullObjects;
             BufferCompute* pCB_LodArgs;
-            BufferCompute* pCB_RenderArgs;
+            BufferIndirectCommand* pCB_RenderArgs;
             BufferCompute* pCB_Result;
 
             bool isRender;
@@ -65,7 +65,7 @@ namespace LostPeterVulkan
         public:
             virtual bool IsCulling();
             virtual int GetRenderCount();  
-            virtual BufferCompute* GetRenderArgsCB();
+            virtual BufferIndirectCommand* GetRenderArgsCB();
 
         public:
             virtual int GetRenderDataCount();
