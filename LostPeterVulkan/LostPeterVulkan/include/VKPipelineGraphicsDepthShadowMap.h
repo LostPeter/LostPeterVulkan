@@ -39,7 +39,6 @@ namespace LostPeterVulkan
         VkDescriptorSetLayout poDescriptorSetLayout_ShadowMapDepthCull;
         VkPipelineLayout poPipelineLayout_ShadowMapDepthCull;
         VkPipeline poPipeline_ShadowMapDepthCull;
-        VkDescriptorSetVector poDescriptorSets_ShadowMapDepthCull;
 
         //ObjectConstants
         std::vector<ObjectConstants> objectWorldCBs;
@@ -75,7 +74,7 @@ namespace LostPeterVulkan
                                       const VkPipelineLayout& vkPipelineLayout,
                                       const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
                                       VkPipeline& vkPipeline,
-                                      VkDescriptorSetVector& vkDescriptorSets);
+                                      VkDescriptorSetVector* pDescriptorSets);
 
     public:
         virtual void CleanupSwapChain();
@@ -89,7 +88,9 @@ namespace LostPeterVulkan
         virtual void UpdateDescriptorSet_ShadowMapDepth();
 
         //Cull Instance
-        virtual void UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance,
+        virtual void CreateDescriptorSet_ShadowMapDepthCull(const String& nameDescriptorSets, VkDescriptorSetVector& vkDescriptorSets);
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets,
+                                                            BufferUniform* pCB_CullInstance,
                                                             BufferCompute* pCB_CullObjectInstances,
                                                             BufferCompute* pCB_Result);
 

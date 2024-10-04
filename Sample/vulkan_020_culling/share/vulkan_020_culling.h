@@ -37,6 +37,7 @@ public:
         bool isCastShadow;
         bool isReceiveShadow;
         bool isShadowPCF;
+        bool isCanCullingInit;
         bool isCanCulling;
 
         //Cull
@@ -116,6 +117,7 @@ public:
             , isCastShadow(false)
             , isReceiveShadow(false)
             , isShadowPCF(false)
+            , isCanCullingInit(false)
             , isCanCulling(false)
 
             //Cull

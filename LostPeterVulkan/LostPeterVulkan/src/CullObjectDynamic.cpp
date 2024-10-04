@@ -492,7 +492,11 @@ namespace LostPeterVulkan
 
             CullRenderData* pCullRenderData = CullManager::GetSingleton().GetCullRenderData();
             pCullRenderData->Destroy();
-            pCullRenderData->Init(pLodData, this->pCullUnitObjectDynamic->nRenderArgsCount, this->pCullUnitObjectDynamic->nObjectCount, CullObjectDynamic::s_nInstanceCountMax);
+            pCullRenderData->Init(pLodData, 
+                                  this->pCullUnitObjectDynamic->nRenderArgsCount, 
+                                  this->pCullUnitObjectDynamic->nObjectCount, 
+                                  CullObjectDynamic::s_nInstanceCountMax,
+                                  this->pCullUnitObjectDynamic);
             this->pCullUnitObjectDynamic->AddCullRenderData(pCullRenderData);
 
             aCullRenderData.push_back(pCullRenderData);

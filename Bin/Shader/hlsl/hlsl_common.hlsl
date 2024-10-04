@@ -293,6 +293,9 @@ struct CullObjectInstanceConstants
 struct CullInstanceConstants
 {
     uint nObjectOffset;
+    float reserve0;
+    float reserve1;
+    float reserve2;
 };
 
 //////////////////////////////// HizDepthConstants //////////////////////////////

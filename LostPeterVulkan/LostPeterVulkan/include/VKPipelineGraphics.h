@@ -49,6 +49,8 @@ namespace LostPeterVulkan
         VkPipeline poPipeline_Cull;
         VkDescriptorSetVector poDescriptorSets_Cull;
 
+        VkDescriptorSetVector poDescriptorSets_ShadowMapCull;
+
         String nameRenderPass;
         VKMultiRenderPass* pRenderPass;
 

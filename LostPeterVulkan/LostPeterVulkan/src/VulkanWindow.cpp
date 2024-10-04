@@ -998,9 +998,9 @@ namespace LostPeterVulkan
 
     }
 
-    void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result)
+    void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result)
     {
-        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(pCB_CullInstance, pCB_CullObjectInstances, pCB_Result);
+        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(pescriptorSets, pCB_CullInstance, pCB_CullObjectInstances, pCB_Result);
     }
     bool VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer)
     {
@@ -1037,9 +1037,9 @@ namespace LostPeterVulkan
             
             drawIndexedIndirect(commandBuffer, bufferIndirectCmd, index * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
-        void VulkanWindow::Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer)
+        void VulkanWindow::Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer, VkDescriptorSetVector* pescriptorSets)
         {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepthCull[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &(*pescriptorSets)[this->poSwapChainImageIndex], 0, nullptr);
         }
     void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer)
     {

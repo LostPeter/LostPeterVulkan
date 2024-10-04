@@ -11,6 +11,7 @@
 
 #include "../include/CullRenderData.h"
 #include "../include/CullManager.h"
+#include "../include/CullUnit.h"
 #include "../include/CullLodData.h"
 #include "../include/BufferCompute.h"
 #include "../include/BufferUniform.h"
@@ -19,7 +20,10 @@
 namespace LostPeterVulkan
 {
     CullRenderData::CullRenderData()
-        : nRenderIndex(0)
+        : pCullUnit(nullptr)
+        , pDescriptorSets_ShadowMapDepthCull(nullptr)
+
+        , nRenderIndex(0)
         , nObjectOffset(0)
         , nMaxMaterialCount(0)
 
@@ -37,27 +41,35 @@ namespace LostPeterVulkan
 
     void CullRenderData::Destroy()
     {
+        this->pCullUnit = nullptr;
+        this->pDescriptorSets_ShadowMapDepthCull = nullptr;
+
         this->nRenderIndex = 0;
         this->nObjectOffset = 0;
         this->nMaxMaterialCount = 0;
-        
+
         this->pCullLodData = nullptr;
 
         F_DELETE(pBuffer_CullObjectInstances)
         F_DELETE(pBuffer_CullInstance)
     }
 
-    void CullRenderData::Init(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax)
+    void CullRenderData::Init(CullLodData* pCLD, 
+                              int renderIndex, 
+                              int objectOffset, 
+                              int objectMax,
+                              CullUnit* pUnit)
     {
-        RefreshNew(pCLD, renderIndex, objectOffset, objectMax);
+        RefreshNew(pCLD, renderIndex, objectOffset, objectMax, pUnit);
     }   
 
-    void CullRenderData::RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax)
+    void CullRenderData::RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax, CullUnit* pUnit)
     {
         if (pCLD != this->pCullLodData)
         {
             Destroy();
         }
+        this->pCullUnit = pUnit;
         this->pCullLodData = pCLD;
         RefreshParam(renderIndex, objectOffset);
         RefreshCullObjectInstances();

@@ -28,6 +28,11 @@ namespace LostPeterVulkan
     public:
         virtual void Destroy();
 
+    public:
+        virtual int GetRenderDataCount();
+        virtual CullRenderData* GetRenderData(int index);
+        
+        virtual BufferCompute* GetResultCB();
     };
 
 }; //LostPeterVulkan

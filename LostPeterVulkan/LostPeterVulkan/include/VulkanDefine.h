@@ -1544,9 +1544,15 @@ namespace LostPeterVulkan
     struct vulkanExport CullInstanceConstants
     {
         uint32 nObjectOffset;
+        float reserve0;
+        float reserve1;
+        float reserve2;
 
         CullInstanceConstants()
             : nObjectOffset(0)
+            , reserve0(0.0f)
+            , reserve1(0.0f)
+            , reserve2(0.0f)
         {
 
         }  

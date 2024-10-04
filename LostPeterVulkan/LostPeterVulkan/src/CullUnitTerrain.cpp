@@ -29,5 +29,20 @@ namespace LostPeterVulkan
     {
         
     }
+
+    int CullUnitTerrain::GetRenderDataCount() 
+    { 
+        return 0; 
+    }
+
+    CullRenderData* CullUnitTerrain::GetRenderData(int index) 
+    { 
+        return nullptr; 
+    }
+        
+    BufferCompute* CullUnitTerrain::GetResultCB()
+    {
+        return nullptr; 
+    }
     
 }; //LostPeterVulkan

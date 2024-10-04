@@ -106,11 +106,11 @@ namespace LostPeterVulkan
             virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart);
         virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
         //CullInstance
-        virtual void UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result);
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result);
         virtual bool Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub);
-            virtual void Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer);
+            virtual void Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer, VkDescriptorSetVector* pescriptorSets);
         virtual void Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer);
 
 

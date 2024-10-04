@@ -23,6 +23,10 @@ namespace LostPeterVulkan
         ~CullRenderData();
 
     public:
+        CullUnit* pCullUnit;
+        VkDescriptorSetVector* pDescriptorSets_ShadowMapDepthCull;
+
+    public:
         int nRenderIndex;
         int nObjectOffset;
         int nMaxMaterialCount;
@@ -35,10 +39,14 @@ namespace LostPeterVulkan
 
     public:
         void Destroy();
-        void Init(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
+        void Init(CullLodData* pCLD, 
+                  int renderIndex, 
+                  int objectOffset, 
+                  int objectMax,
+                  CullUnit* pUnit);
 
     public:
-        void RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax);
+        void RefreshNew(CullLodData* pCLD, int renderIndex, int objectOffset, int objectMax, CullUnit* pUnit);
         void RefreshParam(int renderIndex, int objectOffset);
         void RefreshCullObjectInstances();
         void RefreshCullInstance();
