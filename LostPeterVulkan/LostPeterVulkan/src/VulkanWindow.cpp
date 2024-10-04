@@ -1014,30 +1014,33 @@ namespace LostPeterVulkan
             return false;
 
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline_ShadowMapDepthCull);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepthCull[this->poSwapChainImageIndex], 0, nullptr);
 
         return true;
     }
-    void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer)
-    {
-        CullManager* pCullManager = CullManager::GetSingletonPtr();
-        if (pCullManager->isEnable)
+        void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer)
         {
-            pCullManager->ExecuteShadowMapDraw(commandBuffer);
+            CullManager* pCullManager = CullManager::GetSingletonPtr();
+            if (pCullManager->isEnable)
+            {
+                pCullManager->ExecuteShadowMapDraw(commandBuffer);
+            }
         }
-    }
-    void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub)
-    {
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
-        VkDeviceSize offsets[] = { 0 };
-        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pMeshSub->poIndexBuffer != nullptr)
+        void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub)
         {
-            bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            }
+            
+            drawIndexedIndirect(commandBuffer, bufferIndirectCmd, index * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
-        
-        drawIndexedIndirect(commandBuffer, bufferIndirectCmd, index * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
-    }
+        void VulkanWindow::Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer)
+        {
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepthCull[this->poSwapChainImageIndex], 0, nullptr);
+        }
     void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer)
     {
 

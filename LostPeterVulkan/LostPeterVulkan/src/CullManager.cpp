@@ -238,6 +238,7 @@ namespace LostPeterVulkan
             int count_render = pUnitObject->GetRenderCount();
             if (count_render <= 0)
                 continue;
+            int count_lod = pUnitObject->GetLodCount();
 
             BufferIndirectCommand* pRenderArg = pUnitObject->GetRenderArgsCB();
             BufferCompute* pResult = pUnitObject->GetResultCB();
@@ -246,19 +247,21 @@ namespace LostPeterVulkan
             {
                 CullRenderData* pRenderData = pUnitObject->GetRenderData(j);
                 CullLodData* pLodData = pRenderData->pCullLodData;
+                int count_material = (int)pLodData->aMaterialConstants.size();
                 if (!pLodData->isCastShadow)
                 {
-                    index ++;
+                    index += count_lod * count_material;
                     continue;
                 }
 
                 pVulkanWindow->UpdateDescriptorSet_ShadowMapDepthCull(pRenderData->pBuffer_CullInstance, pRenderData->pBuffer_CullObjectInstances, pResult);
+                pVulkanWindow->Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(commandBuffer);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
                                                                                  pRenderArg->poBuffer_IndirectCommand,
                                                                                  index,
                                                                                  pLodData->pMesh->GetMeshSub(0));
 
-                index ++;
+                index += count_lod * count_material;
             }
         }
 
