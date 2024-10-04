@@ -998,6 +998,10 @@ namespace LostPeterVulkan
 
     }
 
+    void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result)
+    {
+        this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(pCB_CullInstance, pCB_CullObjectInstances, pCB_Result);
+    }
     bool VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer)
     {
         CullManager* pCullManager = CullManager::GetSingletonPtr();
@@ -8686,6 +8690,9 @@ namespace LostPeterVulkan
 
                         if (ImGui::CollapsingHeader("Cull Settings"))
                         {
+                            if (this->m_pPipelineCompute_Cull == nullptr)
+                                return;
+
                             bool isChanged = false;
 
                             //isComputeCullFrustum
@@ -8702,10 +8709,16 @@ namespace LostPeterVulkan
                             }
                             ImGui::Spacing();
 
+                            //forceNoCulling
+                            bool isForceNoCulling = this->m_pPipelineCompute_Cull->cullCB.nIsNoCulling > 0 ? true : false;
+                            if (ImGui::Checkbox("Is Force NoCulling", &isForceNoCulling))
+                            {   
+                                this->m_pPipelineCompute_Cull->cullCB.nIsNoCulling = isForceNoCulling ? 1 : 0;
+                            }
+
                             if (isChanged)
                             {
-                                if (this->m_pPipelineCompute_Cull != nullptr &&
-                                    this->m_pPipelineCompute_Cull->m_pCullManager != nullptr)
+                                if (this->m_pPipelineCompute_Cull->m_pCullManager != nullptr)
                                 {
                                     this->m_pPipelineCompute_Cull->m_pCullManager->RefreshEnable();
                                 }

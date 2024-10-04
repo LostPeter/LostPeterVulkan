@@ -251,6 +251,7 @@ namespace LostPeterVulkan
                     continue;
                 }
 
+                pVulkanWindow->UpdateDescriptorSet_ShadowMapDepthCull(pRenderData->pBuffer_CullInstance, pRenderData->pBuffer_CullObjectInstances, pResult);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
                                                                                  pRenderArg->poBuffer_Compute,
                                                                                  index,
