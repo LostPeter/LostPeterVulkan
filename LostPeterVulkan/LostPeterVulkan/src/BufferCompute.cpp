@@ -65,7 +65,7 @@ namespace LostPeterVulkan
         this->pBuffer_Compute = new uint8[count * stride];
         memset(this->pBuffer_Compute, 0, count * stride);
         VkDeviceSize bufferSize = count * stride;
-        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_Compute, this->poBufferMemory_Compute);
+        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_Compute, this->poBufferMemory_Compute);
         UpdateBuffer();
     }
     

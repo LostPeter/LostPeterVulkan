@@ -57,7 +57,7 @@ namespace LostPeterVulkan
 
         this->indirectCommandCBs.resize(count);
         VkDeviceSize bufferSize = count * sizeof(VkDrawIndexedIndirectCommand);
-        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_IndirectCommand, this->poBufferMemory_IndirectCommand);
+        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_IndirectCommand, this->poBufferMemory_IndirectCommand);
         UpdateBuffer();
     }
     
