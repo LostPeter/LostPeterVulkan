@@ -2412,19 +2412,21 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
                                           pRend->poBuffers_ObjectCB,
                                           pRend->poBuffers_materialCB,
                                           nullptr,
+                                          nullptr,
                                           nullptr);
 
             if (pRend->pPipelineGraphics->poPipeline_Cull != nullptr &&
                 pRend->pCullRenderData != nullptr)
             {
                 createVkDescriptorSets("DescriptorSets-Cull-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout_Cull, pRend->pPipelineGraphics->poDescriptorSets_Cull);
-                // updateDescriptorSets_Graphics(pRend,
-                //                               pRend->pPipelineGraphics->poDescriptorSets_Cull, 
-                //                               pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull, 
-                //                               pRend->poBuffers_ObjectCB,
-                //                               pRend->poBuffers_materialCB,
-                //                               nullptr,
-                //                               nullptr);
+                updateDescriptorSets_Graphics(pRend,
+                                              pRend->pPipelineGraphics->poDescriptorSets_Cull, 
+                                              pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull, 
+                                              pRend->poBuffers_ObjectCB,
+                                              pRend->poBuffers_materialCB,
+                                              pRend->pCullRenderData->pBuffer_CullInstance,
+                                              pRend->pCullRenderData->pBuffer_CullObjectInstances,
+                                              pRend->pCullRenderData->pCullUnit->GetResultCB());
 
                 if (m_pPipelineGraphics_DepthShadowMap != nullptr)
                 {
@@ -2462,6 +2464,7 @@ void Vulkan_020_Culling::createDescriptorSets_Custom()
                                           pModelObject->pRendIndirect->poBuffers_ObjectCB,
                                           pModelObject->pRendIndirect->poBuffers_materialCB,
                                           nullptr,
+                                          nullptr,
                                           nullptr);
         }
     }
@@ -2471,7 +2474,8 @@ void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
                                                        StringVector* poDescriptorSetLayoutNames,
                                                        const VkBufferVector& poBuffersObjectCB,
                                                        const VkBufferVector& poBuffersMaterialCB,
-                                                       BufferCompute* pCB_CullInstances,
+                                                       BufferUniform* pCB_CullInstance,
+                                                       BufferCompute* pCB_CullObjectInstances,
                                                        BufferCompute* pCB_Result)
 {
     F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::updateDescriptorSets_Graphics")
@@ -2537,6 +2541,22 @@ void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
                                             1,
                                             bufferInfo_Instance);
             }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_CullInstance)) //CullInstance
+            {
+                if (pCB_CullInstance != VK_NULL_HANDLE)
+                {
+                    VkDescriptorBufferInfo bufferInfo_CullInstance = {};
+                    bufferInfo_CullInstance.buffer = pCB_CullInstance->poBuffer_Uniform;
+                    bufferInfo_CullInstance.offset = 0;
+                    bufferInfo_CullInstance.range = sizeof(CullInstanceConstants);
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      poDescriptorSets[j],
+                                                                      p,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_CullInstance);
+                }
+            }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
                 Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
@@ -2561,12 +2581,12 @@ void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
             {
-                if (pCB_CullInstances != nullptr)
+                if (pCB_CullObjectInstances != nullptr)
                 {
                     VkDescriptorBufferInfo bufferInfo_InstanceCull = {};
-                    bufferInfo_InstanceCull.buffer = pCB_CullInstances->poBuffer_Compute;
+                    bufferInfo_InstanceCull.buffer = pCB_CullObjectInstances->poBuffer_Compute;
                     bufferInfo_InstanceCull.offset = 0;
-                    bufferInfo_InstanceCull.range = (VkDeviceSize)pCB_CullInstances->GetBufferSize();
+                    bufferInfo_InstanceCull.range = (VkDeviceSize)pCB_CullObjectInstances->GetBufferSize();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
                                                                       poDescriptorSets[j],
                                                                       p,
@@ -3520,21 +3540,57 @@ void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
     CullManager* pCullManager = CullManager::GetSingletonPtr();
     if (pCullManager && pCullManager->isEnable)
     {
-        drawModelObjectRendCull(commandBuffer);
+        drawModelObjectRendCulls(commandBuffer);
     }
 }
-void Vulkan_020_Culling::drawModelObjectRendCull(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::drawModelObjectRendCulls(VkCommandBuffer& commandBuffer)
 {
     size_t count = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
-        if (!pRend->isCanCulling)
+        if (!pRend->isCanCullingInit)
+            continue;
+        if (!pRend->isShow ||
+            !pRend->pModelObject->isShow ||
+            !pRend->isCanCulling ||
+            pRend->pCullLodData == nullptr || 
+            pRend->pCullRenderData == nullptr)
             continue;
 
-        
+        drawModelObjectRendCull(commandBuffer, pRend);
     }
 }
+void Vulkan_020_Culling::drawModelObjectRendCull(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+{
+    ModelObject* pModelObject = pRend->pModelObject;
+    MeshSub* pMeshSub = pRend->pMeshSub;
+
+    VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+    VkDeviceSize offsets[] = { 0 };
+    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+    if (pMeshSub->poIndexBuffer != nullptr)
+    {
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    }
+
+    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
+    {
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame_Cull);
+    }
+    else
+    {
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_Cull);
+    }
+    if (pRend->pPipelineGraphics->poDescriptorSets_Cull.size() > 0)
+    {
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout_Cull, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets_Cull[this->poSwapChainImageIndex], 0, nullptr);
+    }
+
+    BufferIndirectCommand* pBufferIndirectCommand = pRend->pCullRenderData->pCullUnit->GetRenderArgsCB();
+    drawIndexedIndirect(commandBuffer, pBufferIndirectCommand->poBuffer_IndirectCommand, pRend->pCullRenderData->nRenderIndex * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+}
+
 void Vulkan_020_Culling::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
@@ -3552,6 +3608,7 @@ void Vulkan_020_Culling::drawModelObjectRendIndirects(VkCommandBuffer& commandBu
                 pRendIndirect_Last = nullptr;
                 continue;
             }
+
             drawModelObjectRendIndirect(commandBuffer, pRendIndirect);
             pRendIndirect_Last = pRendIndirect;
         }
@@ -3559,6 +3616,7 @@ void Vulkan_020_Culling::drawModelObjectRendIndirects(VkCommandBuffer& commandBu
         {
             if (!pRend->isShow)
                 continue;
+
             drawModelObjectRend(commandBuffer, pRend);
         }
     }
@@ -3621,6 +3679,7 @@ void Vulkan_020_Culling::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mo
             !pRend->pModelObject->isShow ||
             (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
             continue;
+
         drawModelObjectRend(commandBuffer, pRend);
     }
 }

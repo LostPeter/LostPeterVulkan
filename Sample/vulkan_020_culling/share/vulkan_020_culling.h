@@ -591,7 +591,8 @@ protected:
                                                StringVector* poDescriptorSetLayoutNames,
                                                const VkBufferVector& poBuffersObjectCB,
                                                const VkBufferVector& poBuffersMaterialCB,
-                                               BufferCompute* pCB_CullInstances,
+                                               BufferUniform* pCB_CullInstance,
+                                               BufferCompute* pCB_CullObjectInstances,
                                                BufferCompute* pCB_Result);
             void updateDescriptorSets_Compute(ModelObjectRend* pRend,
                                               VKPipelineCompute* pPipelineCompute);
@@ -656,7 +657,8 @@ private:
     VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
 
 ////Draw
-    void drawModelObjectRendCull(VkCommandBuffer& commandBuffer);
+    void drawModelObjectRendCulls(VkCommandBuffer& commandBuffer);
+    void drawModelObjectRendCull(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
