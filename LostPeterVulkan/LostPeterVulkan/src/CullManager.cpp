@@ -267,7 +267,6 @@ namespace LostPeterVulkan
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
 
         //Unit Object
-        int index = 0;
         int count_unit_object = (int)this->aCullUnitObjects.size();
         for (int i = 0; i < count_unit_object; i++)
         {
@@ -288,18 +287,13 @@ namespace LostPeterVulkan
                 CullLodData* pLodData = pRenderData->pCullLodData;
                 int count_material = (int)pLodData->aMaterialConstants.size();
                 if (!pLodData->isCastShadow)
-                {
-                    index += count_lod * count_material;
                     continue;
-                }
-
+                
                 pVulkanWindow->Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(commandBuffer, pRenderData->pDescriptorSets_ShadowMapDepthCull);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
                                                                                  pRenderArg->poBuffer_IndirectCommand,
-                                                                                 index,
+                                                                                 pRenderData->nRenderIndex,
                                                                                  pLodData->pMesh->GetMeshSub(0));
-
-                index += count_lod * count_material;
             }
         }
 
