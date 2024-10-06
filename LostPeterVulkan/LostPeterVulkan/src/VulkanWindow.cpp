@@ -319,9 +319,9 @@ namespace LostPeterVulkan
         "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB",
         "ObjectCopyBlit-TextureFrameColor",
         "Cull-BufferRWArgsCB",
-        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB",
-        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-TextureCSR",
-        "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
         "HizDepth-TextureCSRWSrc-TextureCSRWDst",
         "TextureCopy-TextureCSR-TextureCSRW",
         "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
@@ -597,7 +597,7 @@ namespace LostPeterVulkan
 
             //PipelineCompute-CullFrustum
             {
-                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB";
+                String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
@@ -623,7 +623,7 @@ namespace LostPeterVulkan
 
             //PipelineCompute-CullFrustumDepthHiz
             {
-                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-TextureCSR";
+                String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
@@ -649,7 +649,7 @@ namespace LostPeterVulkan
 
             //PipelineCompute-CullFrustumDepthHizClip
             {
-                String descriptorSetLayout = "Cull-BufferRWArgsCB-ObjectCull-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR";
+                String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
