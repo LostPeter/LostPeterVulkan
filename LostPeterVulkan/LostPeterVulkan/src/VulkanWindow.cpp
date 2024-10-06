@@ -9269,6 +9269,11 @@ namespace LostPeterVulkan
                         {
                             vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
                         }
+                        void VulkanWindow::bindPipelineAndDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipeline& vkPipeline, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets)
+                        {
+                            bindPipeline(commandBuffer, pipelineBindPoint, vkPipeline);
+                            bindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+                        }
                         void VulkanWindow::draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
                         {
                             vkCmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);

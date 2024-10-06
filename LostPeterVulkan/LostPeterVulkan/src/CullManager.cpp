@@ -166,8 +166,15 @@ namespace LostPeterVulkan
             //Clear
             BufferIndirectCommand* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
             this->pVKPipelineComputeCull->UpdateDescriptorSet_CullClearArgs(pCB_RenderArgs);
-            pVulkanWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipeline_CullClearArgs);
-            pVulkanWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->pVKPipelineComputeCull->poPipelineLayout_CullClearArgs, 0, 1, &this->pVKPipelineComputeCull->poDescriptorSet_CullClearArgs, 0, 0);
+            pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                         VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                         this->pVKPipelineComputeCull->poPipeline_CullClearArgs,
+                                                         this->pVKPipelineComputeCull->poPipelineLayout_CullClearArgs, 
+                                                         0, 
+                                                         1, 
+                                                         &this->pVKPipelineComputeCull->poDescriptorSet_CullClearArgs, 
+                                                         0, 
+                                                         nullptr);
             int x = FMath::CeilI(count_render / 64.0f);
             pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
 
@@ -181,15 +188,47 @@ namespace LostPeterVulkan
                 if (pCB_Clip != nullptr)
                 {   
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHizClip(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result, pCB_Clip);
+                    pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                                 VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                                 this->pVKPipelineComputeCull->poPipeline_CullFrustumDepthHizClip,
+                                                                 this->pVKPipelineComputeCull->poPipelineLayout_CullFrustumDepthHizClip, 
+                                                                 0, 
+                                                                 1, 
+                                                                 &this->pVKPipelineComputeCull->poDescriptorSet_CullFrustumDepthHizClip, 
+                                                                 0, 
+                                                                 nullptr);
                 }
                 else
                 {
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHiz(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
+                    pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                                 VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                                 this->pVKPipelineComputeCull->poPipeline_CullFrustumDepthHiz,
+                                                                 this->pVKPipelineComputeCull->poPipelineLayout_CullFrustumDepthHiz, 
+                                                                 0, 
+                                                                 1, 
+                                                                 &this->pVKPipelineComputeCull->poDescriptorSet_CullFrustumDepthHiz, 
+                                                                 0, 
+                                                                 nullptr);
                 }
             }
             else if (pVulkanWindow->isComputeCullFrustum)
             {
                 this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustum(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result);
+                pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                             VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                             this->pVKPipelineComputeCull->poPipeline_CullFrustum,
+                                                             this->pVKPipelineComputeCull->poPipelineLayout_CullFrustum, 
+                                                             0, 
+                                                             1, 
+                                                             &this->pVKPipelineComputeCull->poDescriptorSet_CullFrustum, 
+                                                             0, 
+                                                             nullptr);
+            }
+            else
+            {
+                F_LogError("*********************** CullManager::ExecuteHizCullTest: Wrong cull state !");
+                return;
             }
             x = FMath::CeilI(count_object / 64.0f); 
             pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
@@ -253,7 +292,7 @@ namespace LostPeterVulkan
                     index += count_lod * count_material;
                     continue;
                 }
-                
+
                 pVulkanWindow->Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(commandBuffer, pRenderData->pDescriptorSets_ShadowMapDepthCull);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
                                                                                  pRenderArg->poBuffer_IndirectCommand,
