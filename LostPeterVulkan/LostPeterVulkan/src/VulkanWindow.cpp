@@ -1058,7 +1058,10 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            if (!this->m_pPipelineGraphics_CopyBlit->Init(descriptorSetLayout,
+            Mesh* pMeshBlit = FindMesh_Internal("quad");
+            F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlit");
+            if (!this->m_pPipelineGraphics_CopyBlit->Init(pMeshBlit,
+                                                          descriptorSetLayout,
                                                           pDescriptorSetLayoutNames,
                                                           vkDescriptorSetLayout,
                                                           vkPipelineLayout,
@@ -1079,7 +1082,7 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer)
     {
-        Mesh* pMesh = this->m_aMeshes_Internal[0];
+        Mesh* pMesh = this->m_pPipelineGraphics_CopyBlit->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
         VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };

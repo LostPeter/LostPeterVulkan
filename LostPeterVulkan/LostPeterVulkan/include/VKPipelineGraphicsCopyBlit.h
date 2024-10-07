@@ -35,9 +35,12 @@ namespace LostPeterVulkan
         VkBuffer m_vkBuffer_CopyBlit;
         VkDeviceMemory m_vkBuffersMemory_CopyBlit;
 
+        Mesh* pMeshBlit;
+
     public:
         void Destroy();
-        virtual bool Init(const String& descriptorSetLayout,
+        virtual bool Init(Mesh* pMesh,
+                          const String& descriptorSetLayout,
                           StringVector* pDescriptorSetLayoutNames,
                           const VkDescriptorSetLayout& vkDescriptorSetLayout,
                           const VkPipelineLayout& vkPipelineLayout,

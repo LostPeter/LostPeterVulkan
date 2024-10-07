@@ -11,6 +11,7 @@
 
 #include "../include/VKPipelineGraphicsCopyBlit.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Mesh.h"
 
 namespace LostPeterVulkan
 {
@@ -26,6 +27,8 @@ namespace LostPeterVulkan
         
         , m_vkBuffer_CopyBlit(VK_NULL_HANDLE)
         , m_vkBuffersMemory_CopyBlit(VK_NULL_HANDLE)
+
+        , pMeshBlit(nullptr)
     {
 
     }
@@ -51,12 +54,14 @@ namespace LostPeterVulkan
         }
 
 
-    bool VKPipelineGraphicsCopyBlit::Init(const String& descriptorSetLayout,
+    bool VKPipelineGraphicsCopyBlit::Init(Mesh* pMesh,
+                                          const String& descriptorSetLayout,
                                           StringVector* pDescriptorSetLayoutNames,
                                           const VkDescriptorSetLayout& vkDescriptorSetLayout,
                                           const VkPipelineLayout& vkPipelineLayout,
                                           const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
     {
+        this->pMeshBlit = pMesh;
         this->nameDescriptorSetLayout = descriptorSetLayout;
         this->poDescriptorSetLayoutNames = pDescriptorSetLayoutNames;
         this->poDescriptorSetLayout = vkDescriptorSetLayout;
