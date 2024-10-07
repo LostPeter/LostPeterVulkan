@@ -547,6 +547,12 @@ namespace LostPeterVulkan
     class MeshSub;
     class Texture;
 
+    typedef std::vector<BufferCompute*> BufferComputePtrVector;
+    typedef std::map<String, BufferCompute*> BufferComputePtrMap;
+    typedef std::vector<BufferIndirectCommand*> BufferIndirectCommandPtrVector;
+    typedef std::map<String, BufferIndirectCommand*> BufferIndirectCommandPtrMap;
+    typedef std::vector<BufferUniform*> BufferUniformPtrVector;
+    typedef std::map<String, BufferUniform*> BufferUniformPtrMap;
 
     typedef std::vector<CullLodData*> CullLodDataPtrVector;
     typedef std::map<String, CullLodData*> CullLodDataPtrMap;

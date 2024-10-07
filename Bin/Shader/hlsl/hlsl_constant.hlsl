@@ -24,6 +24,8 @@
 //Max XX Count
 #define MAX_LIGHT_COUNT                 16
 #define MAX_OBJECT_COUNT                1024
+#define MAX_OBJECT_LINEFLAT_2D_COUNT    2048
+#define MAX_OBJECT_LINEFLAT_3D_COUNT    512
 #define MAX_TEXTURE_COUNT               16
 #define MAX_MATERIAL_COUNT              64
 #define MAX_INSTANCE_COUNT              4096

@@ -19,10 +19,9 @@
 }
 
 
-#define MAX_LINEFLAT3D_OBJECT_COUNT 512
 [[vk::binding(1)]]cbuffer lineFlat3DObjectConsts    : register(b1) 
 {
-    LineFlat3DObjectConstants lineFlat3DObjectConsts[MAX_LINEFLAT3D_OBJECT_COUNT];
+    LineFlat3DObjectConstants lineFlat3DObjectConsts[MAX_OBJECT_LINEFLAT_3D_COUNT];
 }
 
 

@@ -19,10 +19,9 @@
 }
 
 
-#define MAX_LINEFLAT2D_OBJECT_COUNT 2048
 [[vk::binding(1)]]cbuffer lineFlat2DObjectConsts    : register(b1) 
 {
-    LineFlat2DObjectConstants lineFlat2DObjectConsts[MAX_LINEFLAT2D_OBJECT_COUNT];
+    LineFlat2DObjectConstants lineFlat2DObjectConsts[MAX_OBJECT_LINEFLAT_2D_COUNT];
 }
 
 float4 main(VSInput_Pos4Color4 input, 
