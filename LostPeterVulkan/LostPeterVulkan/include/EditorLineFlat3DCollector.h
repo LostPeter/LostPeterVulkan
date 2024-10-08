@@ -54,45 +54,99 @@ namespace LostPeterVulkan
     public:
         static const String s_strNameShader_LineFlat3D_Vert;
         static const String s_strNameShader_LineFlat3D_Frag;
+        static const String s_strNameShader_LineFlat3D_Ext_Vert;
+        static const String s_strNameShader_LineFlat3D_Ext_Frag;
 
     public:
+        MeshPtrMap mapName2Mesh;
+        bool isBufferUniform;
+
+
     protected:
-        class BufferUniformLineFlat3D
+        ////////////////////// BufferBaseLineFlat3D /////////////////////////
+        class BufferBaseLineFlat3D
         {
         public:
-            BufferUniformLineFlat3D(Mesh* p);
-            ~BufferUniformLineFlat3D();
+            BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p);
+            virtual ~BufferBaseLineFlat3D();
 
         public:
+            EditorLineFlat3DCollector* pLineFlat3DCollector;
             Mesh* pMesh;
-            BufferUniform* pBufferUniform;
-
             LineFlat3DObjectConstants* pLineFlat3DObject;
             int nObjectCount;
 
         public:
-            void Destroy();
-            void Init();
+            virtual void Destroy() = 0;
+            virtual void Init() = 0;
 
         public:
-            void Clear();
+            virtual void Clear() = 0;
 
-            void AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true);
-            void AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true);
-            void AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true);
+            virtual void AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true) = 0;
+            virtual void AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true) = 0;
+            virtual void AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true) = 0;
         };
-        typedef std::vector<BufferUniformLineFlat3D*> BufferUniformLineFlat3DPtrVector;
-        typedef std::map<Mesh*, BufferUniformLineFlat3D*> Mesh2BufferUniformLineFlat3DPtrMap;
 
-        BufferUniformLineFlat3DPtrVector aBufferUniformLineFlat3D;
-        Mesh2BufferUniformLineFlat3DPtrMap mapMesh2BufferUniformLineFlat3D;
 
-        MeshPtrMap mapName2Mesh;
+        ////////////////////// BufferStorageLineFlat3D //////////////////////
+        class BufferStorageLineFlat3D : public BufferBaseLineFlat3D
+        {
+        public:
+            BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p);
+            virtual ~BufferStorageLineFlat3D();
+
+        public:
+            static const int s_nStepCount;
+
+        public:
+            BufferStorage* pBufferStorage;
+            int nObjectCountMax;
+        
+
+        public:
+            virtual void Destroy();
+            virtual void Init();
+
+        public:
+            virtual void Clear();
+
+            virtual void AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true);
+            virtual void AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true);
+            virtual void AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true);
+
+        protected:
+            BufferStorage* createBufferStorage(int count);
+            void increaseBufferStorage();
+        };
+        typedef std::vector<BufferStorageLineFlat3D*> BufferStorageLineFlat3DPtrVector;
+        typedef std::map<Mesh*, BufferStorageLineFlat3D*> Mesh2BufferStorageLineFlat3DPtrMap;
+
+        BufferStorageLineFlat3DPtrVector aBufferLineFlat3D;
+        Mesh2BufferStorageLineFlat3DPtrMap mapMesh2BufferLineFlat3D;
+
+        //PipelineGraphics-Uniform
+        String nameDescriptorSetLayout_Uniform;
+        StringVector* poDescriptorSetLayoutNames_Uniform;
+        VkDescriptorSetLayout poDescriptorSetLayout_Uniform;
+        VkPipelineLayout poPipelineLayout_Uniform;
+        VkPipeline poPipeline_Uniform;
+        VkDescriptorSet poDescriptorSet_Uniform;
+
+        //PipelineGraphics-Storage
+        String nameDescriptorSetLayout_Storage;
+        StringVector* poDescriptorSetLayoutNames_Storage;
+        VkDescriptorSetLayout poDescriptorSetLayout_Storage;
+        VkPipelineLayout poPipelineLayout_Storage;
+        VkPipeline poPipeline_Storage;
+        VkDescriptorSet poDescriptorSet_Storage;
+
         
     public:
         virtual void Destroy();
 
         virtual void UpdateCBs();
+        virtual void Draw(VkCommandBuffer& commandBuffer);
 
     public:
         //Line 3D
@@ -126,17 +180,15 @@ namespace LostPeterVulkan
     protected:
         virtual void initConfigs();
         virtual void initMeshes();
-            virtual void initMesh(const String& nameMesh);
         virtual void initShaders();
         virtual void initBufferUniforms();
-            virtual void initBufferUniform(const String& nameMesh);
+            virtual void initBuffer(const String& nameMesh);
         virtual void initDescriptorSetLayout();
         virtual void initPipelineLayout();
         virtual void initPipelineGraphics();
         virtual void updateDescriptorSets_Graphics();
 
         virtual void destroyMeshes();
-        virtual void destroyShaders();
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();
         virtual void destroyPipelineLayout();
@@ -145,11 +197,11 @@ namespace LostPeterVulkan
     protected:
         Mesh* getMesh(const String& nameMesh);
 
-        bool hasBufferUniformLineFlat3D(const String& nameMesh);
-        BufferUniformLineFlat3D* getBufferUniformLineFlat3D(const String& nameMesh);
-        BufferUniformLineFlat3D* insertBufferUniformLineFlat3D(const String& nameMesh);
-        void removeBufferUniformLineFlat3D(const String& nameMesh);
-        void removeBufferUniformLineFlat3DAll();
+        bool hasBufferLineFlat3D(const String& nameMesh);
+        BufferStorageLineFlat3D* getBufferLineFlat3D(const String& nameMesh);
+        BufferStorageLineFlat3D* insertBufferLineFlat3D(const String& nameMesh);
+        void removeBufferLineFlat3D(const String& nameMesh);
+        void removeBufferLineFlat3DAll();
     };
 
 }; //LostPeterVulkan

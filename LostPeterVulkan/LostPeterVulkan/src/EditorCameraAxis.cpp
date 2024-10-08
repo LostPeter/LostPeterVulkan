@@ -387,7 +387,7 @@ namespace LostPeterVulkan
         {
             //CameraAxis
             {
-                this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-EditorCameraAxis");
+                this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-EditorCameraAxis");
                 this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
                 this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
                 //1> DescriptorSetLayout / PipelineLayout
@@ -401,7 +401,7 @@ namespace LostPeterVulkan
             }
             //Quad Blit
             {
-                this->pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineG-QuadBlit");
+                this->pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineGraphics-QuadBlit");
                 this->pPipelineGraphics_CopyBlit->nameDescriptorSetLayout = this->nameDescriptorSetLayout_CopyBlit;
                 this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts_CopyBlit;
                 //1> DescriptorSetLayout / PipelineLayout

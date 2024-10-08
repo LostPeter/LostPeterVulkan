@@ -377,14 +377,14 @@ namespace LostPeterVulkan
                 if (typeGeometryType == F_MeshGeometry_LineCircle2D)
                 {
                     FMeshCreateParam_LineCircle2D* pParam_LineCircle2D = (FMeshCreateParam_LineCircle2D*)pParam;
-                    pParam_LineCircle2D->viewWidth = this->poViewport.width;
-                    pParam_LineCircle2D->viewHeight = this->poViewport.height;
+                    pParam_LineCircle2D->viewWidth = (int32)this->poViewport.width;
+                    pParam_LineCircle2D->viewHeight = (int32)this->poViewport.height;
                 }
                 else if (typeGeometryType == F_MeshGeometry_FlatCircle2D)
                 {
                     FMeshCreateParam_FlatCircle2D* pParam_FlatCircle2D = (FMeshCreateParam_FlatCircle2D*)pParam;
-                    pParam_FlatCircle2D->viewWidth = this->poViewport.width;
-                    pParam_FlatCircle2D->viewHeight = this->poViewport.height;
+                    pParam_FlatCircle2D->viewWidth = (int32)this->poViewport.width;
+                    pParam_FlatCircle2D->viewHeight = (int32)this->poViewport.height;
                 }
             }
 
@@ -9370,6 +9370,14 @@ namespace LostPeterVulkan
                                 this->pEditorCoordinateAxis->Draw(commandBuffer);
                             }
                         }
+                        if (this->pEditorLineFlat2DCollector != nullptr)
+                        {
+                            this->pEditorLineFlat2DCollector->Draw(commandBuffer);
+                        }
+                        if (this->pEditorLineFlat3DCollector != nullptr)
+                        {
+                            this->pEditorLineFlat3DCollector->Draw(commandBuffer);
+                        }
                     }
                     void VulkanWindow::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
                     {
@@ -9856,6 +9864,14 @@ namespace LostPeterVulkan
                 {
                     this->pEditorCoordinateAxis->CleanupSwapChain();
                 }
+                if (this->pEditorLineFlat2DCollector != nullptr)
+                {
+                    this->pEditorLineFlat2DCollector->CleanupSwapChain();
+                }
+                if (this->pEditorLineFlat3DCollector != nullptr)
+                {
+                    this->pEditorLineFlat3DCollector->CleanupSwapChain();
+                }
             }
             void VulkanWindow::cleanupSwapChain_Custom()
             {
@@ -9933,6 +9949,14 @@ namespace LostPeterVulkan
             if (this->pEditorCoordinateAxis != nullptr)
             {
                 this->pEditorCoordinateAxis->RecreateSwapChain();
+            }
+            if (this->pEditorLineFlat2DCollector != nullptr)
+            {
+                this->pEditorLineFlat2DCollector->RecreateSwapChain();
+            }
+            if (this->pEditorLineFlat3DCollector != nullptr)
+            {
+                this->pEditorLineFlat3DCollector->RecreateSwapChain();
             }
         }
         void VulkanWindow::recreateSwapChain_Custom()

@@ -1534,7 +1534,7 @@ namespace LostPeterVulkan
     void EditorCoordinateAxis::initPipelineGraphics()
     {
         //0> Pipeline Graphics/Pipeline GraphicsQuadLine
-        this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-EditorCoordinateAxis");
+        this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-EditorCoordinateAxis");
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
         //1> DescriptorSetLayout 

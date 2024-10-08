@@ -527,6 +527,7 @@ namespace LostPeterVulkan
     class Base;
     class BufferCompute;
     class BufferIndirectCommand;
+    class BufferStorage;
     class BufferUniform;
     class CullLodData;
     class CullRenderData;

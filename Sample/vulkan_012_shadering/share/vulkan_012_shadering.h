@@ -161,7 +161,7 @@ public:
             cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
             cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
             
-            this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-Model");
+            this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-Model");
         }
         ~ModelObject()
         {

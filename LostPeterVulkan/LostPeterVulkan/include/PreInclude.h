@@ -38,6 +38,7 @@
 #include "Base.h"
 #include "BufferCompute.h"
 #include "BufferIndirectCommand.h"
+#include "BufferStorage.h"
 #include "BufferUniform.h"
 #include "CullLodData.h"
 #include "CullRenderData.h"

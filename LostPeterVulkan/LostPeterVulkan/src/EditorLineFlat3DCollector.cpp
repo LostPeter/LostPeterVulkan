@@ -12,62 +12,121 @@
 #include "../include/EditorLineFlat3DCollector.h"
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
-#include "../include/BufferUniform.h"
+#include "../include/BufferStorage.h"
 
 namespace LostPeterVulkan
 {
-    ////////////////////// BufferUniformLineFlat3D //////////////////////
-    EditorLineFlat3DCollector::BufferUniformLineFlat3D::BufferUniformLineFlat3D(Mesh *p)
-        : pMesh(p), pBufferUniform(nullptr), pLineFlat3DObject(nullptr){
-                                                 F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::BufferUniformLineFlat3D::BufferUniformLineFlat3D")} EditorLineFlat3DCollector::BufferUniformLineFlat3D::~BufferUniformLineFlat3D()
+    ////////////////////// BufferBaseLineFlat3D /////////////////////////
+    EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p)
+        : pLineFlat3DCollector(pCollector)
+        , pMesh(p)
+        , pLineFlat3DObject(nullptr)
+        , nObjectCount(0)
+    {
+        F_Assert(pLineFlat3DCollector != nullptr && pMesh != nullptr && "EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D")
+    }
+    EditorLineFlat3DCollector::BufferBaseLineFlat3D::~BufferBaseLineFlat3D()
+    {
+
+    }
+
+
+    ////////////////////// BufferStorageLineFlat3D //////////////////////
+    const int EditorLineFlat3DCollector::BufferStorageLineFlat3D::s_nStepCount = 128;
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D::BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh *p)
+        : BufferBaseLineFlat3D(pCollector, p)
+        , pBufferStorage(nullptr)
+        , nObjectCountMax(MAX_OBJECT_LINEFLAT_3D_COUNT)
+    {
+        
+    } 
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D::~BufferStorageLineFlat3D()
     {
         Destroy();
     }
 
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::Destroy()
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::Destroy()
     {
         Clear();
-        F_DELETE(this->pBufferUniform)
+        F_DELETE(this->pBufferStorage)
     }
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::Init()
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::Init()
     {
-        this->pBufferUniform = new BufferUniform("BufferUniform-" + this->pMesh->GetName(), MAX_OBJECT_LINEFLAT_3D_COUNT, sizeof(LineFlat3DObjectConstants));
-        void *pBuffer = this->pBufferUniform->GetBuffer();
-        this->pLineFlat3DObject = (LineFlat3DObjectConstants *)pBuffer;
+        this->pBufferStorage = createBufferStorage(this->nObjectCountMax);
     }
+        BufferStorage* EditorLineFlat3DCollector::BufferStorageLineFlat3D::createBufferStorage(int count)
+        {
+            String nameBuffer = "BufferStorage-" + this->pMesh->GetName() + FUtilString::SaveInt(count);
+            BufferStorage* pBufferStorageNew = new BufferStorage(nameBuffer, count, sizeof(LineFlat3DObjectConstants));
+            void *pBuffer = pBufferStorageNew->GetBuffer();
+            this->pLineFlat3DObject = (LineFlat3DObjectConstants *)pBuffer;
 
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::Clear()
+            if (this->pBufferStorage != nullptr)
+            {
+                memcpy(pBuffer, this->pBufferStorage->GetBuffer(), this->pBufferStorage->GetBufferSize());
+            }
+            F_DELETE(this->pBufferStorage)
+            return pBufferStorageNew;
+        }
+        void EditorLineFlat3DCollector::BufferStorageLineFlat3D::increaseBufferStorage()
+        {
+            this->nObjectCountMax += s_nStepCount;
+            this->pBufferStorage = createBufferStorage(this->nObjectCountMax);
+        }
+
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::Clear()
     {
         this->nObjectCount = 0;
+        this->nObjectCountMax = MAX_OBJECT_LINEFLAT_3D_COUNT;
     }
 
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::AddLineFlat3DObject(const FMatrix4 &mat, const FColor &color, bool isUpdateBuffer /*= true*/)
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const FMatrix4 &mat, const FColor &color, bool isUpdateBuffer /*= true*/)
     {
         LineFlat3DObjectConstants object;
         object.g_MatWorld = mat;
         object.color = color;
         AddLineFlat3DObject(object, isUpdateBuffer);
     }
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::AddLineFlat3DObject(const LineFlat3DObjectConstants &object, bool isUpdateBuffer /*= true*/)
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const LineFlat3DObjectConstants &object, bool isUpdateBuffer /*= true*/)
     {
-        if (this->nObjectCount + 1 >= MAX_OBJECT_LINEFLAT_3D_COUNT)
-            return;
+        if (this->nObjectCount + 1 >= this->nObjectCountMax)
+        {
+            if (this->pLineFlat3DCollector->isBufferUniform)
+            {
+                F_LogError("*********************** EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject: Object count is above max, cur: [%d], max: [%d] !", this->nObjectCount, this->nObjectCountMax);
+                return;
+            }
+            else
+            {
+                increaseBufferStorage();
+            }
+        }
 
         this->pLineFlat3DObject[this->nObjectCount] = object;
         this->nObjectCount++;
 
         if (isUpdateBuffer)
         {
-            this->pBufferUniform->UpdateBuffer();
+            this->pBufferStorage->UpdateBuffer();
         }
     }
-    void EditorLineFlat3DCollector::BufferUniformLineFlat3D::AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants> &objects, bool isUpdateBuffer /*= true*/)
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants> &objects, bool isUpdateBuffer /*= true*/)
     {
         size_t count = objects.size();
         for (size_t i = 0; i < count; i++)
         {
-            if (this->nObjectCount + 1 >= MAX_OBJECT_LINEFLAT_3D_COUNT)
-                break;
+            if (this->nObjectCount + 1 >= this->nObjectCountMax)
+            {
+                if (this->pLineFlat3DCollector->isBufferUniform)
+                {
+                    F_LogError("*********************** EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObjects: Object count is above max, cur: [%d], max: [%d] !", this->nObjectCount, this->nObjectCountMax);
+                    break;
+                }
+                else
+                {
+                    increaseBufferStorage();
+                }
+            }
 
             this->pLineFlat3DObject[this->nObjectCount] = objects[i];
             this->nObjectCount++;
@@ -75,9 +134,11 @@ namespace LostPeterVulkan
 
         if (isUpdateBuffer)
         {
-            this->pBufferUniform->UpdateBuffer();
+            this->pBufferStorage->UpdateBuffer();
         }
     }
+
+
 
     ////////////////////// EditorLineFlat3DCollector ////////////////////
     // Line
@@ -108,16 +169,41 @@ namespace LostPeterVulkan
     const String EditorLineFlat3DCollector::c_strFlat3D_Cone = "geo_flat_cone_3d";
     const String EditorLineFlat3DCollector::c_strFlat3D_Torus = "geo_flat_torus_3d";
 
+
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Vert = "vert_editor_line_3d";
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Frag = "frag_editor_line_3d";
+    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Vert = "vert_editor_line_3d";
+    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Frag = "frag_editor_line_3d";
 
     EditorLineFlat3DCollector::EditorLineFlat3DCollector()
         : EditorBase("EditorLineFlat3DCollector")
+        , isBufferUniform(true)
+
+        //PipelineGraphics-Uniform
+        , nameDescriptorSetLayout_Uniform("Pass-ObjectLineFlat3D")
+        , poDescriptorSetLayoutNames_Uniform(nullptr)
+        , poDescriptorSetLayout_Uniform(VK_NULL_HANDLE)
+        , poPipelineLayout_Uniform(VK_NULL_HANDLE)
+        , poPipeline_Uniform(VK_NULL_HANDLE)
+        , poDescriptorSet_Uniform(VK_NULL_HANDLE)
+
+        //PipelineGraphics-Storage
+        , nameDescriptorSetLayout_Storage("Pass-ObjectLineFlat3D")
+        , poDescriptorSetLayoutNames_Storage(nullptr)
+        , poDescriptorSetLayout_Storage(VK_NULL_HANDLE)
+        , poPipelineLayout_Storage(VK_NULL_HANDLE)
+        , poPipeline_Storage(VK_NULL_HANDLE)
+        , poDescriptorSet_Storage(VK_NULL_HANDLE)
+
     {
+
     }
+
     EditorLineFlat3DCollector::~EditorLineFlat3DCollector()
     {
+
     }
+
     void EditorLineFlat3DCollector::Destroy()
     {
         destroyBufferUniforms();
@@ -128,12 +214,9 @@ namespace LostPeterVulkan
         {
             this->mapName2Mesh.clear();
         }
-        void EditorLineFlat3DCollector::destroyShaders()
-        {
-        }
         void EditorLineFlat3DCollector::destroyBufferUniforms()
         {
-            removeBufferUniformLineFlat3DAll();
+            removeBufferLineFlat3DAll();
         }
         void EditorLineFlat3DCollector::destroyPipelineGraphics()
         {
@@ -151,6 +234,18 @@ namespace LostPeterVulkan
     void EditorLineFlat3DCollector::UpdateCBs()
     {
 
+    }
+
+    void EditorLineFlat3DCollector::Draw(VkCommandBuffer& commandBuffer)
+    {
+        if (this->isBufferUniform)
+        {
+            //for ()
+        }
+        else
+        {
+
+        }
     }
 
     //Line 3D
@@ -290,29 +385,69 @@ namespace LostPeterVulkan
         this->mapName2Mesh[c_strFlat3D_Cone] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Cone);
         this->mapName2Mesh[c_strFlat3D_Torus] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Torus);
     }
-    void EditorLineFlat3DCollector::initMesh(const String &nameMesh)
-    {
-    }
     void EditorLineFlat3DCollector::initShaders()
     {
+        //Line3D
+        {
+            //Vert
+            ShaderModuleInfo siVert;
+            siVert.nameShader = s_strNameShader_LineFlat3D_Vert;
+            siVert.nameShaderType = "vert";
+            siVert.pathShader = "Assets/Shader/editor_line_3d.vert.spv";
+            this->aShaderModuleInfos.push_back(siVert);
+            //Frag
+            ShaderModuleInfo siFrag;
+            siFrag.nameShader = s_strNameShader_LineFlat3D_Frag;
+            siFrag.nameShaderType = "frag";
+            siFrag.pathShader = "Assets/Shader/editor_line_3d.frag.spv";
+            this->aShaderModuleInfos.push_back(siFrag);
+        }
+        //Line3D Ext
+        {
+            //Vert
+            ShaderModuleInfo siVert;
+            siVert.nameShader = s_strNameShader_LineFlat3D_Ext_Vert;
+            siVert.nameShaderType = "vert";
+            siVert.pathShader = "Assets/Shader/editor_line_3d_ext.vert.spv";
+            this->aShaderModuleInfos.push_back(siVert);
+            //Frag
+            ShaderModuleInfo siFrag;
+            siFrag.nameShader = s_strNameShader_LineFlat3D_Ext_Frag;
+            siFrag.nameShaderType = "frag";
+            siFrag.pathShader = "Assets/Shader/editor_line_3d_ext.frag.spv";
+            this->aShaderModuleInfos.push_back(siFrag);
+        }
+
+        EditorBase::initShaders();
     }
     void EditorLineFlat3DCollector::initBufferUniforms()
     {
+        initBuffer(c_strLine3D_AABB);
+        initBuffer(c_strLine3D_Sphere);
+        initBuffer(c_strFlat3D_AABB);
+        initBuffer(c_strFlat3D_Sphere);
     }
-    void EditorLineFlat3DCollector::initBufferUniform(const String &nameMesh)
-    {
-    }
+        void EditorLineFlat3DCollector::initBuffer(const String &nameMesh)
+        {
+            if (hasBufferLineFlat3D(nameMesh))
+                return;
+            insertBufferLineFlat3D(nameMesh);
+        }
     void EditorLineFlat3DCollector::initDescriptorSetLayout()
     {
+
     }
     void EditorLineFlat3DCollector::initPipelineLayout()
     {
+
     }
     void EditorLineFlat3DCollector::initPipelineGraphics()
     {
+
     }
     void EditorLineFlat3DCollector::updateDescriptorSets_Graphics()
     {
+
     }
 
     Mesh *EditorLineFlat3DCollector::getMesh(const String &nameMesh)
@@ -325,65 +460,65 @@ namespace LostPeterVulkan
         return itFind->second;
     }
 
-    bool EditorLineFlat3DCollector::hasBufferUniformLineFlat3D(const String &nameMesh)
+    bool EditorLineFlat3DCollector::hasBufferLineFlat3D(const String &nameMesh)
     {
-        return getBufferUniformLineFlat3D(nameMesh) != nullptr;
+        return getBufferLineFlat3D(nameMesh) != nullptr;
     }
-    EditorLineFlat3DCollector::BufferUniformLineFlat3D *EditorLineFlat3DCollector::getBufferUniformLineFlat3D(const String &nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D *EditorLineFlat3DCollector::getBufferLineFlat3D(const String &nameMesh)
     {
         Mesh *pMesh = getMesh(nameMesh);
-        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::getBufferUniformLineFlat3D")
+        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::getBufferLineFlat3D")
 
-            Mesh2BufferUniformLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferUniformLineFlat3D.find(pMesh);
-        if (itFind == this->mapMesh2BufferUniformLineFlat3D.end())
+        Mesh2BufferStorageLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferLineFlat3D.find(pMesh);
+        if (itFind == this->mapMesh2BufferLineFlat3D.end())
             return nullptr;
         return itFind->second;
     }
-    EditorLineFlat3DCollector::BufferUniformLineFlat3D *EditorLineFlat3DCollector::insertBufferUniformLineFlat3D(const String &nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D *EditorLineFlat3DCollector::insertBufferLineFlat3D(const String &nameMesh)
     {
         Mesh *pMesh = getMesh(nameMesh);
-        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::insertBufferUniformLineFlat3D")
+        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::insertBufferLineFlat3D")
 
-            Mesh2BufferUniformLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferUniformLineFlat3D.find(pMesh);
-        if (itFind != this->mapMesh2BufferUniformLineFlat3D.end())
+        Mesh2BufferStorageLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferLineFlat3D.find(pMesh);
+        if (itFind != this->mapMesh2BufferLineFlat3D.end())
         {
             return itFind->second;
         }
 
-        BufferUniformLineFlat3D *pBufferUniformLineFlat3D = new BufferUniformLineFlat3D(pMesh);
-        pBufferUniformLineFlat3D->Init();
+        BufferStorageLineFlat3D *pBufferLineFlat3D = new BufferStorageLineFlat3D(this, pMesh);
+        pBufferLineFlat3D->Init();
 
-        this->aBufferUniformLineFlat3D.push_back(pBufferUniformLineFlat3D);
-        this->mapMesh2BufferUniformLineFlat3D[pMesh] = pBufferUniformLineFlat3D;
-        return pBufferUniformLineFlat3D;
+        this->aBufferLineFlat3D.push_back(pBufferLineFlat3D);
+        this->mapMesh2BufferLineFlat3D[pMesh] = pBufferLineFlat3D;
+        return pBufferLineFlat3D;
     }
-    void EditorLineFlat3DCollector::removeBufferUniformLineFlat3D(const String &nameMesh)
+    void EditorLineFlat3DCollector::removeBufferLineFlat3D(const String &nameMesh)
     {
         Mesh *pMesh = getMesh(nameMesh);
-        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::removeBufferUniformLineFlat3D")
+        F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::removeBufferLineFlat3D")
 
-            Mesh2BufferUniformLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferUniformLineFlat3D.find(pMesh);
-        if (itFind == this->mapMesh2BufferUniformLineFlat3D.end())
+        Mesh2BufferStorageLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferLineFlat3D.find(pMesh);
+        if (itFind == this->mapMesh2BufferLineFlat3D.end())
             return;
-        BufferUniformLineFlat3D *pBufferUniformLineFlat3D = itFind->second;
+        BufferStorageLineFlat3D *pBufferLineFlat3D = itFind->second;
 
-        BufferUniformLineFlat3DPtrVector::iterator itFindV = std::find(this->aBufferUniformLineFlat3D.begin(), this->aBufferUniformLineFlat3D.end(), pBufferUniformLineFlat3D);
-        if (itFindV != this->aBufferUniformLineFlat3D.end())
+        BufferStorageLineFlat3DPtrVector::iterator itFindV = std::find(this->aBufferLineFlat3D.begin(), this->aBufferLineFlat3D.end(), pBufferLineFlat3D);
+        if (itFindV != this->aBufferLineFlat3D.end())
         {
-            this->aBufferUniformLineFlat3D.erase(itFindV);
+            this->aBufferLineFlat3D.erase(itFindV);
         }
-        this->mapMesh2BufferUniformLineFlat3D.erase(itFind);
-        F_DELETE(pBufferUniformLineFlat3D)
+        this->mapMesh2BufferLineFlat3D.erase(itFind);
+        F_DELETE(pBufferLineFlat3D)
     }
-    void EditorLineFlat3DCollector::removeBufferUniformLineFlat3DAll()
+    void EditorLineFlat3DCollector::removeBufferLineFlat3DAll()
     {
-        for (BufferUniformLineFlat3DPtrVector::iterator it = this->aBufferUniformLineFlat3D.begin();
-             it != this->aBufferUniformLineFlat3D.end(); ++it)
+        for (BufferStorageLineFlat3DPtrVector::iterator it = this->aBufferLineFlat3D.begin();
+             it != this->aBufferLineFlat3D.end(); ++it)
         {
             F_DELETE(*it)
         }
-        this->aBufferUniformLineFlat3D.clear();
-        this->mapMesh2BufferUniformLineFlat3D.clear();
+        this->aBufferLineFlat3D.clear();
+        this->mapMesh2BufferLineFlat3D.clear();
     }
 
 }; // LostPeterVulkan

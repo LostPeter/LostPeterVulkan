@@ -101,7 +101,7 @@ namespace LostPeterVulkan
     }
     void EditorGrid::initPipelineGraphics()
     {
-        String namePipelineGraphics = "PipelineG-" + GetName();
+        String namePipelineGraphics = "PipelineGraphics-" + GetName();
         this->pPipelineGraphics = new VKPipelineGraphics(namePipelineGraphics);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
