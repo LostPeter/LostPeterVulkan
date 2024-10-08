@@ -26,11 +26,11 @@ namespace LostPeterVulkan
     }
     EditorLineFlat2DCollector::~EditorLineFlat2DCollector()
     {
-
+        Destroy();
     }
     void EditorLineFlat2DCollector::Destroy()
     {
-
+        CleanupSwapChain();
     }
     void EditorLineFlat2DCollector::UpdateCBs()
     {

@@ -76,8 +76,7 @@ namespace LostPeterVulkan
     void EditorCameraAxis::Destroy()
     {
         F_DELETE(this->pCamera)
-        destroyBufferUniforms();
-        destroyShaders();
+        CleanupSwapChain();
         destroyMeshes();
     }
     void EditorCameraAxis::Init()

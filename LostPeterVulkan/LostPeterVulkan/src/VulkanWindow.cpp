@@ -1786,6 +1786,14 @@ namespace LostPeterVulkan
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
             }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferObjectLineFlat2D)) //BufferObjectLineFlat2D
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferObjectLineFlat3D)) //BufferObjectLineFlat3D
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Buffer(i, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT));
+            }
             else
             {
                 String msg = "*********************** VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;

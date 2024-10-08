@@ -34,9 +34,7 @@ namespace LostPeterVulkan
     }
     void EditorGrid::Destroy()
     {
-        destroyPipelineGraphics();
-        destroyBufferUniforms();
-        destroyShaders();
+        CleanupSwapChain();
         destroyMeshes();
     }
     void EditorGrid::Init()

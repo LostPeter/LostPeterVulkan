@@ -172,8 +172,8 @@ namespace LostPeterVulkan
 
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Vert = "vert_editor_line_3d";
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Frag = "frag_editor_line_3d";
-    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Vert = "vert_editor_line_3d";
-    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Frag = "frag_editor_line_3d";
+    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Vert = "vert_editor_line_3d_ext";
+    const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Ext_Frag = "frag_editor_line_3d_ext";
 
     EditorLineFlat3DCollector::EditorLineFlat3DCollector()
         : EditorBase("EditorLineFlat3DCollector")
@@ -181,19 +181,15 @@ namespace LostPeterVulkan
 
         //PipelineGraphics-Uniform
         , nameDescriptorSetLayout_Uniform("Pass-ObjectLineFlat3D")
-        , poDescriptorSetLayoutNames_Uniform(nullptr)
         , poDescriptorSetLayout_Uniform(VK_NULL_HANDLE)
         , poPipelineLayout_Uniform(VK_NULL_HANDLE)
         , poPipeline_Uniform(VK_NULL_HANDLE)
-        , poDescriptorSet_Uniform(VK_NULL_HANDLE)
 
         //PipelineGraphics-Storage
-        , nameDescriptorSetLayout_Storage("Pass-ObjectLineFlat3D")
-        , poDescriptorSetLayoutNames_Storage(nullptr)
+        , nameDescriptorSetLayout_Storage("Pass-BufferObjectLineFlat3D")
         , poDescriptorSetLayout_Storage(VK_NULL_HANDLE)
         , poPipelineLayout_Storage(VK_NULL_HANDLE)
         , poPipeline_Storage(VK_NULL_HANDLE)
-        , poDescriptorSet_Storage(VK_NULL_HANDLE)
 
     {
 
@@ -201,18 +197,21 @@ namespace LostPeterVulkan
 
     EditorLineFlat3DCollector::~EditorLineFlat3DCollector()
     {
-
+        Destroy();
     }
 
     void EditorLineFlat3DCollector::Destroy()
     {
-        destroyBufferUniforms();
-        destroyShaders();
+        CleanupSwapChain();
         destroyMeshes();
     }
         void EditorLineFlat3DCollector::destroyMeshes()
         {
             this->mapName2Mesh.clear();
+        }
+        void EditorLineFlat3DCollector::destroyShaders()
+        {
+            
         }
         void EditorLineFlat3DCollector::destroyBufferUniforms()
         {
@@ -220,15 +219,55 @@ namespace LostPeterVulkan
         }
         void EditorLineFlat3DCollector::destroyPipelineGraphics()
         {
+            //PipelineGraphics-Uniform
+            if (this->poPipeline_Uniform != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform);
+            }
+            this->poPipeline_Uniform = VK_NULL_HANDLE;
+            this->poDescriptorSets_Uniform.clear();
 
+            //PipelineGraphics-Storage
+            if (this->poPipeline_Storage != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage);
+            }
+            this->poPipeline_Storage = VK_NULL_HANDLE;
+            this->poDescriptorSets_Storage.clear();
         }
         void EditorLineFlat3DCollector::destroyPipelineLayout()
         {
+            //PipelineGraphics-Uniform  
+            if (this->poPipelineLayout_Uniform != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout_Uniform);
+            }
+            this->poPipelineLayout_Uniform = VK_NULL_HANDLE;
 
+            //PipelineGraphics-Storage
+            if (this->poPipelineLayout_Storage != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout_Storage);
+            }
+            this->poPipelineLayout_Storage = VK_NULL_HANDLE;
         }
         void EditorLineFlat3DCollector::destroyDescriptorSetLayout()
         {
-            
+            //PipelineGraphics-Uniform
+            this->aNamesDescriptorSetLayout_Uniform.clear();
+            if (this->poDescriptorSetLayout_Uniform != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout_Uniform);
+            }
+            this->poDescriptorSetLayout_Uniform = VK_NULL_HANDLE;
+
+            //PipelineGraphics-Storage
+            this->aNamesDescriptorSetLayout_Storage.clear();
+            if (this->poDescriptorSetLayout_Storage != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout_Storage);
+            }
+            this->poDescriptorSetLayout_Storage = VK_NULL_HANDLE;
         }
 
     void EditorLineFlat3DCollector::UpdateCBs()
@@ -351,74 +390,72 @@ namespace LostPeterVulkan
 
     void EditorLineFlat3DCollector::initConfigs()
     {
-
-    }
-    void EditorLineFlat3DCollector::initMeshes()
-    {
-        this->mapName2Mesh.clear();
-
-        // Line
-        this->mapName2Mesh[c_strLine3D_Line] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Line);
-        this->mapName2Mesh[c_strLine3D_Triangle] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Triangle);
-        this->mapName2Mesh[c_strLine3D_Quad] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad);
-        this->mapName2Mesh[c_strLine3D_Grid] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Grid);
-        this->mapName2Mesh[c_strLine3D_Quad_Convex] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad_Convex);
-        this->mapName2Mesh[c_strLine3D_Quad_Concave] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad_Concave);
-        this->mapName2Mesh[c_strLine3D_Circle] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Circle);
-        this->mapName2Mesh[c_strLine3D_AABB] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_AABB);
-        this->mapName2Mesh[c_strLine3D_Sphere] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Sphere);
-        this->mapName2Mesh[c_strLine3D_Cylinder] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Cylinder);
-        this->mapName2Mesh[c_strLine3D_Capsule] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Capsule);
-        this->mapName2Mesh[c_strLine3D_Cone] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Cone);
-        this->mapName2Mesh[c_strLine3D_Torus] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Torus);
-
-        // Flat
-        this->mapName2Mesh[c_strFlat3D_Triangle] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Triangle);
-        this->mapName2Mesh[c_strFlat3D_Quad] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad);
-        this->mapName2Mesh[c_strFlat3D_Quad_Convex] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad_Convex);
-        this->mapName2Mesh[c_strFlat3D_Quad_Concave] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad_Concave);
-        this->mapName2Mesh[c_strFlat3D_Circle] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Circle);
-        this->mapName2Mesh[c_strFlat3D_AABB] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_AABB);
-        this->mapName2Mesh[c_strFlat3D_Sphere] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Sphere);
-        this->mapName2Mesh[c_strFlat3D_Cylinder] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Cylinder);
-        this->mapName2Mesh[c_strFlat3D_Capsule] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Capsule);
-        this->mapName2Mesh[c_strFlat3D_Cone] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Cone);
-        this->mapName2Mesh[c_strFlat3D_Torus] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Torus);
-    }
-    void EditorLineFlat3DCollector::initShaders()
-    {
-        //Line3D
+        //Mesh
         {
-            //Vert
-            ShaderModuleInfo siVert;
-            siVert.nameShader = s_strNameShader_LineFlat3D_Vert;
-            siVert.nameShaderType = "vert";
-            siVert.pathShader = "Assets/Shader/editor_line_3d.vert.spv";
-            this->aShaderModuleInfos.push_back(siVert);
-            //Frag
-            ShaderModuleInfo siFrag;
-            siFrag.nameShader = s_strNameShader_LineFlat3D_Frag;
-            siFrag.nameShaderType = "frag";
-            siFrag.pathShader = "Assets/Shader/editor_line_3d.frag.spv";
-            this->aShaderModuleInfos.push_back(siFrag);
-        }
-        //Line3D Ext
-        {
-            //Vert
-            ShaderModuleInfo siVert;
-            siVert.nameShader = s_strNameShader_LineFlat3D_Ext_Vert;
-            siVert.nameShaderType = "vert";
-            siVert.pathShader = "Assets/Shader/editor_line_3d_ext.vert.spv";
-            this->aShaderModuleInfos.push_back(siVert);
-            //Frag
-            ShaderModuleInfo siFrag;
-            siFrag.nameShader = s_strNameShader_LineFlat3D_Ext_Frag;
-            siFrag.nameShaderType = "frag";
-            siFrag.pathShader = "Assets/Shader/editor_line_3d_ext.frag.spv";
-            this->aShaderModuleInfos.push_back(siFrag);
+            this->mapName2Mesh.clear();
+
+            // Line
+            this->mapName2Mesh[c_strLine3D_Line] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Line);
+            this->mapName2Mesh[c_strLine3D_Triangle] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Triangle);
+            this->mapName2Mesh[c_strLine3D_Quad] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad);
+            this->mapName2Mesh[c_strLine3D_Grid] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Grid);
+            this->mapName2Mesh[c_strLine3D_Quad_Convex] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad_Convex);
+            this->mapName2Mesh[c_strLine3D_Quad_Concave] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Quad_Concave);
+            this->mapName2Mesh[c_strLine3D_Circle] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Circle);
+            this->mapName2Mesh[c_strLine3D_AABB] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_AABB);
+            this->mapName2Mesh[c_strLine3D_Sphere] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Sphere);
+            this->mapName2Mesh[c_strLine3D_Cylinder] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Cylinder);
+            this->mapName2Mesh[c_strLine3D_Capsule] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Capsule);
+            this->mapName2Mesh[c_strLine3D_Cone] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Cone);
+            this->mapName2Mesh[c_strLine3D_Torus] = Base::GetWindowPtr()->FindMesh_Internal(c_strLine3D_Torus);
+
+            // Flat
+            this->mapName2Mesh[c_strFlat3D_Triangle] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Triangle);
+            this->mapName2Mesh[c_strFlat3D_Quad] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad);
+            this->mapName2Mesh[c_strFlat3D_Quad_Convex] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad_Convex);
+            this->mapName2Mesh[c_strFlat3D_Quad_Concave] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Quad_Concave);
+            this->mapName2Mesh[c_strFlat3D_Circle] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Circle);
+            this->mapName2Mesh[c_strFlat3D_AABB] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_AABB);
+            this->mapName2Mesh[c_strFlat3D_Sphere] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Sphere);
+            this->mapName2Mesh[c_strFlat3D_Cylinder] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Cylinder);
+            this->mapName2Mesh[c_strFlat3D_Capsule] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Capsule);
+            this->mapName2Mesh[c_strFlat3D_Cone] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Cone);
+            this->mapName2Mesh[c_strFlat3D_Torus] = Base::GetWindowPtr()->FindMesh_Internal(c_strFlat3D_Torus);
         }
 
-        EditorBase::initShaders();
+        //Shader
+        {
+            //Line3D
+            {
+                //Vert
+                ShaderModuleInfo siVert;
+                siVert.nameShader = s_strNameShader_LineFlat3D_Vert;
+                siVert.nameShaderType = "vert";
+                siVert.pathShader = "Assets/Shader/editor_line_3d.vert.spv";
+                this->aShaderModuleInfos.push_back(siVert);
+                //Frag
+                ShaderModuleInfo siFrag;
+                siFrag.nameShader = s_strNameShader_LineFlat3D_Frag;
+                siFrag.nameShaderType = "frag";
+                siFrag.pathShader = "Assets/Shader/editor_line_3d.frag.spv";
+                this->aShaderModuleInfos.push_back(siFrag);
+            }
+            //Line3D Ext
+            {
+                //Vert
+                ShaderModuleInfo siVert;
+                siVert.nameShader = s_strNameShader_LineFlat3D_Ext_Vert;
+                siVert.nameShaderType = "vert";
+                siVert.pathShader = "Assets/Shader/editor_line_3d_ext.vert.spv";
+                this->aShaderModuleInfos.push_back(siVert);
+                //Frag
+                ShaderModuleInfo siFrag;
+                siFrag.nameShader = s_strNameShader_LineFlat3D_Ext_Frag;
+                siFrag.nameShaderType = "frag";
+                siFrag.pathShader = "Assets/Shader/editor_line_3d_ext.frag.spv";
+                this->aShaderModuleInfos.push_back(siFrag);
+            }
+        }
     }
     void EditorLineFlat3DCollector::initBufferUniforms()
     {
@@ -435,19 +472,153 @@ namespace LostPeterVulkan
         }
     void EditorLineFlat3DCollector::initDescriptorSetLayout()
     {
+        //PipelineGraphics-Uniform
+        this->poDescriptorSetLayout_Uniform = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_Uniform, &this->aNamesDescriptorSetLayout_Uniform);
+        if (this->poDescriptorSetLayout_Uniform == VK_NULL_HANDLE)
+        {
+            String msg = "*********************** EditorLineFlat3DCollector::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_Uniform;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
 
+        //PipelineGraphics-Storage
+        this->poDescriptorSetLayout_Storage = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_Storage, &this->aNamesDescriptorSetLayout_Storage);
+        if (this->poDescriptorSetLayout_Storage == VK_NULL_HANDLE)
+        {
+            String msg = "*********************** EditorLineFlat3DCollector::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_Storage;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
     }
     void EditorLineFlat3DCollector::initPipelineLayout()
     {
+        //PipelineGraphics-Uniform
+        VkDescriptorSetLayoutVector aDescriptorSetLayout_Uniform;
+        aDescriptorSetLayout_Uniform.push_back(this->poDescriptorSetLayout_Uniform);
+        this->poPipelineLayout_Uniform = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-Uniform-" + this->name, aDescriptorSetLayout_Uniform);
+        if (this->poPipelineLayout_Uniform == VK_NULL_HANDLE)
+        {
+            String msg = "*********************** EditorLineFlat3DCollector::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_Uniform;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
 
+        //PipelineGraphics-Storage
+        VkDescriptorSetLayoutVector aDescriptorSetLayout_Storage;
+        aDescriptorSetLayout_Storage.push_back(this->poDescriptorSetLayout_Storage);
+        this->poPipelineLayout_Storage = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-" + this->name, aDescriptorSetLayout_Storage);
+        if (this->poPipelineLayout_Storage == VK_NULL_HANDLE)
+        {
+            String msg = "*********************** EditorLineFlat3DCollector::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_Storage;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
     }
     void EditorLineFlat3DCollector::initPipelineGraphics()
     {
+        VkDynamicStateVector aDynamicStates =
+        {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
 
-    }
+        VkStencilOpState stencilOpFront; 
+        VkStencilOpState stencilOpBack;
+
+        VkViewportVector aViewports;
+        aViewports.push_back(Base::GetWindowPtr()->poViewport);
+        VkRect2DVector aScissors;
+        aScissors.push_back(Base::GetWindowPtr()->poScissor);
+
+        //PipelineGraphics-Uniform
+        {
+            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Uniform-" + this->name, this->poDescriptorSetLayout_Uniform, this->poDescriptorSets_Uniform);
+
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Uniform;
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_LineFlat3D_Vert,
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            s_strNameShader_LineFlat3D_Frag,
+                                                                            this->mapShaderModules,
+                                                                            aShaderStageCreateInfos_Uniform))
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Can not find shader used !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+
+            this->poPipeline_Uniform = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
+                                                                                      aShaderStageCreateInfos_Uniform,
+                                                                                      false, 0, 3,
+                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                      Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
+                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                      VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                      VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                      VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                      VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Uniform == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Uniform] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform] Create pipeline graphics success !");
+        }
+
+        //PipelineGraphics-Storage
+        {
+            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Storage-" + this->name, this->poDescriptorSetLayout_Storage, this->poDescriptorSets_Storage);
+
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Storage;
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_LineFlat3D_Vert,
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            s_strNameShader_LineFlat3D_Frag,
+                                                                            this->mapShaderModules,
+                                                                            aShaderStageCreateInfos_Storage))
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Can not find shader used !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+
+            this->poPipeline_Storage = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
+                                                                                      aShaderStageCreateInfos_Storage,
+                                                                                      false, 0, 3,
+                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                      Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
+                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                      VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                      VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                      VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                      VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Storage == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Storage] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage] Create pipeline graphics success !");
+        }
+    }   
     void EditorLineFlat3DCollector::updateDescriptorSets_Graphics()
     {
+        //PipelineGraphics-Uniform
+        {
+           
+        }
 
+        //PipelineGraphics-Storage
+        {
+            
+        }
     }
 
     Mesh *EditorLineFlat3DCollector::getMesh(const String &nameMesh)

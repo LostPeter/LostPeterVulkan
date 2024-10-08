@@ -295,6 +295,8 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_BufferRWClipCB,                //34: BufferRWClipCB
         Vulkan_DescriptorSet_BufferRWObjectCullInstance,    //35: BufferRWObjectCullInstance
         Vulkan_DescriptorSet_CullInstance,                  //36: CullInstance
+        Vulkan_DescriptorSet_BufferObjectLineFlat2D,        //37: BufferObjectLineFlat2D
+        Vulkan_DescriptorSet_BufferObjectLineFlat3D,        //38: BufferObjectLineFlat3D
 
         Vulkan_DescriptorSet_Count,
     };

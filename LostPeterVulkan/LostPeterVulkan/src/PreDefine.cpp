@@ -469,6 +469,8 @@ namespace LostPeterVulkan
         "BufferRWClipCB",                   //34:  BufferRWClipCB
         "BufferRWObjectCullInstance",       //35:  BufferRWObjectCullInstance
         "CullInstance",                     //36:  CullInstance
+        "BufferObjectLineFlat2D",           //37:  BufferObjectLineFlat2D
+        "BufferObjectLineFlat3D",           //38:  BufferObjectLineFlat3D
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

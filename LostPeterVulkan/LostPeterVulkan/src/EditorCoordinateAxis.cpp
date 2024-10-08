@@ -204,8 +204,7 @@ namespace LostPeterVulkan
     }
     void EditorCoordinateAxis::Destroy()
     {
-        destroyBufferUniforms();
-        destroyShaders();
+        CleanupSwapChain();
         destroyMeshes();
     }
     void EditorCoordinateAxis::Init()

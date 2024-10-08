@@ -127,19 +127,19 @@ namespace LostPeterVulkan
 
         //PipelineGraphics-Uniform
         String nameDescriptorSetLayout_Uniform;
-        StringVector* poDescriptorSetLayoutNames_Uniform;
+        StringVector aNamesDescriptorSetLayout_Uniform;
         VkDescriptorSetLayout poDescriptorSetLayout_Uniform;
         VkPipelineLayout poPipelineLayout_Uniform;
         VkPipeline poPipeline_Uniform;
-        VkDescriptorSet poDescriptorSet_Uniform;
+        VkDescriptorSetVector poDescriptorSets_Uniform;
 
         //PipelineGraphics-Storage
         String nameDescriptorSetLayout_Storage;
-        StringVector* poDescriptorSetLayoutNames_Storage;
+        StringVector aNamesDescriptorSetLayout_Storage;
         VkDescriptorSetLayout poDescriptorSetLayout_Storage;
         VkPipelineLayout poPipelineLayout_Storage;
         VkPipeline poPipeline_Storage;
-        VkDescriptorSet poDescriptorSet_Storage;
+        VkDescriptorSetVector poDescriptorSets_Storage;
 
         
     public:
@@ -179,8 +179,6 @@ namespace LostPeterVulkan
 
     protected:
         virtual void initConfigs();
-        virtual void initMeshes();
-        virtual void initShaders();
         virtual void initBufferUniforms();
             virtual void initBuffer(const String& nameMesh);
         virtual void initDescriptorSetLayout();
@@ -189,6 +187,7 @@ namespace LostPeterVulkan
         virtual void updateDescriptorSets_Graphics();
 
         virtual void destroyMeshes();
+        virtual void destroyShaders();
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();
         virtual void destroyPipelineLayout();
