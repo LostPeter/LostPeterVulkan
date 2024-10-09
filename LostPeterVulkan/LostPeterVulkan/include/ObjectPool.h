@@ -33,8 +33,10 @@ namespace LostPeterVulkan
         }
 
     public:
-        std::list<T*> listFree;
         int stepCount;
+
+    private:
+        std::list<T*> listFree;
 
     public:
         T* Get() 
@@ -79,7 +81,7 @@ namespace LostPeterVulkan
         {
             return new T();
         }
-
+    
         void Reserve(int count)
         {
             int count_free = (int)listFree.size();
@@ -106,31 +108,35 @@ namespace LostPeterVulkan
     template<typename T>
     class ObjectManagedPool 
     {
-    private:
+    public:
+        ObjectManagedPool() 
+            : listFree()
+            , listUsed() 
+            , stepCount(5)
+        { 
+
+        }
+
+    public:
+        int stepCount;
+
         std::list<T> listObjs;
         std::list<T*> listFree;
         std::list<T*> listUsed;
 
     public:
-        ObjectManagedPool() 
-            : listFree()
-            , listUsed() 
-        { 
-
-        }
-
         T* Get() 
         {
             if (listFree.empty()) 
             {  
-                listObjs.push_back(T());
-                listUsed.push_back(&listObjs.back());
+                for (int i = 0; i < stepCount; i++)
+                {
+                    listObjs.push_back(T());
+                    listFree.push_back(&listObjs.back());
+                }
             } 
-            else 
-            {  
-                listUsed.push_back(listFree.back());
-                listFree.pop_back();
-            }
+            listUsed.push_back(listFree.back());
+            listFree.pop_back();
             return listUsed.back();
         }
 
@@ -139,10 +145,45 @@ namespace LostPeterVulkan
             listUsed.remove(obj);
             listFree.push_back(obj);
         }
-    };
+        inline void Back(const std::vector<T*>& objs)
+        {
+            size_t count = objs.size();
+            for (size_t i = 0; i < count; i++)
+                Back(objs[i]);
+        } 
+        inline void Back(const std::list<T*>& objs)
+        {
+            for (auto it = objs.begin();
+                 it != objs.end(); ++it)
+            {
+                Back(*it);
+            }
+        } 
 
-    template<typename T>
-    using ObjectPool = ObjectPointerPool<T>;
+        void Reserve(int count)
+        {
+            int count_free = (int)listFree.size();
+            if (count_free >= count)
+                return;
+            int count_new = count_free - count;
+            for (int i = 0; i < count_new; i++)
+            {
+                listObjs.push_back(T());
+                listFree.push_back(&listObjs.back());
+            }
+        }
+        void Reset()
+        {
+            listFree.clear();
+            listUsed.clear();
+
+            for (auto it = listObjs.begin();
+                 it != listObjs.end(); ++it)
+            {
+                listFree.push_back(&(*it));
+            }
+        }
+    };
 
 }; //LostPeterVulkan
 

@@ -59,8 +59,9 @@ namespace LostPeterVulkan
 
     public:
         MeshPtrMap mapName2Mesh;
-        bool isBufferUniform;
 
+    protected:
+        bool isBufferUniform;
 
     protected:
         ////////////////////// BufferBaseLineFlat3D /////////////////////////
@@ -73,8 +74,9 @@ namespace LostPeterVulkan
         public:
             EditorLineFlat3DCollector* pLineFlat3DCollector;
             Mesh* pMesh;
-            LineFlat3DObjectConstants* pLineFlat3DObject;
             int nObjectCount;
+
+            VkDescriptorSetVector poDescriptorSets;
 
         public:
             virtual void Destroy() = 0;
@@ -83,15 +85,24 @@ namespace LostPeterVulkan
         public:
             virtual void Clear() = 0;
 
-            virtual void AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true) = 0;
-            virtual void AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true) = 0;
-            virtual void AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true) = 0;
+            virtual PointerBuffer* AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true) = 0;
+            virtual PointerBuffer* AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true) = 0;
+            virtual PointerBuffer* AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true) = 0;
+
+            virtual void RemoveLineFlat3DObject(PointerBuffer* pPointer, bool isUpdateBuffer = true) = 0;
+            virtual void UpdateBuffer() = 0;
+
+            virtual void CleanupSwapChain() = 0;
+            virtual void RecreateSwapChain() = 0;
+            virtual void UpdateDescriptorSets() = 0;
         };
 
 
         ////////////////////// BufferStorageLineFlat3D //////////////////////
         class BufferStorageLineFlat3D : public BufferBaseLineFlat3D
         {
+            friend class EditorLineFlat3DCollector;
+
         public:
             BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p);
             virtual ~BufferStorageLineFlat3D();
@@ -102,7 +113,9 @@ namespace LostPeterVulkan
         public:
             BufferStorage* pBufferStorage;
             int nObjectCountMax;
-        
+
+        protected:
+            ObjectManagedPool<PointerBuffer>* pPointerBufferPool;
 
         public:
             virtual void Destroy();
@@ -111,9 +124,16 @@ namespace LostPeterVulkan
         public:
             virtual void Clear();
 
-            virtual void AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true);
-            virtual void AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true);
-            virtual void AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true);
+            virtual PointerBuffer* AddLineFlat3DObject(const FMatrix4& mat, const FColor& color, bool isUpdateBuffer = true);
+            virtual PointerBuffer* AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer = true);
+            virtual PointerBuffer* AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants>& objects, bool isUpdateBuffer = true);
+
+            virtual void RemoveLineFlat3DObject(PointerBuffer* pPointer, bool isUpdateBuffer = true);
+            virtual void UpdateBuffer();
+
+            virtual void CleanupSwapChain();
+            virtual void RecreateSwapChain();
+            virtual void UpdateDescriptorSets();
 
         protected:
             BufferStorage* createBufferStorage(int count);
@@ -131,7 +151,6 @@ namespace LostPeterVulkan
         VkDescriptorSetLayout poDescriptorSetLayout_Uniform;
         VkPipelineLayout poPipelineLayout_Uniform;
         VkPipeline poPipeline_Uniform;
-        VkDescriptorSetVector poDescriptorSets_Uniform;
 
         //PipelineGraphics-Storage
         String nameDescriptorSetLayout_Storage;
@@ -139,7 +158,6 @@ namespace LostPeterVulkan
         VkDescriptorSetLayout poDescriptorSetLayout_Storage;
         VkPipelineLayout poPipelineLayout_Storage;
         VkPipeline poPipeline_Storage;
-        VkDescriptorSetVector poDescriptorSets_Storage;
 
         
     public:
@@ -148,46 +166,82 @@ namespace LostPeterVulkan
         virtual void UpdateCBs();
         virtual void Draw(VkCommandBuffer& commandBuffer);
 
+        virtual void CleanupSwapChain();
+        virtual void RecreateSwapChain();
+
+    public:
+        bool IsBufferUniform() { return this->isBufferUniform; }
+        virtual void ChangeBufferMode(bool isUniform);
+
     public:
         //Line 3D
-        virtual bool AddLine3D_Line();
-        virtual bool AddLine3D_Triangle();
-        virtual bool AddLine3D_Quad();
-        virtual bool AddLine3D_Grid();
-        virtual bool AddLine3D_Quad_Convex();
-        virtual bool AddLine3D_Quad_Concave();
-        virtual bool AddLine3D_Circle();
-        virtual bool AddLine3D_AABB();
-        virtual bool AddLine3D_Sphere();
-        virtual bool AddLine3D_Cylinder();
-        virtual bool AddLine3D_Capsule();
-        virtual bool AddLine3D_Cone();
-        virtual bool AddLine3D_Torus();
+        virtual PointerBuffer* AddLine3D_Line(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Line(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Triangle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Grid(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Grid(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
 
         //Flat 3D
-        virtual bool AddFlat3D_Triangle();
-        virtual bool AddFlat3D_Quad();
-        virtual bool AddFlat3D_Quad_Convex();
-        virtual bool AddFlat3D_Quad_Concave();
-        virtual bool AddFlat3D_Circle();
-        virtual bool AddFlat3D_AABB();
-        virtual bool AddFlat3D_Sphere();
-        virtual bool AddFlat3D_Cylinder();
-        virtual bool AddFlat3D_Capsule();
-        virtual bool AddFlat3D_Cone();
-        virtual bool AddFlat3D_Torus();
+        virtual PointerBuffer* AddFlat3D_Triangle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+
+        virtual void RemoveLineFlat3D(PointerBuffer* pPointer, bool isUpdateBuffer = true);
+        virtual void UpdateBuffer(BufferStorageLineFlat3D* pBufferLineFlat3D);
+        virtual void UpdateBuffer(const String& nameMesh);
 
     protected:
         virtual void initConfigs();
         virtual void initBufferUniforms();
-            virtual void initBuffer(const String& nameMesh);
+            virtual BufferStorageLineFlat3D* initBuffer(const String& nameMesh, bool isBindDescriptor);
         virtual void initDescriptorSetLayout();
         virtual void initPipelineLayout();
         virtual void initPipelineGraphics();
+        virtual void destroyDescriptorSets_Graphics();
+        virtual void createDescriptorSets_Graphics();
         virtual void updateDescriptorSets_Graphics();
-
+            void updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, BufferStorage* pBufferStorage);
         virtual void destroyMeshes();
-        virtual void destroyShaders();
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();
         virtual void destroyPipelineLayout();
@@ -198,6 +252,7 @@ namespace LostPeterVulkan
 
         bool hasBufferLineFlat3D(const String& nameMesh);
         BufferStorageLineFlat3D* getBufferLineFlat3D(const String& nameMesh);
+        BufferStorageLineFlat3D* getOrCreateBufferLineFlat3D(const String& nameMesh);
         BufferStorageLineFlat3D* insertBufferLineFlat3D(const String& nameMesh);
         void removeBufferLineFlat3D(const String& nameMesh);
         void removeBufferLineFlat3DAll();

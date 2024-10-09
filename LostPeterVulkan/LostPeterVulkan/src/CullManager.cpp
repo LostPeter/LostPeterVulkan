@@ -96,19 +96,19 @@ namespace LostPeterVulkan
     }
         void CullManager::createPools()
         {
-            this->pCullLodDataPool = new ObjectPool<CullLodData>();
+            this->pCullLodDataPool = new ObjectPointerPool<CullLodData>();
             this->pCullLodDataPool->stepCount = s_nRenderCount_Step;
             this->pCullLodDataPool->Reserve(s_nRenderCount_Init);
             
-            this->pCullRenderDataPool = new ObjectPool<CullRenderData>();
+            this->pCullRenderDataPool = new ObjectPointerPool<CullRenderData>();
             this->pCullRenderDataPool->stepCount = s_nRenderCount_Step;
             this->pCullRenderDataPool->Reserve(s_nRenderCount_Init);
 
-            this->pCullObjectConstantsPool = new ObjectPool<CullObjectConstants>();
+            this->pCullObjectConstantsPool = new ObjectPointerPool<CullObjectConstants>();
             this->pCullObjectConstantsPool->stepCount = s_nInstanceCount_Step;
             this->pCullObjectConstantsPool->Reserve(s_nInstanceCount_Init);
 
-            this->pCullObjectInstanceConstantsPool = new ObjectPool<CullObjectInstanceConstants>();
+            this->pCullObjectInstanceConstantsPool = new ObjectPointerPool<CullObjectInstanceConstants>();
             this->pCullObjectInstanceConstantsPool->stepCount = s_nInstanceCount_Step;
             this->pCullObjectInstanceConstantsPool->Reserve(s_nInstanceCount_Init);
         }

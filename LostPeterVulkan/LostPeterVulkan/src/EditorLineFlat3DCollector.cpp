@@ -12,6 +12,7 @@
 #include "../include/EditorLineFlat3DCollector.h"
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
+#include "../include/MeshSub.h"
 #include "../include/BufferStorage.h"
 
 namespace LostPeterVulkan
@@ -20,7 +21,6 @@ namespace LostPeterVulkan
     EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p)
         : pLineFlat3DCollector(pCollector)
         , pMesh(p)
-        , pLineFlat3DObject(nullptr)
         , nObjectCount(0)
     {
         F_Assert(pLineFlat3DCollector != nullptr && pMesh != nullptr && "EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D")
@@ -38,7 +38,9 @@ namespace LostPeterVulkan
         , pBufferStorage(nullptr)
         , nObjectCountMax(MAX_OBJECT_LINEFLAT_3D_COUNT)
     {
-        
+        this->pPointerBufferPool = new ObjectManagedPool<PointerBuffer>();
+        this->pPointerBufferPool->stepCount = 20;
+        this->pPointerBufferPool->Reserve(100);
     } 
     EditorLineFlat3DCollector::BufferStorageLineFlat3D::~BufferStorageLineFlat3D()
     {
@@ -49,6 +51,7 @@ namespace LostPeterVulkan
     {
         Clear();
         F_DELETE(this->pBufferStorage)
+        F_DELETE(this->pPointerBufferPool)
     }
     void EditorLineFlat3DCollector::BufferStorageLineFlat3D::Init()
     {
@@ -58,8 +61,7 @@ namespace LostPeterVulkan
         {
             String nameBuffer = "BufferStorage-" + this->pMesh->GetName() + FUtilString::SaveInt(count);
             BufferStorage* pBufferStorageNew = new BufferStorage(nameBuffer, count, sizeof(LineFlat3DObjectConstants));
-            void *pBuffer = pBufferStorageNew->GetBuffer();
-            this->pLineFlat3DObject = (LineFlat3DObjectConstants *)pBuffer;
+            void* pBuffer = pBufferStorageNew->GetBuffer();
 
             if (this->pBufferStorage != nullptr)
             {
@@ -72,29 +74,35 @@ namespace LostPeterVulkan
         {
             this->nObjectCountMax += s_nStepCount;
             this->pBufferStorage = createBufferStorage(this->nObjectCountMax);
+
+            UpdateDescriptorSets();
         }
 
     void EditorLineFlat3DCollector::BufferStorageLineFlat3D::Clear()
     {
         this->nObjectCount = 0;
-        this->nObjectCountMax = MAX_OBJECT_LINEFLAT_3D_COUNT;
+        if (this->pBufferStorage == nullptr)
+            this->nObjectCountMax = MAX_OBJECT_LINEFLAT_3D_COUNT;
+        else 
+            this->nObjectCountMax = this->pBufferStorage->nCount;
+        this->pPointerBufferPool->Reset();
     }
 
-    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const FMatrix4 &mat, const FColor &color, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const FMatrix4 &mat, const FColor &color, bool isUpdateBuffer /*= true*/)
     {
         LineFlat3DObjectConstants object;
         object.g_MatWorld = mat;
         object.color = color;
-        AddLineFlat3DObject(object, isUpdateBuffer);
+        return AddLineFlat3DObject(object, isUpdateBuffer);
     }
-    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const LineFlat3DObjectConstants &object, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject(const LineFlat3DObjectConstants& object, bool isUpdateBuffer /*= true*/)
     {
         if (this->nObjectCount + 1 >= this->nObjectCountMax)
         {
             if (this->pLineFlat3DCollector->isBufferUniform)
             {
                 F_LogError("*********************** EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObject: Object count is above max, cur: [%d], max: [%d] !", this->nObjectCount, this->nObjectCountMax);
-                return;
+                return nullptr;
             }
             else
             {
@@ -102,16 +110,21 @@ namespace LostPeterVulkan
             }
         }
 
-        this->pLineFlat3DObject[this->nObjectCount] = object;
+        pBufferStorage->CopyBuffer(this->nObjectCount * sizeof(LineFlat3DObjectConstants), sizeof(LineFlat3DObjectConstants), (void*)&object);
         this->nObjectCount++;
 
         if (isUpdateBuffer)
         {
             this->pBufferStorage->UpdateBuffer();
         }
+
+        PointerBuffer* pPointer = this->pPointerBufferPool->Get(); 
+        pPointer->Set(this, this->nObjectCount - 1, this->nObjectCount);
+        return pPointer;
     }
-    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants> &objects, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::BufferStorageLineFlat3D::AddLineFlat3DObjects(const std::vector<LineFlat3DObjectConstants> &objects, bool isUpdateBuffer /*= true*/)
     {
+        int nStart = this->nObjectCount;
         size_t count = objects.size();
         for (size_t i = 0; i < count; i++)
         {
@@ -128,16 +141,90 @@ namespace LostPeterVulkan
                 }
             }
 
-            this->pLineFlat3DObject[this->nObjectCount] = objects[i];
+            pBufferStorage->CopyBuffer(this->nObjectCount * sizeof(LineFlat3DObjectConstants), sizeof(LineFlat3DObjectConstants), (void*)&objects[i]);
             this->nObjectCount++;
         }
+        if (this->nObjectCount - nStart <= 0)
+            return nullptr;
 
         if (isUpdateBuffer)
         {
             this->pBufferStorage->UpdateBuffer();
         }
+
+        PointerBuffer* pPointer = this->pPointerBufferPool->Get(); 
+        pPointer->Set(this, nStart, this->nObjectCount);
+        return pPointer;
     }
 
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::RemoveLineFlat3DObject(PointerBuffer* pPointer, bool isUpdateBuffer /*= true*/)
+    {
+        if (pPointer == nullptr)
+            return;
+
+        int nIndexStart = pPointer->nPosStart;
+        int nIndexEnd = pPointer->nPosEnd;
+        int nCount = nIndexEnd - nIndexStart;
+        this->pPointerBufferPool->Back(pPointer);
+        if (nCount <= 0)
+            return;
+        for (std::list<PointerBuffer*>::iterator it = this->pPointerBufferPool->listUsed.begin();
+             it != this->pPointerBufferPool->listUsed.end(); ++it)
+        {
+            PointerBuffer* p = (*it);
+            if (p->nPosStart < nIndexEnd)
+                continue;
+            p->Offset(-nCount);
+        }
+        this->pBufferStorage->RemoveBufferGap(this->nObjectCount * this->pBufferStorage->nStride, 
+                                              nIndexStart * this->pBufferStorage->nStride, 
+                                              nIndexEnd * this->pBufferStorage->nStride,
+                                              isUpdateBuffer);
+        this->nObjectCount -= nCount;
+    }
+
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::UpdateBuffer()
+    {   
+        if (this->pBufferStorage == nullptr)
+            return;
+
+        this->pBufferStorage->UpdateBuffer();
+    }
+
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::CleanupSwapChain()
+    {
+        Base::GetWindowPtr()->destroyVkDescriptorSets(this->poDescriptorSets);
+        this->poDescriptorSets.clear();
+    }
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::RecreateSwapChain()
+    {
+        if (this->poDescriptorSets.size() > 0)
+            return;
+
+        if (this->pLineFlat3DCollector->isBufferUniform)
+        {
+            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Uniform-" + this->pMesh->GetName(), this->pLineFlat3DCollector->poDescriptorSetLayout_Uniform, this->poDescriptorSets);
+        }
+        else
+        {
+            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Storage-" + this->pMesh->GetName(), this->pLineFlat3DCollector->poDescriptorSetLayout_Storage, this->poDescriptorSets);
+        }
+    }
+    void EditorLineFlat3DCollector::BufferStorageLineFlat3D::UpdateDescriptorSets()
+    {
+        if (this->pBufferStorage == nullptr ||
+            this->poDescriptorSets.size() <= 0)
+            return;
+
+        if (this->pLineFlat3DCollector->isBufferUniform)
+        {
+            this->pLineFlat3DCollector->updateDescriptorSets(this->pLineFlat3DCollector->aNamesDescriptorSetLayout_Uniform, this->poDescriptorSets, this->pBufferStorage);
+        }
+        else
+        {
+            this->pLineFlat3DCollector->updateDescriptorSets(this->pLineFlat3DCollector->aNamesDescriptorSetLayout_Storage, this->poDescriptorSets, this->pBufferStorage);
+        }
+    }
 
 
     ////////////////////// EditorLineFlat3DCollector ////////////////////
@@ -204,36 +291,34 @@ namespace LostPeterVulkan
     {
         CleanupSwapChain();
         destroyMeshes();
+        removeBufferLineFlat3DAll();
     }
         void EditorLineFlat3DCollector::destroyMeshes()
         {
             this->mapName2Mesh.clear();
         }
-        void EditorLineFlat3DCollector::destroyShaders()
+        void EditorLineFlat3DCollector::destroyBufferUniforms()
         {
             
         }
-        void EditorLineFlat3DCollector::destroyBufferUniforms()
-        {
-            removeBufferLineFlat3DAll();
-        }
         void EditorLineFlat3DCollector::destroyPipelineGraphics()
         {
+            destroyDescriptorSets_Graphics();
+
             //PipelineGraphics-Uniform
             if (this->poPipeline_Uniform != VK_NULL_HANDLE)
             {
                 Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform);
             }
             this->poPipeline_Uniform = VK_NULL_HANDLE;
-            this->poDescriptorSets_Uniform.clear();
-
+            
             //PipelineGraphics-Storage
             if (this->poPipeline_Storage != VK_NULL_HANDLE)
             {
                 Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage);
             }
             this->poPipeline_Storage = VK_NULL_HANDLE;
-            this->poDescriptorSets_Storage.clear();
+            
         }
         void EditorLineFlat3DCollector::destroyPipelineLayout()
         {
@@ -277,116 +362,296 @@ namespace LostPeterVulkan
 
     void EditorLineFlat3DCollector::Draw(VkCommandBuffer& commandBuffer)
     {
-        if (this->isBufferUniform)
-        {
-            //for ()
-        }
-        else
-        {
+        size_t count = this->aBufferLineFlat3D.size();
+        if (count <= 0)
+            return;
 
+        VulkanWindow* pWindow = Base::GetWindowPtr();
+        for (size_t i = 0; i < count; i++)
+        {
+            BufferStorageLineFlat3D* pLineFlat3D =  this->aBufferLineFlat3D[i];
+            int count_instance = pLineFlat3D->nObjectCount;
+            if (count_instance <= 0)
+                continue;
+            
+            if (this->isBufferUniform)
+            {
+                pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipeline_Uniform);
+                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Uniform, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+            }
+            else
+            {
+                pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipeline_Storage);
+                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Storage, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+            }
+            
+            MeshSub* pMeshSub = pLineFlat3D->pMesh->aMeshSubs[0];
+            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkDeviceSize offsets[] = { 0 };
+            pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, count_instance, 0, 0, 0);
         }
+    }
+
+    void EditorLineFlat3DCollector::CleanupSwapChain()
+    {
+        EditorBase::CleanupSwapChain();
+
+    }
+    void EditorLineFlat3DCollector::RecreateSwapChain()
+    {
+        EditorBase::RecreateSwapChain();
+    }
+
+    void EditorLineFlat3DCollector::ChangeBufferMode(bool isUniform)
+    {
+        if (this->isBufferUniform == isUniform)
+            return;
+
+        this->isBufferUniform = isUniform;
+        updateDescriptorSets_Graphics();
     }
 
     //Line 3D
-    bool EditorLineFlat3DCollector::AddLine3D_Line()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Line(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Line(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Triangle()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Line(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Line);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Quad()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Triangle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Triangle(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Grid()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Triangle);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Quad_Convex()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Quad(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Quad_Concave()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Circle()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Grid(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Grid(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_AABB()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Grid(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Grid);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Sphere()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Quad_Convex(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Cylinder()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Convex);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Capsule()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Quad_Concave(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Cone()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Concave);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddLine3D_Torus()
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddLine3D_Circle(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Circle);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_AABB(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_AABB);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_Sphere(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Sphere);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_Cylinder(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cylinder);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_Capsule(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Capsule);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_Cone(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cone);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_Torus(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Torus);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
 
     //Flat 3D
-    bool EditorLineFlat3DCollector::AddFlat3D_Triangle()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Triangle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_Triangle(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Quad()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Triangle);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Quad_Convex()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_Quad(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Quad_Concave()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Circle()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_Quad_Convex(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_AABB()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Convex);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Sphere()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_Quad_Concave(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Cylinder()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Concave);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Capsule()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_Circle(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Cone()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Circle);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    bool EditorLineFlat3DCollector::AddFlat3D_Torus()
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return true;
+        return AddFlat3D_AABB(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_AABB);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_Sphere(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Sphere);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_Cylinder(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cylinder);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_Capsule(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Capsule);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_Cone(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cone);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_Torus(FMath::FromTRS(vPos, vRotAngle, vScale), color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Torus);
+        return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
 
+    void EditorLineFlat3DCollector::RemoveLineFlat3D(PointerBuffer* pPointer, bool isUpdateBuffer /*= true*/)
+    {
+        if (pPointer == nullptr)
+            return;
+
+        BufferStorageLineFlat3D* pBufferLineFlat3D = (BufferStorageLineFlat3D*)pPointer->pBase;
+        pBufferLineFlat3D->RemoveLineFlat3DObject(pPointer, isUpdateBuffer);
+    }
+    void EditorLineFlat3DCollector::UpdateBuffer(BufferStorageLineFlat3D* pBufferLineFlat3D)
+    {
+        if (pBufferLineFlat3D == nullptr)
+            return;
+        pBufferLineFlat3D->UpdateBuffer();
+    }
+    void EditorLineFlat3DCollector::UpdateBuffer(const String& nameMesh)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getBufferLineFlat3D(nameMesh);
+        UpdateBuffer(pBufferLineFlat3D);
+    }
 
     void EditorLineFlat3DCollector::initConfigs()
     {
@@ -459,20 +724,29 @@ namespace LostPeterVulkan
     }
     void EditorLineFlat3DCollector::initBufferUniforms()
     {
-        initBuffer(c_strLine3D_AABB);
-        initBuffer(c_strLine3D_Sphere);
-        initBuffer(c_strFlat3D_AABB);
-        initBuffer(c_strFlat3D_Sphere);
+        initBuffer(c_strLine3D_AABB, false);
+        initBuffer(c_strLine3D_Sphere, false);
+        initBuffer(c_strFlat3D_AABB, false);
+        initBuffer(c_strFlat3D_Sphere, false);
     }
-        void EditorLineFlat3DCollector::initBuffer(const String &nameMesh)
+        EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::initBuffer(const String &nameMesh, bool isBindDescriptor)
         {
-            if (hasBufferLineFlat3D(nameMesh))
-                return;
-            insertBufferLineFlat3D(nameMesh);
+            BufferStorageLineFlat3D* pBufferLineFlat3D = getBufferLineFlat3D(nameMesh);
+            if (pBufferLineFlat3D != nullptr)
+                return pBufferLineFlat3D;
+            pBufferLineFlat3D = insertBufferLineFlat3D(nameMesh);
+
+            if (isBindDescriptor)
+            {
+                pBufferLineFlat3D->RecreateSwapChain();
+                pBufferLineFlat3D->UpdateDescriptorSets();
+            }
+            return pBufferLineFlat3D;
         }
     void EditorLineFlat3DCollector::initDescriptorSetLayout()
     {
         //PipelineGraphics-Uniform
+        this->aNamesDescriptorSetLayout_Uniform = FUtilString::Split(this->nameDescriptorSetLayout_Uniform, "-");
         this->poDescriptorSetLayout_Uniform = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_Uniform, &this->aNamesDescriptorSetLayout_Uniform);
         if (this->poDescriptorSetLayout_Uniform == VK_NULL_HANDLE)
         {
@@ -482,6 +756,7 @@ namespace LostPeterVulkan
         }
 
         //PipelineGraphics-Storage
+        this->aNamesDescriptorSetLayout_Storage = FUtilString::Split(this->nameDescriptorSetLayout_Storage, "-");
         this->poDescriptorSetLayout_Storage = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_Storage, &this->aNamesDescriptorSetLayout_Storage);
         if (this->poDescriptorSetLayout_Storage == VK_NULL_HANDLE)
         {
@@ -516,6 +791,9 @@ namespace LostPeterVulkan
     }
     void EditorLineFlat3DCollector::initPipelineGraphics()
     {
+        createDescriptorSets_Graphics();
+        updateDescriptorSets_Graphics();
+
         VkDynamicStateVector aDynamicStates =
         {
             VK_DYNAMIC_STATE_VIEWPORT,
@@ -532,8 +810,6 @@ namespace LostPeterVulkan
 
         //PipelineGraphics-Uniform
         {
-            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Uniform-" + this->name, this->poDescriptorSetLayout_Uniform, this->poDescriptorSets_Uniform);
-
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Uniform;
             if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_LineFlat3D_Vert,
                                                                             "",
@@ -554,10 +830,10 @@ namespace LostPeterVulkan
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                       Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
-                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                      VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                      VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                       VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                      VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                      VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                       VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
                                                                                       VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->poPipeline_Uniform == VK_NULL_HANDLE)
@@ -571,14 +847,12 @@ namespace LostPeterVulkan
 
         //PipelineGraphics-Storage
         {
-            Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-Storage-" + this->name, this->poDescriptorSetLayout_Storage, this->poDescriptorSets_Storage);
-
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Storage;
-            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_LineFlat3D_Vert,
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_LineFlat3D_Ext_Vert,
                                                                             "",
                                                                             "",
                                                                             "",
-                                                                            s_strNameShader_LineFlat3D_Frag,
+                                                                            s_strNameShader_LineFlat3D_Ext_Frag,
                                                                             this->mapShaderModules,
                                                                             aShaderStageCreateInfos_Storage))
             {
@@ -593,7 +867,7 @@ namespace LostPeterVulkan
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                       Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
-                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                       VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                       VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                       VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -608,18 +882,94 @@ namespace LostPeterVulkan
             F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage] Create pipeline graphics success !");
         }
     }   
-    void EditorLineFlat3DCollector::updateDescriptorSets_Graphics()
+    void EditorLineFlat3DCollector::destroyDescriptorSets_Graphics()
     {
-        //PipelineGraphics-Uniform
+        size_t count = this->aBufferLineFlat3D.size();
+        for (size_t i = 0; i < count; i++)
         {
-           
-        }
-
-        //PipelineGraphics-Storage
-        {
-            
+            BufferStorageLineFlat3D* p = this->aBufferLineFlat3D[i];
+            p->CleanupSwapChain();
         }
     }
+    void EditorLineFlat3DCollector::createDescriptorSets_Graphics()
+    {
+        size_t count = this->aBufferLineFlat3D.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            BufferStorageLineFlat3D* p = this->aBufferLineFlat3D[i];
+            p->RecreateSwapChain();
+        }
+    }
+    void EditorLineFlat3DCollector::updateDescriptorSets_Graphics()
+    {
+        size_t count = this->aBufferLineFlat3D.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            BufferStorageLineFlat3D* p = this->aBufferLineFlat3D[i];
+            p->UpdateDescriptorSets();
+        }
+    }
+        void EditorLineFlat3DCollector::updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, BufferStorage* pBufferStorage)
+        {
+            F_Assert(pBufferStorage != nullptr && "EditorLineFlat3DCollector::updateDescriptorSets")
+            uint32_t count_ds = (uint32_t)vkDescriptorSets.size();
+            for (uint32_t i = 0; i < count_ds; i++)
+            {
+                VkWriteDescriptorSetVector descriptorWrites;
+
+                uint32_t count_names = (uint32_t)aNamesDescriptorSetLayout.size();
+                for (uint32_t j = 0; j < count_names; j++)
+                {
+                    const String& nameDescriptorSet = aNamesDescriptorSetLayout[j];
+                    if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Pass = {};
+                        bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
+                        bufferInfo_Pass.offset = 0;
+                        bufferInfo_Pass.range = sizeof(PassConstants);
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                          vkDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_Pass);
+                    }
+                    else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat3D)) //ObjectLineFlat3D
+                    {
+                        VkDescriptorBufferInfo bufferInfo_ObjectLineFlat3D = {};
+                        bufferInfo_ObjectLineFlat3D.buffer = pBufferStorage->poBuffer_Storage;
+                        bufferInfo_ObjectLineFlat3D.offset = 0;
+                        bufferInfo_ObjectLineFlat3D.range = pBufferStorage->GetBufferSize();
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                          vkDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_ObjectLineFlat3D);
+                    }
+                    else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferObjectLineFlat3D)) //BufferObjectLineFlat3D
+                    {
+                        VkDescriptorBufferInfo bufferInfo_BufferObjectLineFlat3D = {};
+                        bufferInfo_BufferObjectLineFlat3D.buffer = pBufferStorage->poBuffer_Storage;
+                        bufferInfo_BufferObjectLineFlat3D.offset = 0;
+                        bufferInfo_BufferObjectLineFlat3D.range = pBufferStorage->GetBufferSize();
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
+                                                                          vkDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_BufferObjectLineFlat3D);
+                    }
+                    else
+                    {
+                        String msg = "*********************** EditorLineFlat3DCollector::updateDescriptorSets: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        F_LogError(msg.c_str());
+                        throw std::runtime_error(msg.c_str());
+                    }
+                }
+                Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
+            }
+        }
 
     Mesh *EditorLineFlat3DCollector::getMesh(const String &nameMesh)
     {
@@ -635,7 +985,7 @@ namespace LostPeterVulkan
     {
         return getBufferLineFlat3D(nameMesh) != nullptr;
     }
-    EditorLineFlat3DCollector::BufferStorageLineFlat3D *EditorLineFlat3DCollector::getBufferLineFlat3D(const String &nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::getBufferLineFlat3D(const String &nameMesh)
     {
         Mesh *pMesh = getMesh(nameMesh);
         F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::getBufferLineFlat3D")
@@ -645,7 +995,12 @@ namespace LostPeterVulkan
             return nullptr;
         return itFind->second;
     }
-    EditorLineFlat3DCollector::BufferStorageLineFlat3D *EditorLineFlat3DCollector::insertBufferLineFlat3D(const String &nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::getOrCreateBufferLineFlat3D(const String& nameMesh)
+    {
+        BufferStorageLineFlat3D* pBufferLineFlat3D = initBuffer(nameMesh, true);
+        return pBufferLineFlat3D;
+    }
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::insertBufferLineFlat3D(const String &nameMesh)
     {
         Mesh *pMesh = getMesh(nameMesh);
         F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::insertBufferLineFlat3D")
@@ -656,7 +1011,7 @@ namespace LostPeterVulkan
             return itFind->second;
         }
 
-        BufferStorageLineFlat3D *pBufferLineFlat3D = new BufferStorageLineFlat3D(this, pMesh);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = new BufferStorageLineFlat3D(this, pMesh);
         pBufferLineFlat3D->Init();
 
         this->aBufferLineFlat3D.push_back(pBufferLineFlat3D);
@@ -671,7 +1026,7 @@ namespace LostPeterVulkan
         Mesh2BufferStorageLineFlat3DPtrMap::iterator itFind = this->mapMesh2BufferLineFlat3D.find(pMesh);
         if (itFind == this->mapMesh2BufferLineFlat3D.end())
             return;
-        BufferStorageLineFlat3D *pBufferLineFlat3D = itFind->second;
+        BufferStorageLineFlat3D* pBufferLineFlat3D = itFind->second;
 
         BufferStorageLineFlat3DPtrVector::iterator itFindV = std::find(this->aBufferLineFlat3D.begin(), this->aBufferLineFlat3D.end(), pBufferLineFlat3D);
         if (itFindV != this->aBufferLineFlat3D.end())

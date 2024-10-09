@@ -7532,6 +7532,21 @@ namespace LostPeterVulkan
                 }
             }
 
+            void VulkanWindow::destroyVkDescriptorSet(VkDescriptorSet& vkDescriptorSet)
+            {
+                if (vkDescriptorSet != VK_NULL_HANDLE)
+                {
+                    vkFreeDescriptorSets(this->poDevice, this->poDescriptorPool, 1, &vkDescriptorSet);
+                }
+            }
+            void VulkanWindow::destroyVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets)
+            {
+                uint32_t count = (uint32_t)aDescriptorSets.size();
+                if (count <= 0)
+                    return;
+                
+                vkFreeDescriptorSets(this->poDevice, this->poDescriptorPool, count, aDescriptorSets.data());
+            }
             void VulkanWindow::createVkDescriptorSet(const String& nameDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet)
             {
                 VkDescriptorSetAllocateInfo allocInfo = {};

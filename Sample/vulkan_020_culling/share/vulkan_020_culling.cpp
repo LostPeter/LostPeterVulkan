@@ -1065,6 +1065,77 @@ static bool g_ObjectRend_IsCanCullings[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRend /////////////////////
+void Vulkan_020_Culling::ModelObjectRend::AddLine3D_AABB()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundLineAABB[i] == nullptr)
+        {
+            this->aPointerBoundLineAABB[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strLine3D_AABB);
+    }
+}
+void Vulkan_020_Culling::ModelObjectRend::RemoveLine3D_AABB()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundLineAABB[i] != nullptr)
+        {
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundLineAABB[i], false);
+            this->aPointerBoundLineAABB[i] = nullptr;
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strLine3D_AABB);
+    }
+}
+
+void Vulkan_020_Culling::ModelObjectRend::AddLine3D_Sphere()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundLineSphere[i] == nullptr)
+        {
+            this->aPointerBoundLineSphere[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strLine3D_Sphere);
+    }
+}
+void Vulkan_020_Culling::ModelObjectRend::RemoveLine3D_Sphere()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundLineSphere[i] != nullptr)
+        {
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundLineSphere[i], false);
+            this->aPointerBoundLineSphere[i] = nullptr;
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strLine3D_Sphere);
+    }
+}
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
@@ -1632,6 +1703,10 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
         pRend->materialCBs.clear();
+        pRend->aPointerBoundLineAABB.clear();
+        pRend->aPointerBoundLineAABB.resize(count_instance);
+        pRend->aPointerBoundLineSphere.clear();
+        pRend->aPointerBoundLineSphere.resize(count_instance);
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
@@ -1641,6 +1716,8 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                                                         g_ObjectRend_Tranforms[3 * i + 2]);
             pRend->objectCBs.push_back(objectConstants);
             pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+            pRend->aPointerBoundLineAABB[j] = nullptr;
+            pRend->aPointerBoundLineSphere[j] = nullptr;
 
             //MaterialConstants
             MaterialConstants materialConstants;
@@ -3238,6 +3315,32 @@ void Vulkan_020_Culling::modelConfig()
                                 
                             }
                             
+                            //Bound
+                            String nameIsBoundLineAABB = "Is BoundLineAABB - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundLineAABB.c_str(), &pRend->isBoundLineAABB))
+                            {
+                                if (pRend->isBoundLineAABB)
+                                {
+                                    pRend->AddLine3D_AABB();
+                                }
+                                else
+                                {
+                                    pRend->RemoveLine3D_AABB();
+                                }
+                            }
+                            String nameIsBoundLineSphere = "Is BoundLineSphere - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundLineSphere.c_str(), &pRend->isBoundLineSphere))
+                            {
+                                int count_instance = pModelObject->countInstance;
+                                if (pRend->isBoundLineSphere)
+                                {
+                                    pRend->AddLine3D_Sphere();
+                                }   
+                                else
+                                {
+                                    pRend->RemoveLine3D_Sphere();
+                                }
+                            }
 
 
                             String nameWorld = "Model Object - " + nameObjectRend;

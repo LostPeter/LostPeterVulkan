@@ -1215,9 +1215,11 @@ namespace LostPeterVulkan
                     virtual void createDescriptorSets_Custom();
                         virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
 
+                        virtual void destroyVkDescriptorSet(VkDescriptorSet& vkDescriptorSet);
+                        virtual void destroyVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets);
                         virtual void createVkDescriptorSet(const String& nameDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
                         virtual void createVkDescriptorSets(const String& nameDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
-
+                        
                         virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
                                                                                                        VkDescriptorType descriptorType,
                                                                                                        uint32_t descriptorCount,

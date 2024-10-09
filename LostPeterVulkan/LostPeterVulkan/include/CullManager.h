@@ -31,10 +31,10 @@ namespace LostPeterVulkan
         static int s_nInstanceCount_Max;
         static int s_nInstanceCount_Step;
 
-        ObjectPool<CullLodData>* pCullLodDataPool;
-        ObjectPool<CullRenderData>* pCullRenderDataPool;
-        ObjectPool<CullObjectConstants>* pCullObjectConstantsPool;
-        ObjectPool<CullObjectInstanceConstants>* pCullObjectInstanceConstantsPool;
+        ObjectPointerPool<CullLodData>* pCullLodDataPool;
+        ObjectPointerPool<CullRenderData>* pCullRenderDataPool;
+        ObjectPointerPool<CullObjectConstants>* pCullObjectConstantsPool;
+        ObjectPointerPool<CullObjectInstanceConstants>* pCullObjectInstanceConstantsPool;
 
     public:
         VKPipelineComputeCull* pVKPipelineComputeCull;

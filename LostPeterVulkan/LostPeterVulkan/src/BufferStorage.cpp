@@ -65,7 +65,7 @@ namespace LostPeterVulkan
         this->pBuffer_Storage = new uint8[count * stride];
         memset(this->pBuffer_Storage, 0, count * stride);
         VkDeviceSize bufferSize = count * stride;
-        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_Storage, this->poBufferMemory_Storage);
+        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_Storage, this->poBufferMemory_Storage);
         UpdateBuffer();
     }
     
@@ -83,9 +83,33 @@ namespace LostPeterVulkan
         size_t size = GetBufferSize();
         F_Assert(offset >= 0 && offset < size && bufSize <= size && "BufferStorage::UpdateBuffer")
 
+        CopyBuffer(offset, bufSize, pBuf);
+        UpdateBuffer();
+    }
+
+    void BufferStorage::CopyBuffer(size_t offset, size_t bufSize, void* pBuf)
+    {
         uint8* pBuffer = this->pBuffer_Storage + offset;
         memcpy(pBuffer, pBuf, bufSize);
-        UpdateBuffer();
+    }
+    void BufferStorage::RemoveBufferGap(size_t current, size_t start, size_t end, bool isUpdateBuffer)
+    {
+        size_t total = (size_t)GetBufferSize();
+        size_t count = current - end;
+        uint8* pBufferSrc = this->pBuffer_Storage + start;
+        uint8* pBufferDst = this->pBuffer_Storage + end;
+        for (size_t i = 0; i < count; i++)
+        {
+            *pBufferSrc = *pBufferDst;
+
+            ++pBufferSrc;
+            ++pBufferDst;
+        }
+
+        if (isUpdateBuffer)
+        {
+            UpdateBuffer();
+        }   
     }
 
 }; //LostPeterVulkan

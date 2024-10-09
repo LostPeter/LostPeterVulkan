@@ -129,6 +129,49 @@ namespace LostPeterVulkan
     };
 
 
+    struct vulkanExport PointerBuffer
+    {
+        void* pBase;
+        int nPosStart;
+        int nPosEnd;
+        
+        PointerBuffer()
+            : pBase(nullptr)
+            , nPosStart(0)
+            , nPosEnd(0)
+        {
+
+        }
+        PointerBuffer(void* p, int posStart, int posEnd)
+            : pBase(p)
+            , nPosStart(posStart)
+            , nPosEnd(posEnd)
+        {
+
+        }
+
+        void Clear()
+        {
+            this->pBase = nullptr;
+            this->nPosStart = 0;
+            this->nPosEnd = 0;
+        }
+
+        void Set(void* p, int posStart, int posEnd)
+        {
+            this->pBase = p;
+            this->nPosStart = posStart;
+            this->nPosEnd = posEnd;
+        }
+
+        void Offset(int posOffset)
+        {
+            this->nPosStart += posOffset;
+            this->nPosEnd += posOffset;
+        }
+    };
+    typedef std::vector<PointerBuffer*> PointerBufferPtrVector;
+
 
     struct vulkanExport VulkanPixelFormatDes
 	{

@@ -43,6 +43,8 @@ namespace LostPeterVulkan
         void UpdateBuffer();
         void UpdateBuffer(size_t offset, size_t bufSize, void* pBuf);
 
+        void CopyBuffer(size_t offset, size_t bufSize, void* pBuf);
+        void RemoveBufferGap(size_t current, size_t start, size_t end, bool isUpdateBuffer);
     };
 
 }; //LostPeterVulkan

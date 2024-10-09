@@ -40,6 +40,12 @@ public:
         bool isCanCullingInit;
         bool isCanCulling;
 
+        //Bound
+        bool isBoundLineAABB;
+        bool isBoundLineSphere;
+        PointerBufferPtrVector aPointerBoundLineAABB;
+        PointerBufferPtrVector aPointerBoundLineSphere;
+
         //Cull
         CullLodData* pCullLodData;
         CullRenderData* pCullRenderData;
@@ -119,6 +125,10 @@ public:
             , isShadowPCF(false)
             , isCanCullingInit(false)
             , isCanCulling(false)
+
+            //Bound
+            , isBoundLineAABB(false)
+            , isBoundLineSphere(false)
 
             //Cull
             , pCullLodData(nullptr)
@@ -259,7 +269,7 @@ public:
             return &(itFind->second);
         }
 
-    //Pipeline Computes
+    ////Pipeline Computes
         void AddPipelineCompute(VKPipelineCompute* pPipelineCompute)
         {
             this->aPipelineComputes.push_back(pPipelineCompute);
@@ -270,6 +280,11 @@ public:
             return this->aPipelineComputes[index];
         }
 
+    ////LineFlat3D
+        void AddLine3D_AABB();
+        void RemoveLine3D_AABB();
+        void AddLine3D_Sphere();
+        void RemoveLine3D_Sphere();
     };
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
     typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;
