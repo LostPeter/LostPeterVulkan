@@ -40,11 +40,17 @@ public:
         bool isCanCullingInit;
         bool isCanCulling;
 
-        //Bound
-        bool isBoundLineAABB;
-        bool isBoundLineSphere;
-        PointerBufferPtrVector aPointerBoundLineAABB;
-        PointerBufferPtrVector aPointerBoundLineSphere;
+        //Bound Line
+        bool isBoundAABB_Line;
+        bool isBoundSphere_Line;
+        PointerBufferPtrVector aPointerBoundAABB_Line;
+        PointerBufferPtrVector aPointerBoundSphere_Line;
+
+        //Bound Flat
+        bool isBoundAABB_Flat;
+        bool isBoundSphere_Flat;
+        PointerBufferPtrVector aPointerBoundAABB_Flat;
+        PointerBufferPtrVector aPointerBoundSphere_Flat;
 
         //Cull
         CullLodData* pCullLodData;
@@ -126,9 +132,13 @@ public:
             , isCanCullingInit(false)
             , isCanCulling(false)
 
-            //Bound
-            , isBoundLineAABB(false)
-            , isBoundLineSphere(false)
+            //Bound Line
+            , isBoundAABB_Line(false)
+            , isBoundSphere_Line(false)
+
+            //Bound Flat
+            , isBoundAABB_Flat(false)
+            , isBoundSphere_Flat(false)
 
             //Cull
             , pCullLodData(nullptr)
@@ -285,6 +295,12 @@ public:
         void RemoveLine3D_AABB();
         void AddLine3D_Sphere();
         void RemoveLine3D_Sphere();
+
+        void AddFlat3D_AABB();
+        void RemoveFlat3D_AABB();
+        void AddFlat3D_Sphere();
+        void RemoveFlat3D_Sphere();
+
     };
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
     typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;

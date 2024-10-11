@@ -1071,9 +1071,9 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_AABB()
     int count_instance = this->pModelObject->countInstance;
     for (int i = 0; i < count_instance; i++)
     {
-        if (this->aPointerBoundLineAABB[i] == nullptr)
+        if (this->aPointerBoundAABB_Line[i] == nullptr)
         {
-            this->aPointerBoundLineAABB[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1088,10 +1088,10 @@ void Vulkan_020_Culling::ModelObjectRend::RemoveLine3D_AABB()
     int count_instance = this->pModelObject->countInstance;
     for (int i = 0; i < count_instance; i++)
     {
-        if (this->aPointerBoundLineAABB[i] != nullptr)
+        if (this->aPointerBoundAABB_Line[i] != nullptr)
         {
-            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundLineAABB[i], false);
-            this->aPointerBoundLineAABB[i] = nullptr;
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundAABB_Line[i], false);
+            this->aPointerBoundAABB_Line[i] = nullptr;
             isNeedUpdateBuffer = true;
         }
     }
@@ -1107,9 +1107,9 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_Sphere()
     int count_instance = this->pModelObject->countInstance;
     for (int i = 0; i < count_instance; i++)
     {
-        if (this->aPointerBoundLineSphere[i] == nullptr)
+        if (this->aPointerBoundSphere_Line[i] == nullptr)
         {
-            this->aPointerBoundLineSphere[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1124,16 +1124,89 @@ void Vulkan_020_Culling::ModelObjectRend::RemoveLine3D_Sphere()
     int count_instance = this->pModelObject->countInstance;
     for (int i = 0; i < count_instance; i++)
     {
-        if (this->aPointerBoundLineSphere[i] != nullptr)
+        if (this->aPointerBoundSphere_Line[i] != nullptr)
         {
-            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundLineSphere[i], false);
-            this->aPointerBoundLineSphere[i] = nullptr;
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundSphere_Line[i], false);
+            this->aPointerBoundSphere_Line[i] = nullptr;
             isNeedUpdateBuffer = true;
         }
     }
     if (isNeedUpdateBuffer)
     {
         this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strLine3D_Sphere);
+    }
+}
+
+
+void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_AABB()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundAABB_Flat[i] == nullptr)
+        {
+            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clGreen, false);
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strFlat3D_AABB);
+    }
+}
+void Vulkan_020_Culling::ModelObjectRend::RemoveFlat3D_AABB()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundAABB_Flat[i] != nullptr)
+        {
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundAABB_Flat[i], false);
+            this->aPointerBoundAABB_Flat[i] = nullptr;
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strFlat3D_AABB);
+    }
+}
+
+void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_Sphere()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundSphere_Flat[i] == nullptr)
+        {
+            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clGreen, false);
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strFlat3D_Sphere);
+    }
+}
+void Vulkan_020_Culling::ModelObjectRend::RemoveFlat3D_Sphere()
+{
+    bool isNeedUpdateBuffer = false;
+    int count_instance = this->pModelObject->countInstance;
+    for (int i = 0; i < count_instance; i++)
+    {
+        if (this->aPointerBoundSphere_Flat[i] != nullptr)
+        {
+            this->pModelObject->pWindow->pEditorLineFlat3DCollector->RemoveLineFlat3D(this->aPointerBoundSphere_Flat[i], false);
+            this->aPointerBoundSphere_Flat[i] = nullptr;
+            isNeedUpdateBuffer = true;
+        }
+    }
+    if (isNeedUpdateBuffer)
+    {
+        this->pModelObject->pWindow->pEditorLineFlat3DCollector->UpdateBuffer(EditorLineFlat3DCollector::c_strFlat3D_Sphere);
     }
 }
 
@@ -1703,10 +1776,14 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
         pRend->materialCBs.clear();
-        pRend->aPointerBoundLineAABB.clear();
-        pRend->aPointerBoundLineAABB.resize(count_instance);
-        pRend->aPointerBoundLineSphere.clear();
-        pRend->aPointerBoundLineSphere.resize(count_instance);
+        pRend->aPointerBoundAABB_Line.clear();
+        pRend->aPointerBoundAABB_Line.resize(count_instance);
+        pRend->aPointerBoundSphere_Line.clear();
+        pRend->aPointerBoundSphere_Line.resize(count_instance);
+        pRend->aPointerBoundAABB_Flat.clear();
+        pRend->aPointerBoundAABB_Flat.resize(count_instance);
+        pRend->aPointerBoundSphere_Flat.clear();
+        pRend->aPointerBoundSphere_Flat.resize(count_instance);
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
@@ -1716,8 +1793,10 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                                                         g_ObjectRend_Tranforms[3 * i + 2]);
             pRend->objectCBs.push_back(objectConstants);
             pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
-            pRend->aPointerBoundLineAABB[j] = nullptr;
-            pRend->aPointerBoundLineSphere[j] = nullptr;
+            pRend->aPointerBoundAABB_Line[j] = nullptr;
+            pRend->aPointerBoundSphere_Line[j] = nullptr;
+            pRend->aPointerBoundAABB_Flat[j] = nullptr;
+            pRend->aPointerBoundSphere_Flat[j] = nullptr;
 
             //MaterialConstants
             MaterialConstants materialConstants;
@@ -3315,11 +3394,11 @@ void Vulkan_020_Culling::modelConfig()
                                 
                             }
                             
-                            //Bound
-                            String nameIsBoundLineAABB = "Is BoundLineAABB - " + nameObjectRend;
-                            if (ImGui::Checkbox(nameIsBoundLineAABB.c_str(), &pRend->isBoundLineAABB))
+                            //Bound Line
+                            String nameIsBoundAABB_Line = "Is BoundAABB Line - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundAABB_Line.c_str(), &pRend->isBoundAABB_Line))
                             {
-                                if (pRend->isBoundLineAABB)
+                                if (pRend->isBoundAABB_Line)
                                 {
                                     pRend->AddLine3D_AABB();
                                 }
@@ -3328,11 +3407,11 @@ void Vulkan_020_Culling::modelConfig()
                                     pRend->RemoveLine3D_AABB();
                                 }
                             }
-                            String nameIsBoundLineSphere = "Is BoundLineSphere - " + nameObjectRend;
-                            if (ImGui::Checkbox(nameIsBoundLineSphere.c_str(), &pRend->isBoundLineSphere))
+                            String nameIsBoundSphere_Line = "Is BoundSphere Line - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundSphere_Line.c_str(), &pRend->isBoundSphere_Line))
                             {
                                 int count_instance = pModelObject->countInstance;
-                                if (pRend->isBoundLineSphere)
+                                if (pRend->isBoundSphere_Line)
                                 {
                                     pRend->AddLine3D_Sphere();
                                 }   
@@ -3342,6 +3421,33 @@ void Vulkan_020_Culling::modelConfig()
                                 }
                             }
 
+                            //Bound Flat
+                            String nameIsBoundAABB_Flat = "Is BoundAABB Flat - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundAABB_Flat.c_str(), &pRend->isBoundAABB_Flat))
+                            {
+                                if (pRend->isBoundAABB_Flat)
+                                {
+                                    pRend->AddFlat3D_AABB();
+                                }
+                                else
+                                {
+                                    pRend->RemoveFlat3D_AABB();
+                                }
+                            }
+                            String nameIsBoundSphere_Flat = "Is BoundSphere Flat - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsBoundSphere_Flat.c_str(), &pRend->isBoundSphere_Flat))
+                            {
+                                int count_instance = pModelObject->countInstance;
+                                if (pRend->isBoundSphere_Flat)
+                                {
+                                    pRend->AddFlat3D_Sphere();
+                                }   
+                                else
+                                {
+                                    pRend->RemoveFlat3D_Sphere();
+                                }
+                            }
+                            
 
                             String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))
