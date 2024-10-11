@@ -18,10 +18,11 @@
 namespace LostPeterVulkan
 {
     ////////////////////// BufferBaseLineFlat3D /////////////////////////
-    EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p)
+    EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p, bool bIsLineList)
         : pLineFlat3DCollector(pCollector)
         , pMesh(p)
         , nObjectCount(0)
+        , isLineList(bIsLineList)
     {
         F_Assert(pLineFlat3DCollector != nullptr && pMesh != nullptr && "EditorLineFlat3DCollector::BufferBaseLineFlat3D::BufferBaseLineFlat3D")
     }
@@ -33,8 +34,8 @@ namespace LostPeterVulkan
 
     ////////////////////// BufferStorageLineFlat3D //////////////////////
     const int EditorLineFlat3DCollector::BufferStorageLineFlat3D::s_nStepCount = 128;
-    EditorLineFlat3DCollector::BufferStorageLineFlat3D::BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh *p)
-        : BufferBaseLineFlat3D(pCollector, p)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D::BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh *p, bool bIsLineList)
+        : BufferBaseLineFlat3D(pCollector, p, bIsLineList)
         , pBufferStorage(nullptr)
         , nObjectCountMax(MAX_OBJECT_LINEFLAT_3D_COUNT)
     {
@@ -270,13 +271,15 @@ namespace LostPeterVulkan
         , nameDescriptorSetLayout_Uniform("Pass-ObjectLineFlat3D")
         , poDescriptorSetLayout_Uniform(VK_NULL_HANDLE)
         , poPipelineLayout_Uniform(VK_NULL_HANDLE)
-        , poPipeline_Uniform(VK_NULL_HANDLE)
+        , poPipeline_Uniform_Line(VK_NULL_HANDLE)
+        , poPipeline_Uniform_Flat(VK_NULL_HANDLE)
 
         //PipelineGraphics-Storage
         , nameDescriptorSetLayout_Storage("Pass-BufferObjectLineFlat3D")
         , poDescriptorSetLayout_Storage(VK_NULL_HANDLE)
         , poPipelineLayout_Storage(VK_NULL_HANDLE)
-        , poPipeline_Storage(VK_NULL_HANDLE)
+        , poPipeline_Storage_Line(VK_NULL_HANDLE)
+        , poPipeline_Storage_Flat(VK_NULL_HANDLE)
 
     {
 
@@ -306,19 +309,29 @@ namespace LostPeterVulkan
             destroyDescriptorSets_Graphics();
 
             //PipelineGraphics-Uniform
-            if (this->poPipeline_Uniform != VK_NULL_HANDLE)
+            if (this->poPipeline_Uniform_Line != VK_NULL_HANDLE)
             {
-                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform);
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform_Line);
             }
-            this->poPipeline_Uniform = VK_NULL_HANDLE;
+            this->poPipeline_Uniform_Line = VK_NULL_HANDLE;
+            if (this->poPipeline_Uniform_Flat != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform_Flat);
+            }
+            this->poPipeline_Uniform_Flat = VK_NULL_HANDLE;
             
             //PipelineGraphics-Storage
-            if (this->poPipeline_Storage != VK_NULL_HANDLE)
+            if (this->poPipeline_Storage_Line != VK_NULL_HANDLE)
             {
-                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage);
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage_Line);
             }
-            this->poPipeline_Storage = VK_NULL_HANDLE;
-            
+            this->poPipeline_Storage_Line = VK_NULL_HANDLE;
+            if (this->poPipeline_Storage_Flat != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage_Flat);
+            }
+            this->poPipeline_Storage_Flat = VK_NULL_HANDLE;
+
         }
         void EditorLineFlat3DCollector::destroyPipelineLayout()
         {
@@ -374,16 +387,37 @@ namespace LostPeterVulkan
             if (count_instance <= 0)
                 continue;
             
+            VkPipeline vkPipeline = VK_NULL_HANDLE;
+            VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
+
             if (this->isBufferUniform)
             {
-                pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipeline_Uniform);
-                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Uniform, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+                vkPipelineLayout = this->poPipelineLayout_Uniform;
+
+                if (pLineFlat3D->isLineList)
+                {
+                    vkPipeline = this->poPipeline_Uniform_Line;
+                }
+                else
+                {
+                    vkPipeline = this->poPipeline_Uniform_Flat;
+                }
             }
             else
             {
-                pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipeline_Storage);
-                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Storage, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+                vkPipelineLayout = this->poPipelineLayout_Storage;
+
+                if (pLineFlat3D->isLineList)
+                {
+                    vkPipeline = this->poPipeline_Storage_Line;
+                }
+                else
+                {
+                    vkPipeline = this->poPipeline_Storage_Flat;
+                }
             }
+            pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+            pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
             
             MeshSub* pMeshSub = pLineFlat3D->pMesh->aMeshSubs[0];
             VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
@@ -420,7 +454,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Line(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Line);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Line, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Triangle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -429,7 +463,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Triangle);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Triangle, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -438,7 +472,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Grid(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -447,7 +481,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Grid(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Grid);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Grid, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -456,7 +490,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Convex);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Convex, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -465,7 +499,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Concave);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Quad_Concave, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -474,7 +508,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Circle);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Circle, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -483,7 +517,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_AABB);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_AABB, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -492,7 +526,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Sphere);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Sphere, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -501,7 +535,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cylinder);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cylinder, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -510,7 +544,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Capsule);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Capsule, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -519,7 +553,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cone);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Cone, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -528,7 +562,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Torus);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Torus, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
 
@@ -539,7 +573,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Triangle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Triangle);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Triangle, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -548,7 +582,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Convex(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -557,7 +591,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Convex(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Convex);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Convex, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Concave(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -566,7 +600,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Concave);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Quad_Concave, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -575,7 +609,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Circle);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Circle, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -584,7 +618,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_AABB);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_AABB, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -593,7 +627,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Sphere);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Sphere, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -602,7 +636,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cylinder(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cylinder);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cylinder, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Capsule(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -611,7 +645,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Capsule(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Capsule);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Capsule, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cone(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -620,7 +654,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Cone(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cone);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Cone, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Torus(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -629,7 +663,7 @@ namespace LostPeterVulkan
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Torus(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Torus);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Torus, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
 
@@ -724,17 +758,17 @@ namespace LostPeterVulkan
     }
     void EditorLineFlat3DCollector::initBufferUniforms()
     {
-        initBuffer(c_strLine3D_AABB, false);
-        initBuffer(c_strLine3D_Sphere, false);
-        initBuffer(c_strFlat3D_AABB, false);
-        initBuffer(c_strFlat3D_Sphere, false);
+        initBuffer(c_strLine3D_AABB, false, true);
+        initBuffer(c_strLine3D_Sphere, false, true);
+        initBuffer(c_strFlat3D_AABB, false, false);
+        initBuffer(c_strFlat3D_Sphere, false, false);
     }
-        EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::initBuffer(const String &nameMesh, bool isBindDescriptor)
+        EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::initBuffer(const String &nameMesh, bool isBindDescriptor, bool bIsLineList)
         {
             BufferStorageLineFlat3D* pBufferLineFlat3D = getBufferLineFlat3D(nameMesh);
             if (pBufferLineFlat3D != nullptr)
                 return pBufferLineFlat3D;
-            pBufferLineFlat3D = insertBufferLineFlat3D(nameMesh);
+            pBufferLineFlat3D = insertBufferLineFlat3D(nameMesh, bIsLineList);
 
             if (isBindDescriptor)
             {
@@ -797,7 +831,7 @@ namespace LostPeterVulkan
         VkDynamicStateVector aDynamicStates =
         {
             VK_DYNAMIC_STATE_VIEWPORT,
-            VK_DYNAMIC_STATE_SCISSOR
+            VK_DYNAMIC_STATE_SCISSOR,
         };
 
         VkStencilOpState stencilOpFront; 
@@ -824,25 +858,45 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            this->poPipeline_Uniform = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
-                                                                                      aShaderStageCreateInfos_Uniform,
-                                                                                      false, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
-                                                                                      Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
-                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                      VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                      VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                      VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                      VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->poPipeline_Uniform == VK_NULL_HANDLE)
+            this->poPipeline_Uniform_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
+                                                                                           aShaderStageCreateInfos_Uniform,
+                                                                                           false, 0, 3,
+                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                           Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Uniform_Line == VK_NULL_HANDLE)
             {
-                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Uniform] !";
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Uniform-Line] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform] Create pipeline graphics success !");
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform-Line] Create pipeline graphics success !");
+
+            this->poPipeline_Uniform_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
+                                                                                           aShaderStageCreateInfos_Uniform,
+                                                                                           false, 0, 3,
+                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                           Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Uniform_Flat == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Uniform-Flat] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform-Flat] Create pipeline graphics success !");
         }
 
         //PipelineGraphics-Storage
@@ -861,25 +915,45 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            this->poPipeline_Storage = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
-                                                                                      aShaderStageCreateInfos_Storage,
-                                                                                      false, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
-                                                                                      Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
-                                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                      VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                      VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                      VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                      VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->poPipeline_Storage == VK_NULL_HANDLE)
+            this->poPipeline_Storage_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
+                                                                                           aShaderStageCreateInfos_Storage,
+                                                                                           false, 0, 3,
+                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                           Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                           VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Storage_Line == VK_NULL_HANDLE)
             {
-                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Storage] !";
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Storage-Line] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage] Create pipeline graphics success !");
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage-Line] Create pipeline graphics success !");
+
+            this->poPipeline_Storage_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
+                                                                                           aShaderStageCreateInfos_Storage,
+                                                                                           false, 0, 3,
+                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                           Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                           VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Storage_Flat == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Storage-Flat] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage-Flat] Create pipeline graphics success !");
         }
     }   
     void EditorLineFlat3DCollector::destroyDescriptorSets_Graphics()
@@ -995,12 +1069,12 @@ namespace LostPeterVulkan
             return nullptr;
         return itFind->second;
     }
-    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::getOrCreateBufferLineFlat3D(const String& nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::getOrCreateBufferLineFlat3D(const String& nameMesh, bool bIsLineList)
     {
-        BufferStorageLineFlat3D* pBufferLineFlat3D = initBuffer(nameMesh, true);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = initBuffer(nameMesh, true, bIsLineList);
         return pBufferLineFlat3D;
     }
-    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::insertBufferLineFlat3D(const String &nameMesh)
+    EditorLineFlat3DCollector::BufferStorageLineFlat3D* EditorLineFlat3DCollector::insertBufferLineFlat3D(const String &nameMesh, bool bIsLineList)
     {
         Mesh *pMesh = getMesh(nameMesh);
         F_Assert(pMesh != nullptr && "EditorLineFlat3DCollector::insertBufferLineFlat3D")
@@ -1011,7 +1085,7 @@ namespace LostPeterVulkan
             return itFind->second;
         }
 
-        BufferStorageLineFlat3D* pBufferLineFlat3D = new BufferStorageLineFlat3D(this, pMesh);
+        BufferStorageLineFlat3D* pBufferLineFlat3D = new BufferStorageLineFlat3D(this, pMesh, bIsLineList);
         pBufferLineFlat3D->Init();
 
         this->aBufferLineFlat3D.push_back(pBufferLineFlat3D);

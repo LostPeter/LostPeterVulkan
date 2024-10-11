@@ -3033,6 +3033,7 @@ namespace LostPeterVulkan
 
         if (this->poPhysicalDeviceFeatures.vertexPipelineStoresAndAtomics)
             this->poPhysicalEnabledFeatures.vertexPipelineStoresAndAtomics = VK_TRUE;
+
     }
     void VulkanWindow::createLogicalDevice()
     {
@@ -9519,6 +9520,10 @@ namespace LostPeterVulkan
                         void VulkanWindow::SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
                         {
                             vkCmdSetDepthBias(commandBuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);
+                        }
+                        void VulkanWindow::SetPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology)
+                        {
+                            vkCmdSetPrimitiveTopology(commandBuffer, vkPrimitiveTopology);
                         }
                         void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
                         {

@@ -68,7 +68,7 @@ namespace LostPeterVulkan
         class BufferBaseLineFlat3D
         {
         public:
-            BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p);
+            BufferBaseLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p, bool bIsLineList);
             virtual ~BufferBaseLineFlat3D();
 
         public:
@@ -77,6 +77,7 @@ namespace LostPeterVulkan
             int nObjectCount;
 
             VkDescriptorSetVector poDescriptorSets;
+            bool isLineList;
 
         public:
             virtual void Destroy() = 0;
@@ -104,7 +105,7 @@ namespace LostPeterVulkan
             friend class EditorLineFlat3DCollector;
 
         public:
-            BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p);
+            BufferStorageLineFlat3D(EditorLineFlat3DCollector* pCollector, Mesh* p, bool bIsLineList);
             virtual ~BufferStorageLineFlat3D();
 
         public:
@@ -150,15 +151,16 @@ namespace LostPeterVulkan
         StringVector aNamesDescriptorSetLayout_Uniform;
         VkDescriptorSetLayout poDescriptorSetLayout_Uniform;
         VkPipelineLayout poPipelineLayout_Uniform;
-        VkPipeline poPipeline_Uniform;
+        VkPipeline poPipeline_Uniform_Line;
+        VkPipeline poPipeline_Uniform_Flat;
 
         //PipelineGraphics-Storage
         String nameDescriptorSetLayout_Storage;
         StringVector aNamesDescriptorSetLayout_Storage;
         VkDescriptorSetLayout poDescriptorSetLayout_Storage;
         VkPipelineLayout poPipelineLayout_Storage;
-        VkPipeline poPipeline_Storage;
-
+        VkPipeline poPipeline_Storage_Line;
+        VkPipeline poPipeline_Storage_Flat;
         
     public:
         virtual void Destroy();
@@ -233,7 +235,7 @@ namespace LostPeterVulkan
     protected:
         virtual void initConfigs();
         virtual void initBufferUniforms();
-            virtual BufferStorageLineFlat3D* initBuffer(const String& nameMesh, bool isBindDescriptor);
+            virtual BufferStorageLineFlat3D* initBuffer(const String& nameMesh, bool isBindDescriptor, bool bIsLineList);
         virtual void initDescriptorSetLayout();
         virtual void initPipelineLayout();
         virtual void initPipelineGraphics();
@@ -252,8 +254,8 @@ namespace LostPeterVulkan
 
         bool hasBufferLineFlat3D(const String& nameMesh);
         BufferStorageLineFlat3D* getBufferLineFlat3D(const String& nameMesh);
-        BufferStorageLineFlat3D* getOrCreateBufferLineFlat3D(const String& nameMesh);
-        BufferStorageLineFlat3D* insertBufferLineFlat3D(const String& nameMesh);
+        BufferStorageLineFlat3D* getOrCreateBufferLineFlat3D(const String& nameMesh, bool bIsLineList);
+        BufferStorageLineFlat3D* insertBufferLineFlat3D(const String& nameMesh, bool bIsLineList);
         void removeBufferLineFlat3D(const String& nameMesh);
         void removeBufferLineFlat3DAll();
     };

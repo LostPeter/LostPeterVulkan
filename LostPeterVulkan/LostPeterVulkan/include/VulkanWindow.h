@@ -1412,6 +1412,7 @@ namespace LostPeterVulkan
                                                      const VkClearValueVector& aClearValue);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);
                             virtual void SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
+                            virtual void SetPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
                             virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
                             virtual void bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);
