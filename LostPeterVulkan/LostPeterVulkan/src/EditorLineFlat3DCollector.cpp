@@ -273,6 +273,7 @@ namespace LostPeterVulkan
         , poPipelineLayout_Uniform(VK_NULL_HANDLE)
         , poPipeline_Uniform_Line(VK_NULL_HANDLE)
         , poPipeline_Uniform_Flat(VK_NULL_HANDLE)
+        , poPipeline_Uniform_Flat_Wire(VK_NULL_HANDLE)
 
         //PipelineGraphics-Storage
         , nameDescriptorSetLayout_Storage("Pass-BufferObjectLineFlat3D")
@@ -280,6 +281,7 @@ namespace LostPeterVulkan
         , poPipelineLayout_Storage(VK_NULL_HANDLE)
         , poPipeline_Storage_Line(VK_NULL_HANDLE)
         , poPipeline_Storage_Flat(VK_NULL_HANDLE)
+        , poPipeline_Storage_Flat_Wire(VK_NULL_HANDLE)
 
     {
 
@@ -319,6 +321,11 @@ namespace LostPeterVulkan
                 Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform_Flat);
             }
             this->poPipeline_Uniform_Flat = VK_NULL_HANDLE;
+            if (this->poPipeline_Uniform_Flat_Wire != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Uniform_Flat_Wire);
+            }
+            this->poPipeline_Uniform_Flat_Wire = VK_NULL_HANDLE;
             
             //PipelineGraphics-Storage
             if (this->poPipeline_Storage_Line != VK_NULL_HANDLE)
@@ -331,7 +338,12 @@ namespace LostPeterVulkan
                 Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage_Flat);
             }
             this->poPipeline_Storage_Flat = VK_NULL_HANDLE;
-
+            if (this->poPipeline_Storage_Flat_Wire != VK_NULL_HANDLE)
+            {
+                Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_Storage_Flat_Wire);
+            }
+            this->poPipeline_Storage_Flat_Wire = VK_NULL_HANDLE;
+            
         }
         void EditorLineFlat3DCollector::destroyPipelineLayout()
         {
@@ -400,7 +412,10 @@ namespace LostPeterVulkan
                 }
                 else
                 {
-                    vkPipeline = this->poPipeline_Uniform_Flat;
+                    if (pWindow->cfg_isWireFrame)
+                        vkPipeline = this->poPipeline_Uniform_Flat_Wire;
+                    else
+                        vkPipeline = this->poPipeline_Uniform_Flat;
                 }
             }
             else
@@ -413,7 +428,10 @@ namespace LostPeterVulkan
                 }
                 else
                 {
-                    vkPipeline = this->poPipeline_Storage_Flat;
+                    if (pWindow->cfg_isWireFrame)
+                        vkPipeline = this->poPipeline_Storage_Flat_Wire;
+                    else
+                        vkPipeline = this->poPipeline_Storage_Flat;
                 }
             }
             pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
@@ -858,7 +876,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            this->poPipeline_Uniform_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
+            this->poPipeline_Uniform_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-Line-" + this->name,
                                                                                            aShaderStageCreateInfos_Uniform,
                                                                                            false, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
@@ -878,13 +896,13 @@ namespace LostPeterVulkan
             }
             F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform-Line] Create pipeline graphics success !");
 
-            this->poPipeline_Uniform_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-" + this->name,
+            this->poPipeline_Uniform_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-Flat-" + this->name,
                                                                                            aShaderStageCreateInfos_Uniform,
                                                                                            false, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                            Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
-                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                            VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                            VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -897,6 +915,26 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
             F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform-Flat] Create pipeline graphics success !");
+
+            this->poPipeline_Uniform_Flat_Wire = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Uniform-Flat-Wire-" + this->name,
+                                                                                                aShaderStageCreateInfos_Uniform,
+                                                                                                false, 0, 3,
+                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                                Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Uniform, aViewports, aScissors, aDynamicStates,
+                                                                                                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                                VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                                VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Uniform_Flat_Wire == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Uniform-Flat-Wire] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Uniform-Flat-Wire] Create pipeline graphics success !");
         }
 
         //PipelineGraphics-Storage
@@ -915,7 +953,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            this->poPipeline_Storage_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
+            this->poPipeline_Storage_Line = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-Line-" + this->name,
                                                                                            aShaderStageCreateInfos_Storage,
                                                                                            false, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
@@ -935,13 +973,13 @@ namespace LostPeterVulkan
             }
             F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage-Line] Create pipeline graphics success !");
 
-            this->poPipeline_Storage_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-" + this->name,
+            this->poPipeline_Storage_Flat = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-Flat-" + this->name,
                                                                                            aShaderStageCreateInfos_Storage,
                                                                                            false, 0, 3,
                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                            Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
-                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                                            VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                            VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -954,6 +992,26 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
             F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage-Flat] Create pipeline graphics success !");
+
+            this->poPipeline_Storage_Flat_Wire = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Storage-Flat-Wire-" + this->name,
+                                                                                                aShaderStageCreateInfos_Storage,
+                                                                                                false, 0, 3,
+                                                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                                Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout_Storage, aViewports, aScissors, aDynamicStates,
+                                                                                                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+                                                                                                VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+                                                                                                VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poPipeline_Storage_Flat_Wire == VK_NULL_HANDLE)
+            {
+                String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Failed to create pipeline graphics for [EditorLineFlat3DCollector-Storage-Flat-Wire] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("EditorLineFlat3DCollector::initPipelineGraphics: [EditorLineFlat3DCollector-Storage-Flat-Wire] Create pipeline graphics success !");
         }
     }   
     void EditorLineFlat3DCollector::destroyDescriptorSets_Graphics()

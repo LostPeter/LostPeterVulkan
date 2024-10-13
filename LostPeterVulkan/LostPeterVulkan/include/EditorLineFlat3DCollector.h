@@ -153,6 +153,7 @@ namespace LostPeterVulkan
         VkPipelineLayout poPipelineLayout_Uniform;
         VkPipeline poPipeline_Uniform_Line;
         VkPipeline poPipeline_Uniform_Flat;
+        VkPipeline poPipeline_Uniform_Flat_Wire;
 
         //PipelineGraphics-Storage
         String nameDescriptorSetLayout_Storage;
@@ -161,6 +162,7 @@ namespace LostPeterVulkan
         VkPipelineLayout poPipelineLayout_Storage;
         VkPipeline poPipeline_Storage_Line;
         VkPipeline poPipeline_Storage_Flat;
+        VkPipeline poPipeline_Storage_Flat_Wire;
         
     public:
         virtual void Destroy();

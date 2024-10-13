@@ -40,6 +40,9 @@ public:
         bool isCanCullingInit;
         bool isCanCulling;
 
+        //Bound Scale
+        float fScale;
+
         //Bound Line
         bool isBoundAABB_Line;
         bool isBoundSphere_Line;
@@ -131,6 +134,9 @@ public:
             , isShadowPCF(false)
             , isCanCullingInit(false)
             , isCanCulling(false)
+
+            //Bound Scale
+            , fScale(1.0f)
 
             //Bound Line
             , isBoundAABB_Line(false)
@@ -441,6 +447,12 @@ public:
         int countInstanceExt;
         int countInstance;
 
+        //Bound
+        bool isBoundAABB_Line;
+        bool isBoundSphere_Line;
+        bool isBoundAABB_Flat;
+        bool isBoundSphere_Flat;
+
         //Mesh
         Mesh* pMesh;
         std::vector<int> aMeshSubUsed;
@@ -468,6 +480,12 @@ public:
 
             , countInstanceExt(0)
             , countInstance(1)
+
+            //Bound
+            , isBoundAABB_Line(false)
+            , isBoundSphere_Line(false)
+            , isBoundAABB_Flat(false)
+            , isBoundSphere_Flat(false)
 
             //Mesh
             , pMesh(nullptr)

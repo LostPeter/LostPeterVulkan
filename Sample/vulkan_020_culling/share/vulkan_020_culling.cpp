@@ -24,8 +24,8 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
-    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
-    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+    "cube",             "Pos3Color4Normal3Tex2",                "geometry",         "EntityAABB",               "", //cube Assets/Mesh/Common/cube.obj
+    "sphere",           "Pos3Color4Normal3Tex2",                "geometry",         "EntitySphere",             "", //sphere Assets/Mesh/Common/sphere.fbx
     
     "grass_lod",        "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/grass_lod/grass_lod.fbx", //grass_lod
     
@@ -896,8 +896,8 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(    0,  0.0,    0.0),    FVector3(     0,   0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
     FVector3(    0,    1,  15.0f),    FVector3(     0,   0,  0),    FVector3(   0.04f,      1.0f,     0.04f), //object_depth-1
  
-    FVector3( 2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    0.5f,      0.5f,      0.5f), //object_cube-1
-    FVector3(-2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(  0.008f,    0.008f,    0.008f), //object_sphere-1
+    FVector3( 2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_cube-1
+    FVector3(-2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_sphere-1
 
     FVector3( 0.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_grass_lod-1
 
@@ -923,6 +923,41 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3( 0.0f,    1,   3.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock020_lod-1
     FVector3( 0.0f,    1,   2.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock021_lod-1
     FVector3( 0.0f,    1,   1.0f),    FVector3(     0,   0,  0),    FVector3(  0.001f,    0.001f,    0.001f), //object_rock022_lod-1
+
+};
+static float g_ObjectRend_Scale[g_ObjectRend_Count] = 
+{
+    1.0f, //object_terrain-1
+    1.0f, //object_skybox-1
+    1.0f, //object_depth-1
+
+    1.0f, //object_cube-1
+    1.0f, //object_sphere-1
+
+    1000.0f, //object_grass_lod-1
+
+    1000.0f, //object_rock001_lod-1
+    1000.0f, //object_rock002_lod-1
+    1000.0f, //object_rock003_lod-1
+    1000.0f, //object_rock004_lod-1
+    1000.0f, //object_rock005_lod-1
+    1000.0f, //object_rock006_lod-1
+    1000.0f, //object_rock007_lod-1
+    1000.0f, //object_rock008_lod-1
+    1000.0f, //object_rock009_lod-1
+    1000.0f, //object_rock010_lod-1
+    1000.0f, //object_rock011_lod-1
+    1000.0f, //object_rock012_lod-1
+    1000.0f, //object_rock013_lod-1
+    1000.0f, //object_rock014_lod-1
+    1000.0f, //object_rock015_lod-1
+    1000.0f, //object_rock016_lod-1
+    1000.0f, //object_rock017_lod-1
+    1000.0f, //object_rock018_lod-1
+    1000.0f, //object_rock019_lod-1
+    1000.0f, //object_rock020_lod-1
+    1000.0f, //object_rock021_lod-1
+    1000.0f, //object_rock022_lod-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -1062,6 +1097,10 @@ static bool g_ObjectRend_IsCanCullings[g_ObjectRend_Count] =
     true, //object_rock021_lod-1
     true, //object_rock022_lod-1
 };
+static bool g_ObjectRend_IsShowBoundAABB_All_Line = false;
+static bool g_ObjectRend_IsShowBoundSphere_All_Line = false;
+static bool g_ObjectRend_IsShowBoundAABB_All_Flat = false;
+static bool g_ObjectRend_IsShowBoundSphere_All_Flat = false;
 
 
 /////////////////////////// ModelObjectRend /////////////////////
@@ -1073,7 +1112,8 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_AABB()
     {
         if (this->aPointerBoundAABB_Line[i] == nullptr)
         {
-            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld * FMath::Scale(this->fScale, this->fScale, this->fScale);
+            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(mat4, FMath::ms_clRed, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1109,7 +1149,8 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_Sphere()
     {
         if (this->aPointerBoundSphere_Line[i] == nullptr)
         {
-            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clRed, false);
+            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld * FMath::Scale(this->fScale, this->fScale, this->fScale);
+            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(mat4, FMath::ms_clRed, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1146,7 +1187,8 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_AABB()
     {
         if (this->aPointerBoundAABB_Flat[i] == nullptr)
         {
-            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(this->objectCBs[i].g_MatWorld, FMath::ms_clGreen, false);
+            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld * FMath::Scale(this->fScale, this->fScale, this->fScale);
+            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(mat4, FMath::ms_clGreen, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1182,7 +1224,8 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_Sphere()
     {
         if (this->aPointerBoundSphere_Flat[i] == nullptr)
         {
-            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(this->objectCBs[i].g_MatWorld, FMath::ms_clGreen, false);
+            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld * FMath::Scale(this->fScale, this->fScale, this->fScale);
+            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(mat4, FMath::ms_clGreen, false);
             isNeedUpdateBuffer = true;
         }
     }
@@ -1446,7 +1489,7 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirectMulti(false)
 {
     this->isComputeCullFrustum = true;
-    this->isComputeCullFrustumHizDepth = true;
+    this->isComputeCullFrustumHizDepth = false;
 
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
@@ -1707,6 +1750,7 @@ void Vulkan_020_Culling::loadModel_Custom()
                 pRend->isReceiveShadow = g_ObjectRend_IsReceiveShadows[nIndexObjectRend];
                 pRend->isCanCullingInit = g_ObjectRend_IsCanCullings[nIndexObjectRend];
                 pRend->isCanCulling = pRend->isCanCullingInit;
+                pRend->fScale = g_ObjectRend_Scale[nIndexObjectRend];
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -1851,7 +1895,7 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                     pRend->pCullLodData->aMaterialConstants.push_back(materialConstants);
 
                 CullObjectInstanceConstants instanceConstants;
-                instanceConstants.mat4Object2World = objectConstants.g_MatWorld;
+                instanceConstants.mat4Object2World = objectConstants.g_MatWorld; //* FMath::Scale(pRend->fScale, pRend->fScale, pRend->fScale);
                 pRend->pCullLodData->aInstanceDatas.push_back(instanceConstants);
             }
         }
@@ -3135,6 +3179,8 @@ void Vulkan_020_Culling::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
+        size_t count_object = this->m_aModelObjects.size();
+
         //m_isDrawIndirect
         // if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
         // {
@@ -3146,6 +3192,7 @@ void Vulkan_020_Culling::modelConfig()
             
         // }
 
+        //g_Object_InstanceGap
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
         {
@@ -3153,7 +3200,76 @@ void Vulkan_020_Culling::modelConfig()
             rebuildInstanceCBs(false);
         }
 
-        size_t count_object = this->m_aModelObjects.size();
+        //g_ObjectRend_IsShowBoundAABB_All_Line
+        if (ImGui::Checkbox("Is ShowBound AABB Line - All", &g_ObjectRend_IsShowBoundAABB_All_Line))
+        {
+            for (int i = 0; i < count_object; i++)
+            {
+                ModelObject* pModelObject = this->m_aModelObjects[i];
+                size_t count_object_rend = pModelObject->aRends.size();
+                for (int j = 0; j < count_object_rend; j++)
+                {
+                    ModelObjectRend* pRend = pModelObject->aRends[j];
+                    if (g_ObjectRend_IsShowBoundAABB_All_Line)
+                        pRend->AddLine3D_AABB();
+                    else
+                        pRend->RemoveLine3D_AABB();
+                }
+            }
+        }
+        //g_ObjectRend_IsShowBoundSphere_All_Line
+        if (ImGui::Checkbox("Is ShowBound Sphere Line - All", &g_ObjectRend_IsShowBoundSphere_All_Line))
+        {
+            for (int i = 0; i < count_object; i++)
+            {
+                ModelObject* pModelObject = this->m_aModelObjects[i];
+                size_t count_object_rend = pModelObject->aRends.size();
+                for (int j = 0; j < count_object_rend; j++)
+                {
+                    ModelObjectRend* pRend = pModelObject->aRends[j];
+                    if (g_ObjectRend_IsShowBoundSphere_All_Line)
+                        pRend->AddLine3D_Sphere();
+                    else
+                        pRend->RemoveLine3D_Sphere();
+                }
+            }
+        }
+        //g_ObjectRend_IsShowBoundAABB_All_Flat
+        if (ImGui::Checkbox("Is ShowBound AABB Flat - All", &g_ObjectRend_IsShowBoundAABB_All_Flat))
+        {
+            for (int i = 0; i < count_object; i++)
+            {
+                ModelObject* pModelObject = this->m_aModelObjects[i];
+                size_t count_object_rend = pModelObject->aRends.size();
+                for (int j = 0; j < count_object_rend; j++)
+                {
+                    ModelObjectRend* pRend = pModelObject->aRends[j];
+                    if (g_ObjectRend_IsShowBoundAABB_All_Flat)
+                        pRend->AddFlat3D_AABB();
+                    else
+                        pRend->RemoveFlat3D_AABB();
+                }
+            }
+        }
+        //g_ObjectRend_IsShowBoundSphere_All_Flat
+        if (ImGui::Checkbox("Is ShowBound Sphere Flat - All", &g_ObjectRend_IsShowBoundSphere_All_Flat))
+        {
+            for (int i = 0; i < count_object; i++)
+            {
+                ModelObject* pModelObject = this->m_aModelObjects[i];
+                size_t count_object_rend = pModelObject->aRends.size();
+                for (int j = 0; j < count_object_rend; j++)
+                {
+                    ModelObjectRend* pRend = pModelObject->aRends[j];
+                    if (g_ObjectRend_IsShowBoundSphere_All_Flat)
+                        pRend->AddFlat3D_Sphere();
+                    else
+                        pRend->RemoveFlat3D_Sphere();
+                }
+            }
+        }
+
+        
         for (size_t i = 0; i < count_object; i++)
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
@@ -3227,6 +3343,60 @@ void Vulkan_020_Culling::modelConfig()
                     pModelObject->countInstanceExt = countInstanceExt;
                     pModelObject->countInstance = countInstanceExt * 2 + 1;
                     rebuildInstanceCBs(false);
+                }
+
+                //Bound
+                String nameBoundAABBLine = "Is ShowBound AABB Line - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameBoundAABBLine.c_str(), &pModelObject->isBoundAABB_Line))
+                {
+                    size_t count_object_rend = pModelObject->aRends.size();
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        if (pModelObject->isBoundAABB_Line)
+                            pRend->AddLine3D_AABB();
+                        else
+                            pRend->RemoveLine3D_AABB();
+                    }
+                }
+                String nameBoundSphereLine = "Is ShowBound Sphere Line - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameBoundSphereLine.c_str(), &pModelObject->isBoundSphere_Line))
+                {
+                    size_t count_object_rend = pModelObject->aRends.size();
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        if (pModelObject->isBoundSphere_Line)
+                            pRend->AddLine3D_Sphere();
+                        else
+                            pRend->RemoveLine3D_Sphere();
+                    }
+                }
+                String nameBoundAABBFlat = "Is ShowBound AABB Flat - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameBoundAABBFlat.c_str(), &pModelObject->isBoundAABB_Flat))
+                {
+                    size_t count_object_rend = pModelObject->aRends.size();
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        if (pModelObject->isBoundAABB_Flat)
+                            pRend->AddFlat3D_AABB();
+                        else
+                            pRend->RemoveFlat3D_AABB();
+                    }
+                }
+                String nameBoundSphereFlat = "Is ShowBound Sphere Flat - " + pModelObject->nameObject;
+                if (ImGui::Checkbox(nameBoundSphereFlat.c_str(), &pModelObject->isBoundSphere_Flat))
+                {
+                    size_t count_object_rend = pModelObject->aRends.size();
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        if (pModelObject->isBoundSphere_Flat)
+                            pRend->AddFlat3D_Sphere();
+                        else
+                            pRend->RemoveFlat3D_Sphere();
+                    }
                 }
 
                 //2> ModelObjectRend
