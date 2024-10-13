@@ -383,6 +383,7 @@ namespace LostPeterVulkan
     void EditorLineFlat3DCollector::UpdateCBs()
     {
 
+
     }
 
     void EditorLineFlat3DCollector::Draw(VkCommandBuffer& commandBuffer)
