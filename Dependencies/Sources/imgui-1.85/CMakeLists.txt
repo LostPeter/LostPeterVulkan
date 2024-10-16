@@ -13,6 +13,8 @@ SET(PLATFORM_MODE_DX12 "dx12")
 SET(PLATFORM_MODE_GL3 "gl3")
 SET(PLATFORM_MODE_GLES3_ANDROID "gles3_android")
 SET(PLATFORM_MODE_GLES3_IOS "gles3_ios")
+SET(PLATFORM_MODE_GLFW_DX12 "glfw_dx12")
+SET(PLATFORM_MODE_GLFW_GL3 "glfw_gl3")
 SET(PLATFORM_MODE_GLFW_VULKAN "glfw_vulkan")
 SET(PLATFORM_MODE_METAL "metal")
 MESSAGE(STATUS "Build platform: ${PLATFORM_MODE}")
@@ -25,6 +27,10 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_ANDROID})
     SET(NAME_PROJ "imgui-1.85_gles3_android")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_IOS}) 
     SET(NAME_PROJ "imgui-1.85_gles3_ios")
+    elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_DX12}) 
+    SET(NAME_PROJ "imgui-1.85_glfw_dx12")
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_GL3}) 
+    SET(NAME_PROJ "imgui-1.85_glfw_gl3")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN}) 
     SET(NAME_PROJ "imgui-1.85_glfw_vulkan")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_METAL}) 
@@ -113,7 +119,7 @@ if (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_DX12})
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GL3}) 
     #HEADER_FILES
     FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
-                                  "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.h")
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.h")
     MESSAGE(STATUS "HEADER files: ${HEADER_FILES}")
     #SOURCE_FILES_CPP
     FILE(GLOB_RECURSE SOURCE_FILES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp" 
@@ -136,7 +142,27 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GL3})
     #LIB_XXX
 
     #Build
+    if (WIN32)
+        MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
+        ADD_DEFINITIONS(-DIMGUI_EXPORTS)
+        if(MSVC)
+            ADD_DEFINITIONS(/wd4251 /wd4275)
+        endif()
+        
+        MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
 
+    elseif (APPLE)
+        MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
+        
+        ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+        TARGET_LINK_LIBRARIES(${PROJECT_NAME})
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
+            -Wl,-search_paths_first")
+        
+    endif ()
 
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_ANDROID}) 
     #HEADER_FILES
@@ -185,6 +211,140 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_IOS})
     #LIB_XXX
 
     #Build
+
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_DX12})
+    #HEADER_FILES
+    FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_dx12/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_win32/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.h")
+    MESSAGE(STATUS "HEADER files: ${HEADER_FILES}")
+    #SOURCE_FILES_CPP
+    FILE(GLOB_RECURSE SOURCE_FILES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp" 
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_dx12/*.cpp"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_win32/*.cpp"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.cpp")
+    MESSAGE(STATUS "SOURCE .cpp files: ${SOURCE_FILES_CPP}")
+    #SOURCE_FILES_C
+    FILE(GLOB_RECURSE SOURCE_FILES_C "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_dx12/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_win32/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.c")
+    MESSAGE(STATUS "SOURCE .c files: ${SOURCE_FILES_C}")
+
+    #LIB_INCLUDE
+    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Include/Windows/glfw-3.3.6")
+    MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
+    INCLUDE_DIRECTORIES(${LIB_INCLUDE})
+
+    #LIB_GLFW_DIR
+    SET(LIB_GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/Windows/")
+    MESSAGE(STATUS "LIB_GLFW_DIR dir: ${LIB_GLFW_DIR}")
+
+    #Build
+    MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
+    ADD_DEFINITIONS(-DIMGUI_EXPORTS)
+    if(MSVC)
+        ADD_DEFINITIONS(/wd4251 /wd4275)
+    endif()
+
+    if (DEBUG)
+        LINK_LIBRARIES(shlwapi.lib 
+                       d3d12.lib
+                       dxgi.lib
+                       d3dcompiler.lib
+                       ${LIB_GLFW_DIR}/glfw-3.3.6_d.lib)
+    else ()
+        LINK_LIBRARIES(shlwapi.lib
+                       d3d12.lib
+                       dxgi.lib
+                       d3dcompiler.lib
+                       ${LIB_GLFW_DIR}/glfw-3.3.6.lib)
+    endif ()
+
+    MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
+
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_GL3}) 
+    #HEADER_FILES
+    FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.h")
+    MESSAGE(STATUS "HEADER files: ${HEADER_FILES}")
+    #SOURCE_FILES_CPP
+    FILE(GLOB_RECURSE SOURCE_FILES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp" 
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.cpp"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.cpp")
+    MESSAGE(STATUS "SOURCE .cpp files: ${SOURCE_FILES_CPP}")
+    #SOURCE_FILES_C
+    FILE(GLOB_RECURSE SOURCE_FILES_C "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.c"       
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.c")
+    MESSAGE(STATUS "SOURCE .c files: ${SOURCE_FILES_C}")
+
+    #SOURCE_FILES_MM
+    if (APPLE)
+        FILE(GLOB_RECURSE SOURCE_FILES_MM "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.mm"
+                                          "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.mm"
+                                          "${CMAKE_CURRENT_SOURCE_DIR}/impl_gl3/*.mm")
+        MESSAGE(STATUS "SOURCE .mm files: ${SOURCE_FILES_MM}")
+    endif ()
+
+    #LIB_INCLUDE
+    if (WIN32)
+        SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Include/Windows/glfw-3.3.6")
+    elseif (APPLE)
+        SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Include/MacOS/glfw-3.3.6")
+    endif ()
+    MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
+    INCLUDE_DIRECTORIES(${LIB_INCLUDE})
+
+    #LIB_GLFW_DIR
+    if (WIN32)
+        SET(LIB_GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/Windows/")
+
+    elseif (APPLE)
+        SET(LIB_GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/MacOS/")
+
+    endif ()
+    MESSAGE(STATUS "LIB_GLFW_DIR dir: ${LIB_GLFW_DIR}")
+
+    #Build
+    if (WIN32)
+        MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
+        ADD_DEFINITIONS(-DIMGUI_EXPORTS)
+        if(MSVC)
+            ADD_DEFINITIONS(/wd4251 /wd4275)
+        endif()
+
+        if (DEBUG)
+            LINK_LIBRARIES(shlwapi.lib
+                           ${LIB_GLFW_DIR}/glfw-3.3.6_d.lib)
+        else ()
+            LINK_LIBRARIES(shlwapi.lib
+                           ${LIB_GLFW_DIR}/glfw-3.3.6.lib)
+        endif ()
+        
+        MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
+
+    elseif (APPLE)
+        MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
+        
+        if (DEBUG)
+            LINK_LIBRARIES(${LIB_GLFW_DIR}/libglfw-3.3.6_d.a)
+        else ()
+            LINK_LIBRARIES(${LIB_GLFW_DIR}/libglfw-3.3.6.a)
+        endif ()
+        
+        ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+        TARGET_LINK_LIBRARIES(${PROJECT_NAME})
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
+        SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
+            -Wl,-search_paths_first"
+        )
+        
+    endif ()
 
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
     #HEADER_FILES
@@ -284,9 +444,9 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
         
         ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-                            ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
-                            ${LIB_VULKAN_DIR}/libvulkan.1.3.290.dylib 
-                            ${SYS_VULKAN_LIBS})
+                              ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
+                              ${LIB_VULKAN_DIR}/libvulkan.1.3.290.dylib 
+                              ${SYS_VULKAN_LIBS})
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
