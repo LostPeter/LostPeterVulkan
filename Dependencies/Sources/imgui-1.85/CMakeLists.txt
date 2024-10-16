@@ -13,10 +13,11 @@ SET(PLATFORM_MODE_DX12 "dx12")
 SET(PLATFORM_MODE_GL3 "gl3")
 SET(PLATFORM_MODE_GLES3_ANDROID "gles3_android")
 SET(PLATFORM_MODE_GLES3_IOS "gles3_ios")
+SET(PLATFORM_MODE_METAL "metal")
 SET(PLATFORM_MODE_GLFW_DX12 "glfw_dx12")
 SET(PLATFORM_MODE_GLFW_GL3 "glfw_gl3")
 SET(PLATFORM_MODE_GLFW_VULKAN "glfw_vulkan")
-SET(PLATFORM_MODE_METAL "metal")
+SET(PLATFORM_MODE_GLFW_METAL "glfw_metal")
 MESSAGE(STATUS "Build platform: ${PLATFORM_MODE}")
 
 if (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_DX12})
@@ -27,14 +28,16 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_ANDROID})
     SET(NAME_PROJ "imgui-1.85_gles3_android")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_IOS}) 
     SET(NAME_PROJ "imgui-1.85_gles3_ios")
-    elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_DX12}) 
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_METAL}) 
+    SET(NAME_PROJ "imgui-1.85_metal")
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_DX12}) 
     SET(NAME_PROJ "imgui-1.85_glfw_dx12")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_GL3}) 
     SET(NAME_PROJ "imgui-1.85_glfw_gl3")
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN}) 
     SET(NAME_PROJ "imgui-1.85_glfw_vulkan")
-elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_METAL}) 
-    SET(NAME_PROJ "imgui-1.85_metal")
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_METAL}) 
+    SET(NAME_PROJ "imgui-1.85_glfw_metal")
 else ()
     MESSAGE(FATAL_ERROR "Unknown PLATFORM_MODE: ${PLATFORM_MODE}")
 endif ()
@@ -212,6 +215,44 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_IOS})
 
     #Build
 
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_METAL}) 
+    #HEADER_FILES
+    FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.h")
+    MESSAGE(STATUS "HEADER files: ${HEADER_FILES}")
+    #SOURCE_FILES_CPP
+    FILE(GLOB_RECURSE SOURCE_FILES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp" 
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.cpp")
+    MESSAGE(STATUS "SOURCE .cpp files: ${SOURCE_FILES_CPP}")
+    #SOURCE_FILES_C
+    FILE(GLOB_RECURSE SOURCE_FILES_C "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.c")
+    MESSAGE(STATUS "SOURCE .c files: ${SOURCE_FILES_C}")
+
+    #SOURCE_FILES_MM
+    FILE(GLOB_RECURSE SOURCE_FILES_MM "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.mm"
+                                      "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.mm")
+    MESSAGE(STATUS "SOURCE .mm files: ${SOURCE_FILES_MM}")
+
+    #LIB_INCLUDE
+    SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
+    SET(CORE_FOUNDATION_LIBS ${SYS_FRAMEWORKS_DIR}/CoreFoundation.framework)
+    SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
+    SET(METAL_LIBS ${SYS_FRAMEWORKS_DIR}/Metal.framework)
+    SET(METALKIT_LIBS ${SYS_FRAMEWORKS_DIR}/MetalKit.framework)
+
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                          ${CORE_FOUNDATION_LIBS}
+                          ${COCOA_LIBS}
+                          ${METAL_LIBS}
+                          ${METALKIT_LIBS})
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
+        -Wl,-search_paths_first")
+
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_DX12})
     #HEADER_FILES
     FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
@@ -341,8 +382,7 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_GL3})
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
-            -Wl,-search_paths_first"
-        )
+            -Wl,-search_paths_first")
         
     endif ()
 
@@ -451,32 +491,68 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
-            -Wl,-search_paths_first"
-        )
+            -Wl,-search_paths_first")
         
     endif ()
 
-elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_METAL}) 
+elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_METAL}) 
     #HEADER_FILES
     FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.h"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.h"
                                    "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.h")
     MESSAGE(STATUS "HEADER files: ${HEADER_FILES}")
     #SOURCE_FILES_CPP
     FILE(GLOB_RECURSE SOURCE_FILES_CPP "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp" 
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.cpp"
                                        "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.cpp")
     MESSAGE(STATUS "SOURCE .cpp files: ${SOURCE_FILES_CPP}")
     #SOURCE_FILES_C
     FILE(GLOB_RECURSE SOURCE_FILES_C "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.c"
+                                     "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.c"
                                      "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.c")
     MESSAGE(STATUS "SOURCE .c files: ${SOURCE_FILES_C}")
 
     #SOURCE_FILES_MM
-    if (APPLE)
     FILE(GLOB_RECURSE SOURCE_FILES_MM "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.mm"
+                                      "${CMAKE_CURRENT_SOURCE_DIR}/impl_glfw/*.mm"
                                       "${CMAKE_CURRENT_SOURCE_DIR}/impl_metal/*.mm")
     MESSAGE(STATUS "SOURCE .mm files: ${SOURCE_FILES_MM}")
- endif ()
 
+    #LIB_INCLUDE
+    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Include/MacOS/glfw-3.3.6")
+    SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
+    SET(CORE_FOUNDATION_LIBS ${SYS_FRAMEWORKS_DIR}/CoreFoundation.framework)
+    SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
+    SET(METAL_LIBS ${SYS_FRAMEWORKS_DIR}/Metal.framework)
+    SET(METALKIT_LIBS ${SYS_FRAMEWORKS_DIR}/MetalKit.framework)
+    MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
+    INCLUDE_DIRECTORIES(${LIB_INCLUDE})
+
+    #LIB_GLFW_DIR
+    SET(LIB_GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/MacOS/")
+    MESSAGE(STATUS "LIB_GLFW_DIR dir: ${LIB_GLFW_DIR}")
+
+    #Build
+    MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
+    
+    if (DEBUG)
+        LINK_LIBRARIES(${LIB_GLFW_DIR}/libglfw-3.3.6_d.a)
+    else ()
+        LINK_LIBRARIES(${LIB_GLFW_DIR}/libglfw-3.3.6.a)
+    endif ()
+    
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                          ${CORE_FOUNDATION_LIBS}
+                          ${COCOA_LIBS}
+                          ${METAL_LIBS}
+                          ${METALKIT_LIBS})
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
+        -Wl,-search_paths_first")
+    
 else () 
 
 endif ()
