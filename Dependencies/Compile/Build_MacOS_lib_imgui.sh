@@ -28,7 +28,7 @@ if [ [ "$mode" != "$m_gl3" ]\
     && [ "$mode" != "$m_metal" ]\
     && [ "$mode" != "$m_glfw_gl3" ]\
     && [ "$mode" != "$m_glfw_vulkan" ]\
-    && [ "$mode" != "$m_glfw_metal" ]; then
+    && [ "$mode" != "$m_glfw_metal" ] ]; then
 
     echo "wrong mode type: ["$mode"], only can be [$m_gl3][$m_gles_android][$m_gles_ios][$m_metal][$m_glfw_gl3][$m_glfw_vulkan][$m_glfw_metal]"
     exit 1
