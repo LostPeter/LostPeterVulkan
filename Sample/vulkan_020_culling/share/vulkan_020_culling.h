@@ -40,9 +40,6 @@ public:
         bool isCanCullingInit;
         bool isCanCulling;
 
-        //Bound Scale
-        float fScale;
-
         //Bound Line
         bool isBoundAABB_Line;
         bool isBoundSphere_Line;
@@ -134,9 +131,6 @@ public:
             , isShadowPCF(false)
             , isCanCullingInit(false)
             , isCanCulling(false)
-
-            //Bound Scale
-            , fScale(1.0f)
 
             //Bound Line
             , isBoundAABB_Line(false)

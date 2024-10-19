@@ -64,7 +64,7 @@ namespace LostPeterFoundation
 
     void FSphere::Merge(const FVector3& point)
     {
-        float dis = FMath::Length2(this->m_vCenter - point);
+        float dis = FMath::Length(this->m_vCenter - point);
         if (dis <= this->m_fRadius)
             return;
         this->m_fRadius = dis;
