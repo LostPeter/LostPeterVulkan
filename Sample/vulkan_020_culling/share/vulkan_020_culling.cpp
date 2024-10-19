@@ -1078,9 +1078,12 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_AABB()
         if (this->aPointerBoundAABB_Line[i] == nullptr)
         {
             FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FAABB aabb(this->pMeshSub->aabb);
-            aabb.Transform(mat4);
-            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(aabb, FMath::ms_clRed, false);
+            FVector3 vCenter = this->pMeshSub->aabb.GetCenter();
+            FVector3 vExtent = this->pMeshSub->aabb.GetExtents();
+            FVector3 vScale = vExtent / 0.5f;
+            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
+            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(mat4, FMath::ms_clRed, false);
+
             isNeedUpdateBuffer = true;
         }
     }
@@ -1117,9 +1120,11 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_Sphere()
         if (this->aPointerBoundSphere_Line[i] == nullptr)
         {
             FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FSphere sphere(this->pMeshSub->sphere);
-            sphere.Transform(mat4);
-            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(sphere, FMath::ms_clRed, false);
+            float fRadius = this->pMeshSub->sphere.GetRadius();
+            FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
+            mat4 = mat4 * FMath::Scale(vScale);
+            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(mat4, FMath::ms_clRed, false);
+
             isNeedUpdateBuffer = true;
         }
     }
@@ -1157,9 +1162,12 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_AABB()
         if (this->aPointerBoundAABB_Flat[i] == nullptr)
         {
             FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FAABB aabb(this->pMeshSub->aabb);
-            aabb.Transform(mat4);
-            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(aabb, FMath::ms_clGreen, false);
+            FVector3 vCenter = this->pMeshSub->aabb.GetCenter();
+            FVector3 vExtent = this->pMeshSub->aabb.GetExtents();
+            FVector3 vScale = vExtent / 0.5f;
+            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
+            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(mat4, FMath::ms_clGreen, false);
+
             isNeedUpdateBuffer = true;
         }
     }
@@ -1196,9 +1204,11 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_Sphere()
         if (this->aPointerBoundSphere_Flat[i] == nullptr)
         {
             FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FSphere sphere(this->pMeshSub->sphere);
-            sphere.Transform(mat4);
-            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(sphere, FMath::ms_clGreen, false);
+            float fRadius = this->pMeshSub->sphere.GetRadius();
+            FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
+            mat4 = mat4 * FMath::Scale(vScale);
+            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(mat4, FMath::ms_clGreen, false);
+
             isNeedUpdateBuffer = true;
         }
     }
@@ -3489,6 +3499,12 @@ void Vulkan_020_Culling::modelConfig()
                         if (ImGui::CollapsingHeader(nameObjectRend.c_str()))
                         {
                             ImGui::Text("Vertex: [%d], Index: [%d]", (int)pRend->pMeshSub->poVertexCount, (int)pRend->pMeshSub->poIndexCount);
+                            FVector3 vCenter = pRend->pMeshSub->aabb.GetCenter();
+                            FVector3 vExtent = pRend->pMeshSub->aabb.GetExtents();
+                            ImGui::Text("AABB: Center: [%f, %f, %f], Extent: [%f, %f, %f]", vCenter.x, vCenter.y, vCenter.z, vExtent.x, vExtent.y, vExtent.z);
+                            vCenter = pRend->pMeshSub->sphere.GetCenter();
+                            float fRadius = pRend->pMeshSub->sphere.GetRadius();
+                            ImGui::Text("Sphere: Center: [%f, %f, %f], Radius: [%f]", vCenter.x, vCenter.y, vCenter.z, fRadius);
                             //isShow
                             String nameIsShowRend = "Is Show - " + nameObjectRend;
                             if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRend->isShow))
