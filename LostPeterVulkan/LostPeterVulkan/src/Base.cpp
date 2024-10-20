@@ -14,7 +14,7 @@
 
 namespace LostPeterVulkan
 {
-    VulkanWindow* Base::ms_pVulkanWindow = nullptr;
+    VulkanWindow* Base::ms_pWindow = nullptr;
     Base::Base(const String& _name)
         : group(0)
         , name(_name)

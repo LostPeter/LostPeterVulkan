@@ -1993,7 +1993,7 @@ namespace LostPeterVulkan
         cfg_StencilOpBack.writeMask = 0;
         cfg_StencilOpBack.reference = 0;
 
-        Base::ms_pVulkanWindow = this;
+        Base::ms_pWindow = this;
     }
 
     VulkanWindow::~VulkanWindow()

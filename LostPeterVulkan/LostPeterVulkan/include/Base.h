@@ -25,10 +25,10 @@ namespace LostPeterVulkan
         virtual ~Base();
 
     public:
-        static VulkanWindow* ms_pVulkanWindow;
+        static VulkanWindow* ms_pWindow;
 
     public:
-        static VulkanWindow* GetWindowPtr() { return ms_pVulkanWindow; }
+        static VulkanWindow* GetWindowPtr() { return ms_pWindow; }
 
     protected:
         uint32 group;
