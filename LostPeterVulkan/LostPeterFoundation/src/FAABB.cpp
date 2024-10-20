@@ -20,7 +20,7 @@ namespace LostPeterFoundation
     const FAABB FAABB::ms_aabbInfinite(-F_C_MAX_FLOAT, -F_C_MAX_FLOAT, -F_C_MAX_FLOAT,
                                         F_C_MAX_FLOAT,  F_C_MAX_FLOAT,  F_C_MAX_FLOAT);
 
-    FAABB&	FAABB::Add(const FAABB& aabb)																				
+    FAABB& FAABB::Add(const FAABB& aabb)																				
     {
         FVector3 min; GetMin(min);
         FVector3 temp; aabb.GetMin(temp);
@@ -46,13 +46,14 @@ namespace LostPeterFoundation
 
     void FAABB::MakeSphere(FSphere& sphere)	const	
     {
-        FVector3 center = sphere.GetCenter();
-        GetExtents(center);
-        float fRad = FMath::Length(center) * 1.00001f;
-        sphere.SetRadius(fRad);
+        if (!IsInfinite())
+            return;
 
-        center = sphere.GetCenter();
-        GetCenter(center);
+        FVector3 center = GetCenter();
+        FVector3 extent = GetExtents();
+        float fRadius = FMath::Length(extent);
+        sphere.SetCenter(center);
+        sphere.SetRadius(fRadius);
     }
 
     bool FAABB::IsInside(const FAABB& box) const	

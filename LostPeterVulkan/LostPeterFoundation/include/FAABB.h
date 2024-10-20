@@ -258,9 +258,9 @@ namespace LostPeterFoundation
 
     public:
         FAABB&	Add(const FAABB& aabb);
-
-        void MakeSphere(FSphere& sphere) const;
+        
         float MakeCube(FAABB& cube) const;	
+        void MakeSphere(FSphere& sphere) const;
 
         bool IsInside(const FAABB& box)	const;	
 

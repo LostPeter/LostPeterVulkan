@@ -60,8 +60,8 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexPC& meshVertex)
         {
-            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
+            aabb.MakeSphere(sphere);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexPC& meshVertex)
@@ -76,9 +76,9 @@ namespace LostPeterFoundation
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexPC& meshVertex = vertices[i];
-                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
+            aabb.MakeSphere(sphere);
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -232,8 +232,8 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexPCT& meshVertex)
         {
-            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
+            aabb.MakeSphere(sphere);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexPCT& meshVertex)
@@ -248,9 +248,9 @@ namespace LostPeterFoundation
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexPCT& meshVertex = vertices[i];
-                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
+            aabb.MakeSphere(sphere);
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -406,8 +406,8 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertex& meshVertex)
         {
-            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
+            aabb.MakeSphere(sphere);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertex& meshVertex)
@@ -422,9 +422,9 @@ namespace LostPeterFoundation
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertex& meshVertex = vertices[i];
-                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
+            aabb.MakeSphere(sphere);
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -578,8 +578,8 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexUV2& meshVertex)
         {
-            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
+            aabb.MakeSphere(sphere);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexUV2& meshVertex)
@@ -594,9 +594,9 @@ namespace LostPeterFoundation
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexUV2& meshVertex = vertices[i];
-                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
+            aabb.MakeSphere(sphere);
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -750,8 +750,8 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexSkin& meshVertex)
         {
-            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
+            aabb.MakeSphere(sphere);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexSkin& meshVertex)
@@ -766,9 +766,9 @@ namespace LostPeterFoundation
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexSkin& meshVertex = vertices[i];
-                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
+            aabb.MakeSphere(sphere);
         }
 
         void ReserveIndexCount(size_t nCount)
