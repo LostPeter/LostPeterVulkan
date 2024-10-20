@@ -97,7 +97,7 @@ namespace LostPeterVulkan
             }
             //pCB_Result
             {
-                int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax * 5;
+                int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax;
                 this->pCB_Result = new BufferCompute("BufferCompute-Static-Result", count_result, sizeof(uint));
             }
         }
@@ -197,9 +197,9 @@ namespace LostPeterVulkan
             CullObjectConstants cullObject;
             MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(0);
             FVector3 vCenter = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetCenter());
-            FVector3 vSize = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetHalfSize());
+            FVector3 vExtent = FMath::TransformMatrix3(FMath::ToMatrix3(instanceData.mat4Object2World), pMeshSub->aabb.GetExtents());
             cullObject.vPos = FVector4(vCenter.x, vCenter.y, vCenter.z, 1.0f);
-            cullObject.vExt = FVector4(vSize.x, vSize.y, vSize.z, 1.0f);
+            cullObject.vExt = FVector4(vExtent.x, vExtent.y, vExtent.z, 1.0f);
             cullObject.nRenderIndex = (uint)pCullRenderData->nRenderIndex;
             cullObject.nRenderCount = (uint)pLodData->aMaterialConstants.size();
             cullObject.nObjectOffset = (uint)pCullRenderData->nObjectOffset;
@@ -302,9 +302,9 @@ namespace LostPeterVulkan
                 CullObjectConstants cullObject;
                 MeshSub* pMeshSub = pLodData->pMesh->GetMeshSub(0);
                 FVector3 vCenter = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetCenter());
-                FVector3 vSize = FMath::Transform(instanceData.mat4Object2World, pMeshSub->aabb.GetHalfSize());
+                FVector3 vExtent = FMath::TransformMatrix3(FMath::ToMatrix3(instanceData.mat4Object2World), pMeshSub->aabb.GetExtents());
                 cullObject.vPos = FVector4(vCenter.x, vCenter.y, vCenter.z, 1.0f);
-                cullObject.vExt = FVector4(vSize.x, vSize.y, vSize.z, 1.0f);
+                cullObject.vExt = FVector4(vExtent.x, vExtent.y, vExtent.z, 1.0f);
                 cullObject.nRenderIndex = (uint)pCullRenderData->nRenderIndex;
                 cullObject.nRenderCount = (uint)pLodData->aMaterialConstants.size();
                 cullObject.nObjectOffset = (uint)pCullRenderData->nObjectOffset;

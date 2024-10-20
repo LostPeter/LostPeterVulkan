@@ -719,6 +719,7 @@ namespace LostPeterFoundation
         static void ToAxes(const FQuaternion& qRot, FVector3& xAxis, FVector3& yAxis, FVector3& zAxis);
         static void ToAngleAxis(const FQuaternion& qRot, float& fAngle, FVector3& vAxis);
 
+        static FVector3 TransformMatrix3(const FMatrix3& mat3, const FVector3& vScale);
         static FVector3 Transform(const FMatrix4& mat4, const FVector3& vPos);
         static FVector3 Transform(const FQuaternion& qRot, const FVector3& vPos);
 
