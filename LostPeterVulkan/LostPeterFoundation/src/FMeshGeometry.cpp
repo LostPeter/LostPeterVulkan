@@ -1816,6 +1816,7 @@ namespace LostPeterFoundation
         //Vertex
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vStart.x, vStart.y, 0.0f), vColor));   //0
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vEnd.x, vEnd.y, 0.0f), vColor));       //1
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -1837,6 +1838,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vTop.x, vTop.y, 0.0f), vColor));       //0
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeft.x, vLeft.y, 0.0f), vColor));     //1
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRight.x, vRight.y, 0.0f), vColor));   //2
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -1865,6 +1867,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftBottom.x, vLeftBottom.y, 0.0f), vColor));     //1
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightBottom.x, vRightBottom.y, 0.0f), vColor));   //2
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightTop.x, vRightTop.y, 0.0f), vColor));         //3
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -1930,6 +1933,7 @@ namespace LostPeterFoundation
                 AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
             }
         }
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         uint nVertexCount = n * 2 + m * 2;
@@ -1996,6 +2000,7 @@ namespace LostPeterFoundation
         {
             AddVertex(meshDataPC, FMeshVertexPC(vC, vColor));
         }
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         for (uint32 i = 0; i < segment; ++i)    
@@ -2233,6 +2238,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vTop.x, vTop.y, 0.0f), vColor));       //0
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeft.x, vLeft.y, 0.0f), vColor));     //1
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRight.x, vRight.y, 0.0f), vColor));   //2
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         AddIndexTriangle(meshDataPC, 0, 2, 1);        
@@ -2259,6 +2265,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftBottom.x, vLeftBottom.y, 0.0f), vColor));     //1
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightBottom.x, vRightBottom.y, 0.0f), vColor));   //2
         AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightTop.x, vRightTop.y, 0.0f), vColor));         //3
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexTriangle(meshDataPC, 0, 3, 2);
@@ -2644,6 +2651,7 @@ namespace LostPeterFoundation
         //Vertex
         AddVertex(meshDataPC, FMeshVertexPC(vStart, vColor));   //0
         AddVertex(meshDataPC, FMeshVertexPC(vEnd, vColor));     //1
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -2665,6 +2673,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vTop, vColor));     //0
         AddVertex(meshDataPC, FMeshVertexPC(vLeft, vColor));    //1
         AddVertex(meshDataPC, FMeshVertexPC(vRight, vColor));   //2
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -2693,6 +2702,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vLeftBottom, vColor));  //1
         AddVertex(meshDataPC, FMeshVertexPC(vRightBottom, vColor)); //2
         AddVertex(meshDataPC, FMeshVertexPC(vRightTop, vColor));    //3
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -2755,6 +2765,7 @@ namespace LostPeterFoundation
                 AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
             }
         }
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         uint nVertexCount = n * 2 + m * 2;
@@ -2798,6 +2809,7 @@ namespace LostPeterFoundation
         {
             AddVertex(meshDataPC, FMeshVertexPC(vCenter, vColor));
         }
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         for (uint32 i = 0; i < segment; ++i)    
@@ -2846,6 +2858,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY + vZ, vColor)); //5 +-+
         AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY + vZ, vColor)); //6 --+
         AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY + vZ, vColor)); //7 -++
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -2908,6 +2921,7 @@ namespace LostPeterFoundation
         //Vertex Bottom
         FMeshVertexPC vertexBottom(vCenter - vUp * radius, vColor);
         AddVertex(meshDataPC, vertexBottom);
+        meshDataPC.RefreshSphereByAABB();
 
         //Index Top
         for (uint32 i = 1; i <= sliceCount; ++i)
@@ -2991,6 +3005,7 @@ namespace LostPeterFoundation
             //sliceCount * 2 + 1
             AddVertex(meshDataPC, FMeshVertexPC(vCenter + vUp * (0.5f * height), vColor)); //Top
         }
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         for (uint32 i = 0; i < sliceCount; ++i)
@@ -3092,6 +3107,7 @@ namespace LostPeterFoundation
                 }
             } 
         } 
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         int topIndex = offset - (numSegments + 1);
@@ -3143,6 +3159,7 @@ namespace LostPeterFoundation
             }
         }
         AddVertex(meshDataPC, FMeshVertexPC(vCenter, vColor));
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         for (uint32 i = 0; i < numSegBase; i++)
@@ -3196,6 +3213,7 @@ namespace LostPeterFoundation
                 }
             }
         }    
+        meshDataPC.RefreshSphereByAABB();
     }
 
 
@@ -3344,6 +3362,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vTop, vColor));
         AddVertex(meshDataPC, FMeshVertexPC(vLeft, vColor));
         AddVertex(meshDataPC, FMeshVertexPC(vRight, vColor));
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         AddIndexTriangle(meshDataPC, 0, 2, 1);
@@ -3370,6 +3389,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vLeftBottom, vColor));
         AddVertex(meshDataPC, FMeshVertexPC(vRightBottom, vColor));
         AddVertex(meshDataPC, FMeshVertexPC(vRightTop, vColor));
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexTriangle(meshDataPC, 0, 3, 2);
@@ -3452,6 +3472,7 @@ namespace LostPeterFoundation
         AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY + vZ, vColor)); //5 +-+
         AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY + vZ, vColor)); //6 --+
         AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY + vZ, vColor)); //7 -++
+        meshDataPC.RefreshSphereByAABB();
 
         //Index
         AddIndexTriangle(meshDataPC, 0, 3, 2); //Front
@@ -3514,6 +3535,7 @@ namespace LostPeterFoundation
         //Vertex Bottom
         FMeshVertexPC vertexBottom(vCenter - vUp * radius, vColor);
         AddVertex(meshDataPC, vertexBottom);
+        meshDataPC.RefreshSphereByAABB();
 
         //Index Top
         for (uint32 i = 1; i <= sliceCount; ++i)
@@ -3600,6 +3622,7 @@ namespace LostPeterFoundation
                 AddVertex(meshDataPC, vertex);
             }
         }
+        meshDataPC.RefreshSphereByAABB();
         
         //Index
         //Bottom/Top
@@ -3765,6 +3788,8 @@ namespace LostPeterFoundation
                 offset ++;
             } 
         } 
+
+        meshDataPC.RefreshSphereByAABB();
     }
 
     //FlatCone3D
@@ -3840,6 +3865,8 @@ namespace LostPeterFoundation
             }
             offset++;
         }
+
+        meshDataPC.RefreshSphereByAABB();
     }
 
     //FlatTorus3D
@@ -3891,6 +3918,7 @@ namespace LostPeterFoundation
                 offset ++;
             }
         }       
+        meshDataPC.RefreshSphereByAABB();
     }
 
 
@@ -4111,7 +4139,8 @@ namespace LostPeterFoundation
                                          0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,   0.0f,
                                          1.0f,  flipV ? 0.0f : 1.0f));
-        
+        meshData.RefreshSphereByAABB();
+
         //Index
         if (rightHand)
         {
@@ -4161,6 +4190,7 @@ namespace LostPeterFoundation
                                         0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f,  0.0f,
                                         1.0f, flipV ? 1.0f : 0.0f));
+        meshData.RefreshSphereByAABB();
 
         //Index
         if (rightHand)
@@ -4408,6 +4438,7 @@ namespace LostPeterFoundation
         {
             AddVertex(meshData, v[i]);
         }
+        meshData.RefreshSphereByAABB();
 
         //Index
         uint32 i[36];
@@ -4521,6 +4552,7 @@ namespace LostPeterFoundation
         //Vertex Bottom
         FMeshVertex vertexBottom(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
         AddVertex(meshData, vertexBottom);
+        meshData.RefreshSphereByAABB();
 
         //Index Top
         for (uint32 i = 1; i <= sliceCount; ++i)
@@ -4905,6 +4937,7 @@ namespace LostPeterFoundation
                                  stackCount, 
                                  flipV, 
                                  rightHand);
+        meshData.RefreshSphereByAABB();
     }
 
     //EntityCapsule
@@ -5056,6 +5089,8 @@ namespace LostPeterFoundation
                 offset ++;
             } 
         } 
+
+        meshData.RefreshSphereByAABB();
     }
 
     //EntityCone
@@ -5168,6 +5203,8 @@ namespace LostPeterFoundation
             }
             offset++;
         }
+
+        meshData.RefreshSphereByAABB();
     }
 
     //EntityTorus
@@ -5231,7 +5268,9 @@ namespace LostPeterFoundation
                 }
                 offset ++;
             }
-        }       
+        }  
+
+        meshData.RefreshSphereByAABB();     
     }
 
     //EntitySkyBox
@@ -5449,7 +5488,7 @@ namespace LostPeterFoundation
     }
     uint32 FMeshGeometry::AddVertex(FMeshDataPC& meshDataPC, const FMeshVertexPC& vertex)
     {
-        meshDataPC.AddVertex(vertex);
+        meshDataPC.AddVertex(vertex, true, false);
         return GetVertexCount(meshDataPC);
     }
     uint32 FMeshGeometry::AddVertex(FMeshDataPC& meshDataPC, 
@@ -5525,7 +5564,7 @@ namespace LostPeterFoundation
     }
     uint32 FMeshGeometry::AddVertex(FMeshData& meshData, const FMeshVertex& vertex)
     {
-        meshData.AddVertex(vertex);
+        meshData.AddVertex(vertex, true, false);
         return GetVertexCount(meshData);
     }
     uint32 FMeshGeometry::AddVertex(FMeshData& meshData,

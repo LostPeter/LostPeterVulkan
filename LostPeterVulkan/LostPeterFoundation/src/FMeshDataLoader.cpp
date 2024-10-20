@@ -57,8 +57,9 @@ namespace LostPeterFoundation
                                normal.x, normal.y, normal.z,
                                tangent.x, tangent.y, tangent.z,
                                texCoords.x, meshData.bIsFlipY ? 1.0f - texCoords.y : texCoords.y);
-            meshData.AddVertex(vertex);
+            meshData.AddVertex(vertex, true, false);
         }
+        meshData.RefreshSphereByAABB();
 
         for (unsigned int i = 0; i < pMesh->mNumFaces; ++i)
         {

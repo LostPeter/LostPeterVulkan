@@ -1077,12 +1077,10 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_AABB()
     {
         if (this->aPointerBoundAABB_Line[i] == nullptr)
         {
-            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FVector3 vCenter = this->pMeshSub->aabb.GetCenter();
-            FVector3 vExtent = this->pMeshSub->aabb.GetExtents();
-            FVector3 vScale = vExtent / 0.5f;
-            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
-            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(mat4, FMath::ms_clRed, false);
+            this->aPointerBoundAABB_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_AABB(this->objectCBs[i].g_MatWorld, 
+                                                                                                                      this->pMeshSub->aabb, 
+                                                                                                                      FMath::ms_clRed, 
+                                                                                                                      false);
 
             isNeedUpdateBuffer = true;
         }
@@ -1119,15 +1117,11 @@ void Vulkan_020_Culling::ModelObjectRend::AddLine3D_Sphere()
     {
         if (this->aPointerBoundSphere_Line[i] == nullptr)
         {
-            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FSphere sphere;
-            this->pMeshSub->aabb.MakeSphere(sphere);
-            FVector3 vCenter = sphere.GetCenter();
-            float fRadius = sphere.GetRadius();
-            FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
-            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
-            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(mat4, FMath::ms_clRed, false);
-
+            this->aPointerBoundSphere_Line[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddLine3D_Sphere(this->objectCBs[i].g_MatWorld, 
+                                                                                                                          this->pMeshSub->sphere,
+                                                                                                                          FMath::ms_clRed, 
+                                                                                                                          false);
+            
             isNeedUpdateBuffer = true;
         }
     }
@@ -1164,12 +1158,10 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_AABB()
     {
         if (this->aPointerBoundAABB_Flat[i] == nullptr)
         {
-            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FVector3 vCenter = this->pMeshSub->aabb.GetCenter();
-            FVector3 vExtent = this->pMeshSub->aabb.GetExtents();
-            FVector3 vScale = vExtent / 0.5f;
-            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
-            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(mat4, FMath::ms_clGreen, false);
+            this->aPointerBoundAABB_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_AABB(this->objectCBs[i].g_MatWorld, 
+                                                                                                                      this->pMeshSub->aabb, 
+                                                                                                                      FMath::ms_clGreen, 
+                                                                                                                      false);
 
             isNeedUpdateBuffer = true;
         }
@@ -1206,12 +1198,10 @@ void Vulkan_020_Culling::ModelObjectRend::AddFlat3D_Sphere()
     {
         if (this->aPointerBoundSphere_Flat[i] == nullptr)
         {
-            FMatrix4 mat4 = this->objectCBs[i].g_MatWorld;
-            FVector3 vCenter = this->pMeshSub->sphere.GetCenter();
-            float fRadius = this->pMeshSub->sphere.GetRadius();
-            FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
-            mat4 = mat4 * FMath::Scale(vScale) * FMath::Translate(vCenter);
-            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(mat4, FMath::ms_clGreen, false);
+            this->aPointerBoundSphere_Flat[i] = this->pModelObject->pWindow->pEditorLineFlat3DCollector->AddFlat3D_Sphere(this->objectCBs[i].g_MatWorld, 
+                                                                                                                          this->pMeshSub->sphere,
+                                                                                                                          FMath::ms_clGreen, 
+                                                                                                                          false);
 
             isNeedUpdateBuffer = true;
         }

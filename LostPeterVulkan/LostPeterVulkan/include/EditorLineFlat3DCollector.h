@@ -193,9 +193,11 @@ namespace LostPeterVulkan
         virtual PointerBuffer* AddLine3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
-        virtual PointerBuffer* AddLine3D_AABB(const FAABB& aabb, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_AABB(const FMatrix4& vMatWorld, const FAABB& aabbObject, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_AABB(const FAABB& aabbWorld, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddLine3D_Sphere(const FMatrix4& vMatWorld, const FSphere& sphereObject, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_Sphere(const FSphere& sphere, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddLine3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
@@ -219,10 +221,12 @@ namespace LostPeterVulkan
         virtual PointerBuffer* AddFlat3D_Quad_Concave(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_Circle(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_Circle(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
-        virtual PointerBuffer* AddFlat3D_AABB(const FAABB& aabb, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_AABB(const FMatrix4& vMatWorld, const FAABB& aabbObject, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_AABB(const FAABB& aabbWorld, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_AABB(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
-        virtual PointerBuffer* AddFlat3D_Sphere(const FSphere& sphere, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Sphere(const FMatrix4& vMatWorld, const FSphere& sphereObject, const FColor& color, bool isUpdateBuffer = true);
+        virtual PointerBuffer* AddFlat3D_Sphere(const FSphere& sphereWorld, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_Sphere(const FMatrix4& vMat, const FColor& color, bool isUpdateBuffer = true);
         virtual PointerBuffer* AddFlat3D_Cylinder(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer = true);

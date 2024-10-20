@@ -530,9 +530,17 @@ namespace LostPeterVulkan
         BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_Circle, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FAABB& aabb, const FColor& color, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FMatrix4& vMatWorld, const FAABB& aabbObject, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return AddLine3D_AABB(aabb.GetCenter(), FMath::ms_v3Zero, aabb.GetExtents(), color, isUpdateBuffer);
+        FVector3 vCenter = aabbObject.GetCenter();
+        FVector3 vExtent = aabbObject.GetExtents();
+        FVector3 vScale = vExtent / 0.5f;
+        FMatrix4 mat4 = vMatWorld * FMath::Translate(vCenter) * FMath::Scale(vScale);
+        return AddLine3D_AABB(mat4, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FAABB& aabbWorld, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddLine3D_AABB(aabbWorld.GetCenter(), FMath::ms_v3Zero, aabbWorld.GetExtents() / 0.5f, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
@@ -543,9 +551,17 @@ namespace LostPeterVulkan
         BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strLine3D_AABB, true);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
+    PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FMatrix4& vMatWorld, const FSphere& sphereObject, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        FVector3 vCenter = sphereObject.GetCenter();
+        float fRadius = sphereObject.GetRadius();
+        FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
+        FMatrix4 mat4 = vMatWorld * FMath::Translate(vCenter) * FMath::Scale(vScale);
+        return AddLine3D_Sphere(mat4, color, isUpdateBuffer);
+    }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FSphere& sphere, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        float fRadius = sphere.GetRadius();
+        float fRadius = sphere.GetRadius() / 0.5f;
         return AddLine3D_Sphere(sphere.GetCenter(), FMath::ms_v3Zero, FVector3(fRadius, fRadius, fRadius), color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddLine3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
@@ -640,9 +656,17 @@ namespace LostPeterVulkan
         BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_Circle, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FAABB& aabb, const FColor& color, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FMatrix4& vMatWorld, const FAABB& aabbObject, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        return AddFlat3D_AABB(aabb.GetCenter(), FMath::ms_v3Zero, aabb.GetExtents(), color, isUpdateBuffer);
+        FVector3 vCenter = aabbObject.GetCenter();
+        FVector3 vExtent = aabbObject.GetExtents();
+        FVector3 vScale = vExtent / 0.5f;
+        FMatrix4 mat4 = vMatWorld * FMath::Translate(vCenter) * FMath::Scale(vScale);
+        return AddFlat3D_AABB(mat4, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FAABB& aabbWorld, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        return AddFlat3D_AABB(aabbWorld.GetCenter(), FMath::ms_v3Zero, aabbWorld.GetExtents() / 0.5f, color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_AABB(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
@@ -653,10 +677,18 @@ namespace LostPeterVulkan
         BufferStorageLineFlat3D* pBufferLineFlat3D = getOrCreateBufferLineFlat3D(c_strFlat3D_AABB, false);
         return pBufferLineFlat3D->AddLineFlat3DObject(vMat, color, isUpdateBuffer);
     }
-    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FSphere& sphere, const FColor& color, bool isUpdateBuffer /*= true*/)
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FMatrix4& vMatWorld, const FSphere& sphereObject, const FColor& color, bool isUpdateBuffer /*= true*/)
     {
-        float fRadius = sphere.GetRadius();
-        return AddFlat3D_Sphere(sphere.GetCenter(), FMath::ms_v3Zero, FVector3(fRadius, fRadius, fRadius), color, isUpdateBuffer);
+        FVector3 vCenter = sphereObject.GetCenter();
+        float fRadius = sphereObject.GetRadius();
+        FVector3 vScale = FVector3(fRadius, fRadius, fRadius) / 0.5f;
+        FMatrix4 mat4 = vMatWorld * FMath::Translate(vCenter) * FMath::Scale(vScale);
+        return AddFlat3D_Sphere(mat4, color, isUpdateBuffer);
+    }
+    PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FSphere& sphereWorld, const FColor& color, bool isUpdateBuffer /*= true*/)
+    {
+        float fRadius = sphereWorld.GetRadius() / 0.5f;
+        return AddFlat3D_Sphere(sphereWorld.GetCenter(), FMath::ms_v3Zero, FVector3(fRadius, fRadius, fRadius), color, isUpdateBuffer);
     }
     PointerBuffer* EditorLineFlat3DCollector::AddFlat3D_Sphere(const FVector3& vPos, const FVector3& vRotAngle, const FVector3& vScale, const FColor& color, bool isUpdateBuffer /*= true*/)
     {

@@ -46,7 +46,7 @@ namespace LostPeterFoundation
 
     void FAABB::MakeSphere(FSphere& sphere)	const	
     {
-        if (!IsInfinite())
+        if (!IsFinite())
             return;
 
         FVector3 center = GetCenter();

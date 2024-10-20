@@ -120,13 +120,12 @@ namespace LostPeterVulkan
         }
 
         //1> Vertex/Index Data
-        this->sphere = meshDataPC.sphere;
         this->aabb = meshDataPC.aabb;
         if (isTransformLocal)
         {
-            this->sphere.Transform(matTransformLocal);
             this->aabb.TransformAffine(matTransformLocal);
         }
+        this->aabb.MakeSphere(this->sphere);
 
         int count_vertex = (int)meshDataPC.vertices.size();
         this->vertices_Pos3Color4.clear();
@@ -213,13 +212,12 @@ namespace LostPeterVulkan
     bool MeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         //1> Vertex/Index Data
-        this->sphere = meshData.sphere;
         this->aabb = meshData.aabb;
         if (isTransformLocal)
         {
-            this->sphere.Transform(matTransformLocal);
             this->aabb.TransformAffine(matTransformLocal);
         }
+        this->aabb.MakeSphere(this->sphere);
 
         int count_vertex = (int)meshData.vertices.size();
         if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
