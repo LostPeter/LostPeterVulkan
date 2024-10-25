@@ -3502,9 +3502,9 @@ namespace LostPeterFoundation
             return false;
         if (frustum.GetPlane(F_FrustumPlane_Right).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
             return false;
-        if (frustum.GetPlane(F_FrustumPlane_Top).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+        if (frustum.GetPlane(F_FrustumPlane_Down).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
             return false;
-        if (frustum.GetPlane(F_FrustumPlane_Bottom).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+        if (frustum.GetPlane(F_FrustumPlane_Up).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
             return false;
         if (frustum.GetPlane(F_FrustumPlane_Near).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
             return false;

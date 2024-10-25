@@ -180,7 +180,7 @@ namespace LostPeterFoundation
 	{
 		if (m_typeCamera == F_Camera_Perspective)
 		{
-			float tanThetaY = FMath::Tan(m_fFovY * 0.5f);
+			float tanThetaY = FMath::Tan(this->m_fFovY * 0.5f);
 			float tanThetaX = tanThetaY * m_fAspect;
 
 			float half_w = tanThetaX * m_fNearZ;
@@ -205,7 +205,7 @@ namespace LostPeterFoundation
 
 	void FCamera::GetWorldFrustumCorners(FVector3 aWorldFrustumCorners[8])
 	{
-		FMatrix4 eyeToWorld = FMath::AffineInverse(m_mat4View);
+		FMatrix4 eyeToWorld = FMath::InverseMatrix4(m_mat4View);
 		
 		float fNearLeft, fNearRight, fNearTop, fNearBottom;
 		CalculateProjectionParameters(fNearLeft, fNearRight, fNearTop, fNearBottom);
@@ -221,56 +221,57 @@ namespace LostPeterFoundation
 		float fFarBottom = fNearBottom * fRadio;
 
 		//Near
-		aWorldFrustumCorners[0] = FMath::TransformAffine(eyeToWorld, FVector3(fNearRight, fNearTop,    -fNearZ));
-		aWorldFrustumCorners[1] = FMath::TransformAffine(eyeToWorld, FVector3(fNearLeft,  fNearTop,    -fNearZ));
-		aWorldFrustumCorners[2] = FMath::TransformAffine(eyeToWorld, FVector3(fNearLeft,  fNearBottom, -fNearZ));
-		aWorldFrustumCorners[3] = FMath::TransformAffine(eyeToWorld, FVector3(fNearRight, fNearBottom, -fNearZ));
+		aWorldFrustumCorners[0] = FMath::Transform(eyeToWorld, FVector3(fNearRight, fNearTop,    fNearZ));
+		aWorldFrustumCorners[1] = FMath::Transform(eyeToWorld, FVector3(fNearLeft,  fNearTop,    fNearZ));
+		aWorldFrustumCorners[2] = FMath::Transform(eyeToWorld, FVector3(fNearLeft,  fNearBottom, fNearZ));
+		aWorldFrustumCorners[3] = FMath::Transform(eyeToWorld, FVector3(fNearRight, fNearBottom, fNearZ));
 		//Far
-		aWorldFrustumCorners[4] = FMath::TransformAffine(eyeToWorld, FVector3(fFarRight,  fFarTop,     -fFarZ));
-		aWorldFrustumCorners[5] = FMath::TransformAffine(eyeToWorld, FVector3(fFarLeft,   fFarTop,     -fFarZ));
-		aWorldFrustumCorners[6] = FMath::TransformAffine(eyeToWorld, FVector3(fFarLeft,   fFarBottom,  -fFarZ));
-		aWorldFrustumCorners[7] = FMath::TransformAffine(eyeToWorld, FVector3(fFarRight,  fFarBottom,  -fFarZ));
+		aWorldFrustumCorners[4] = FMath::Transform(eyeToWorld, FVector3(fFarRight,  fFarTop,     fFarZ));
+		aWorldFrustumCorners[5] = FMath::Transform(eyeToWorld, FVector3(fFarLeft,   fFarTop,     fFarZ));
+		aWorldFrustumCorners[6] = FMath::Transform(eyeToWorld, FVector3(fFarLeft,   fFarBottom,  fFarZ));
+		aWorldFrustumCorners[7] = FMath::Transform(eyeToWorld, FVector3(fFarRight,  fFarBottom,  fFarZ));
 	}
 
 	void FCamera::GetWorldFrustumPlanes(FPlane aWorldFrustumPlanes[6])
 	{
 		FMatrix4 matVP = m_mat4Projection * m_mat4View;
 
-		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.x = matVP[3][0] + matVP[2][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.y = matVP[3][1] + matVP[2][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.z = matVP[3][2] + matVP[2][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Near].m_fDistance = matVP[3][3] + matVP[2][3];
-
-		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.x = matVP[3][0] - matVP[2][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.y = matVP[3][1] - matVP[2][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.z = matVP[3][2] - matVP[2][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Far].m_fDistance = matVP[3][3] - matVP[2][3];
-
-		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.x = matVP[3][0] + matVP[0][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.y = matVP[3][1] + matVP[0][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.z = matVP[3][2] + matVP[0][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Left].m_fDistance = matVP[3][3] + matVP[0][3];
-
-		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.x = matVP[3][0] - matVP[0][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.y = matVP[3][1] - matVP[0][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.z = matVP[3][2] - matVP[0][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Right].m_fDistance = matVP[3][3] - matVP[0][3];
-
-		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.x = matVP[3][0] - matVP[1][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.y = matVP[3][1] - matVP[1][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Top].m_vNormal.z = matVP[3][2] - matVP[1][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Top].m_fDistance = matVP[3][3] - matVP[1][3];
-
-		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.x = matVP[3][0] + matVP[1][0];
-		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.y = matVP[3][1] + matVP[1][1];
-		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_vNormal.z = matVP[3][2] + matVP[1][2];
-		aWorldFrustumPlanes[F_FrustumPlane_Bottom].m_fDistance = matVP[3][3] + matVP[1][3];
-
-		for (int i = 0; i < 6; i++) 
-		{
-			float length = FMath::Length(aWorldFrustumPlanes[i].m_vNormal);
-			aWorldFrustumPlanes[i].m_fDistance /= length;
-		}
+		//F_FrustumPlane_Left
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.x = matVP[0][3] + matVP[0][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.y = matVP[1][3] + matVP[1][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_vNormal.z = matVP[2][3] + matVP[2][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].m_fDistance = matVP[3][3] + matVP[3][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Left].Normalize();
+		//F_FrustumPlane_Right
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.x = matVP[0][3] - matVP[0][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.y = matVP[1][3] - matVP[1][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_vNormal.z = matVP[2][3] - matVP[2][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].m_fDistance = matVP[3][3] - matVP[3][0];
+		aWorldFrustumPlanes[F_FrustumPlane_Right].Normalize();
+		//F_FrustumPlane_Down
+		aWorldFrustumPlanes[F_FrustumPlane_Down].m_vNormal.x = matVP[0][3] + matVP[0][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Down].m_vNormal.y = matVP[1][3] + matVP[1][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Down].m_vNormal.z = matVP[2][3] + matVP[2][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Down].m_fDistance = matVP[3][3] + matVP[3][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Down].Normalize();
+		//F_FrustumPlane_Up
+		aWorldFrustumPlanes[F_FrustumPlane_Up].m_vNormal.x = matVP[0][3] - matVP[0][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Up].m_vNormal.y = matVP[1][3] - matVP[1][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Up].m_vNormal.z = matVP[2][3] - matVP[2][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Up].m_fDistance = matVP[3][3] - matVP[3][1];
+		aWorldFrustumPlanes[F_FrustumPlane_Up].Normalize();
+		//F_FrustumPlane_Near
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.x = matVP[0][3] + matVP[0][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.y = matVP[1][3] + matVP[1][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_vNormal.z = matVP[2][3] + matVP[2][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].m_fDistance = matVP[3][3] + matVP[3][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Near].Normalize();
+		//F_FrustumPlane_Far
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.x = matVP[0][3] - matVP[0][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.y = matVP[1][3] - matVP[1][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_vNormal.z = matVP[2][3] - matVP[2][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].m_fDistance = matVP[3][3] - matVP[3][2];
+		aWorldFrustumPlanes[F_FrustumPlane_Far].Normalize();
 	}
 
 	void FCamera::LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& worldUp)

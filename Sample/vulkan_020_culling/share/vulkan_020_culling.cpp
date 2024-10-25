@@ -512,7 +512,7 @@ static const char* g_ObjectRend_CullingDesc[4 * g_ObjectRend_CullInfo_Count] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 6; //28;
+static const int g_Object_Count = 28;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name          
@@ -523,30 +523,30 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_cube",                         "cube", //object_cube   
     "object_sphere",                       "sphere", //object_sphere
     
-//    "object_grass_lod",                    "grass_lod", //grass_lod
+    "object_grass_lod",                    "grass_lod", //grass_lod
 
     "object_rock001_lod",                  "rock001_lod", //object_rock001_lod
-    // "object_rock002_lod",                  "rock002_lod", //object_rock002_lod
-    // "object_rock003_lod",                  "rock003_lod", //object_rock003_lod
-    // "object_rock004_lod",                  "rock004_lod", //object_rock004_lod
-    // "object_rock005_lod",                  "rock005_lod", //object_rock005_lod
-    // "object_rock006_lod",                  "rock006_lod", //object_rock006_lod
-    // "object_rock007_lod",                  "rock007_lod", //object_rock007_lod
-    // "object_rock008_lod",                  "rock008_lod", //object_rock008_lod
-    // "object_rock009_lod",                  "rock009_lod", //object_rock009_lod
-    // "object_rock010_lod",                  "rock010_lod", //object_rock010_lod
-    // "object_rock011_lod",                  "rock011_lod", //object_rock011_lod
-    // "object_rock012_lod",                  "rock012_lod", //object_rock012_lod
-    // "object_rock013_lod",                  "rock013_lod", //object_rock013_lod
-    // "object_rock014_lod",                  "rock014_lod", //object_rock014_lod
-    // "object_rock015_lod",                  "rock015_lod", //object_rock015_lod
-    // "object_rock016_lod",                  "rock016_lod", //object_rock016_lod
-    // "object_rock017_lod",                  "rock017_lod", //object_rock017_lod
-    // "object_rock018_lod",                  "rock018_lod", //object_rock018_lod
-    // "object_rock019_lod",                  "rock019_lod", //object_rock019_lod
-    // "object_rock020_lod",                  "rock020_lod", //object_rock020_lod
-    // "object_rock021_lod",                  "rock021_lod", //object_rock021_lod
-    // "object_rock022_lod",                  "rock022_lod", //object_rock022_lod
+    "object_rock002_lod",                  "rock002_lod", //object_rock002_lod
+    "object_rock003_lod",                  "rock003_lod", //object_rock003_lod
+    "object_rock004_lod",                  "rock004_lod", //object_rock004_lod
+    "object_rock005_lod",                  "rock005_lod", //object_rock005_lod
+    "object_rock006_lod",                  "rock006_lod", //object_rock006_lod
+    "object_rock007_lod",                  "rock007_lod", //object_rock007_lod
+    "object_rock008_lod",                  "rock008_lod", //object_rock008_lod
+    "object_rock009_lod",                  "rock009_lod", //object_rock009_lod
+    "object_rock010_lod",                  "rock010_lod", //object_rock010_lod
+    "object_rock011_lod",                  "rock011_lod", //object_rock011_lod
+    "object_rock012_lod",                  "rock012_lod", //object_rock012_lod
+    "object_rock013_lod",                  "rock013_lod", //object_rock013_lod
+    "object_rock014_lod",                  "rock014_lod", //object_rock014_lod
+    "object_rock015_lod",                  "rock015_lod", //object_rock015_lod
+    "object_rock016_lod",                  "rock016_lod", //object_rock016_lod
+    "object_rock017_lod",                  "rock017_lod", //object_rock017_lod
+    "object_rock018_lod",                  "rock018_lod", //object_rock018_lod
+    "object_rock019_lod",                  "rock019_lod", //object_rock019_lod
+    "object_rock020_lod",                  "rock020_lod", //object_rock020_lod
+    "object_rock021_lod",                  "rock021_lod", //object_rock021_lod
+    "object_rock022_lod",                  "rock022_lod", //object_rock022_lod
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
@@ -557,55 +557,30 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0", //object_cube
     "0", //object_sphere
     
-    //"0;1;2", //object_grass_lod
-
-    // "0;1;2", //object_rock001_lod
-    // "0;1;2", //object_rock002_lod
-    // "0;1;2", //object_rock003_lod
-    // "0;1;2", //object_rock004_lod
-    // "0;1;2", //object_rock005_lod
-    // "0;1;2", //object_rock006_lod
-    // "0;1;2", //object_rock007_lod
-    // "0;1;2", //object_rock008_lod
-    // "0;1;2", //object_rock009_lod
-    // "0;1;2", //object_rock010_lod
-    // "0;1;2", //object_rock011_lod
-    // "0;1;2", //object_rock012_lod
-    // "0;1;2", //object_rock013_lod
-    // "0;1;2", //object_rock014_lod
-    // "0;1;2", //object_rock015_lod
-    // "0;1;2", //object_rock016_lod
-    // "0;1;2", //object_rock017_lod
-    // "0;1;2", //object_rock018_lod
-    // "0;1;2", //object_rock019_lod
-    // "0;1;2", //object_rock020_lod
-    // "0;1;2", //object_rock021_lod
-    // "0;1;2", //object_rock022_lod
-
- //   "0", //object_grass_lod
+    "0", //object_grass_lod
 
     "0", //object_rock001_lod
-    // "0", //object_rock002_lod
-    // "0", //object_rock003_lod
-    // "0", //object_rock004_lod
-    // "0", //object_rock005_lod
-    // "0", //object_rock006_lod
-    // "0", //object_rock007_lod
-    // "0", //object_rock008_lod
-    // "0", //object_rock009_lod
-    // "0", //object_rock010_lod
-    // "0", //object_rock011_lod
-    // "0", //object_rock012_lod
-    // "0", //object_rock013_lod
-    // "0", //object_rock014_lod
-    // "0", //object_rock015_lod
-    // "0", //object_rock016_lod
-    // "0", //object_rock017_lod
-    // "0", //object_rock018_lod
-    // "0", //object_rock019_lod
-    // "0", //object_rock020_lod
-    // "0", //object_rock021_lod
-    // "0", //object_rock022_lod
+    "0", //object_rock002_lod
+    "0", //object_rock003_lod
+    "0", //object_rock004_lod
+    "0", //object_rock005_lod
+    "0", //object_rock006_lod
+    "0", //object_rock007_lod
+    "0", //object_rock008_lod
+    "0", //object_rock009_lod
+    "0", //object_rock010_lod
+    "0", //object_rock011_lod
+    "0", //object_rock012_lod
+    "0", //object_rock013_lod
+    "0", //object_rock014_lod
+    "0", //object_rock015_lod
+    "0", //object_rock016_lod
+    "0", //object_rock017_lod
+    "0", //object_rock018_lod
+    "0", //object_rock019_lod
+    "0", //object_rock020_lod
+    "0", //object_rock021_lod
+    "0", //object_rock022_lod
 };  
 
 static float g_Object_InstanceGap = 1.5f;
@@ -618,30 +593,30 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     0, //object_cube 
     0, //object_sphere 
     
- //   16, //object_grass_lod 
+    16, //object_grass_lod 
 
     16, //object_rock001_lod 
-    // 16, //object_rock002_lod 
-    // 16, //object_rock003_lod 
-    // 16, //object_rock004_lod 
-    // 16, //object_rock005_lod 
-    // 16, //object_rock006_lod 
-    // 16, //object_rock007_lod 
-    // 16, //object_rock008_lod 
-    // 16, //object_rock009_lod 
-    // 16, //object_rock010_lod 
-    // 16, //object_rock011_lod 
-    // 16, //object_rock012_lod 
-    // 16, //object_rock013_lod 
-    // 16, //object_rock014_lod 
-    // 16, //object_rock015_lod 
-    // 16, //object_rock016_lod 
-    // 16, //object_rock017_lod 
-    // 16, //object_rock018_lod 
-    // 16, //object_rock019_lod 
-    // 16, //object_rock020_lod 
-    // 16, //object_rock021_lod 
-    // 16, //object_rock022_lod 
+    16, //object_rock002_lod 
+    16, //object_rock003_lod 
+    16, //object_rock004_lod 
+    16, //object_rock005_lod 
+    16, //object_rock006_lod 
+    16, //object_rock007_lod 
+    16, //object_rock008_lod 
+    16, //object_rock009_lod 
+    16, //object_rock010_lod 
+    16, //object_rock011_lod 
+    16, //object_rock012_lod 
+    16, //object_rock013_lod 
+    16, //object_rock014_lod 
+    16, //object_rock015_lod 
+    16, //object_rock016_lod 
+    16, //object_rock017_lod 
+    16, //object_rock018_lod 
+    16, //object_rock019_lod 
+    16, //object_rock020_lod 
+    16, //object_rock021_lod 
+    16, //object_rock022_lod 
 };
 static bool g_Object_IsShows[] = 
 {
@@ -652,30 +627,30 @@ static bool g_Object_IsShows[] =
     true, //object_cube
     true, //object_sphere
     
- //   true, //object_grass_lod
+    true, //object_grass_lod
 
     true, //object_rock001_lod
-    // true, //object_rock002_lod
-    // true, //object_rock003_lod
-    // true, //object_rock004_lod
-    // true, //object_rock005_lod
-    // true, //object_rock006_lod
-    // true, //object_rock007_lod
-    // true, //object_rock008_lod
-    // true, //object_rock009_lod
-    // true, //object_rock010_lod
-    // true, //object_rock011_lod
-    // true, //object_rock012_lod
-    // true, //object_rock013_lod
-    // true, //object_rock014_lod
-    // true, //object_rock015_lod
-    // true, //object_rock016_lod
-    // true, //object_rock017_lod
-    // true, //object_rock018_lod
-    // true, //object_rock019_lod
-    // true, //object_rock020_lod
-    // true, //object_rock021_lod
-    // true, //object_rock022_lod
+    true, //object_rock002_lod
+    true, //object_rock003_lod
+    true, //object_rock004_lod
+    true, //object_rock005_lod
+    true, //object_rock006_lod
+    true, //object_rock007_lod
+    true, //object_rock008_lod
+    true, //object_rock009_lod
+    true, //object_rock010_lod
+    true, //object_rock011_lod
+    true, //object_rock012_lod
+    true, //object_rock013_lod
+    true, //object_rock014_lod
+    true, //object_rock015_lod
+    true, //object_rock016_lod
+    true, //object_rock017_lod
+    true, //object_rock018_lod
+    true, //object_rock019_lod
+    true, //object_rock020_lod
+    true, //object_rock021_lod
+    true, //object_rock022_lod
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
@@ -686,30 +661,30 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_cube
     false, //object_sphere
     
- //   false, //object_grass_lod
+    false, //object_grass_lod
 
     false, //object_rock001_lod
-    // false, //object_rock002_lod
-    // false, //object_rock003_lod
-    // false, //object_rock004_lod
-    // false, //object_rock005_lod
-    // false, //object_rock006_lod
-    // false, //object_rock007_lod
-    // false, //object_rock008_lod
-    // false, //object_rock009_lod
-    // false, //object_rock010_lod
-    // false, //object_rock011_lod
-    // false, //object_rock012_lod
-    // false, //object_rock013_lod
-    // false, //object_rock014_lod
-    // false, //object_rock015_lod
-    // false, //object_rock016_lod
-    // false, //object_rock017_lod
-    // false, //object_rock018_lod
-    // false, //object_rock019_lod
-    // false, //object_rock020_lod
-    // false, //object_rock021_lod
-    // false, //object_rock022_lod
+    false, //object_rock002_lod
+    false, //object_rock003_lod
+    false, //object_rock004_lod
+    false, //object_rock005_lod
+    false, //object_rock006_lod
+    false, //object_rock007_lod
+    false, //object_rock008_lod
+    false, //object_rock009_lod
+    false, //object_rock010_lod
+    false, //object_rock011_lod
+    false, //object_rock012_lod
+    false, //object_rock013_lod
+    false, //object_rock014_lod
+    false, //object_rock015_lod
+    false, //object_rock016_lod
+    false, //object_rock017_lod
+    false, //object_rock018_lod
+    false, //object_rock019_lod
+    false, //object_rock020_lod
+    false, //object_rock021_lod
+    false, //object_rock022_lod
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
@@ -720,30 +695,30 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_cube
     true, //object_sphere
     
- //   true, //object_grass_lod
+    true, //object_grass_lod
 
     true, //object_rock001_lod
-    // true, //object_rock002_lod
-    // true, //object_rock003_lod
-    // true, //object_rock004_lod
-    // true, //object_rock005_lod
-    // true, //object_rock006_lod
-    // true, //object_rock007_lod
-    // true, //object_rock008_lod
-    // true, //object_rock009_lod
-    // true, //object_rock010_lod
-    // true, //object_rock011_lod
-    // true, //object_rock012_lod
-    // true, //object_rock013_lod
-    // true, //object_rock014_lod
-    // true, //object_rock015_lod
-    // true, //object_rock016_lod
-    // true, //object_rock017_lod
-    // true, //object_rock018_lod
-    // true, //object_rock019_lod
-    // true, //object_rock020_lod
-    // true, //object_rock021_lod
-    // true, //object_rock022_lod
+    true, //object_rock002_lod
+    true, //object_rock003_lod
+    true, //object_rock004_lod
+    true, //object_rock005_lod
+    true, //object_rock006_lod
+    true, //object_rock007_lod
+    true, //object_rock008_lod
+    true, //object_rock009_lod
+    true, //object_rock010_lod
+    true, //object_rock011_lod
+    true, //object_rock012_lod
+    true, //object_rock013_lod
+    true, //object_rock014_lod
+    true, //object_rock015_lod
+    true, //object_rock016_lod
+    true, //object_rock017_lod
+    true, //object_rock018_lod
+    true, //object_rock019_lod
+    true, //object_rock020_lod
+    true, //object_rock021_lod
+    true, //object_rock022_lod
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
@@ -754,35 +729,35 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_cube
     false, //object_sphere
     
- //   false, //object_grass_lod
+    false, //object_grass_lod
 
     false, //object_rock001_lod
-    // false, //object_rock002_lod
-    // false, //object_rock003_lod
-    // false, //object_rock004_lod
-    // false, //object_rock005_lod
-    // false, //object_rock006_lod
-    // false, //object_rock007_lod
-    // false, //object_rock008_lod
-    // false, //object_rock009_lod
-    // false, //object_rock010_lod
-    // false, //object_rock011_lod
-    // false, //object_rock012_lod
-    // false, //object_rock013_lod
-    // false, //object_rock014_lod
-    // false, //object_rock015_lod
-    // false, //object_rock016_lod
-    // false, //object_rock017_lod
-    // false, //object_rock018_lod
-    // false, //object_rock019_lod
-    // false, //object_rock020_lod
-    // false, //object_rock021_lod
-    // false, //object_rock022_lod
+    false, //object_rock002_lod
+    false, //object_rock003_lod
+    false, //object_rock004_lod
+    false, //object_rock005_lod
+    false, //object_rock006_lod
+    false, //object_rock007_lod
+    false, //object_rock008_lod
+    false, //object_rock009_lod
+    false, //object_rock010_lod
+    false, //object_rock011_lod
+    false, //object_rock012_lod
+    false, //object_rock013_lod
+    false, //object_rock014_lod
+    false, //object_rock015_lod
+    false, //object_rock016_lod
+    false, //object_rock017_lod
+    false, //object_rock018_lod
+    false, //object_rock019_lod
+    false, //object_rock020_lod
+    false, //object_rock021_lod
+    false, //object_rock022_lod
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 6; //28;
+static const int g_ObjectRend_Count = 28;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -793,30 +768,31 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_cube-1",                       "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_cube-1
     "object_sphere-1",                     "",                     "",                              "",                         "",                    "texture2d",                                                                    "", //object_sphere-1
     
-//    "object_grass_lod-1",                  "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_grass_lod-1
+    "object_grass_lod-1",                  "",                     "",                              "",                         "",                    "default_white",                                                                "", //object_grass_lod-1
     
     "object_rock001_lod-1",                "",                     "",                              "",                         "",                    "rock001_lod_albedo",                                                           "", //object_rock001_lod-1
-//     "object_rock002_lod-1",                "",                     "",                              "",                         "",                    "rock002_lod_albedo",                                                           "", //object_rock002_lod-1
-//     "object_rock003_lod-1",                "",                     "",                              "",                         "",                    "rock003_lod_albedo",                                                           "", //object_rock003_lod-1
-//     "object_rock004_lod-1",                "",                     "",                              "",                         "",                    "rock004_lod_albedo",                                                           "", //object_rock004_lod-1
-//     "object_rock005_lod-1",                "",                     "",                              "",                         "",                    "rock005_lod_albedo",                                                           "", //object_rock005_lod-1
-//     "object_rock006_lod-1",                "",                     "",                              "",                         "",                    "rock006_lod_albedo",                                                           "", //object_rock006_lod-1
-//     "object_rock007_lod-1",                "",                     "",                              "",                         "",                    "rock007_lod_albedo",                                                           "", //object_rock007_lod-1
-//     "object_rock008_lod-1",                "",                     "",                              "",                         "",                    "rock008_lod_albedo",                                                           "", //object_rock008_lod-1
-//     "object_rock009_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock009_lod-1
-//     "object_rock010_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock010_lod-1
-//     "object_rock011_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock011_lod-1
-//     "object_rock012_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock012_lod-1
-//     "object_rock013_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock013_lod-1
-//     "object_rock014_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock014_lod-1
-//     "object_rock015_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock015_lod-1
-//     "object_rock016_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock016_lod-1
-//     "object_rock017_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock017_lod-1
-//     "object_rock018_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock018_lod-1
-//     "object_rock019_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock019_lod-1
-//     "object_rock020_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock020_lod-1
-//     "object_rock021_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock021_lod-1
-//     "object_rock022_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock022_lod-1
+    "object_rock002_lod-1",                "",                     "",                              "",                         "",                    "rock002_lod_albedo",                                                           "", //object_rock002_lod-1
+    "object_rock003_lod-1",                "",                     "",                              "",                         "",                    "rock003_lod_albedo",                                                           "", //object_rock003_lod-1
+    "object_rock004_lod-1",                "",                     "",                              "",                         "",                    "rock004_lod_albedo",                                                           "", //object_rock004_lod-1
+    "object_rock005_lod-1",                "",                     "",                              "",                         "",                    "rock005_lod_albedo",                                                           "", //object_rock005_lod-1
+    "object_rock006_lod-1",                "",                     "",                              "",                         "",                    "rock006_lod_albedo",                                                           "", //object_rock006_lod-1
+    "object_rock007_lod-1",                "",                     "",                              "",                         "",                    "rock007_lod_albedo",                                                           "", //object_rock007_lod-1
+    "object_rock008_lod-1",                "",                     "",                              "",                         "",                    "rock008_lod_albedo",                                                           "", //object_rock008_lod-1
+    "object_rock009_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock009_lod-1
+    "object_rock010_lod-1",                "",                     "",                              "",                         "",                    "rock009_010_lod_albedo",                                                       "", //object_rock010_lod-1
+    "object_rock011_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock011_lod-1
+    "object_rock012_lod-1",                "",                     "",                              "",                         "",                    "rock011_012_lod_albedo",                                                       "", //object_rock012_lod-1
+    "object_rock013_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock013_lod-1
+    "object_rock014_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock014_lod-1
+    "object_rock015_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock015_lod-1
+    "object_rock016_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock016_lod-1
+    "object_rock017_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock017_lod-1
+    "object_rock018_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock018_lod-1
+    "object_rock019_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock019_lod-1
+    "object_rock020_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock020_lod-1
+    "object_rock021_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",                                                       "", //object_rock021_lod-1
+    "object_rock022_lod-1",                "",                     "",                              "",                         "",                    "rock013_022_lod_albedo",    
+                                                       "", //object_rock022_lod-1
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
@@ -828,30 +804,30 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_cube-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_sphere-1
     
-//    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_grass_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_grass_lod-1
 
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock001_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock002_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock003_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock004_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock005_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock006_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock007_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock008_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock009_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock010_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock011_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock012_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock013_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock014_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock015_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock016_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock017_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock018_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock019_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock020_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock021_lod-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock022_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock002_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock003_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock004_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock005_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock006_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock007_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock008_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock009_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock010_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock011_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock012_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock013_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock014_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock015_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock016_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock017_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock018_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock019_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock020_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock021_lod-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_rock022_lod-1
 
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
@@ -864,30 +840,30 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_cube-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_sphere-1
 
-//    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass_lod-1
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock001_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock002_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock003_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock004_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock005_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock006_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock007_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock008_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock009_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock010_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock011_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock012_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock013_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock014_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock015_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock016_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock017_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock018_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock019_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock020_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock021_lod-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock022_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock002_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock003_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock004_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock005_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock006_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock007_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock008_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock009_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock010_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock011_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock012_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock013_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock014_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock015_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock016_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock017_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock018_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock019_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock020_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock021_lod-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_rock022_lod-1
 
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
@@ -899,30 +875,30 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3( 2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_cube-1
     FVector3(-2.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_sphere-1
 
-//    FVector3( 0.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_grass_lod-1
+    FVector3( 0.0f,    1,   0.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_grass_lod-1
 
     FVector3( 0.0f,    1,  -1.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock001_lod-1
-    // FVector3( 0.0f,    1,  -2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock002_lod-1
-    // FVector3( 0.0f,    1,  -3.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock003_lod-1
-    // FVector3( 0.0f,    1,  -4.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock004_lod-1
-    // FVector3( 0.0f,    1,  -5.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock005_lod-1
-    // FVector3( 0.0f,    1,  -6.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock006_lod-1
-    // FVector3( 0.0f,    1,  -7.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock007_lod-1
-    // FVector3( 0.0f,    1,  -8.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock008_lod-1
-    // FVector3( 0.0f,    1,  -9.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock009_lod-1
-    // FVector3( 0.0f,    1, -10.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock010_lod-1
-    // FVector3( 0.0f,    1, -11.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock011_lod-1
-    // FVector3( 0.0f,    1,  11.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock012_lod-1
-    // FVector3( 0.0f,    1,  10.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock013_lod-1
-    // FVector3( 0.0f,    1,   9.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock014_lod-1
-    // FVector3( 0.0f,    1,   8.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock015_lod-1
-    // FVector3( 0.0f,    1,   7.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock016_lod-1
-    // FVector3( 0.0f,    1,   6.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock017_lod-1
-    // FVector3( 0.0f,    1,   5.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock018_lod-1
-    // FVector3( 0.0f,    1,   4.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock019_lod-1
-    // FVector3( 0.0f,    1,   3.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock020_lod-1
-    // FVector3( 0.0f,    1,   2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock021_lod-1
-    // FVector3( 0.0f,    1,   1.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock022_lod-1
+    FVector3( 0.0f,    1,  -2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock002_lod-1
+    FVector3( 0.0f,    1,  -3.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock003_lod-1
+    FVector3( 0.0f,    1,  -4.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock004_lod-1
+    FVector3( 0.0f,    1,  -5.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock005_lod-1
+    FVector3( 0.0f,    1,  -6.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock006_lod-1
+    FVector3( 0.0f,    1,  -7.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock007_lod-1
+    FVector3( 0.0f,    1,  -8.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock008_lod-1
+    FVector3( 0.0f,    1,  -9.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock009_lod-1
+    FVector3( 0.0f,    1, -10.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock010_lod-1
+    FVector3( 0.0f,    1, -11.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock011_lod-1
+    FVector3( 0.0f,    1,  11.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock012_lod-1
+    FVector3( 0.0f,    1,  10.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock013_lod-1
+    FVector3( 0.0f,    1,   9.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock014_lod-1
+    FVector3( 0.0f,    1,   8.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock015_lod-1
+    FVector3( 0.0f,    1,   7.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock016_lod-1
+    FVector3( 0.0f,    1,   6.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock017_lod-1
+    FVector3( 0.0f,    1,   5.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock018_lod-1
+    FVector3( 0.0f,    1,   4.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock019_lod-1
+    FVector3( 0.0f,    1,   3.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock020_lod-1
+    FVector3( 0.0f,    1,   2.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock021_lod-1
+    FVector3( 0.0f,    1,   1.0f),    FVector3(     0,   0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_rock022_lod-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -934,30 +910,30 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_cube-1
     false, //object_sphere-1
 
-//    false, //object_grass_lod-1
+    false, //object_grass_lod-1
 
     false, //object_rock001_lod-1
-    // false, //object_rock002_lod-1
-    // false, //object_rock003_lod-1
-    // false, //object_rock004_lod-1
-    // false, //object_rock005_lod-1
-    // false, //object_rock006_lod-1
-    // false, //object_rock007_lod-1
-    // false, //object_rock008_lod-1
-    // false, //object_rock009_lod-1
-    // false, //object_rock010_lod-1
-    // false, //object_rock011_lod-1
-    // false, //object_rock012_lod-1
-    // false, //object_rock013_lod-1
-    // false, //object_rock014_lod-1
-    // false, //object_rock015_lod-1
-    // false, //object_rock016_lod-1
-    // false, //object_rock017_lod-1
-    // false, //object_rock018_lod-1
-    // false, //object_rock019_lod-1
-    // false, //object_rock020_lod-1
-    // false, //object_rock021_lod-1
-    // false, //object_rock022_lod-1
+    false, //object_rock002_lod-1
+    false, //object_rock003_lod-1
+    false, //object_rock004_lod-1
+    false, //object_rock005_lod-1
+    false, //object_rock006_lod-1
+    false, //object_rock007_lod-1
+    false, //object_rock008_lod-1
+    false, //object_rock009_lod-1
+    false, //object_rock010_lod-1
+    false, //object_rock011_lod-1
+    false, //object_rock012_lod-1
+    false, //object_rock013_lod-1
+    false, //object_rock014_lod-1
+    false, //object_rock015_lod-1
+    false, //object_rock016_lod-1
+    false, //object_rock017_lod-1
+    false, //object_rock018_lod-1
+    false, //object_rock019_lod-1
+    false, //object_rock020_lod-1
+    false, //object_rock021_lod-1
+    false, //object_rock022_lod-1
 
 };
 static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] = 
@@ -969,30 +945,31 @@ static bool g_ObjectRend_IsCastShadows[g_ObjectRend_Count] =
     true, //object_cube-1
     true, //object_sphere-1
     
- //   true, //object_grass_lod-1
+    true, //object_grass_lod-1
     
     true, //object_rock001_lod-1
-    // true, //object_rock002_lod-1
-    // true, //object_rock003_lod-1
-    // true, //object_rock004_lod-1
-    // true, //object_rock005_lod-1
-    // true, //object_rock006_lod-1
-    // true, //object_rock007_lod-1
-    // true, //object_rock008_lod-1
-    // true, //object_rock009_lod-1
-    // true, //object_rock010_lod-1
-    // true, //object_rock011_lod-1
-    // true, //object_rock012_lod-1
-    // true, //object_rock013_lod-1
-    // true, //object_rock014_lod-1
-    // true, //object_rock015_lod-1
-    // true, //object_rock016_lod-1
-    // true, //object_rock017_lod-1
-    // true, //object_rock018_lod-1
-    // true, //object_rock019_lod-1
-    // true, //object_rock020_lod-1
-    // true, //object_rock021_lod-1
-    // true, //object_rock022_lod-1
+    true, //object_rock002_lod-1
+    true, //object_rock003_lod-1
+    true, //object_rock004_lod-1
+    true, //object_rock005_lod-1
+    true, //object_rock006_lod-1
+    true, //object_rock007_lod-1
+    true, //object_rock008_lod-1
+    true, //object_rock009_lod-1
+    true, //object_rock010_lod-1
+    true, //object_rock011_lod-1
+    true, //object_rock012_lod-1
+    true, //object_rock013_lod-1
+    true, //object_rock014_lod-1
+    true, //object_rock015_lod-1
+    true, //object_rock016_lod-1
+    true, //object_rock017_lod-1
+    true, //object_rock018_lod-1
+    true, //object_rock019_lod-1
+    true, //object_rock020_lod-1
+    true, //object_rock021_lod-1
+    true, //object_rock022_lod-1
+
 };
 static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] = 
 {
@@ -1003,30 +980,31 @@ static bool g_ObjectRend_IsReceiveShadows[g_ObjectRend_Count] =
     false, //object_cube-1
     false, //object_sphere-1
    
- //   false, //object_grass_lod-1
+    false, //object_grass_lod-1
     
     false, //object_rock001_lod-1
-    // false, //object_rock002_lod-1
-    // false, //object_rock003_lod-1
-    // false, //object_rock004_lod-1
-    // false, //object_rock005_lod-1
-    // false, //object_rock006_lod-1
-    // false, //object_rock007_lod-1
-    // false, //object_rock008_lod-1
-    // false, //object_rock009_lod-1
-    // false, //object_rock010_lod-1
-    // false, //object_rock011_lod-1
-    // false, //object_rock012_lod-1
-    // false, //object_rock013_lod-1
-    // false, //object_rock014_lod-1
-    // false, //object_rock015_lod-1
-    // false, //object_rock016_lod-1
-    // false, //object_rock017_lod-1
-    // false, //object_rock018_lod-1
-    // false, //object_rock019_lod-1
-    // false, //object_rock020_lod-1
-    // false, //object_rock021_lod-1
-    // false, //object_rock022_lod-1
+    false, //object_rock002_lod-1
+    false, //object_rock003_lod-1
+    false, //object_rock004_lod-1
+    false, //object_rock005_lod-1
+    false, //object_rock006_lod-1
+    false, //object_rock007_lod-1
+    false, //object_rock008_lod-1
+    false, //object_rock009_lod-1
+    false, //object_rock010_lod-1
+    false, //object_rock011_lod-1
+    false, //object_rock012_lod-1
+    false, //object_rock013_lod-1
+    false, //object_rock014_lod-1
+    false, //object_rock015_lod-1
+    false, //object_rock016_lod-1
+    false, //object_rock017_lod-1
+    false, //object_rock018_lod-1
+    false, //object_rock019_lod-1
+    false, //object_rock020_lod-1
+    false, //object_rock021_lod-1
+    false, //object_rock022_lod-1
+
 };
 static bool g_ObjectRend_IsCanCullings[g_ObjectRend_Count] = 
 {
@@ -1037,30 +1015,31 @@ static bool g_ObjectRend_IsCanCullings[g_ObjectRend_Count] =
     true, //object_cube-1
     true, //object_sphere-1
     
- //   true, //object_grass_lod-1
+    true, //object_grass_lod-1
     
     true, //object_rock001_lod-1
-    // true, //object_rock002_lod-1
-    // true, //object_rock003_lod-1
-    // true, //object_rock004_lod-1
-    // true, //object_rock005_lod-1
-    // true, //object_rock006_lod-1
-    // true, //object_rock007_lod-1
-    // true, //object_rock008_lod-1
-    // true, //object_rock009_lod-1
-    // true, //object_rock010_lod-1
-    // true, //object_rock011_lod-1
-    // true, //object_rock012_lod-1
-    // true, //object_rock013_lod-1
-    // true, //object_rock014_lod-1
-    // true, //object_rock015_lod-1
-    // true, //object_rock016_lod-1
-    // true, //object_rock017_lod-1
-    // true, //object_rock018_lod-1
-    // true, //object_rock019_lod-1
-    // true, //object_rock020_lod-1
-    // true, //object_rock021_lod-1
-    // true, //object_rock022_lod-1
+    true, //object_rock002_lod-1
+    true, //object_rock003_lod-1
+    true, //object_rock004_lod-1
+    true, //object_rock005_lod-1
+    true, //object_rock006_lod-1
+    true, //object_rock007_lod-1
+    true, //object_rock008_lod-1
+    true, //object_rock009_lod-1
+    true, //object_rock010_lod-1
+    true, //object_rock011_lod-1
+    true, //object_rock012_lod-1
+    true, //object_rock013_lod-1
+    true, //object_rock014_lod-1
+    true, //object_rock015_lod-1
+    true, //object_rock016_lod-1
+    true, //object_rock017_lod-1
+    true, //object_rock018_lod-1
+    true, //object_rock019_lod-1
+    true, //object_rock020_lod-1
+    true, //object_rock021_lod-1
+    true, //object_rock022_lod-1
+    
 };
 static bool g_ObjectRend_IsShowBoundAABB_All_Line = false;
 static bool g_ObjectRend_IsShowBoundSphere_All_Line = false;
@@ -1513,8 +1492,12 @@ void Vulkan_020_Culling::createCamera()
         VulkanWindow::cameraReset();
 
         this->pCamera->SetPos(FVector3(0.0f, 18.0f, -18.0f));
-        this->pCamera->SetEulerAngles(FVector3(46.0f, 0.0f, 0.0f));
-        this->pCamera->SetFarZ(1000000.0f);
+        this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
+        this->pCamera->SetNearZ(0.1f);
+        this->pCamera->SetFarZ(10000.0f);
+        this->pCamera->SetFovY(45.0f);
+        this->pCamera->UpdateViewMatrix();
+        this->pCamera->UpdateProjectionMatrix();
     }
 void Vulkan_020_Culling::createLightMain()
 {

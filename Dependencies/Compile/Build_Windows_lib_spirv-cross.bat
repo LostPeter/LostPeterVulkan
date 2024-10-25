@@ -77,14 +77,14 @@ cd %name_project%
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 -DSPIRV_CROSS_ENABLE_TESTS=OFF "../../../Sources/%name%/"
     msbuild spirv-cross.sln /p:configuration=debug
-    copy /Y ".\Debug\%name_lib_core%.lib" "..\..\..\Lib\Windows\"%name_lib_core_final%
-    copy /Y ".\Debug\%name_lib_c%.lib" "..\..\..\Lib\Windows\"%name_lib_c_final%
-    copy /Y ".\Debug\%name_lib_cpp%.lib" "..\..\..\Lib\Windows\"%name_lib_cpp_final%
-    copy /Y ".\Debug\%name_lib_glsl%.lib" "..\..\..\Lib\Windows\"%name_lib_glsl_final%
-    copy /Y ".\Debug\%name_lib_hlsl%.lib" "..\..\..\Lib\Windows\"%name_lib_hlsl_final%
-    copy /Y ".\Debug\%name_lib_msl%.lib" "..\..\..\Lib\Windows\"%name_lib_msl_final%
-    copy /Y ".\Debug\%name_lib_reflect%.lib" "..\..\..\Lib\Windows\"%name_lib_reflect_final%
-    copy /Y ".\Debug\%name_lib_util%.lib" "..\..\..\Lib\Windows\"%name_lib_util_final%
+    copy /Y ".\Debug\%name_lib_core%d.lib" "..\..\..\Lib\Windows\"%name_lib_core_final%
+    copy /Y ".\Debug\%name_lib_c%d.lib" "..\..\..\Lib\Windows\"%name_lib_c_final%
+    copy /Y ".\Debug\%name_lib_cpp%d.lib" "..\..\..\Lib\Windows\"%name_lib_cpp_final%
+    copy /Y ".\Debug\%name_lib_glsl%d.lib" "..\..\..\Lib\Windows\"%name_lib_glsl_final%
+    copy /Y ".\Debug\%name_lib_hlsl%d.lib" "..\..\..\Lib\Windows\"%name_lib_hlsl_final%
+    copy /Y ".\Debug\%name_lib_msl%d.lib" "..\..\..\Lib\Windows\"%name_lib_msl_final%
+    copy /Y ".\Debug\%name_lib_reflect%d.lib" "..\..\..\Lib\Windows\"%name_lib_reflect_final%
+    copy /Y ".\Debug\%name_lib_util%d.lib" "..\..\..\Lib\Windows\"%name_lib_util_final%
     copy /Y ".\Debug\%name_exe%.exe" "..\..\..\..\Bin\Windows\"%name_exe_final%
 ) else (
     cmake -DSPIRV_CROSS_ENABLE_TESTS=OFF "../../../Sources/%name%/"

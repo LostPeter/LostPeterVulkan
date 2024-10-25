@@ -1123,13 +1123,13 @@ namespace LostPeterFoundation
 
     enum FFrustumPlaneType
     {
-        F_FrustumPlane_Near = 0,                        //0: Near
-        F_FrustumPlane_Far,                             //1: Far
-        F_FrustumPlane_Left,                            //2: Left
-        F_FrustumPlane_Right,                           //3: Right
-        F_FrustumPlane_Top,                             //4: Top
-        F_FrustumPlane_Bottom,                          //5: Bottom
-
+        F_FrustumPlane_Left = 0,                        //0: Left
+        F_FrustumPlane_Right,                           //1: Right
+        F_FrustumPlane_Down,                            //2: Down
+        F_FrustumPlane_Up,                              //3: Up
+        F_FrustumPlane_Near,                            //4: Near
+        F_FrustumPlane_Far,                             //5: Far
+        
         F_FrustumPlane_Count
     };
 
