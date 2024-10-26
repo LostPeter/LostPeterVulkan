@@ -9,13 +9,13 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/VKPipelineGraphicsCopyBlit.h"
+#include "../include/VKPipelineGraphicsCopyBlitToFrame.h"
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 
 namespace LostPeterVulkan
 {
-    VKPipelineGraphicsCopyBlit::VKPipelineGraphicsCopyBlit(const String& namePipelineGraphics)
+    VKPipelineGraphicsCopyBlitToFrame::VKPipelineGraphicsCopyBlitToFrame(const String& namePipelineGraphics)
         : Base(namePipelineGraphics)
 
         , nameDescriptorSetLayout("")
@@ -33,17 +33,17 @@ namespace LostPeterVulkan
 
     }
 
-    VKPipelineGraphicsCopyBlit::~VKPipelineGraphicsCopyBlit()
+    VKPipelineGraphicsCopyBlitToFrame::~VKPipelineGraphicsCopyBlitToFrame()
     {
         Destroy();
     }
 
-    void VKPipelineGraphicsCopyBlit::Destroy()
+    void VKPipelineGraphicsCopyBlitToFrame::Destroy()
     {
         CleanupSwapChain();
         destroyBufferCopyBlitObject();
     }
-        void VKPipelineGraphicsCopyBlit::destroyBufferCopyBlitObject()
+        void VKPipelineGraphicsCopyBlitToFrame::destroyBufferCopyBlitObject()
         {
             if (this->m_vkBuffer_CopyBlit != VK_NULL_HANDLE)
             {
@@ -54,12 +54,12 @@ namespace LostPeterVulkan
         }
 
 
-    bool VKPipelineGraphicsCopyBlit::Init(Mesh* pMesh,
-                                          const String& descriptorSetLayout,
-                                          StringVector* pDescriptorSetLayoutNames,
-                                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                          const VkPipelineLayout& vkPipelineLayout,
-                                          const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
+    bool VKPipelineGraphicsCopyBlitToFrame::Init(Mesh* pMesh,
+                                                 const String& descriptorSetLayout,
+                                                 StringVector* pDescriptorSetLayoutNames,
+                                                 const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                                 const VkPipelineLayout& vkPipelineLayout,
+                                                 const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
     {
         this->pMeshBlit = pMesh;
         this->nameDescriptorSetLayout = descriptorSetLayout;
@@ -72,7 +72,7 @@ namespace LostPeterVulkan
         {
             if (!createBufferCopyBlitObject())
             {
-                F_LogError("*********************** VKPipelineGraphicsCopyBlit::Init: createBufferCopyBlitObject failed !");
+                F_LogError("*********************** VKPipelineGraphicsCopyBlitToFrame::Init: createBufferCopyBlitObject failed !");
                 return false;
             }
         }
@@ -92,7 +92,8 @@ namespace LostPeterVulkan
                 VK_DYNAMIC_STATE_SCISSOR
             };
             
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
+            String namePipeline = "PipelineGraphics-CopyBlitToFrame-" + this->name;
+            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(namePipeline,
                                                                               aShaderStageCreateInfos,
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -106,13 +107,14 @@ namespace LostPeterVulkan
                                                                               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics for [PipelineGraphics-CopyBlit] !";
+                String msg = "*********************** VKPipelineGraphicsCopyBlitToFrame::Init: Failed to create pipeline graphics for [" + namePipeline + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics-CopyBlit] Create pipeline graphics success !");
+            F_LogInfo("VKPipelineGraphicsCopyBlitToFrame::Init: [%s] Create pipeline graphics success !", namePipeline.c_str());
             
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
+            String namePipelineWire = "PipelineGraphics-CopyBlitToFrame-Wire-" + this->name;
+            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(namePipelineWire,
                                                                                         aShaderStageCreateInfos,
                                                                                         false, 0, 3,
                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
@@ -126,24 +128,24 @@ namespace LostPeterVulkan
                                                                                         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** VKPipelineGraphicsCopyBlit::Init: Failed to create pipeline graphics wire frame for [PipelineGraphics-CopyBlit] !";
+                String msg = "*********************** VKPipelineGraphicsCopyBlitToFrame::Init: Failed to create pipeline graphics wire frame for [" + namePipelineWire + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("VKPipelineGraphicsCopyBlit::Init: [PipelineGraphics-CopyBlit] Create pipeline graphics wire frame success !");
+            F_LogInfo("VKPipelineGraphicsCopyBlitToFrame::Init: [%s] Create pipeline graphics wire frame success !", namePipelineWire.c_str());
         }
 
         //3> VkDescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-CopyBlitToFrame-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
         if (this->poDescriptorSets.empty())
         {
-            F_LogError("*********************** VKPipelineGraphicsCopyBlit::Init: createVkDescriptorSets failed !");
+            F_LogError("*********************** VKPipelineGraphicsCopyBlitToFrame::Init: createVkDescriptorSets failed !");
             return false;
         }
 
         return true;
     }
-        bool VKPipelineGraphicsCopyBlit::createBufferCopyBlitObject()
+        bool VKPipelineGraphicsCopyBlitToFrame::createBufferCopyBlitObject()
         {
             this->m_objectCB_CopyBlit.offsetX = 0.0f;
             this->m_objectCB_CopyBlit.offsetY = 0.0f;
@@ -155,7 +157,7 @@ namespace LostPeterVulkan
             return true;
         }
 
-    void VKPipelineGraphicsCopyBlit::CleanupSwapChain()
+    void VKPipelineGraphicsCopyBlitToFrame::CleanupSwapChain()
     {
         this->poDescriptorSetLayoutNames = nullptr;
         this->poDescriptorSetLayout = VK_NULL_HANDLE;
@@ -174,10 +176,10 @@ namespace LostPeterVulkan
         this->poDescriptorSets.clear();
     }  
 
-    void VKPipelineGraphicsCopyBlit::UpdateDescriptorSets(const VkDescriptorImageInfo& imageInfo)
+    void VKPipelineGraphicsCopyBlitToFrame::UpdateDescriptorSets(const VkDescriptorImageInfo& imageInfo)
     {
         StringVector* pDescriptorSetLayoutNames = this->poDescriptorSetLayoutNames;
-        F_Assert(pDescriptorSetLayoutNames != nullptr && "VKPipelineGraphicsCopyBlit::UpdateDescriptorSets")
+        F_Assert(pDescriptorSetLayoutNames != nullptr && "VKPipelineGraphicsCopyBlitToFrame::UpdateDescriptorSets")
         uint32_t count_ds = (uint32_t)this->poDescriptorSets.size();
         for (uint32_t i = 0; i < count_ds; i++)
         {
@@ -212,7 +214,7 @@ namespace LostPeterVulkan
                 }
                 else
                 {
-                    String msg = "*********************** VKPipelineGraphicsCopyBlit::UpdateDescriptorSets: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    String msg = "*********************** VKPipelineGraphicsCopyBlitToFrame::UpdateDescriptorSets: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -221,7 +223,7 @@ namespace LostPeterVulkan
         }
     }
 
-    void VKPipelineGraphicsCopyBlit::UpdateBuffer(const CopyBlitObjectConstants& object)
+    void VKPipelineGraphicsCopyBlitToFrame::UpdateBuffer(const CopyBlitObjectConstants& object)
     {
         m_objectCB_CopyBlit = object;
         Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->m_objectCB_CopyBlit, this->m_vkBuffersMemory_CopyBlit);

@@ -9,18 +9,18 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VK_PIPELINE_GRAPHICS_COPY_BLIT_H_
-#define _VK_PIPELINE_GRAPHICS_COPY_BLIT_H_
+#ifndef _VK_PIPELINE_GRAPHICS_COPY_BLIT_TO_FRAME_H_
+#define _VK_PIPELINE_GRAPHICS_COPY_BLIT_TO_FRAME_H_
 
 #include "Base.h"
 
 namespace LostPeterVulkan
 {
-    class vulkanExport VKPipelineGraphicsCopyBlit : public Base
+    class vulkanExport VKPipelineGraphicsCopyBlitToFrame : public Base
     {
     public:
-        VKPipelineGraphicsCopyBlit(const String& namePipelineGraphics);
-        virtual ~VKPipelineGraphicsCopyBlit();
+        VKPipelineGraphicsCopyBlitToFrame(const String& namePipelineGraphics);
+        virtual ~VKPipelineGraphicsCopyBlitToFrame();
 
     public:
         String nameDescriptorSetLayout;

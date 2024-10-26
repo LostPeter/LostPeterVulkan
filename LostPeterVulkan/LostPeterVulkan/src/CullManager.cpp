@@ -253,6 +253,12 @@ namespace LostPeterVulkan
     }
     void CullManager::ExecuteHizDepthGenerate(VkCommandBuffer& commandBuffer)
     {
+        if (!this->isEnable)
+            return;
+        VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
+        if (!pVulkanWindow->isComputeCullFrustumHizDepth)
+            return;
+
         
     }
 

@@ -40,7 +40,7 @@ namespace LostPeterVulkan
         VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
 
         //PipelineGraphics
-        VKPipelineGraphicsCopyBlit* m_pPipelineGraphics_CopyBlit;
+        VKPipelineGraphicsCopyBlitToFrame* m_pPipelineGraphics_CopyBlitToFrame;
         VKPipelineGraphicsDepthShadowMap* m_pPipelineGraphics_DepthShadowMap;
         VKPipelineGraphicsTerrain* m_pPipelineGraphics_Terrain;
 

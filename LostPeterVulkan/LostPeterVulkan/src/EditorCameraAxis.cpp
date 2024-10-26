@@ -210,13 +210,13 @@ namespace LostPeterVulkan
                 ShaderModuleInfo siVert;
                 siVert.nameShader = s_strNameShader_QuadBlit_Vert;
                 siVert.nameShaderType = "vert";
-                siVert.pathShader = "Assets/Shader/standard_copy_blit.vert.spv";
+                siVert.pathShader = "Assets/Shader/standard_copy_blit_to_frame.vert.spv";
                 this->aShaderModuleInfos.push_back(siVert);
                 //Frag
                 ShaderModuleInfo siFrag;
                 siFrag.nameShader = s_strNameShader_QuadBlit_Frag;
                 siFrag.nameShaderType = "frag";
-                siFrag.pathShader = "Assets/Shader/standard_copy_blit.frag.spv";
+                siFrag.pathShader = "Assets/Shader/standard_copy_blit_to_frame.frag.spv";
                 this->aShaderModuleInfos.push_back(siFrag);
             }
         }

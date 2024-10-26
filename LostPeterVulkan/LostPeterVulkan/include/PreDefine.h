@@ -552,7 +552,8 @@ namespace LostPeterVulkan
     class VKPipelineComputeCull;
     class VKPipelineComputeTerrain;
     class VKPipelineGraphics;
-    class VKPipelineGraphicsCopyBlit;
+    class VKPipelineGraphicsCopyBlitFromFrame;
+    class VKPipelineGraphicsCopyBlitToFrame;
     class VKPipelineGraphicsDepthShadowMap;
     class VKPipelineGraphicsTerrain;
     class VKRenderPassCull;
