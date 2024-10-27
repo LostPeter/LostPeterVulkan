@@ -32,6 +32,7 @@
 #include "VKPipelineGraphicsCopyBlitToFrame.h"
 #include "VKPipelineGraphicsDepthShadowMap.h"
 #include "VKPipelineGraphicsTerrain.h"
+#include "VKRenderPassCopyBlitFromFrame.h"
 #include "VKRenderPassCull.h"
 #include "VKRenderPassShadowMap.h"
 #include "VKRenderPassTerrain.h"

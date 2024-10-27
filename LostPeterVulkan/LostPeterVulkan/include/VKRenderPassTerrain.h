@@ -20,7 +20,7 @@ namespace LostPeterVulkan
     class vulkanExport VKRenderPassTerrain : public Base
     {
     public:
-        VKRenderPassTerrain(const String& _nameRenderPass);
+        VKRenderPassTerrain(const String& nameRenderPass);
         virtual ~VKRenderPassTerrain();
 
     public:

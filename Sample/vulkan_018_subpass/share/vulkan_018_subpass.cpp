@@ -886,7 +886,7 @@ void Vulkan_018_SubPass::createCustomBeforePipeline()
     createShaderModules();
 
     //4> Graphics_CopyBlit
-    UpdateDescriptorSets_Graphics_CopyBlit(this->m_pSubPassRenderPass->aImageInfos[0]);
+    UpdateDescriptorSets_Graphics_CopyBlitToFrame(this->m_pSubPassRenderPass->aImageInfos[0]);
 }   
 void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 {
@@ -1745,7 +1745,7 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
 
     void Vulkan_018_SubPass::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
     {
-        Draw_Graphics_CopyBlit(commandBuffer);
+        Draw_Graphics_CopyBlitToFrame(commandBuffer);
     }
 
 bool Vulkan_018_SubPass::beginRenderImgui()

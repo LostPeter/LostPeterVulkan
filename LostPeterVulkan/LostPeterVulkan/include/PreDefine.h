@@ -321,25 +321,26 @@ namespace LostPeterVulkan
         Vulkan_DescriptorSet_TextureTESE,                   //17: TextureTESE
         Vulkan_DescriptorSet_TextureFS,                     //18: TextureFS
         Vulkan_DescriptorSet_TextureFrameColor,             //19: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //20: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //21: TextureCSRW
-        Vulkan_DescriptorSet_TextureCSRWSrc,                //22: TextureCSRWSrc
-        Vulkan_DescriptorSet_TextureCSRWDst,                //23: TextureCSRWDst
-        Vulkan_DescriptorSet_TextureDepthShadow,            //24: TextureDepthShadow
-        Vulkan_DescriptorSet_InputAttachRed,                //25: InputAttachRed
-        Vulkan_DescriptorSet_InputAttachGreen,              //26: InputAttachGreen
-        Vulkan_DescriptorSet_InputAttachBlue,               //27: InputAttachBlue
-        Vulkan_DescriptorSet_Terrain,                       //28: Terrain
-        Vulkan_DescriptorSet_Cull,                          //29: Cull
-        Vulkan_DescriptorSet_HizDepth,                      //30: HizDepth
-        Vulkan_DescriptorSet_BufferRWArgsCB,                //31: BufferRWArgsCB
-        Vulkan_DescriptorSet_BufferRWLodCB,                 //32: BufferRWLodCB
-        Vulkan_DescriptorSet_BufferRWResultCB,              //33: BufferRWResultCB
-        Vulkan_DescriptorSet_BufferRWClipCB,                //34: BufferRWClipCB
-        Vulkan_DescriptorSet_BufferRWObjectCullInstance,    //35: BufferRWObjectCullInstance
-        Vulkan_DescriptorSet_CullInstance,                  //36: CullInstance
-        Vulkan_DescriptorSet_BufferObjectLineFlat2D,        //37: BufferObjectLineFlat2D
-        Vulkan_DescriptorSet_BufferObjectLineFlat3D,        //38: BufferObjectLineFlat3D
+        Vulkan_DescriptorSet_TextureFrameDepth,             //20: TextureFrameDepth
+        Vulkan_DescriptorSet_TextureCSR,                    //21: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //22: TextureCSRW
+        Vulkan_DescriptorSet_TextureCSRWSrc,                //23: TextureCSRWSrc
+        Vulkan_DescriptorSet_TextureCSRWDst,                //24: TextureCSRWDst
+        Vulkan_DescriptorSet_TextureDepthShadow,            //25: TextureDepthShadow
+        Vulkan_DescriptorSet_InputAttachRed,                //26: InputAttachRed
+        Vulkan_DescriptorSet_InputAttachGreen,              //27: InputAttachGreen
+        Vulkan_DescriptorSet_InputAttachBlue,               //28: InputAttachBlue
+        Vulkan_DescriptorSet_Terrain,                       //29: Terrain
+        Vulkan_DescriptorSet_Cull,                          //30: Cull
+        Vulkan_DescriptorSet_HizDepth,                      //31: HizDepth
+        Vulkan_DescriptorSet_BufferRWArgsCB,                //32: BufferRWArgsCB
+        Vulkan_DescriptorSet_BufferRWLodCB,                 //33: BufferRWLodCB
+        Vulkan_DescriptorSet_BufferRWResultCB,              //34: BufferRWResultCB
+        Vulkan_DescriptorSet_BufferRWClipCB,                //35: BufferRWClipCB
+        Vulkan_DescriptorSet_BufferRWObjectCullInstance,    //36: BufferRWObjectCullInstance
+        Vulkan_DescriptorSet_CullInstance,                  //37: CullInstance
+        Vulkan_DescriptorSet_BufferObjectLineFlat2D,        //38: BufferObjectLineFlat2D
+        Vulkan_DescriptorSet_BufferObjectLineFlat3D,        //39: BufferObjectLineFlat3D
 
         Vulkan_DescriptorSet_Count,
     };
@@ -556,6 +557,7 @@ namespace LostPeterVulkan
     class VKPipelineGraphicsCopyBlitToFrame;
     class VKPipelineGraphicsDepthShadowMap;
     class VKPipelineGraphicsTerrain;
+    class VKRenderPassCopyBlitFromFrame;
     class VKRenderPassCull;
     class VKRenderPassShadowMap;
     class VKRenderPassTerrain;

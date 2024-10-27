@@ -23,18 +23,45 @@ namespace LostPeterVulkan
         virtual ~VKPipelineGraphicsCopyBlitFromFrame();
 
     public:
+        VKRenderPassCopyBlitFromFrame* pVKRenderPassCopyBlitFromFrame;
 
+        String nameDescriptorSetLayout;
+        StringVector* poDescriptorSetLayoutNames;
+        VkDescriptorSetLayout poDescriptorSetLayout;
+        VkPipelineLayout poPipelineLayout;
+        VkPipeline poPipeline;
+        VkDescriptorSetVector poDescriptorSets;
+
+        CopyBlitObjectConstants m_objectCB_CopyBlit;
+        VkBuffer m_vkBuffer_CopyBlit;
+        VkDeviceMemory m_vkBuffersMemory_CopyBlit;
+
+        Mesh* pMeshBlit;
 
     public:
         void Destroy();
 
+        virtual bool Init(uint32_t width, 
+                          uint32_t height,
+                          VkFormat format,
+                          bool isDepth,
+                          Mesh* pMesh,
+                          const String& descriptorSetLayout,
+                          StringVector* pDescriptorSetLayoutNames,
+                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                          const VkPipelineLayout& vkPipelineLayout,
+                          const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     protected:
-
+        void destroyBufferCopyBlitObject();
+        
+        bool createBufferCopyBlitObject();
 
     public:
+        virtual void CleanupSwapChain();
 
-
+        virtual void UpdateDescriptorSets(const VkDescriptorImageInfo& imageInfo);
+        virtual void UpdateBuffer(const CopyBlitObjectConstants& object);
     };
 
 }; //LostPeterVulkan

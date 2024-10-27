@@ -20,7 +20,7 @@ namespace LostPeterVulkan
     class vulkanExport VKRenderPassCull : public Base
     {
     public:
-        VKRenderPassCull(const String& _nameRenderPass);
+        VKRenderPassCull(const String& nameRenderPass);
         virtual ~VKRenderPassCull();
 
     public:

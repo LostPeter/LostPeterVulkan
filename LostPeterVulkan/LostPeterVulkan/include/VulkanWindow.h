@@ -91,10 +91,14 @@ namespace LostPeterVulkan
         virtual void Update_Compute_Terrain(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics
-        //PipelineGraphics-CopyBlit
-        virtual void UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo);
-        virtual void UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object);
-        virtual void Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer);
+        //PipelineGraphics-CopyBlitToFrame
+        virtual void UpdateDescriptorSets_Graphics_CopyBlitToFrame(const VkDescriptorImageInfo& imageInfo);
+        virtual void UpdateBuffer_Graphics_CopyBlitToFrame(const CopyBlitObjectConstants& object);
+        virtual void Draw_Graphics_CopyBlitToFrame(VkCommandBuffer& commandBuffer);
+        //PipelineGraphics-CopyBlitFromFrame
+        virtual void UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkDescriptorImageInfo& imageInfo);
+        virtual void UpdateBuffer_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const CopyBlitObjectConstants& object);
+        virtual void Draw_Graphics_CopyBlitFromFrame(VkCommandBuffer& commandBuffer, VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame);
 
         //PipelineGraphics_DepthShadowMap
         //ObjectWorld

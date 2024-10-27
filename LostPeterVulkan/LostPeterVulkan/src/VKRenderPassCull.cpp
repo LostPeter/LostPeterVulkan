@@ -17,9 +17,9 @@ namespace LostPeterVulkan
     int VKRenderPassCull::s_nHizDepthWidth = 1024;
     int VKRenderPassCull::s_nHizDepthHeight = 512;
 
-    VKRenderPassCull::VKRenderPassCull(const String& _nameRenderPass)
+    VKRenderPassCull::VKRenderPassCull(const String& nameRenderPass)
         //Window
-        : Base(_nameRenderPass)
+        : Base(nameRenderPass)
 
         //HizDepth
         , poHizDepthImage(VK_NULL_HANDLE)

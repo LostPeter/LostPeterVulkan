@@ -544,13 +544,14 @@ namespace LostPeterVulkan
     }
 
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 11;
+    static const int g_DescriptorSetLayoutCount_Internal = 12;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
         "Pass-Object",
         "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB",
         "ObjectCopyBlit-TextureFrameColor",
+        "ObjectCopyBlit-TextureFrameDepth",
         "Cull-BufferRWArgsCB",
         "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
         "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
@@ -610,15 +611,15 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 15;
+    static const int g_ShaderCount_Internal = 17;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
         ///////////////////////////////////////// vert /////////////////////////////////////////
+        "vert_standard_copy_blit_from_frame",                     "vert",              "Assets/Shader/standard_copy_blit_from_frame.vert.spv", //standard_copy_blit_from_frame vert
         "vert_standard_copy_blit_to_frame",                       "vert",              "Assets/Shader/standard_copy_blit_to_frame.vert.spv", //standard_copy_blit_to_frame vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
         "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
-
         "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
@@ -631,6 +632,7 @@ namespace LostPeterVulkan
 
 
         ///////////////////////////////////////// frag /////////////////////////////////////////
+        "frag_standard_copy_blit_from_frame",                     "frag",              "Assets/Shader/standard_copy_blit_from_frame.frag.spv", //standard_copy_blit_from_frame frag
         "frag_standard_copy_blit_to_frame",                       "frag",              "Assets/Shader/standard_copy_blit_to_frame.frag.spv", //standard_copy_blit_to_frame frag
         "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
         "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
@@ -1072,15 +1074,15 @@ namespace LostPeterVulkan
             }
             F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlit: [PipelineGraphics_CopyBlit] create success !");
         }
-    void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlit(const VkDescriptorImageInfo& imageInfo)
+    void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitToFrame(const VkDescriptorImageInfo& imageInfo)
     {
         this->m_pPipelineGraphics_CopyBlitToFrame->UpdateDescriptorSets(imageInfo);
     }
-    void VulkanWindow::UpdateBuffer_Graphics_CopyBlit(const CopyBlitObjectConstants& object)
+    void VulkanWindow::UpdateBuffer_Graphics_CopyBlitToFrame(const CopyBlitObjectConstants& object)
     {
         this->m_pPipelineGraphics_CopyBlitToFrame->UpdateBuffer(object);
     }
-    void VulkanWindow::Draw_Graphics_CopyBlit(VkCommandBuffer& commandBuffer)
+    void VulkanWindow::Draw_Graphics_CopyBlitToFrame(VkCommandBuffer& commandBuffer)
     {
         Mesh* pMesh = this->m_pPipelineGraphics_CopyBlitToFrame->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
@@ -1095,6 +1097,37 @@ namespace LostPeterVulkan
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlitToFrame->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_CopyBlitToFrame->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
+
+    void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkDescriptorImageInfo& imageInfo)
+    {
+        if (pCopyBlitFromFrame == nullptr)
+            return;
+
+        pCopyBlitFromFrame->UpdateDescriptorSets(imageInfo);
+    }
+    void VulkanWindow::UpdateBuffer_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const CopyBlitObjectConstants& object)
+    {
+        if (pCopyBlitFromFrame == nullptr)
+            return;
+
+        pCopyBlitFromFrame->UpdateBuffer(object);
+    }
+    void VulkanWindow::Draw_Graphics_CopyBlitFromFrame(VkCommandBuffer& commandBuffer, VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame)
+    {
+        if (pCopyBlitFromFrame == nullptr)
+            return;
+
+        Mesh* pMesh = pCopyBlitFromFrame->pMeshBlit;
+        MeshSub* pMeshSub = pMesh->aMeshSubs[0];
+        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipeline);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipelineLayout, 0, 1, &pCopyBlitFromFrame->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+    }
+
 
         void VulkanWindow::createPipelineGraphics_DepthShadowMap()
         {
@@ -1715,6 +1748,10 @@ namespace LostPeterVulkan
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameDepth)) //TextureFrameDepth
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
             }
@@ -3690,19 +3727,10 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::createRenderPasses()
     {
-        //1> createRenderPass_ShadowMap
         createRenderPass_ShadowMap();
-
-        //2> createRenderPass_Default
         createRenderPass_Default();
-
-        //3> createRenderPass_Cull
         createRenderPass_Cull();
-
-        //4> createRenderPass_Terrain
         createRenderPass_Terrain();
-
-        //5> createRenderPass_Custom
         createRenderPass_Custom();
     }
         void VulkanWindow::createRenderPass_ShadowMap()

@@ -452,25 +452,26 @@ namespace LostPeterVulkan
         "TextureTESE",                      //17:  TextureTESE
         "TextureFS",                        //18:  TextureFS
         "TextureFrameColor",                //19:  TextureFrameColor
-        "TextureCSR",                       //20:  TextureCSR
-        "TextureCSRW",                      //21:  TextureCSRW
-        "TextureCSRWSrc",                   //22:  TextureCSRWSrc
-        "TextureCSRWDst",                   //23:  TextureCSRWDst
-        "TextureDepthShadow",               //24:  TextureDepthShadow
-        "InputAttachRed",                   //25:  InputAttachRed
-        "InputAttachGreen",                 //26:  InputAttachGreen
-        "InputAttachBlue",                  //27:  InputAttachBlue
-        "Terrain",                          //28:  Terrain
-        "Cull",                             //29:  Cull
-        "HizDepth",                         //30:  HizDepth
-        "BufferRWArgsCB",                   //31:  BufferRWArgsCB
-        "BufferRWLodCB",                    //32:  BufferRWLodCB
-        "BufferRWResultCB",                 //33:  BufferRWResultCB
-        "BufferRWClipCB",                   //34:  BufferRWClipCB
-        "BufferRWObjectCullInstance",       //35:  BufferRWObjectCullInstance
-        "CullInstance",                     //36:  CullInstance
-        "BufferObjectLineFlat2D",           //37:  BufferObjectLineFlat2D
-        "BufferObjectLineFlat3D",           //38:  BufferObjectLineFlat3D
+        "TextureFrameDepth",                //20:  TextureFrameDepth
+        "TextureCSR",                       //21:  TextureCSR
+        "TextureCSRW",                      //22:  TextureCSRW
+        "TextureCSRWSrc",                   //23:  TextureCSRWSrc
+        "TextureCSRWDst",                   //24:  TextureCSRWDst
+        "TextureDepthShadow",               //25:  TextureDepthShadow
+        "InputAttachRed",                   //26:  InputAttachRed
+        "InputAttachGreen",                 //27:  InputAttachGreen
+        "InputAttachBlue",                  //28:  InputAttachBlue
+        "Terrain",                          //29:  Terrain
+        "Cull",                             //30:  Cull
+        "HizDepth",                         //31:  HizDepth
+        "BufferRWArgsCB",                   //32:  BufferRWArgsCB
+        "BufferRWLodCB",                    //33:  BufferRWLodCB
+        "BufferRWResultCB",                 //34:  BufferRWResultCB
+        "BufferRWClipCB",                   //35:  BufferRWClipCB
+        "BufferRWObjectCullInstance",       //36:  BufferRWObjectCullInstance
+        "CullInstance",                     //37:  CullInstance
+        "BufferObjectLineFlat2D",           //38:  BufferObjectLineFlat2D
+        "BufferObjectLineFlat3D",           //39:  BufferObjectLineFlat3D
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

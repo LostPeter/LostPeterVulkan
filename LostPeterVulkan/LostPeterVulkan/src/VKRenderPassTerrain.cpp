@@ -17,9 +17,9 @@ namespace LostPeterVulkan
     const uint32 VKRenderPassTerrain::c_nMaxGridVertexCount = 129;
     const uint32 VKRenderPassTerrain::c_nInstanceGridVertexCount = 17;
     
-    VKRenderPassTerrain::VKRenderPassTerrain(const String& _nameRenderPass)
+    VKRenderPassTerrain::VKRenderPassTerrain(const String& nameRenderPass)
         //Window
-        : Base(_nameRenderPass)
+        : Base(nameRenderPass)
 
         //Terrain
         , poTerrainHeightMapData(nullptr)
