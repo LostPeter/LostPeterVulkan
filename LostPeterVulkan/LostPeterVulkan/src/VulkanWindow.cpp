@@ -8282,7 +8282,7 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateCompute_AfterRender_HizDepthGenerate(VkCommandBuffer& commandBuffer)
                 {
                     if (!this->cfg_isRenderPassCull ||
-                        !this->isComputeCullFrustumHizDepth ||
+                        //!this->isComputeCullFrustumHizDepth ||
                         this->m_pPipelineCompute_Cull == nullptr)
                         return;
 
@@ -9649,8 +9649,8 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer)
                 {
                     if (this->m_pVKRenderPassCull == nullptr ||
-                        this->m_pPipelineGraphics_DepthHiz == nullptr ||
-                        !this->isComputeCullFrustumHizDepth)
+                        //!this->isComputeCullFrustumHizDepth ||
+                        this->m_pPipelineGraphics_DepthHiz == nullptr)
                     {
                         return;
                     }
