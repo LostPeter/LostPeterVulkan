@@ -427,7 +427,7 @@ protected:
         virtual void createDescriptorSets_Custom();
 
     //Compute/Update
-        virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
+        virtual void updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer);
 
     //Render/Update
         virtual void updateCBs_Custom();

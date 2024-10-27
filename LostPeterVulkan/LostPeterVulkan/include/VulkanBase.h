@@ -65,14 +65,22 @@ namespace LostPeterVulkan
         virtual void OnLoad() = 0;
         virtual bool OnIsInit() = 0;
         virtual void OnResize(int w, int h, bool force) = 0;
-        virtual bool OnBeginCompute() = 0;
-            virtual void OnUpdateCompute() = 0;
-            virtual void OnCompute() = 0;
-        virtual void OnEndCompute() = 0;
+
+        virtual bool OnBeginCompute_BeforeRender() = 0;
+            virtual void OnUpdateCompute_BeforeRender() = 0;
+            virtual void OnCompute_BeforeRender() = 0;
+        virtual void OnEndCompute_BeforeRender() = 0;
+
         virtual bool OnBeginRender() = 0;
             virtual void OnUpdateRender() = 0;
             virtual void OnRender() = 0;
         virtual void OnEndRender() = 0;
+
+        virtual bool OnBeginCompute_AfterRender() = 0;
+            virtual void OnUpdateCompute_AfterRender() = 0;
+            virtual void OnCompute_AfterRender() = 0;
+        virtual void OnEndCompute_AfterRender() = 0;
+
         virtual void OnDestroy() = 0;
 
         // Mouse Input

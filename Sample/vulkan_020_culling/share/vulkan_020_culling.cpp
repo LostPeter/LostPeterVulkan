@@ -1449,7 +1449,8 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
 
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
-    this->cfg_isUseComputeShader = true;
+    this->cfg_isUseComputeShaderBeforeRender = true;
+    this->cfg_isUseComputeShaderAfterRender = true;
     this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_isImgui = true;
@@ -2843,7 +2844,7 @@ void Vulkan_020_Culling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_020_Culling::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_020_Culling::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)

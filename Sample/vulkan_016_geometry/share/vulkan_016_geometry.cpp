@@ -1782,7 +1782,7 @@ void Vulkan_016_Geometry::createDescriptorSets_Compute(VKPipelineCompute* pPipel
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_016_Geometry::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_016_Geometry::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)

@@ -544,7 +544,7 @@ namespace LostPeterVulkan
     }
 
     //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 12;
+    static const int g_DescriptorSetLayoutCount_Internal = 13;
     static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
     {
         "Pass",
@@ -556,6 +556,7 @@ namespace LostPeterVulkan
         "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
         "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
         "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
+        "HizDepth-TextureFS",
         "HizDepth-TextureCSRWSrc-TextureCSRWDst",
         "TextureCopy-TextureCSR-TextureCSRW",
         "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
@@ -944,6 +945,15 @@ namespace LostPeterVulkan
 
         this->m_pPipelineCompute_Cull->Dispatch_Cull(commandBuffer);
     }
+    void VulkanWindow::Update_Compute_HizDepthGenerate(VkCommandBuffer& commandBuffer)
+    {
+        if (!this->cfg_isRenderPassCull ||
+            !this->isComputeCullFrustumHizDepth ||
+            this->m_pPipelineCompute_Cull == nullptr)
+            return;
+        
+        this->m_pPipelineCompute_Cull->Dispatch_HizDepthGenerate(commandBuffer);
+    }
 
         void VulkanWindow::createPipelineCompute_Terrain()
         {
@@ -1007,6 +1017,7 @@ namespace LostPeterVulkan
     void VulkanWindow::destroyPipelineGraphics_Internal()
     {
         destroyPipelineGraphics_Terrain();
+        destroyPipelineGraphics_DepthHiz();
         destroyPipelineGraphics_DepthShadowMap();
         destroyPipelineGraphics_CopyBlit();
 
@@ -1019,6 +1030,10 @@ namespace LostPeterVulkan
         {
             F_DELETE(m_pPipelineGraphics_DepthShadowMap)
         }
+        void VulkanWindow::destroyPipelineGraphics_DepthHiz()
+        {
+            F_DELETE(m_pPipelineGraphics_DepthHiz)
+        }
         void VulkanWindow::destroyPipelineGraphics_Terrain()
         {
             F_DELETE(m_pPipelineGraphics_Terrain)
@@ -1028,6 +1043,7 @@ namespace LostPeterVulkan
     {
         createPipelineGraphics_CopyBlit();
         createPipelineGraphics_DepthShadowMap();
+        createPipelineGraphics_DepthHiz();
         createPipelineGraphics_Terrain();
 
     }
@@ -1314,6 +1330,25 @@ namespace LostPeterVulkan
     {
 
     }
+
+
+        void VulkanWindow::createPipelineGraphics_DepthHiz()
+        {
+            if (this->m_pVKRenderPassCull == nullptr)
+            {
+                return;
+            }
+
+            this->m_pPipelineGraphics_DepthHiz = new VKPipelineGraphicsDepthHiz("PipelineGraphics-DepthHiz", this->m_pVKRenderPassCull);
+            if (!this->m_pPipelineGraphics_DepthHiz->Init())
+            {
+                F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthHiz: m_pPipelineGraphics_DepthHiz->Init failed !");
+                return;
+            }
+        }
+
+
+
 
         void VulkanWindow::createPipelineGraphics_Terrain()
         {
@@ -1926,7 +1961,8 @@ namespace LostPeterVulkan
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
         , cfg_isNegativeViewport(true)
-        , cfg_isUseComputeShader(false)
+        , cfg_isUseComputeShaderBeforeRender(false)
+        , cfg_isUseComputeShaderAfterRender(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
@@ -1987,6 +2023,7 @@ namespace LostPeterVulkan
 
         , m_pPipelineGraphics_CopyBlitToFrame(nullptr)
         , m_pPipelineGraphics_DepthShadowMap(nullptr)
+        , m_pPipelineGraphics_DepthHiz(nullptr)
         , m_pPipelineGraphics_Terrain(nullptr)
 
         , pCamera(nullptr)
@@ -2066,21 +2103,21 @@ namespace LostPeterVulkan
         }
     }
 
-    bool VulkanWindow::OnBeginCompute()
+    bool VulkanWindow::OnBeginCompute_BeforeRender()
     {
-        return beginCompute();
+        return beginCompute_BeforeRender();
     }
-        void VulkanWindow::OnUpdateCompute()
+        void VulkanWindow::OnUpdateCompute_BeforeRender()
         {
-            updateCompute();
+            updateCompute_BeforeRender();
         }
-        void VulkanWindow::OnCompute()
+        void VulkanWindow::OnCompute_BeforeRender()
         {
-            compute();
+            compute_BeforeRender();
         }
-    void VulkanWindow::OnEndCompute()
+    void VulkanWindow::OnEndCompute_BeforeRender()
     {
-        endCompute();
+        endCompute_BeforeRender();
     }
 
     bool VulkanWindow::OnBeginRender()
@@ -2098,6 +2135,23 @@ namespace LostPeterVulkan
     void VulkanWindow::OnEndRender()
     {
         endRender();
+    }
+
+    bool VulkanWindow::OnBeginCompute_AfterRender()
+    {
+        return beginCompute_AfterRender();
+    }
+        void VulkanWindow::OnUpdateCompute_AfterRender()
+        {
+            updateCompute_AfterRender();
+        }
+        void VulkanWindow::OnCompute_AfterRender()
+        {
+            compute_AfterRender();
+        }
+    void VulkanWindow::OnEndCompute_AfterRender()
+    {
+        endCompute_AfterRender();
     }
 
     void VulkanWindow::OnDestroy()
@@ -2981,7 +3035,7 @@ namespace LostPeterVulkan
                 }
 
                 //Compute
-                if (this->cfg_isUseComputeShader)
+                if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
                 {
                     if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
                     {
@@ -3037,7 +3091,7 @@ namespace LostPeterVulkan
         bool VulkanWindow::isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute)
         {   
             findQueueFamilies(device, indexGraphics, indexPresent, indexCompute);
-            if (this->cfg_isUseComputeShader)
+            if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
             {
                 if (indexGraphics == -1 || indexPresent == -1 || indexCompute == -1)
                     return false;
@@ -3082,7 +3136,7 @@ namespace LostPeterVulkan
         std::set<uint32_t> uniqueQueueFamilies;
         uniqueQueueFamilies.insert(this->queueIndexGraphics);
         uniqueQueueFamilies.insert(this->queueIndexPresent);
-        if (this->cfg_isUseComputeShader)
+        if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
             uniqueQueueFamilies.insert(this->queueIndexCompute);
 
         float queuePriority = 1.0f;
@@ -3148,7 +3202,7 @@ namespace LostPeterVulkan
             this->poDebug->SetVkQueueName(this->poDevice, this->poQueuePresent, "Queue-Present");
         }
         //Queue-Compute
-        if (this->cfg_isUseComputeShader)
+        if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
         {
             vkGetDeviceQueue(this->poDevice, this->queueIndexCompute, 0, &this->poQueueCompute);
             if (this->queueIndexGraphics != this->queueIndexCompute)
@@ -3202,13 +3256,13 @@ namespace LostPeterVulkan
         F_LogInfo("<1-4-1> VulkanWindow::createCommandPool: Create CommandPoolGraphics success !");
 
         //2> poCommandPoolCompute
-        if (this->cfg_isUseComputeShader)
+        if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
         {
             createCommandPool_Compute();
             F_LogInfo("<1-4-2> VulkanWindow::createCommandPool: Create CommandPoolCompute success !");
         }
 
-        F_LogInfo("<1-4> VulkanWindow::createCommandPool finish, create CommandPoolGraphics: [true], create CommandPoolCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
+        F_LogInfo("<1-4> VulkanWindow::createCommandPool finish, create CommandPoolGraphics: [true], create CommandPoolCompute: [%s]", (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender) ? "true" : "false");
     }
         void VulkanWindow::createCommandPool_Graphics()
         {
@@ -7800,7 +7854,7 @@ namespace LostPeterVulkan
             createCommandBuffer_Compute();
 
 
-            F_LogInfo("<2-1-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
+            F_LogInfo("<2-1-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender) ? "true" : "false");
         }
         F_LogInfo("**<2-1-8> VulkanWindow::createCommandBuffers finish **");
     }
@@ -7828,7 +7882,7 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::createCommandBuffer_Compute()
         {
-            if (this->cfg_isUseComputeShader)
+            if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
             {
                 VkCommandBufferAllocateInfo allocInfo = {};
                 allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -8017,9 +8071,11 @@ namespace LostPeterVulkan
 
     }
 
-    bool VulkanWindow::beginCompute()
+    //Compute Before Render
+    bool VulkanWindow::beginCompute_BeforeRender()
     {
-        if (this->poQueueCompute == VK_NULL_HANDLE ||
+        if (!this->cfg_isUseComputeShaderBeforeRender ||
+            this->poQueueCompute == VK_NULL_HANDLE ||
             this->poCommandBufferCompute == VK_NULL_HANDLE)
         {
             return false;
@@ -8027,13 +8083,13 @@ namespace LostPeterVulkan
 
         return true;
     }
-        void VulkanWindow::updateCompute()
+        void VulkanWindow::updateCompute_BeforeRender()
         {  
-            // CommandBuffer
-            updateComputeCommandBuffer();
+            //CommandBuffer
+            updateComputeCommandBuffer_BeforeRender();
 
         }
-                void VulkanWindow::updateComputeCommandBuffer()
+                void VulkanWindow::updateComputeCommandBuffer_BeforeRender()
                 {
                     vkQueueWaitIdle(this->poQueueCompute);
 
@@ -8045,28 +8101,28 @@ namespace LostPeterVulkan
 
                     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                     {
-                        String msg = "*********************** VulkanWindow::updateComputeCommandBuffer: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
+                        String msg = "*********************** VulkanWindow::updateComputeCommandBuffer_BeforeRender: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
                         F_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
                     {
-                        updateCompute_Default(commandBuffer);
-                        updateCompute_Terrain(commandBuffer);
-                        updateCompute_Custom(commandBuffer);
-                        updateCompute_Cull(commandBuffer);
+                        updateCompute_BeforeRender_Default(commandBuffer);
+                        updateCompute_BeforeRender_Terrain(commandBuffer);
+                        updateCompute_BeforeRender_Custom(commandBuffer);
+                        updateCompute_BeforeRender_Cull(commandBuffer);
                     }
                     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                     {
-                        String msg = "*********************** VulkanWindow::updateComputeCommandBuffer: vkEndCommandBuffer: Failed to record compute command buffer !";
+                        String msg = "*********************** VulkanWindow::updateComputeCommandBuffer_BeforeRender: vkEndCommandBuffer: Failed to record compute command buffer !";
                         F_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
                 }
-                    void VulkanWindow::updateCompute_Default(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateCompute_BeforeRender_Default(VkCommandBuffer& commandBuffer)
                     {
 
                     }
-                    void VulkanWindow::updateCompute_Terrain(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateCompute_BeforeRender_Terrain(VkCommandBuffer& commandBuffer)
                     {
                         if (!this->cfg_isRenderPassTerrain ||
                             this->m_pPipelineCompute_Terrain == nullptr)
@@ -8074,11 +8130,11 @@ namespace LostPeterVulkan
                         
                         Update_Compute_Terrain(commandBuffer);
                     }
-                    void VulkanWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
                     {
 
                     }
-                    void VulkanWindow::updateCompute_Cull(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateCompute_BeforeRender_Cull(VkCommandBuffer& commandBuffer)
                     {
                         if (!this->cfg_isRenderPassCull ||
                             this->m_pPipelineCompute_Cull == nullptr)
@@ -8087,7 +8143,7 @@ namespace LostPeterVulkan
                         Update_Compute_Cull(commandBuffer);
                     }
 
-        void VulkanWindow::compute()
+        void VulkanWindow::compute_BeforeRender()
         {
             VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 
@@ -8109,14 +8165,110 @@ namespace LostPeterVulkan
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
             {
-                String msg = "*********************** VulkanWindow::compute: Failed to submit compute command buffer !";
+                String msg = "*********************** VulkanWindow::compute_BeforeRender: Failed to submit compute command buffer !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
-    void VulkanWindow::endCompute()
+    void VulkanWindow::endCompute_BeforeRender()
     {
         
+    }
+
+    //Compute After Render
+    bool VulkanWindow::beginCompute_AfterRender()
+    {   
+        if (!this->cfg_isUseComputeShaderAfterRender ||
+            this->poQueueCompute == VK_NULL_HANDLE ||
+            this->poCommandBufferCompute == VK_NULL_HANDLE)
+        {
+            return false;
+        }
+
+        return true;
+    }
+        void VulkanWindow::updateCompute_AfterRender()
+        {
+            //CommandBuffer
+            updateComputeCommandBuffer_AfterRender();
+
+        }
+            void VulkanWindow::updateComputeCommandBuffer_AfterRender()
+            {
+                vkQueueWaitIdle(this->poQueueCompute);
+
+                VkCommandBuffer& commandBuffer = this->poCommandBufferCompute;
+                VkCommandBufferBeginInfo beginInfo = {};
+                beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                beginInfo.flags = 0; // Optional
+                beginInfo.pInheritanceInfo = nullptr; // Optional
+
+                if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+                {
+                    String msg = "*********************** VulkanWindow::updateComputeCommandBuffer_AfterRender: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                {
+                    updateCompute_AfterRender_Default(commandBuffer);
+                    updateCompute_AfterRender_Custom(commandBuffer);
+                    updateCompute_AfterRender_HizDepthGenerate(commandBuffer);
+                }
+                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+                {
+                    String msg = "*********************** VulkanWindow::updateComputeCommandBuffer_AfterRender: vkEndCommandBuffer: Failed to record compute command buffer !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+                void VulkanWindow::updateCompute_AfterRender_Default(VkCommandBuffer& commandBuffer)
+                {
+
+                }
+                void VulkanWindow::updateCompute_AfterRender_Custom(VkCommandBuffer& commandBuffer)
+                {
+
+                }
+                void VulkanWindow::updateCompute_AfterRender_HizDepthGenerate(VkCommandBuffer& commandBuffer)
+                {
+                    if (!this->cfg_isRenderPassCull ||
+                        !this->isComputeCullFrustumHizDepth ||
+                        this->m_pPipelineCompute_Cull == nullptr)
+                        return;
+
+                    Update_Compute_HizDepthGenerate(commandBuffer);
+                }
+
+        void VulkanWindow::compute_AfterRender()
+        {
+            VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
+            // if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
+            // {
+            //     submitInfo.waitSemaphoreCount = 1;
+            //     submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
+            // }
+            submitInfo.pWaitDstStageMask = &waitStageMask;
+            // if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
+            // {
+            //     submitInfo.signalSemaphoreCount = 1;
+            //     submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+            // }
+            
+            if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
+            {
+                String msg = "*********************** VulkanWindow::compute_AfterRender: Failed to submit compute command buffer !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
+    void VulkanWindow::endCompute_AfterRender()
+    {
+
     }
 
 

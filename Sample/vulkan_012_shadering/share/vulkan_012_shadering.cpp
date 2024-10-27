@@ -634,7 +634,7 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, String name)
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
-    this->cfg_isUseComputeShader = true;
+    this->cfg_isUseComputeShaderBeforeRender = true;
     this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_cameraPos = FVector3(-2.5f, 2.0f, -20.0f);
@@ -1626,7 +1626,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
     }
 }
 
-void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_012_Shadering::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

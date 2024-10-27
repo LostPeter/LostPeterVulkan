@@ -1769,7 +1769,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Compute(VKPipelineCompute* pPipe
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_019_ShadowMap::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_019_ShadowMap::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)

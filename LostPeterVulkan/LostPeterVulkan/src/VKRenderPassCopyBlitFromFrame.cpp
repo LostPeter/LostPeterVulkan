@@ -205,14 +205,15 @@ namespace LostPeterVulkan
             subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
             aSubpassDependency.push_back(subpassDependency1);
 
-            if (!Base::GetWindowPtr()->createVkRenderPass(GetName(),
+            String nameRenderPass = "RenderPass-" + GetName();
+            if (!Base::GetWindowPtr()->createVkRenderPass(nameRenderPass,
                                                           aAttachmentDescription,
                                                           aSubpassDescription,
                                                           aSubpassDependency,
                                                           nullptr,
                                                           this->poRenderPass))
             {
-                String msg = "*********************** VKRenderPassCopyBlitFromFrame::Init: Failed to create renderpass: " + GetName();
+                String msg = "*********************** VKRenderPassCopyBlitFromFrame::Init: Failed to create renderpass: " + nameRenderPass;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -222,7 +223,8 @@ namespace LostPeterVulkan
         {
             VkImageViewVector aImageViews;
             aImageViews.push_back(this->poImageView);
-            if (!Base::GetWindowPtr()->createVkFramebuffer(GetName(),
+            String nameFramebuffer = "Framebuffer-" + GetName();
+            if (!Base::GetWindowPtr()->createVkFramebuffer(nameFramebuffer,
                                                            aImageViews, 
                                                            this->poRenderPass,
                                                            0,
@@ -231,7 +233,7 @@ namespace LostPeterVulkan
                                                            1,
                                                            this->poFrameBuffer))
             {
-                String msg = "*********************** VKRenderPassCopyBlitFromFrame::Init: Failed to create framebuffer: " + GetName();
+                String msg = "*********************** VKRenderPassCopyBlitFromFrame::Init: Failed to create framebuffer: " + nameFramebuffer;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }

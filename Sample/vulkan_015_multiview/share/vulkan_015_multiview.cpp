@@ -2280,7 +2280,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Compute(VKPipelineCompute* pPipe
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_015_MultiView::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_015_MultiView::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)

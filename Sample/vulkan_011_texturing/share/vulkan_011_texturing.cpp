@@ -781,7 +781,7 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-    this->cfg_isUseComputeShader = true;
+    this->cfg_isUseComputeShaderBeforeRender = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
@@ -1860,9 +1860,9 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
     }   
 }
 
-void Vulkan_011_Texturing::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_011_Texturing::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
-
+    
 }
 
 void Vulkan_011_Texturing::updateCBs_Custom()

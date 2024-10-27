@@ -73,11 +73,7 @@ namespace LostPeterVulkan
         VkBuffer poBuffer_CullCB;  
         VkDeviceMemory poBufferMemory_CullCB;
 
-        //HizDepthConstants
-        HizDepthConstants hizDepthCB;
-        VkBuffer poBuffer_HizDepthCB;  
-        VkDeviceMemory poBufferMemory_HizDepthCB;
-
+        //Camera Param
         FMatrix4 mat4VPLast;
         FVector3 aWorldFrustumCorners[MAX_FRUSTUM_CORNER_COUNT];
         FPlane aWorldFrustumPlanes[MAX_FRUSTUM_PLANE_COUNT];
@@ -115,12 +111,10 @@ namespace LostPeterVulkan
                                           const VkShaderModule& vkShaderModule);
 
     protected:
-        void destroyBufferHizDepth();
         void destroyBufferCull();
         void destroyVkComputePipeline(VkPipeline& poPipeline);
         
         bool createBufferCull();
-        bool createBufferHizDepth();
         bool createVkComputePipeline(const String& nameComputePipeline,
                                      const String& descriptorSetLayout,
                                      StringVector* pDescriptorSetLayoutNames,

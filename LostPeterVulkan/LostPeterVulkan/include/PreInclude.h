@@ -30,6 +30,7 @@
 #include "VKPipelineGraphics.h"
 #include "VKPipelineGraphicsCopyBlitFromFrame.h"
 #include "VKPipelineGraphicsCopyBlitToFrame.h"
+#include "VKPipelineGraphicsDepthHiz.h"
 #include "VKPipelineGraphicsDepthShadowMap.h"
 #include "VKPipelineGraphicsTerrain.h"
 #include "VKRenderPassCopyBlitFromFrame.h"

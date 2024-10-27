@@ -25,11 +25,10 @@ namespace LostPeterVulkan
 
     public:
         static int s_nHizDepthWidth;
-        static int s_nHizDepthHeight;
 
     public:
-        ////////////////////////// Texture //////////////////////////////////
         //HizDepth
+        VkFormat poFormat;
         VkImage poHizDepthImage;
         VkDeviceMemory poHizDepthImageMemory;
         VkImageView poHizDepthImageView;
@@ -39,15 +38,33 @@ namespace LostPeterVulkan
 
         int nHizDepthWidth;
         int nHizDepthHeight;
-        int nHizDepthMinmapCount;
+        int nHizDepthMinmapCount; 
 
+        //HizDepthConstants
+        HizDepthConstants hizDepthCB;
+        VkBuffer poBuffer_HizDepthCB;  
+        VkDeviceMemory poBufferMemory_HizDepthCB;
+
+        //RenderPass/FrameBuffer
+        VkOffset2D offset;
+        VkExtent2D extent;
+        VkClearValueVector aClearValue;
+        VkViewport viewPort;
+        VkRect2D rtScissor;
+
+        VkRenderPass poRenderPass;
+        VkFramebuffer poFrameBuffer;
 
     public:
         void Destroy();
         virtual bool Init();
 
     protected:
-        virtual bool setupCullTexture();
+        virtual void destroyBufferHizDepth();
+
+        virtual bool createBufferHizDepth();
+        virtual bool createCullTexture();
+        virtual bool createRenderPassFrameBuffer();
 
     public: 
         void CleanupSwapChain();
@@ -55,6 +72,7 @@ namespace LostPeterVulkan
 
     protected:
         void updateHizDepthRTSize();
+        void updateHizDepthBuffer();
         void getHizDepthRTSizeFromScreen(int screenWidth, int& w, int& mip);
     };
 

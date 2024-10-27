@@ -876,7 +876,7 @@ Vulkan_021_Terrain::Vulkan_021_Terrain(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-    this->cfg_isUseComputeShader = true;
+    this->cfg_isUseComputeShaderBeforeRender = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = false;
     this->cfg_isEditorCameraAxisShow = true;
@@ -1997,7 +1997,7 @@ void Vulkan_021_Terrain::createDescriptorSets_Compute(VKPipelineCompute* pPipeli
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_021_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_021_Terrain::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)

@@ -42,6 +42,7 @@ namespace LostPeterVulkan
         //PipelineGraphics
         VKPipelineGraphicsCopyBlitToFrame* m_pPipelineGraphics_CopyBlitToFrame;
         VKPipelineGraphicsDepthShadowMap* m_pPipelineGraphics_DepthShadowMap;
+        VKPipelineGraphicsDepthHiz* m_pPipelineGraphics_DepthHiz;
         VKPipelineGraphicsTerrain* m_pPipelineGraphics_Terrain;
 
         //Mesh
@@ -85,6 +86,7 @@ namespace LostPeterVulkan
         //PipelineCompute
         //PipelineCompute-Cull
         virtual void Update_Compute_Cull(VkCommandBuffer& commandBuffer);
+        virtual void Update_Compute_HizDepthGenerate(VkCommandBuffer& commandBuffer);
 
         //PipelineCompute-Terrain
         virtual void UpdateDescriptorSets_Compute_Terrain();
@@ -117,6 +119,8 @@ namespace LostPeterVulkan
             virtual void Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer, VkDescriptorSetVector* pescriptorSets);
         virtual void Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer);
 
+        //PipelineGraphics_DepthHiz
+        
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
@@ -174,10 +178,12 @@ namespace LostPeterVulkan
         virtual void destroyPipelineGraphics_Internal();
             virtual void destroyPipelineGraphics_CopyBlit();
             virtual void destroyPipelineGraphics_DepthShadowMap();
+            virtual void destroyPipelineGraphics_DepthHiz();
             virtual void destroyPipelineGraphics_Terrain();
         virtual void createPipelineGraphics_Internal();
             virtual void createPipelineGraphics_CopyBlit();
             virtual void createPipelineGraphics_DepthShadowMap();
+            virtual void createPipelineGraphics_DepthHiz();
             virtual void createPipelineGraphics_Terrain();
         
     ///////////////////////// Internal /////////////////////////
@@ -371,7 +377,8 @@ namespace LostPeterVulkan
         bool cfg_isWireFrame;
         bool cfg_isRotate;
         bool cfg_isNegativeViewport;
-        bool cfg_isUseComputeShader;
+        bool cfg_isUseComputeShaderBeforeRender;
+        bool cfg_isUseComputeShaderAfterRender;
         bool cfg_isCreateRenderComputeSycSemaphore;
         VkDynamicStateVector cfg_aDynamicStates;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
@@ -488,15 +495,21 @@ namespace LostPeterVulkan
         virtual void OnLoad();
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
-        virtual bool OnBeginCompute();
-            virtual void OnUpdateCompute();
-            virtual void OnCompute();
-        virtual void OnEndCompute();
+        virtual bool OnBeginCompute_BeforeRender();
+            virtual void OnUpdateCompute_BeforeRender();
+            virtual void OnCompute_BeforeRender();
+        virtual void OnEndCompute_BeforeRender();
+
         virtual bool OnBeginRender();
             virtual void OnUpdateRender();
             virtual void OnRender();
         virtual void OnEndRender();
         virtual void OnDestroy();
+
+        virtual bool OnBeginCompute_AfterRender();
+            virtual void OnUpdateCompute_AfterRender();
+            virtual void OnCompute_AfterRender();
+        virtual void OnEndCompute_AfterRender();
 
         // Mouse Input
         virtual void OnMouseInput();
@@ -1315,17 +1328,29 @@ namespace LostPeterVulkan
         //Resize
         virtual void resizeWindow(int w, int h, bool force);
 
-        //Compute
-        virtual bool beginCompute();
-            virtual void updateCompute();
-                virtual void updateComputeCommandBuffer();
-                    virtual void updateCompute_Default(VkCommandBuffer& commandBuffer);
-                    virtual void updateCompute_Terrain(VkCommandBuffer& commandBuffer);
-                    virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
-                    virtual void updateCompute_Cull(VkCommandBuffer& commandBuffer);
+        //Compute Before Render
+        virtual bool beginCompute_BeforeRender();
+            virtual void updateCompute_BeforeRender();
+                virtual void updateComputeCommandBuffer_BeforeRender();
+                    virtual void updateCompute_BeforeRender_Default(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_BeforeRender_Terrain(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_BeforeRender_Cull(VkCommandBuffer& commandBuffer);
+                    
+            virtual void compute_BeforeRender();
+        virtual void endCompute_BeforeRender();
 
-            virtual void compute();
-        virtual void endCompute();
+        //Compute After Render
+        virtual bool beginCompute_AfterRender();
+            virtual void updateCompute_AfterRender();
+                virtual void updateComputeCommandBuffer_AfterRender();
+                    virtual void updateCompute_AfterRender_Default(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_AfterRender_Custom(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_AfterRender_HizDepthGenerate(VkCommandBuffer& commandBuffer);
+
+            virtual void compute_AfterRender();
+        virtual void endCompute_AfterRender();
+
 
         //Render/Update
         virtual bool beginRender();

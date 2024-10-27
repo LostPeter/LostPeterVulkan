@@ -555,6 +555,7 @@ namespace LostPeterVulkan
     class VKPipelineGraphics;
     class VKPipelineGraphicsCopyBlitFromFrame;
     class VKPipelineGraphicsCopyBlitToFrame;
+    class VKPipelineGraphicsDepthHiz;
     class VKPipelineGraphicsDepthShadowMap;
     class VKPipelineGraphicsTerrain;
     class VKRenderPassCopyBlitFromFrame;

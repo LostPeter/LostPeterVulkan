@@ -67,11 +67,8 @@ namespace LostPeterVulkan
         , poBuffer_CullCB(VK_NULL_HANDLE)
         , poBufferMemory_CullCB(VK_NULL_HANDLE)
 
-        //CullObjectConstants
-        , poBuffer_HizDepthCB(VK_NULL_HANDLE)
-        , poBufferMemory_HizDepthCB(VK_NULL_HANDLE)
-
-        , mat4VPLast(FMath::Identity4x4())
+        //Camera Param
+        , mat4VPLast(FMath::Identity4x4())  
 
     {
 
@@ -86,18 +83,8 @@ namespace LostPeterVulkan
     {
         F_DELETE(m_pCullManager)
         CleanupSwapChain();
-        destroyBufferHizDepth();
         destroyBufferCull();
     }
-        void VKPipelineComputeCull::destroyBufferHizDepth()
-        {
-            if (this->poBuffer_HizDepthCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
-            }
-            this->poBuffer_HizDepthCB = VK_NULL_HANDLE;
-            this->poBufferMemory_HizDepthCB = VK_NULL_HANDLE;
-        }
         void VKPipelineComputeCull::destroyBufferCull()
         {
             if (this->poBuffer_CullCB != VK_NULL_HANDLE)
@@ -123,15 +110,6 @@ namespace LostPeterVulkan
             if (!createBufferCull())
             {
                 F_LogError("*********************** VKPipelineComputeCull::Init: createBufferCull failed !");
-                return false;
-            }
-        }
-        //HizDepthConstants
-        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
-        {
-            if (!createBufferHizDepth())
-            {
-                F_LogError("*********************** VKPipelineComputeCull::Init: createBufferHizDepth failed !");
                 return false;
             }
         }
@@ -284,15 +262,6 @@ namespace LostPeterVulkan
             Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CullConstants), &this->cullCB, this->poBufferMemory_CullCB);
             return true;
         }
-        bool VKPipelineComputeCull::createBufferHizDepth()
-        {
-            destroyBufferHizDepth();
-
-            VkDeviceSize bufferSize = sizeof(HizDepthConstants);
-            Base::GetWindowPtr()->createVkBuffer("HizDepthConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
-            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(HizDepthConstants), &this->hizDepthCB, this->poBufferMemory_HizDepthCB);
-            return true;
-        } 
         bool VKPipelineComputeCull::createVkComputePipeline(const String& nameComputePipeline,
                                                             const String& descriptorSetLayout,
                                                             StringVector* pDescriptorSetLayoutNames,
@@ -522,7 +491,7 @@ namespace LostPeterVulkan
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_HizDepth)) //HizDepth
             {
                 VkDescriptorBufferInfo bufferInfo_HizDepth = {};
-                bufferInfo_HizDepth.buffer = this->poBuffer_HizDepthCB;
+                bufferInfo_HizDepth.buffer = this->m_pVKRenderPassCull->poBuffer_HizDepthCB;
                 bufferInfo_HizDepth.offset = 0;
                 bufferInfo_HizDepth.range = sizeof(HizDepthConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
