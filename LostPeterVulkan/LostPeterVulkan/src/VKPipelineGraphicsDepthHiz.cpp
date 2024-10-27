@@ -172,20 +172,20 @@ namespace LostPeterVulkan
             {
                 String& nameDescriptorSet = poDescriptorSetLayoutNames->at(j);
 
-                if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //HizDepth
+                if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_HizDepth)) //HizDepth
                 {
-                    VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
-                    bufferInfo_Pass.offset = 0;
-                    bufferInfo_Pass.range = sizeof(PassConstants);
+                    VkDescriptorBufferInfo bufferInfo_HizDepth = {};
+                    bufferInfo_HizDepth.buffer = vkBuffer_HizDepthCB;
+                    bufferInfo_HizDepth.offset = 0;
+                    bufferInfo_HizDepth.range = sizeof(HizDepthConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
                                                                       vkDescriptorSets[i],
                                                                       j,
                                                                       0,
                                                                       1,
-                                                                      bufferInfo_Pass);
+                                                                      bufferInfo_HizDepth);
                 }
-                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFS
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
                 {
                     VkDescriptorImageInfo imageInfo;
                     imageInfo.sampler = vkSampler;

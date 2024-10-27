@@ -120,7 +120,7 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_DepthHiz
-        
+        virtual void Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
@@ -1413,6 +1413,7 @@ namespace LostPeterVulkan
                         virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
                                                      const String& nameRenderPass,

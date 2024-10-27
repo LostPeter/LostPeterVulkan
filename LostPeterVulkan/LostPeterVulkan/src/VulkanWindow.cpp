@@ -612,13 +612,14 @@ namespace LostPeterVulkan
     }
 
     //ShaderModule
-    static const int g_ShaderCount_Internal = 17;
+    static const int g_ShaderCount_Internal = 19;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
         ///////////////////////////////////////// vert /////////////////////////////////////////
         "vert_standard_copy_blit_from_frame",                     "vert",              "Assets/Shader/standard_copy_blit_from_frame.vert.spv", //standard_copy_blit_from_frame vert
         "vert_standard_copy_blit_to_frame",                       "vert",              "Assets/Shader/standard_copy_blit_to_frame.vert.spv", //standard_copy_blit_to_frame vert
+        "vert_standard_copy_blit_hiz_depth_from_frame",           "vert",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.vert.spv", //standard_copy_blit_hiz_depth_from_frame vert
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
         "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
         "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
@@ -635,6 +636,7 @@ namespace LostPeterVulkan
         ///////////////////////////////////////// frag /////////////////////////////////////////
         "frag_standard_copy_blit_from_frame",                     "frag",              "Assets/Shader/standard_copy_blit_from_frame.frag.spv", //standard_copy_blit_from_frame frag
         "frag_standard_copy_blit_to_frame",                       "frag",              "Assets/Shader/standard_copy_blit_to_frame.frag.spv", //standard_copy_blit_to_frame frag
+        "frag_standard_copy_blit_hiz_depth_from_frame",           "frag",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.frag.spv", //standard_copy_blit_hiz_depth_from_frame frag
         "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
         "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
 
@@ -1154,7 +1156,7 @@ namespace LostPeterVulkan
                 return;
             }
             
-            //PipelineGraphics-ShadowMapDepth
+            //PipelineGraphics-DepthShadowMap
             {
                 String descriptorSetLayout = "Pass-Object";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
@@ -1164,7 +1166,7 @@ namespace LostPeterVulkan
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-ShadowMapDepth]")
+                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMap]")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
                 String nameShaderVert = "vert_standard_renderpass_shadowmap";
@@ -1176,7 +1178,7 @@ namespace LostPeterVulkan
                                                           this->m_mapVkShaderModules_Internal,
                                                           aShaderStageCreateInfos_DepthShadowMap))
                 {
-                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] Can not find shader used !";
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMap] Can not find shader used !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -1187,13 +1189,13 @@ namespace LostPeterVulkan
                                                                                   vkPipelineLayout,
                                                                                   aShaderStageCreateInfos_DepthShadowMap))
                 {
-                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] PipelineGraphics_DepthShadowMap->Init failed !");
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMap] PipelineGraphics_DepthShadowMap->Init failed !");
                     return;
                 }
-                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepth] create success !");
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMap] create success !");
             }
 
-            //PipelineGraphics-ShadowMapDepthCull
+            //PipelineGraphics-DepthShadowMapCull
             {
                 String descriptorSetLayout = "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB";
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
@@ -1203,7 +1205,7 @@ namespace LostPeterVulkan
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-ShadowMapDepthCull]")
+                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMapCull]")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
                 String nameShaderVert = "vert_standard_renderpass_shadowmap_cull";
@@ -1215,7 +1217,7 @@ namespace LostPeterVulkan
                                                           this->m_mapVkShaderModules_Internal,
                                                           aShaderStageCreateInfos_DepthShadowMap))
                 {
-                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] Can not find shader used !";
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMapCull] Can not find shader used !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -1226,10 +1228,10 @@ namespace LostPeterVulkan
                                                                                       vkPipelineLayout,
                                                                                       aShaderStageCreateInfos_DepthShadowMap))
                 {
-                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] PipelineGraphics_DepthShadowMap->Init failed !");
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMapCull] PipelineGraphics_DepthShadowMap->Init failed !");
                     return;
                 }
-                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-ShadowMapDepthCull] create success !");
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMapCull] create success !");
             }
         }
     void VulkanWindow::UpdateBuffer_ObjectWorld_Begin()
@@ -1345,8 +1347,56 @@ namespace LostPeterVulkan
                 F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthHiz: m_pPipelineGraphics_DepthHiz->Init failed !");
                 return;
             }
+
+            //PipelineGraphics-DepthHiz
+            {
+                String descriptorSetLayout = "HizDepth-TextureFS";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         "VulkanWindow::createPipelineGraphics_DepthHiz-[PipelineGraphics-DepthHiz]")
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthHiz;
+                String nameShaderVert = "vert_standard_copy_blit_hiz_depth_from_frame";
+                String nameShaderFrag = "frag_standard_copy_blit_hiz_depth_from_frame";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          nameShaderFrag,
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_DepthHiz))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthHiz: [PipelineGraphics-DepthHiz] Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                if (!this->m_pPipelineGraphics_DepthHiz->InitHizDepth(descriptorSetLayout,
+                                                                      pDescriptorSetLayoutNames,
+                                                                      vkDescriptorSetLayout,
+                                                                      vkPipelineLayout,
+                                                                      aShaderStageCreateInfos_DepthHiz))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthHiz: [PipelineGraphics-DepthHiz] PipelineGraphics_DepthHiz->Init failed !");
+                    return;
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_DepthHiz: [PipelineGraphics-DepthHiz] create success !");
+            }
+        }
+    void VulkanWindow::Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer)
+    {
+        if (this->m_pVKRenderPassCull == nullptr)
+        {
+            return;
         }
 
+        
+    }
 
 
 
@@ -4512,7 +4562,7 @@ namespace LostPeterVulkan
             VkSemaphoreCreateInfo semaphoreInfo = {};
             semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-            //1> poGraphicsWaitSemaphore
+            //1> Graphics WaitSemaphore
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsWaitSemaphore) != VK_SUCCESS)
             {
                 String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create GraphicsWaitSemaphore !";
@@ -4527,7 +4577,7 @@ namespace LostPeterVulkan
             vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
             vkQueueWaitIdle(this->poQueueGraphics);
 
-            //2> poComputeWaitSemaphore
+            //2> Compute WaitSemaphore
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeWaitSemaphore) != VK_SUCCESS)
             {
                 String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
@@ -8247,17 +8297,12 @@ namespace LostPeterVulkan
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
-            // if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
-            // {
-            //     submitInfo.waitSemaphoreCount = 1;
-            //     submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
-            // }
             submitInfo.pWaitDstStageMask = &waitStageMask;
-            // if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
-            // {
-            //     submitInfo.signalSemaphoreCount = 1;
-            //     submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
-            // }
+            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
+            {
+                submitInfo.signalSemaphoreCount = 1;
+                submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+            }
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
             {
@@ -9405,6 +9450,7 @@ namespace LostPeterVulkan
                         updateRenderPass_Default(commandBuffer);
                     }
                     updateRenderPass_CustomAfterDefault(commandBuffer);
+                    updateRenderPass_DepthHiz(commandBuffer);
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
@@ -9599,6 +9645,31 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
                 {
 
+                }
+                void VulkanWindow::updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer)
+                {
+                    if (this->m_pVKRenderPassCull == nullptr ||
+                        this->m_pPipelineGraphics_DepthHiz == nullptr ||
+                        !this->isComputeCullFrustumHizDepth)
+                    {
+                        return;
+                    }
+
+                    beginRenderPass(commandBuffer,
+                                    "[RenderPass-DepthHiz]",
+                                    this->m_pVKRenderPassCull->poRenderPass,
+                                    this->m_pVKRenderPassCull->poFrameBuffer,
+                                    this->m_pVKRenderPassCull->offset,
+                                    this->m_pVKRenderPassCull->extent,
+                                    this->m_pVKRenderPassCull->aClearValue);
+                    {
+                        //1> Viewport
+                        bindViewport(commandBuffer, this->m_pVKRenderPassCull->viewPort, this->m_pVKRenderPassCull->rtScissor);
+                    
+                        //2> DepthHiz
+                        Draw_Graphics_DepthHiz(commandBuffer);
+                    }
+                    endRenderPass(commandBuffer);
                 }
 
                     void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 

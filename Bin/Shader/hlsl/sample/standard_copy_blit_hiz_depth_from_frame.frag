@@ -23,10 +23,16 @@
 [[vk::binding(1)]] SamplerState texture2DSampler    : register(s1);
 
 
-float4 main(VSInput_Color4TexCood2 input) : SV_TARGET
+float main(VSInput_Color4TexCood2 input) : SV_TARGET
 {
-    float4 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgba;
-    outColor.xyz *= input.inColor.xyz;
+    float2 offset = hizDepthConstants.vRtDepthSize.zw * 0.5;
+    float x = texture2D.Sample(texture2DSampler, input.inTexCoord + offset, 0).x;
+    float y = texture2D.Sample(texture2DSampler, input.inTexCoord - offset, 0).x;
+    float z = texture2D.Sample(texture2DSampler, input.inTexCoord + float2(offset.x, -offset.y), 0).x;
+    float w = texture2D.Sample(texture2DSampler, input.inTexCoord + float2(-offset.x, offset.y), 0).x;
+    float4 readDepth = float4(x,y,z,w);
+    readDepth.xy = max(readDepth.xy, readDepth.zw);
+    readDepth.x = max(readDepth.x, readDepth.y);
     
-    return outColor;
+    return readDepth.x;
 }
