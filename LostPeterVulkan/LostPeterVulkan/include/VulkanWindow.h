@@ -307,7 +307,8 @@ namespace LostPeterVulkan
         std::vector<VkCommandBuffer> poCommandBuffersGraphics;
 
         VkCommandPool poCommandPoolCompute;
-        VkCommandBuffer poCommandBufferCompute;
+        VkCommandBuffer poCommandBufferComputeBefore;
+        VkCommandBuffer poCommandBufferComputeAfter;
         
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
@@ -345,8 +346,8 @@ namespace LostPeterVulkan
         uint32_t poSwapChainImageIndex;
 
         VkSemaphore poGraphicsWaitSemaphore;
-        VkSemaphore poComputeWaitSemaphore;
-
+        VkSemaphore poComputeBeforeWaitSemaphore;
+        VkSemaphore poComputeAfterWaitSemaphore;
 
         //Features 
         struct SwapChainSupportDetails 
@@ -495,6 +496,7 @@ namespace LostPeterVulkan
         virtual void OnLoad();
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
+
         virtual bool OnBeginCompute_BeforeRender();
             virtual void OnUpdateCompute_BeforeRender();
             virtual void OnCompute_BeforeRender();
@@ -504,12 +506,14 @@ namespace LostPeterVulkan
             virtual void OnUpdateRender();
             virtual void OnRender();
         virtual void OnEndRender();
-        virtual void OnDestroy();
 
         virtual bool OnBeginCompute_AfterRender();
             virtual void OnUpdateCompute_AfterRender();
             virtual void OnCompute_AfterRender();
         virtual void OnEndCompute_AfterRender();
+
+        virtual void OnPresent();
+        virtual void OnDestroy();
 
         // Mouse Input
         virtual void OnMouseInput();

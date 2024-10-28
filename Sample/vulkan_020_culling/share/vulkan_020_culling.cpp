@@ -1445,7 +1445,7 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirectMulti(false)
 {
     this->isComputeCullFrustum = true;
-    this->isComputeCullFrustumHizDepth = false;
+    this->isComputeCullFrustumHizDepth = true;
 
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;

@@ -59,6 +59,9 @@ namespace LostPeterVulkan
         void Destroy();
         virtual bool Init();
 
+        virtual void UpdateHizDepthBuffer_Render();
+        virtual void UpdateHizDepthBuffer_Compute(float w, float h);
+
     protected:
         virtual void destroyBufferHizDepth();
 

@@ -18,6 +18,7 @@
 #include "../include/CullUnitTerrain.h"
 #include "../include/CullObjectStatic.h"
 #include "../include/CullObjectDynamic.h"
+#include "../include/VKRenderPassCull.h"
 #include "../include/VKPipelineComputeCull.h"
 #include "../include/BufferCompute.h"
 #include "../include/BufferIndirectCommand.h"
@@ -258,8 +259,39 @@ namespace LostPeterVulkan
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         if (!pVulkanWindow->isComputeCullFrustumHizDepth)
             return;
+        this->pVKPipelineComputeCull->UpdateMatrixVP();
+        VKRenderPassCull* pVKRenderPassCull = this->pVKPipelineComputeCull->m_pVKRenderPassCull;
 
-        
+        int w = pVKRenderPassCull->nHizDepthWidth;
+        int h = pVKRenderPassCull->nHizDepthHeight;
+        int count_mipmap = pVKRenderPassCull->nHizDepthMinmapCount;
+        if (count_mipmap > 0)
+        {
+            pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                         VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                         this->pVKPipelineComputeCull->poPipeline_HizDepthGenerate,
+                                                         this->pVKPipelineComputeCull->poPipelineLayout_HizDepthGenerate, 
+                                                         0, 
+                                                         1, 
+                                                         &this->pVKPipelineComputeCull->poDescriptorSet_HizDepthGenerate, 
+                                                         0, 
+                                                         nullptr);
+
+            for (int i = 0; i < count_mipmap; i++)
+            {
+                w = FMath::Max(1, w / 2);
+                h = FMath::Max(1, h / 2);
+                pVKRenderPassCull->UpdateHizDepthBuffer_Compute(w, h);
+                
+                this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate();
+                
+                int x, y;
+                x = FMath::CeilI(w / 8.0f);
+                y = FMath::CeilI(h / 8.0f);
+                pVulkanWindow->dispatch(commandBuffer, x, y, 1);
+            }
+        }
+
     }
 
     void CullManager::ExecuteShadowMapDraw(VkCommandBuffer& commandBuffer)

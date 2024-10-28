@@ -35,10 +35,12 @@ namespace LostPeterVulkan
         
         VkDescriptorImageInfo imageInfo;
 
+        Mesh* pMesh;
+
     public:
         void Destroy();
 
-        virtual bool Init();
+        virtual bool Init(Mesh* pMesh);
 
         virtual bool InitHizDepth(const String& descriptorSetLayout,
                                   StringVector* pDescriptorSetLayoutNames,

@@ -132,7 +132,7 @@ namespace LostPeterVulkan
                                                                   (uint32_t)this->nHizDepthMinmapCount,
                                                                   VK_SAMPLE_COUNT_1_BIT,
                                                                   this->poFormat,
-                                                                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                                                                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
                                                                   VK_IMAGE_LAYOUT_GENERAL,
                                                                   true,
                                                                   this->poHizDepthImage,
@@ -217,24 +217,24 @@ namespace LostPeterVulkan
                                                                       0,
                                                                       this->poFormat,
                                                                       VK_SAMPLE_COUNT_1_BIT,
-                                                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                                      VK_IMAGE_LAYOUT_UNDEFINED,
-                                                                      VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+                                                                      VK_ATTACHMENT_LOAD_OP_LOAD,
+                                                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                                                      VK_ATTACHMENT_LOAD_OP_LOAD,
+                                                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); 
                     aAttachmentDescription.push_back(attachmentSR);
 
                     //VkSubpassDescription
                     VkAttachmentReference attachRef = {};
                     attachRef.attachment = 0;
-                    attachRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+                    attachRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
                     VkSubpassDescription subpass_SceneRender = {};
                     subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-                    subpass_SceneRender.colorAttachmentCount = 0;
-                    subpass_SceneRender.pColorAttachments = nullptr;
-                    subpass_SceneRender.pDepthStencilAttachment = &attachRef;
+                    subpass_SceneRender.colorAttachmentCount = 1;
+                    subpass_SceneRender.pColorAttachments = &attachRef;
+                    subpass_SceneRender.pDepthStencilAttachment = nullptr;
                     aSubpassDescription.push_back(subpass_SceneRender);
                     
                     //VkSubpassDependency
@@ -244,7 +244,7 @@ namespace LostPeterVulkan
                     subpassDependency0.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
                     subpassDependency0.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
                     subpassDependency0.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                    subpassDependency0.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+                    subpassDependency0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
                     subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                     aSubpassDependency.push_back(subpassDependency0);
 
@@ -253,7 +253,7 @@ namespace LostPeterVulkan
                     subpassDependency1.dstSubpass = VK_SUBPASS_EXTERNAL;
                     subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
                     subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    subpassDependency1.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+                    subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
                     subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
                     subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                     aSubpassDependency.push_back(subpassDependency1);
@@ -307,6 +307,23 @@ namespace LostPeterVulkan
 
     }
 
+    void VKRenderPassCull::UpdateHizDepthBuffer_Render()
+    {
+        this->hizDepthCB.vRtDepthSize.x = this->nHizDepthWidth;
+        this->hizDepthCB.vRtDepthSize.y = this->nHizDepthHeight;
+        this->hizDepthCB.vRtDepthSize.z = 1.0f / this->nHizDepthWidth;
+        this->hizDepthCB.vRtDepthSize.w = 1.0f / this->nHizDepthHeight;
+        updateHizDepthBuffer();
+    }
+    void VKRenderPassCull::UpdateHizDepthBuffer_Compute(float w, float h)
+    {
+        this->hizDepthCB.vRtDepthSize.x = w;
+        this->hizDepthCB.vRtDepthSize.y = h;
+        this->hizDepthCB.vRtDepthSize.z = 0.0f;
+        this->hizDepthCB.vRtDepthSize.w = 0.0f;
+        updateHizDepthBuffer();
+    }
+
     void VKRenderPassCull::updateHizDepthRTSize()
     {
         int nScreenWith = (int)Base::GetWindowPtr()->poSwapChainExtent.width;
@@ -315,15 +332,9 @@ namespace LostPeterVulkan
         this->nHizDepthMinmapCount = 9;
         getHizDepthRTSizeFromScreen(nScreenWith, this->nHizDepthWidth, this->nHizDepthMinmapCount);
         this->nHizDepthHeight = this->nHizDepthWidth / 2;
-
-        updateHizDepthBuffer();
     }
     void VKRenderPassCull::updateHizDepthBuffer()
     {
-        this->hizDepthCB.vRtDepthSize.x = this->nHizDepthWidth;
-        this->hizDepthCB.vRtDepthSize.y = this->nHizDepthHeight;
-        this->hizDepthCB.vRtDepthSize.z = 1.0f / this->nHizDepthWidth;
-        this->hizDepthCB.vRtDepthSize.w = 1.0f / this->nHizDepthHeight;
         Base::GetWindowPtr()->updateVKBuffer(0, sizeof(HizDepthConstants), &this->hizDepthCB, this->poBufferMemory_HizDepthCB);
     }
     void VKRenderPassCull::getHizDepthRTSizeFromScreen(int screenWidth, int& w, int& mip)

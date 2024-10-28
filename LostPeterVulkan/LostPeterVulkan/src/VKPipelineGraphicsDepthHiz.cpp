@@ -26,6 +26,8 @@ namespace LostPeterVulkan
         , poPipelineLayout_HizDepth(VK_NULL_HANDLE)
         , poPipeline_HizDepth(VK_NULL_HANDLE)
 
+        , pMesh(nullptr)
+
     {
 
     }   
@@ -40,8 +42,10 @@ namespace LostPeterVulkan
         CleanupSwapChain();
     }
 
-    bool VKPipelineGraphicsDepthHiz::Init()
+    bool VKPipelineGraphicsDepthHiz::Init(Mesh* pMesh)
     {
+        F_Assert(pMesh != nullptr && "VKPipelineGraphicsDepthHiz::Init")
+        this->pMesh = pMesh;
         
         return true;
     }

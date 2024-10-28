@@ -81,6 +81,7 @@ namespace LostPeterVulkan
             virtual void OnCompute_AfterRender() = 0;
         virtual void OnEndCompute_AfterRender() = 0;
 
+        virtual void OnPresent() = 0;
         virtual void OnDestroy() = 0;
 
         // Mouse Input

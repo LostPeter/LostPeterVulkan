@@ -104,6 +104,8 @@ namespace LostPeterVulkan
                         pBase->OnEndCompute_AfterRender();
                     }
 
+                    pBase->OnPresent();
+
                     if (pBase->isMinimizedWindowNeedClose) 
                     {
                         break;

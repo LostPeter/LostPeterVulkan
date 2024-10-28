@@ -1341,8 +1341,9 @@ namespace LostPeterVulkan
                 return;
             }
 
+            Mesh* pMesh = FindMesh_Internal("quad");
             this->m_pPipelineGraphics_DepthHiz = new VKPipelineGraphicsDepthHiz("PipelineGraphics-DepthHiz", this->m_pVKRenderPassCull);
-            if (!this->m_pPipelineGraphics_DepthHiz->Init())
+            if (!this->m_pPipelineGraphics_DepthHiz->Init(pMesh))
             {
                 F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthHiz: m_pPipelineGraphics_DepthHiz->Init failed !");
                 return;
@@ -1390,12 +1391,22 @@ namespace LostPeterVulkan
         }
     void VulkanWindow::Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer)
     {
-        if (this->m_pVKRenderPassCull == nullptr)
+        if (this->m_pVKRenderPassCull == nullptr ||
+            this->m_pPipelineGraphics_DepthHiz == nullptr)
         {
             return;
         }
 
-        
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_Render();
+        Mesh* pMesh = this->m_pPipelineGraphics_DepthHiz->pMesh;
+        MeshSub* pMeshSub = pMesh->aMeshSubs[0];
+        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipeline_HizDepth);
+        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
+        drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
 
 
@@ -1961,7 +1972,8 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poCommandPoolGraphics(VK_NULL_HANDLE) 
         , poCommandPoolCompute(VK_NULL_HANDLE)
-        , poCommandBufferCompute(VK_NULL_HANDLE)
+        , poCommandBufferComputeBefore(VK_NULL_HANDLE)
+        , poCommandBufferComputeAfter(VK_NULL_HANDLE)
 
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
@@ -1991,7 +2003,8 @@ namespace LostPeterVulkan
         , poCurrentFrame(0)
         , poSwapChainImageIndex(0)
         , poGraphicsWaitSemaphore(VK_NULL_HANDLE)
-        , poComputeWaitSemaphore(VK_NULL_HANDLE)
+        , poComputeBeforeWaitSemaphore(VK_NULL_HANDLE)
+        , poComputeAfterWaitSemaphore(VK_NULL_HANDLE)
 
         , queueIndexGraphics(0)
         , queueIndexPresent(0)
@@ -2204,6 +2217,35 @@ namespace LostPeterVulkan
         endCompute_AfterRender();
     }
 
+    void VulkanWindow::OnPresent()
+    {
+        VkPresentInfoKHR presentInfo = {};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        VkSemaphoreVector aSemaphores;
+        aSemaphores.push_back(this->poRenderCompleteSemaphores[this->poCurrentFrame]);
+        if (this->poComputeAfterWaitSemaphore != VK_NULL_HANDLE)
+            aSemaphores.push_back(this->poComputeAfterWaitSemaphore);
+        presentInfo.waitSemaphoreCount = (uint32_t)aSemaphores.size();
+        presentInfo.pWaitSemaphores = aSemaphores.data();
+        VkSwapchainKHR swapChains[] = { this->poSwapChain };
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.pImageIndices = &this->poSwapChainImageIndex;
+        VkResult result = vkQueuePresentKHR(this->poQueuePresent, &presentInfo);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->isFrameBufferResized) 
+        {
+            this->isFrameBufferResized = false;
+            recreateSwapChain();
+        } 
+        else if (result != VK_SUCCESS) 
+        {
+            String msg = "*********************** VulkanWindow::OnPresent: Failed to present swap chain image !";
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        this->poCurrentFrame = (this->poCurrentFrame + 1) % s_maxFramesInFight;
+    }
     void VulkanWindow::OnDestroy()
     {
         //1> Wait
@@ -4577,14 +4619,28 @@ namespace LostPeterVulkan
             vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
             vkQueueWaitIdle(this->poQueueGraphics);
 
-            //2> Compute WaitSemaphore
-            if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeWaitSemaphore) != VK_SUCCESS)
+            //2> Compute Before WaitSemaphore
+            if (this->cfg_isUseComputeShaderBeforeRender)
             {
-                String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
+                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeBeforeWaitSemaphore) != VK_SUCCESS)
+                {
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore Before!";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
             }
 
+            //3> Compute After WaitSemaphore
+            if (this->cfg_isUseComputeShaderAfterRender)
+            {
+                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeAfterWaitSemaphore) != VK_SUCCESS)
+                {
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore After!";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+            
             F_LogInfo("<1-10-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
 
@@ -7932,22 +7988,39 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::createCommandBuffer_Compute()
         {
-            if (this->cfg_isUseComputeShaderBeforeRender || this->cfg_isUseComputeShaderAfterRender)
+            if (this->cfg_isUseComputeShaderBeforeRender)
             {
                 VkCommandBufferAllocateInfo allocInfo = {};
                 allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
                 allocInfo.commandPool = this->poCommandPoolCompute;
                 allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
                 allocInfo.commandBufferCount = 1;
-                if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferCompute) != VK_SUCCESS) 
+                if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferComputeBefore) != VK_SUCCESS) 
                 {
-                    String msg = "*********************** VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute !";
+                    String msg = "*********************** VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute before !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                this->poDebug->SetVkCommandBufferName(this->poDevice, this->poCommandBufferCompute, "CommandBuffer-Compute");
+                this->poDebug->SetVkCommandBufferName(this->poDevice, this->poCommandBufferComputeBefore, "CommandBuffer-Compute-Before");
 
-                F_LogInfo("<2-1-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferCompute success !");
+                F_LogInfo("<2-1-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferComputeBefore success !");
+            }
+            if (this->cfg_isUseComputeShaderAfterRender)
+            {
+                VkCommandBufferAllocateInfo allocInfo = {};
+                allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+                allocInfo.commandPool = this->poCommandPoolCompute;
+                allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+                allocInfo.commandBufferCount = 1;
+                if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferComputeAfter) != VK_SUCCESS) 
+                {
+                    String msg = "*********************** VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute after !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                this->poDebug->SetVkCommandBufferName(this->poDevice, this->poCommandBufferComputeAfter, "CommandBuffer-Compute-eAfter");
+
+                F_LogInfo("<2-1-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferComputeeAfter success !");
             }
         }
 
@@ -8126,7 +8199,7 @@ namespace LostPeterVulkan
     {
         if (!this->cfg_isUseComputeShaderBeforeRender ||
             this->poQueueCompute == VK_NULL_HANDLE ||
-            this->poCommandBufferCompute == VK_NULL_HANDLE)
+            this->poCommandBufferComputeBefore == VK_NULL_HANDLE)
         {
             return false;
         }
@@ -8143,7 +8216,7 @@ namespace LostPeterVulkan
                 {
                     vkQueueWaitIdle(this->poQueueCompute);
 
-                    VkCommandBuffer& commandBuffer = this->poCommandBufferCompute;
+                    VkCommandBuffer& commandBuffer = this->poCommandBufferComputeBefore;
                     VkCommandBufferBeginInfo beginInfo = {};
                     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                     beginInfo.flags = 0; // Optional
@@ -8200,17 +8273,17 @@ namespace LostPeterVulkan
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
+            submitInfo.pCommandBuffers = &this->poCommandBufferComputeBefore;
             if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
             {
                 submitInfo.waitSemaphoreCount = 1;
                 submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
             }
             submitInfo.pWaitDstStageMask = &waitStageMask;
-            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
+            if (this->poComputeBeforeWaitSemaphore != VK_NULL_HANDLE)
             {
                 submitInfo.signalSemaphoreCount = 1;
-                submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+                submitInfo.pSignalSemaphores = &this->poComputeBeforeWaitSemaphore;
             }
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
@@ -8230,7 +8303,7 @@ namespace LostPeterVulkan
     {   
         if (!this->cfg_isUseComputeShaderAfterRender ||
             this->poQueueCompute == VK_NULL_HANDLE ||
-            this->poCommandBufferCompute == VK_NULL_HANDLE)
+            this->poCommandBufferComputeAfter == VK_NULL_HANDLE)
         {
             return false;
         }
@@ -8247,7 +8320,7 @@ namespace LostPeterVulkan
             {
                 vkQueueWaitIdle(this->poQueueCompute);
 
-                VkCommandBuffer& commandBuffer = this->poCommandBufferCompute;
+                VkCommandBuffer& commandBuffer = this->poCommandBufferComputeAfter;
                 VkCommandBufferBeginInfo beginInfo = {};
                 beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                 beginInfo.flags = 0; // Optional
@@ -8282,7 +8355,7 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateCompute_AfterRender_HizDepthGenerate(VkCommandBuffer& commandBuffer)
                 {
                     if (!this->cfg_isRenderPassCull ||
-                        //!this->isComputeCullFrustumHizDepth ||
+                        !this->isComputeCullFrustumHizDepth ||
                         this->m_pPipelineCompute_Cull == nullptr)
                         return;
 
@@ -8296,12 +8369,17 @@ namespace LostPeterVulkan
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
+            submitInfo.pCommandBuffers = &this->poCommandBufferComputeAfter;
             submitInfo.pWaitDstStageMask = &waitStageMask;
-            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
+            if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
+            {
+                submitInfo.waitSemaphoreCount = 1;
+                submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
+            }
+            if (this->poComputeAfterWaitSemaphore != VK_NULL_HANDLE)
             {
                 submitInfo.signalSemaphoreCount = 1;
-                submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+                submitInfo.pSignalSemaphores = &this->poComputeAfterWaitSemaphore;
             }
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
@@ -9649,7 +9727,7 @@ namespace LostPeterVulkan
                 void VulkanWindow::updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer)
                 {
                     if (this->m_pVKRenderPassCull == nullptr ||
-                        //!this->isComputeCullFrustumHizDepth ||
+                        !this->isComputeCullFrustumHizDepth ||
                         this->m_pPipelineGraphics_DepthHiz == nullptr)
                     {
                         return;
@@ -9848,8 +9926,8 @@ namespace LostPeterVulkan
             VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
             VkSemaphoreVector aWaitSemaphores;
-            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
-                aWaitSemaphores.push_back(this->poComputeWaitSemaphore);
+            if (this->poComputeBeforeWaitSemaphore != VK_NULL_HANDLE)
+                aWaitSemaphores.push_back(this->poComputeBeforeWaitSemaphore);
             VkSemaphore presentCompleteSemaphore = this->poPresentCompleteSemaphores[this->poCurrentFrame];
             aWaitSemaphores.push_back(presentCompleteSemaphore);
 
@@ -9880,31 +9958,11 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg);
             }
 
-            //3> Present
-            VkPresentInfoKHR presentInfo = {};
-            presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-            presentInfo.waitSemaphoreCount = 1;
-            presentInfo.pWaitSemaphores = &renderCompleteSemaphore;
-            VkSwapchainKHR swapChains[] = { this->poSwapChain };
-            presentInfo.swapchainCount = 1;
-            presentInfo.pSwapchains = swapChains;
-            presentInfo.pImageIndices = &this->poSwapChainImageIndex;
-            VkResult result = vkQueuePresentKHR(this->poQueuePresent, &presentInfo);
-            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->isFrameBufferResized) 
-            {
-                this->isFrameBufferResized = false;
-                recreateSwapChain();
-            } 
-            else if (result != VK_SUCCESS) 
-            {
-                String msg = "*********************** VulkanWindow::render: Failed to present swap chain image !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
+            
         }
     void VulkanWindow::endRender()
     {
-        this->poCurrentFrame = (this->poCurrentFrame + 1) % s_maxFramesInFight;
+        
     }
 
     void VulkanWindow::cleanup()
@@ -9938,8 +9996,10 @@ namespace LostPeterVulkan
 
             destroyVkSemaphore(this->poGraphicsWaitSemaphore);
             this->poGraphicsWaitSemaphore = VK_NULL_HANDLE;
-            destroyVkSemaphore(this->poComputeWaitSemaphore);
-            this->poComputeWaitSemaphore = VK_NULL_HANDLE;
+            destroyVkSemaphore(this->poComputeBeforeWaitSemaphore);
+            this->poComputeBeforeWaitSemaphore = VK_NULL_HANDLE;
+            destroyVkSemaphore(this->poComputeAfterWaitSemaphore);
+            this->poComputeAfterWaitSemaphore = VK_NULL_HANDLE;
 
             //4> CommandPool
             destroyVkCommandPool(this->poCommandPoolGraphics);
@@ -10060,10 +10120,18 @@ namespace LostPeterVulkan
                     freeCommandBuffers(this->poCommandPoolGraphics, (uint32_t)this->poCommandBuffersGraphics.size(), this->poCommandBuffersGraphics.data());
                 }
                 this->poCommandBuffersGraphics.clear();
-                if (this->poCommandPoolCompute != VK_NULL_HANDLE &&
-                    this->poCommandBufferCompute != VK_NULL_HANDLE)
+                if (this->poCommandPoolCompute != VK_NULL_HANDLE)
                 {
-                    freeCommandBuffers(this->poCommandPoolCompute, 1, &(this->poCommandBufferCompute));
+                    if (this->poCommandBufferComputeBefore != VK_NULL_HANDLE)
+                    {
+                        freeCommandBuffers(this->poCommandPoolCompute, 1, &(this->poCommandBufferComputeBefore));
+                        this->poCommandBufferComputeBefore = VK_NULL_HANDLE;
+                    }
+                    if (this->poCommandBufferComputeAfter != VK_NULL_HANDLE)
+                    {
+                        freeCommandBuffers(this->poCommandPoolCompute, 1, &(this->poCommandBufferComputeAfter));
+                        this->poCommandBufferComputeAfter = VK_NULL_HANDLE;
+                    }
                 }
                 
                 //4> RenderPass
