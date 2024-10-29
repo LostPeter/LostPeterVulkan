@@ -450,7 +450,7 @@ namespace LostPeterVulkan
                             pCB_Result,
                             pCB_Clip);
     }
-    void VKPipelineComputeCull::UpdateDescriptorSet_HizDepthGenerate()
+    void VKPipelineComputeCull::UpdateDescriptorSet_HizDepthGenerate(int mipmap0, int mipmap1)
     {
         updateDescriptorSet(this->poDescriptorSet_HizDepthGenerate, 
                             this->poDescriptorSetLayoutNames_HizDepthGenerate,
@@ -458,7 +458,9 @@ namespace LostPeterVulkan
                             nullptr,
                             nullptr,
                             nullptr,
-                            nullptr);
+                            nullptr,
+                            mipmap0,
+                            mipmap1);
     }
 
     void VKPipelineComputeCull::updateDescriptorSet(VkDescriptorSet& descriptorSet,
@@ -467,7 +469,9 @@ namespace LostPeterVulkan
                                                     BufferIndirectCommand* pCB_RenderArgs,
                                                     BufferCompute* pCB_LodArgs,
                                                     BufferCompute* pCB_Result,
-                                                    BufferCompute* pCB_Clip)
+                                                    BufferCompute* pCB_Clip,
+                                                    int mipmap0 /*= 0*/,
+                                                    int mipmap1 /*= 1*/)
     {
         VkWriteDescriptorSetVector descriptorWrites;
         uint32_t count = (uint32_t)poDescriptorSetLayoutNames->size();
@@ -593,23 +597,27 @@ namespace LostPeterVulkan
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWSrc)) //TextureCSRWSrc
             {
+                VkDescriptorImageInfo imageInfo = {};
+                this->m_pVKRenderPassCull->GetDescriptorImageInfo(mipmap0, imageInfo);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 descriptorSet,
                                                                 i,
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                                                                this->m_pVKRenderPassCull->poHizDepthImageInfo_NoSampler);
+                                                                imageInfo);
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRWDst)) //TextureCSRWDst
             {
+                VkDescriptorImageInfo imageInfo = {};
+                this->m_pVKRenderPassCull->GetDescriptorImageInfo(mipmap1, imageInfo);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                 descriptorSet,
                                                                 i,
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                                                                this->m_pVKRenderPassCull->poHizDepthImageInfo_NoSampler);
+                                                                imageInfo);
             }
             else
             {

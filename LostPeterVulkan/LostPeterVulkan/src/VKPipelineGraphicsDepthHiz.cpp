@@ -100,11 +100,10 @@ namespace LostPeterVulkan
                 {
                     VK_DYNAMIC_STATE_VIEWPORT,
                     VK_DYNAMIC_STATE_SCISSOR,
-                    VK_DYNAMIC_STATE_DEPTH_BIAS
                 };
 
                 VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
-
+                aColorBlendAttachmentState.push_back(Util_PipelineColorBlendAttachmentState(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT, false));
                 vkPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(nameGraphicsPipeline,
                                                                             aShaderStageCreateInfos,
                                                                             false, 0, 3,
@@ -194,7 +193,7 @@ namespace LostPeterVulkan
                     VkDescriptorImageInfo imageInfo;
                     imageInfo.sampler = vkSampler;
                     imageInfo.imageView = vkImageView;
-                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                     Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                     vkDescriptorSets[i],
                                                                     j,

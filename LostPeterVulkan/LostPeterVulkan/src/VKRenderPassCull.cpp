@@ -24,7 +24,8 @@ namespace LostPeterVulkan
         , poFormat(VK_FORMAT_R32_SFLOAT)
         , poHizDepthImage(VK_NULL_HANDLE)
         , poHizDepthImageMemory(VK_NULL_HANDLE)
-        , poHizDepthImageView(VK_NULL_HANDLE)
+        , poHizDepthImageView_Main(VK_NULL_HANDLE)
+        , poHizDepthImageView_0(VK_NULL_HANDLE)
         , poHizDepthSampler(VK_NULL_HANDLE)
 
         , nHizDepthWidth(s_nHizDepthWidth)
@@ -63,13 +64,23 @@ namespace LostPeterVulkan
         this->poFrameBuffer = VK_NULL_HANDLE;
 
         //HizDepth
+        if (this->poHizDepthImageView_0 != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkImageView(this->poHizDepthImageView_0);
+        }
+        for (size_t i = 0; i < this->aHizDepthImageView_Mipmap.size(); i++)
+        {
+            Base::GetWindowPtr()->destroyVkImageView(this->aHizDepthImageView_Mipmap[i]);
+        }
         if (this->poHizDepthImage != VK_NULL_HANDLE)
         {
-            Base::GetWindowPtr()->destroyVkImage(this->poHizDepthImage, this->poHizDepthImageMemory, this->poHizDepthImageView);
+            Base::GetWindowPtr()->destroyVkImage(this->poHizDepthImage, this->poHizDepthImageMemory, this->poHizDepthImageView_Main);
         }
         this->poHizDepthImage = VK_NULL_HANDLE;
         this->poHizDepthImageMemory = VK_NULL_HANDLE;
-        this->poHizDepthImageView = VK_NULL_HANDLE;
+        this->poHizDepthImageView_Main = VK_NULL_HANDLE;
+        this->poHizDepthImageView_0 = VK_NULL_HANDLE;
+        this->aHizDepthImageView_Mipmap.clear();
         if (this->poHizDepthSampler != VK_NULL_HANDLE)
         {
             Base::GetWindowPtr()->destroyVkImageSampler(this->poHizDepthSampler);
@@ -138,15 +149,52 @@ namespace LostPeterVulkan
                                                                   this->poHizDepthImage,
                                                                   this->poHizDepthImageMemory);
                 F_LogInfo("VKRenderPassCull::createCullTexture: createTextureRenderTarget2D !");
-                Base::GetWindowPtr()->createVkImageView(nameTexture,
+                VkComponentMapping componentMapping = { VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY };
+                Base::GetWindowPtr()->createVkImageView(nameTexture + "-ViewMain",
+                                                        0,
                                                         this->poHizDepthImage, 
                                                         VK_IMAGE_VIEW_TYPE_2D, 
                                                         this->poFormat, 
+                                                        componentMapping,
                                                         VK_IMAGE_ASPECT_COLOR_BIT,
+                                                        0,
+                                                        (uint32_t)this->nHizDepthMinmapCount,
+                                                        0,
                                                         1, 
+                                                        this->poHizDepthImageView_Main);
+                F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView Main !");
+                Base::GetWindowPtr()->createVkImageView(nameTexture + "-View0",
+                                                        0,
+                                                        this->poHizDepthImage, 
+                                                        VK_IMAGE_VIEW_TYPE_2D, 
+                                                        this->poFormat, 
+                                                        componentMapping,
+                                                        VK_IMAGE_ASPECT_COLOR_BIT,
+                                                        0,
+                                                        1,
+                                                        0,
                                                         1, 
-                                                        this->poHizDepthImageView);
-                F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView !");
+                                                        this->poHizDepthImageView_0);
+                F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView 0 !");
+                for (int i = 0; i < this->nHizDepthMinmapCount; i++)
+                {
+                    VkImageView viewMip;
+                    String nameView = nameTexture + "-Storage_View" + FUtilString::SaveInt(i);
+                    Base::GetWindowPtr()->createVkImageView(nameView,
+                                                            0,
+                                                            this->poHizDepthImage, 
+                                                            VK_IMAGE_VIEW_TYPE_2D, 
+                                                            this->poFormat, 
+                                                            componentMapping,
+                                                            VK_IMAGE_ASPECT_COLOR_BIT,
+                                                            i,
+                                                            1,
+                                                            0,
+                                                            1, 
+                                                            viewMip);
+                    this->aHizDepthImageView_Mipmap.push_back(viewMip);
+                    F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView Storage [%d] !", i);
+                }
                 Base::GetWindowPtr()->createVkSampler(nameTexture,
                                                       F_TextureFilter_None, 
                                                       F_TextureAddressing_Clamp,
@@ -159,13 +207,9 @@ namespace LostPeterVulkan
                                                       this->poHizDepthSampler);
                 F_LogInfo("VKRenderPassCull::createCullTexture: createVkSampler !");
 
-                this->poHizDepthImageInfo_NoSampler = {};
-                this->poHizDepthImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                this->poHizDepthImageInfo_NoSampler.imageView = this->poHizDepthImageView;
-                this->poHizDepthImageInfo_NoSampler.sampler = nullptr;
                 this->poHizDepthImageInfo_Sampler = {};
                 this->poHizDepthImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                this->poHizDepthImageInfo_Sampler.imageView = this->poHizDepthImageView;
+                this->poHizDepthImageInfo_Sampler.imageView = this->poHizDepthImageView_Main;
                 this->poHizDepthImageInfo_Sampler.sampler = this->poHizDepthSampler;
 
                 F_LogInfo("VKRenderPassCull::createCullTexture: Compute: Create render texture: [%s] - (w,h): [%d, %d], mip: [%d] success !", 
@@ -179,8 +223,8 @@ namespace LostPeterVulkan
         {
             F_LogInfo("VKRenderPassCull::createRenderPassFrameBuffer: Start setup cull renderpass, framebuffer !");
             {
-                uint32_t width = Base::GetWindowPtr()->poExtent.width;
-                uint32_t height = Base::GetWindowPtr()->poExtent.height;
+                uint32_t width = (uint32_t)this->nHizDepthWidth;
+                uint32_t height = (uint32_t)this->nHizDepthHeight;
 
                 //1> Common
                 {
@@ -238,25 +282,25 @@ namespace LostPeterVulkan
                     aSubpassDescription.push_back(subpass_SceneRender);
                     
                     //VkSubpassDependency
-                    VkSubpassDependency subpassDependency0 = {};
-                    subpassDependency0.srcSubpass = VK_SUBPASS_EXTERNAL;
-                    subpassDependency0.dstSubpass = 0;
-                    subpassDependency0.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    subpassDependency0.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-                    subpassDependency0.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                    subpassDependency0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                    subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-                    aSubpassDependency.push_back(subpassDependency0);
+                    // VkSubpassDependency subpassDependency0 = {};
+                    // subpassDependency0.srcSubpass = VK_SUBPASS_EXTERNAL;
+                    // subpassDependency0.dstSubpass = 0;
+                    // subpassDependency0.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    // subpassDependency0.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+                    // subpassDependency0.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                    // subpassDependency0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                    // subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                    // aSubpassDependency.push_back(subpassDependency0);
 
-                    VkSubpassDependency subpassDependency1 = {};
-                    subpassDependency1.srcSubpass = 0;
-                    subpassDependency1.dstSubpass = VK_SUBPASS_EXTERNAL;
-                    subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-                    subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                    subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                    subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-                    aSubpassDependency.push_back(subpassDependency1);
+                    // VkSubpassDependency subpassDependency1 = {};
+                    // subpassDependency1.srcSubpass = 0;
+                    // subpassDependency1.dstSubpass = VK_SUBPASS_EXTERNAL;
+                    // subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+                    // subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    // subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                    // subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                    // subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                    // aSubpassDependency.push_back(subpassDependency1);
 
                     String nameRenderPass = "RenderPass-" + GetName();
                     if (!Base::GetWindowPtr()->createVkRenderPass(nameRenderPass,
@@ -275,7 +319,7 @@ namespace LostPeterVulkan
                 //3> Framebuffer
                 {
                     VkImageViewVector aImageViews;
-                    aImageViews.push_back(this->poHizDepthImageView);
+                    aImageViews.push_back(this->poHizDepthImageView_0);
                     String nameFramebuffer = "Framebuffer-" + GetName();
                     if (!Base::GetWindowPtr()->createVkFramebuffer(nameFramebuffer,
                                                                    aImageViews, 
@@ -307,10 +351,19 @@ namespace LostPeterVulkan
 
     }
 
+    void VKRenderPassCull::GetDescriptorImageInfo(int mipmap, VkDescriptorImageInfo& imageInfo)
+    {
+        F_Assert(mipmap >= 0 && mipmap < this->nHizDepthMinmapCount && "VKRenderPassCull::GetDescriptorImageInfo")
+
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+        imageInfo.imageView = this->aHizDepthImageView_Mipmap[mipmap];
+        imageInfo.sampler = nullptr;
+    }
+
     void VKRenderPassCull::UpdateHizDepthBuffer_Render()
     {
-        this->hizDepthCB.vRtDepthSize.x = this->nHizDepthWidth;
-        this->hizDepthCB.vRtDepthSize.y = this->nHizDepthHeight;
+        this->hizDepthCB.vRtDepthSize.x = (float)this->nHizDepthWidth;
+        this->hizDepthCB.vRtDepthSize.y = (float)this->nHizDepthHeight;
         this->hizDepthCB.vRtDepthSize.z = 1.0f / this->nHizDepthWidth;
         this->hizDepthCB.vRtDepthSize.w = 1.0f / this->nHizDepthHeight;
         updateHizDepthBuffer();

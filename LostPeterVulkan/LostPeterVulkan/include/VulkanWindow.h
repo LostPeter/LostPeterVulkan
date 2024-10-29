@@ -1096,6 +1096,18 @@ namespace LostPeterVulkan
                                                        uint32_t mipMapCount,
                                                        uint32_t numArray,
                                                        VkImageView& imageView);
+                        virtual void createVkImageView(const String& nameTex,
+                                                       VkImageViewCreateFlags flags, 
+                                                       VkImage image, 
+                                                       VkImageViewType type, 
+                                                       VkFormat format, 
+                                                       VkComponentMapping componentMapping,
+                                                       VkImageAspectFlags aspectFlags, 
+                                                       uint32_t baseMipLevel,
+                                                       uint32_t mipMapCount,
+                                                       uint32_t baseArrayLayer,
+                                                       uint32_t numArray,
+                                                       VkImageView& imageView);
                                                      
                         virtual void createVkSampler(const String& nameTex,
                                                      uint32_t mipMapCount, 

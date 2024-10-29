@@ -31,9 +31,10 @@ namespace LostPeterVulkan
         VkFormat poFormat;
         VkImage poHizDepthImage;
         VkDeviceMemory poHizDepthImageMemory;
-        VkImageView poHizDepthImageView;
+        VkImageView poHizDepthImageView_Main;
+        VkImageView poHizDepthImageView_0;
+        VkImageViewVector aHizDepthImageView_Mipmap;
         VkSampler poHizDepthSampler;
-        VkDescriptorImageInfo poHizDepthImageInfo_NoSampler;
         VkDescriptorImageInfo poHizDepthImageInfo_Sampler;
 
         int nHizDepthWidth;
@@ -58,6 +59,8 @@ namespace LostPeterVulkan
     public:
         void Destroy();
         virtual bool Init();
+
+        virtual void GetDescriptorImageInfo(int mipmap, VkDescriptorImageInfo& imageInfo);
 
         virtual void UpdateHizDepthBuffer_Render();
         virtual void UpdateHizDepthBuffer_Compute(float w, float h);

@@ -149,7 +149,7 @@ namespace LostPeterVulkan
                                                                  BufferCompute* pCB_LodArgs,
                                                                  BufferCompute* pCB_Result,
                                                                  BufferCompute* pCB_Clip);
-        virtual void UpdateDescriptorSet_HizDepthGenerate();
+        virtual void UpdateDescriptorSet_HizDepthGenerate(int mipmap0, int mipmap1);
 
     protected:
         virtual void updateDescriptorSet(VkDescriptorSet& descriptorSet,
@@ -158,7 +158,9 @@ namespace LostPeterVulkan
                                          BufferIndirectCommand* pCB_RenderArgs,
                                          BufferCompute* pCB_LodArgs,
                                          BufferCompute* pCB_Result,
-                                         BufferCompute* pCB_Clip);
+                                         BufferCompute* pCB_Clip,
+                                         int mipmap0 = 0,
+                                         int mipmap1 = 1);
     };
 
 }; //LostPeterVulkan

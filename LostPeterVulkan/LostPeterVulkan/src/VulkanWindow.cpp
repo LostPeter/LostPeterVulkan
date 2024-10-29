@@ -3980,11 +3980,11 @@ namespace LostPeterVulkan
                 VkRenderPassCreateInfo renderPassInfo = {};
                 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
                 renderPassInfo.attachmentCount = static_cast<uint32_t>(aAttachmentDescription.size());
-                renderPassInfo.pAttachments = &aAttachmentDescription[0];
+                renderPassInfo.pAttachments = aAttachmentDescription.data();
                 renderPassInfo.subpassCount = static_cast<uint32_t>(aSubpassDescription.size());
-                renderPassInfo.pSubpasses = &aSubpassDescription[0];
+                renderPassInfo.pSubpasses = aSubpassDescription.data();
                 renderPassInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
-                renderPassInfo.pDependencies = &aSubpassDependency[0];
+                renderPassInfo.pDependencies = aSubpassDependency.data();
                 if (pMultiviewCI != nullptr)
                     renderPassInfo.pNext = pMultiviewCI;
 
@@ -4535,7 +4535,7 @@ namespace LostPeterVulkan
                     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
                     framebufferInfo.renderPass = vkRenderPass;
                     framebufferInfo.attachmentCount = static_cast<uint32_t>(aImageView.size());
-                    framebufferInfo.pAttachments = &aImageView[0];
+                    framebufferInfo.pAttachments = aImageView.data();
                     framebufferInfo.width = width;
                     framebufferInfo.height = height;
                     framebufferInfo.layers = layers;
@@ -6538,6 +6538,40 @@ namespace LostPeterVulkan
             viewInfo.subresourceRange.baseMipLevel = 0;
             viewInfo.subresourceRange.levelCount = mipMapCount;
             viewInfo.subresourceRange.baseArrayLayer = 0;
+            viewInfo.subresourceRange.layerCount = numArray;
+
+            if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
+            {
+                String msg = "*********************** VulkanWindow::createVkImageView: Failed to create texture image view !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            this->poDebug->SetVkImageViewName(this->poDevice, imageView, nameTex.c_str());
+        }
+        void VulkanWindow::createVkImageView(const String& nameTex,
+                                             VkImageViewCreateFlags flags, 
+                                             VkImage image, 
+                                             VkImageViewType type, 
+                                             VkFormat format, 
+                                             VkComponentMapping componentMapping,
+                                             VkImageAspectFlags aspectFlags, 
+                                             uint32_t baseMipLevel,
+                                             uint32_t mipMapCount,
+                                             uint32_t baseArrayLayer,
+                                             uint32_t numArray,
+                                             VkImageView& imageView)
+        {
+            VkImageViewCreateInfo viewInfo = {};
+            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            viewInfo.flags = flags;
+            viewInfo.image = image;
+            viewInfo.viewType = type;
+            viewInfo.format = format;
+            viewInfo.components = componentMapping;
+            viewInfo.subresourceRange.aspectMask = aspectFlags;
+            viewInfo.subresourceRange.baseMipLevel = baseMipLevel;
+            viewInfo.subresourceRange.levelCount = mipMapCount;
+            viewInfo.subresourceRange.baseArrayLayer = baseArrayLayer;
             viewInfo.subresourceRange.layerCount = numArray;
 
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 

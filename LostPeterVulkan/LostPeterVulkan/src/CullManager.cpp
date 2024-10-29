@@ -277,13 +277,13 @@ namespace LostPeterVulkan
                                                          0, 
                                                          nullptr);
 
-            for (int i = 0; i < count_mipmap; i++)
+            for (int i = 0; i < count_mipmap - 1; i++)
             {
                 w = FMath::Max(1, w / 2);
                 h = FMath::Max(1, h / 2);
                 pVKRenderPassCull->UpdateHizDepthBuffer_Compute(w, h);
                 
-                this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate();
+                this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate(i, i + 1);
                 
                 int x, y;
                 x = FMath::CeilI(w / 8.0f);
