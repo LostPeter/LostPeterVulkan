@@ -157,7 +157,7 @@ namespace LostPeterVulkan
         updateDescriptorSets(this->poDescriptorSets_HizDepth, 
                              this->poDescriptorSetLayoutNames_HizDepth,
                              this->m_pVKRenderPassCull->poBuffer_HizDepthCB,
-                             Base::GetWindowPtr()->poDepthImageView,
+                             Base::GetWindowPtr()->poDepthImageView_Depth,
                              this->m_pVKRenderPassCull->poHizDepthSampler);
     }
     void VKPipelineGraphicsDepthHiz::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
@@ -193,7 +193,7 @@ namespace LostPeterVulkan
                     VkDescriptorImageInfo imageInfo;
                     imageInfo.sampler = vkSampler;
                     imageInfo.imageView = vkImageView;
-                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
                     Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                     vkDescriptorSets[i],
                                                                     j,

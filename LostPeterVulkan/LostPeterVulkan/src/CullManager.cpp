@@ -178,6 +178,7 @@ namespace LostPeterVulkan
                                                          nullptr);
             int x = FMath::CeilI(count_render / 64.0f);
             pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
+            pVulkanWindow->pipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
             //Test
             BufferCompute* pCB_CullObjects = pUnitObject->GetObjectDataCB();
@@ -256,6 +257,7 @@ namespace LostPeterVulkan
     {
         if (!this->isEnable)
             return;
+        return;
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         if (!pVulkanWindow->isComputeCullFrustumHizDepth)
             return;
@@ -281,7 +283,7 @@ namespace LostPeterVulkan
             {
                 w = FMath::Max(1, w / 2);
                 h = FMath::Max(1, h / 2);
-                pVKRenderPassCull->UpdateHizDepthBuffer_Compute(w, h);
+                pVKRenderPassCull->UpdateHizDepthBuffer_Compute((float)w, (float)h);
                 
                 this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate(i, i + 1);
                 
@@ -289,6 +291,7 @@ namespace LostPeterVulkan
                 x = FMath::CeilI(w / 8.0f);
                 y = FMath::CeilI(h / 8.0f);
                 pVulkanWindow->dispatch(commandBuffer, x, y, 1);
+                pVulkanWindow->pipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
             }
         }
 

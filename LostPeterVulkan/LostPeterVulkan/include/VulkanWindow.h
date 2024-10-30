@@ -296,6 +296,8 @@ namespace LostPeterVulkan
         VkImage poDepthImage;
         VkDeviceMemory poDepthImageMemory;
         VkImageView poDepthImageView;
+        VkImageView poDepthImageView_Depth;
+        VkImageView poDepthImageView_Stencil;
         VkImageVector poColorImageLists;
         VkDeviceMemoryVector poColorImageMemoryLists;
         VkImageViewVector poColorImageViewLists;
@@ -378,6 +380,8 @@ namespace LostPeterVulkan
         bool cfg_isWireFrame;
         bool cfg_isRotate;
         bool cfg_isNegativeViewport;
+        bool cfg_isUseFramebuffer_Depth;
+        bool cfg_isUseFramebuffer_Stencil;
         bool cfg_isUseComputeShaderBeforeRender;
         bool cfg_isUseComputeShaderAfterRender;
         bool cfg_isCreateRenderComputeSycSemaphore;
@@ -1457,8 +1461,8 @@ namespace LostPeterVulkan
                                                      const VkExtent2D& extent,
                                                      const VkClearValueVector& aClearValue);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);
-                            virtual void SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
-                            virtual void SetPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology);
+                            virtual void setDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
+                            virtual void setPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
                             virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
                             virtual void bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);
@@ -1472,6 +1476,8 @@ namespace LostPeterVulkan
 
                         virtual void dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ);
                         virtual void dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset);
+
+                        virtual void pipelineBarrier(VkCommandBuffer& commandBuffer, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkDependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const VkMemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier* pImageMemoryBarriers);
 
                 virtual void updateRenderCommandBuffers_CustomAfterDefault();
 

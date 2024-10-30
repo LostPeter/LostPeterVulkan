@@ -144,7 +144,7 @@ namespace LostPeterVulkan
                                                                   VK_SAMPLE_COUNT_1_BIT,
                                                                   this->poFormat,
                                                                   VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-                                                                  VK_IMAGE_LAYOUT_GENERAL,
+                                                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                                                   true,
                                                                   this->poHizDepthImage,
                                                                   this->poHizDepthImageMemory);
@@ -178,8 +178,8 @@ namespace LostPeterVulkan
                 F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView 0 !");
                 for (int i = 0; i < this->nHizDepthMinmapCount; i++)
                 {
-                    VkImageView viewMip;
-                    String nameView = nameTexture + "-Storage_View" + FUtilString::SaveInt(i);
+                    VkImageView viewMip = VK_NULL_HANDLE;
+                    String nameView = nameTexture + "-Storage-View" + FUtilString::SaveInt(i);
                     Base::GetWindowPtr()->createVkImageView(nameView,
                                                             0,
                                                             this->poHizDepthImage, 
@@ -192,8 +192,14 @@ namespace LostPeterVulkan
                                                             0,
                                                             1, 
                                                             viewMip);
+                    if (viewMip == VK_NULL_HANDLE)
+                    {
+                        F_LogError("*********************** VKRenderPassCull::createCullTexture: createVkImageView Storage: [%s] failed !", nameView.c_str());
+                        continue;
+                    }
+
                     this->aHizDepthImageView_Mipmap.push_back(viewMip);
-                    F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView Storage [%d] !", i);
+                    F_LogInfo("VKRenderPassCull::createCullTexture: createVkImageView Storage: [%s] success !", nameView.c_str());
                 }
                 Base::GetWindowPtr()->createVkSampler(nameTexture,
                                                       F_TextureFilter_None, 
@@ -208,7 +214,7 @@ namespace LostPeterVulkan
                 F_LogInfo("VKRenderPassCull::createCullTexture: createVkSampler !");
 
                 this->poHizDepthImageInfo_Sampler = {};
-                this->poHizDepthImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                this->poHizDepthImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 this->poHizDepthImageInfo_Sampler.imageView = this->poHizDepthImageView_Main;
                 this->poHizDepthImageInfo_Sampler.sampler = this->poHizDepthSampler;
 
@@ -261,10 +267,10 @@ namespace LostPeterVulkan
                                                                       0,
                                                                       this->poFormat,
                                                                       VK_SAMPLE_COUNT_1_BIT,
-                                                                      VK_ATTACHMENT_LOAD_OP_LOAD,
-                                                                      VK_ATTACHMENT_STORE_OP_STORE,
-                                                                      VK_ATTACHMENT_LOAD_OP_LOAD,
-                                                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                                      VK_ATTACHMENT_STORE_OP_DONT_CARE, 
+                                                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE, 
+                                                                      VK_ATTACHMENT_STORE_OP_DONT_CARE, 
                                                                       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                                                       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL); 
                     aAttachmentDescription.push_back(attachmentSR);
@@ -282,25 +288,7 @@ namespace LostPeterVulkan
                     aSubpassDescription.push_back(subpass_SceneRender);
                     
                     //VkSubpassDependency
-                    // VkSubpassDependency subpassDependency0 = {};
-                    // subpassDependency0.srcSubpass = VK_SUBPASS_EXTERNAL;
-                    // subpassDependency0.dstSubpass = 0;
-                    // subpassDependency0.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    // subpassDependency0.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-                    // subpassDependency0.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                    // subpassDependency0.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                    // subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-                    // aSubpassDependency.push_back(subpassDependency0);
 
-                    // VkSubpassDependency subpassDependency1 = {};
-                    // subpassDependency1.srcSubpass = 0;
-                    // subpassDependency1.dstSubpass = VK_SUBPASS_EXTERNAL;
-                    // subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-                    // subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    // subpassDependency1.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                    // subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                    // subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-                    // aSubpassDependency.push_back(subpassDependency1);
 
                     String nameRenderPass = "RenderPass-" + GetName();
                     if (!Base::GetWindowPtr()->createVkRenderPass(nameRenderPass,

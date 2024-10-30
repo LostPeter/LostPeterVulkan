@@ -2024,6 +2024,8 @@ namespace LostPeterVulkan
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
         , cfg_isNegativeViewport(true)
+        , cfg_isUseFramebuffer_Depth(false)
+        , cfg_isUseFramebuffer_Stencil(false)
         , cfg_isUseComputeShaderBeforeRender(false)
         , cfg_isUseComputeShaderAfterRender(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
@@ -3485,7 +3487,7 @@ namespace LostPeterVulkan
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
-        createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        createInfo.imageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 
         uint32_t queueFamilyIndices[] =
         {
@@ -3660,7 +3662,7 @@ namespace LostPeterVulkan
                           this->poMSAASamples, 
                           colorFormat, 
                           VK_IMAGE_TILING_OPTIMAL, 
-                          VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
+                          VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
                           VK_SHARING_MODE_EXCLUSIVE,
                           false,
                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -3694,7 +3696,7 @@ namespace LostPeterVulkan
                           this->poMSAASamples, 
                           depthFormat, 
                           VK_IMAGE_TILING_OPTIMAL, 
-                          VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                          VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
                           VK_SHARING_MODE_EXCLUSIVE,
                           false,
                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -3709,6 +3711,28 @@ namespace LostPeterVulkan
                               1,
                               1,
                               this->poDepthImageView);
+            if (this->cfg_isUseFramebuffer_Depth)
+            {
+                createVkImageView(nameTexture,
+                                  this->poDepthImage, 
+                                  VK_IMAGE_VIEW_TYPE_2D,
+                                  depthFormat, 
+                                  VK_IMAGE_ASPECT_DEPTH_BIT, 
+                                  1,
+                                  1,
+                                  this->poDepthImageView_Depth);
+            }
+            if (this->cfg_isUseFramebuffer_Stencil)
+            {
+                createVkImageView(nameTexture,
+                              this->poDepthImage, 
+                              VK_IMAGE_VIEW_TYPE_2D,
+                              depthFormat, 
+                              VK_IMAGE_ASPECT_STENCIL_BIT, 
+                              1,
+                              1,
+                              this->poDepthImageView_Stencil);
+            }
 
             F_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
         }
@@ -6706,6 +6730,15 @@ namespace LostPeterVulkan
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                     destinationStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
                 } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+                {
+                    // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    barrier.srcAccessMask = 0;
+                    barrier.dstAccessMask = 0; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                }
                 else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) 
                 {
                     // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_GENERAL
@@ -6720,16 +6753,16 @@ namespace LostPeterVulkan
                     throw std::invalid_argument("VulkanWindow::transitionImageLayout: Unsupported layout transition !");
                 }
 
-                vkCmdPipelineBarrier(cmdBuffer,
-                                     sourceStage, 
-                                     destinationStage,
-                                     0,
-                                     0, 
-                                     nullptr,
-                                     0, 
-                                     nullptr,
-                                     1, 
-                                     &barrier);
+                pipelineBarrier(cmdBuffer,
+                                sourceStage, 
+                                destinationStage,
+                                0,
+                                0, 
+                                nullptr,
+                                0, 
+                                nullptr,
+                                1, 
+                                &barrier);
             }
             if (isCreate)
             {
@@ -9625,7 +9658,7 @@ namespace LostPeterVulkan
                         bindViewport(commandBuffer, this->m_pVKRenderPassShadowMap->viewPort, this->m_pVKRenderPassShadowMap->rtScissor);
                         
                         //2> DepthBias
-                        SetDepthBias(commandBuffer, this->shadowMainLight.depthBiasConstant, 0.0f, this->shadowMainLight.depthBiasSlope);
+                        setDepthBias(commandBuffer, this->shadowMainLight.depthBiasConstant, 0.0f, this->shadowMainLight.depthBiasSlope);
 
                         //3> Showmap Render
                         drawMeshShadowMap(commandBuffer);
@@ -9880,11 +9913,11 @@ namespace LostPeterVulkan
                             vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
                             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
                         }
-                        void VulkanWindow::SetDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
+                        void VulkanWindow::setDepthBias(VkCommandBuffer& commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor)
                         {
                             vkCmdSetDepthBias(commandBuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);
                         }
-                        void VulkanWindow::SetPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology)
+                        void VulkanWindow::setPrimitiveTopology(VkCommandBuffer& commandBuffer, VkPrimitiveTopology vkPrimitiveTopology)
                         {
                             vkCmdSetPrimitiveTopology(commandBuffer, vkPrimitiveTopology);
                         }
@@ -9940,6 +9973,11 @@ namespace LostPeterVulkan
                     {
                         vkCmdDispatchIndirect(commandBuffer, buffer, offset);
                     }   
+
+                    void VulkanWindow::pipelineBarrier(VkCommandBuffer& commandBuffer, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkDependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const VkMemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier* pImageMemoryBarriers)
+                    {
+                        vkCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+                    }
 
         void VulkanWindow::updateRenderCommandBuffers_CustomAfterDefault()
         {   
@@ -10128,8 +10166,20 @@ namespace LostPeterVulkan
                 destroyResourceInternal();
 
                 //1> DepthImage/ColorImage
+                if (this->poDepthImageView_Depth != VK_NULL_HANDLE)
+                    destroyVkImageView(this->poDepthImageView_Depth);
+                this->poDepthImageView_Depth = VK_NULL_HANDLE;
+                if (this->poDepthImageView_Stencil != VK_NULL_HANDLE)
+                    destroyVkImageView(this->poDepthImageView_Stencil);
+                this->poDepthImageView_Stencil = VK_NULL_HANDLE;
                 destroyVkImage(this->poDepthImage, this->poDepthImageMemory, this->poDepthImageView);
+                this->poDepthImage = VK_NULL_HANDLE;
+                this->poDepthImageMemory = VK_NULL_HANDLE;
+                this->poDepthImageView = VK_NULL_HANDLE;
                 destroyVkImage(this->poColorImage, this->poColorImageMemory, this->poColorImageView);
+                this->poColorImage = VK_NULL_HANDLE;
+                this->poColorImageMemory = VK_NULL_HANDLE;
+                this->poColorImageView = VK_NULL_HANDLE;
                 size_t count = this->poColorImageLists.size();
                 for (size_t i = 0; i < count; i++)
                 {
