@@ -1968,6 +1968,8 @@ namespace LostPeterVulkan
         , poDepthImage(VK_NULL_HANDLE)
         , poDepthImageMemory(VK_NULL_HANDLE)
         , poDepthImageView(VK_NULL_HANDLE)
+        , poDepthImageView_Depth(VK_NULL_HANDLE)
+        , poDepthImageView_Stencil(VK_NULL_HANDLE)
         , poRenderPass(VK_NULL_HANDLE)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poCommandPoolGraphics(VK_NULL_HANDLE) 

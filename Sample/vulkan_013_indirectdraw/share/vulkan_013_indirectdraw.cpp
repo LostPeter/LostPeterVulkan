@@ -2199,16 +2199,16 @@ void Vulkan_013_IndirectDraw::updateRenderPass_SyncComputeGraphics(VkCommandBuff
                 imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 			    imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 
-                vkCmdPipelineBarrier(commandBuffer,
-                                     VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                     0,
-                                     0,
-                                     nullptr,
-                                     0,
-                                     nullptr,
-                                     1,
-                                     &imageMemoryBarrier);
+                pipelineBarrier(commandBuffer,
+                                VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                0,
+                                0,
+                                nullptr,
+                                0,
+                                nullptr,
+                                1,
+                                &imageMemoryBarrier);
             }
         }
     }
