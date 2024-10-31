@@ -74,7 +74,12 @@ namespace LostPeterVulkan
 
 
         //0> VKRenderPassCopyBlitFromFrame
-        this->pVKRenderPassCopyBlitFromFrame = new VKRenderPassCopyBlitFromFrame("RenderPass-CopyBlitFromFrame");
+        String nameRenderPass = "RenderPass-CopyBlitFromFrame-";
+        if (isDepth)
+            nameRenderPass += "Depth";
+        else
+            nameRenderPass += "Color";
+        this->pVKRenderPassCopyBlitFromFrame = new VKRenderPassCopyBlitFromFrame(nameRenderPass);
         if (!this->pVKRenderPassCopyBlitFromFrame->Init(width,
                                                         height,
                                                         format,
@@ -115,7 +120,7 @@ namespace LostPeterVulkan
                                                                               false, 0, 3,
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                              Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors, aDynamicStates,
+                                                                              this->pVKRenderPassCopyBlitFromFrame->poRenderPass, this->poPipelineLayout, aViewports, aScissors, aDynamicStates,
                                                                               VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -166,6 +171,15 @@ namespace LostPeterVulkan
         this->poDescriptorSets.clear();
     }  
 
+    void VKPipelineGraphicsCopyBlitFromFrame::UpdateDescriptorSets(const VkImageView& imageView)
+    {
+        VkDescriptorImageInfo imageInfo = { };
+        imageInfo.sampler = this->pVKRenderPassCopyBlitFromFrame->poSampler;
+        imageInfo.imageView = imageView;
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        UpdateDescriptorSets(imageInfo);
+    }
     void VKPipelineGraphicsCopyBlitFromFrame::UpdateDescriptorSets(const VkDescriptorImageInfo& imageInfo)
     {
         StringVector* pDescriptorSetLayoutNames = this->poDescriptorSetLayoutNames;

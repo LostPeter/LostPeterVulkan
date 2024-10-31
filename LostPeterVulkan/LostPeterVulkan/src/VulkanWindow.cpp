@@ -93,7 +93,6 @@ namespace LostPeterVulkan
         {
             m_pVKRenderPassTerrain->CleanupSwapChain();
         }
-
     }
 
     //Mesh
@@ -1021,10 +1020,15 @@ namespace LostPeterVulkan
         destroyPipelineGraphics_Terrain();
         destroyPipelineGraphics_DepthHiz();
         destroyPipelineGraphics_DepthShadowMap();
-        destroyPipelineGraphics_CopyBlit();
-
+        destroyPipelineGraphics_CopyBlitToFrame();
+        destroyPipelineGraphics_CopyBlitFromFrame();
     }
-        void VulkanWindow::destroyPipelineGraphics_CopyBlit()
+        void VulkanWindow::destroyPipelineGraphics_CopyBlitFromFrame()
+        {
+            F_DELETE(m_pPipelineGraphics_CopyBlitFromFrameColor)
+            F_DELETE(m_pPipelineGraphics_CopyBlitFromFrameDepth)
+        }
+        void VulkanWindow::destroyPipelineGraphics_CopyBlitToFrame()
         {
             F_DELETE(m_pPipelineGraphics_CopyBlitToFrame)
         }
@@ -1043,13 +1047,111 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createPipelineGraphics_Internal()
     {
-        createPipelineGraphics_CopyBlit();
+        createPipelineGraphics_CopyBlitFromFrame();
+        createPipelineGraphics_CopyBlitToFrame();
         createPipelineGraphics_DepthShadowMap();
         createPipelineGraphics_DepthHiz();
         createPipelineGraphics_Terrain();
 
     }
-        void VulkanWindow::createPipelineGraphics_CopyBlit()
+        void VulkanWindow::createPipelineGraphics_CopyBlitFromFrame()
+        {
+            if (this->cfg_isUseCopyBlitFromFrameColor)
+            {
+                this->m_pPipelineGraphics_CopyBlitFromFrameColor = new VKPipelineGraphicsCopyBlitFromFrame("PipelineGraphics-CopyBlitFromFrameColor");
+                String descriptorSetLayout = "ObjectCopyBlit-TextureFrameColor";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color")
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitFromFrameColor;
+                String nameShaderVert = "vert_standard_copy_blit_from_frame";
+                String nameShaderFrag = "frag_standard_copy_blit_from_frame";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          nameShaderFrag,
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_CopyBlitFromFrameColor))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color: Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                Mesh* pMeshBlit = FindMesh_Internal("quad");
+                F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color");
+                if (!this->m_pPipelineGraphics_CopyBlitFromFrameColor->Init(this->poSwapChainExtent.width,
+                                                                            this->poSwapChainExtent.height,
+                                                                            this->poSwapChainImageFormat,
+                                                                            false,
+                                                                            pMeshBlit,
+                                                                            descriptorSetLayout,
+                                                                            pDescriptorSetLayoutNames,
+                                                                            vkDescriptorSetLayout,
+                                                                            vkPipelineLayout,
+                                                                            aShaderStageCreateInfos_CopyBlitFromFrameColor))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color: PipelineGraphics_CopyBlitFromFrameColor->Init failed !");
+                    return;
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlitFromFrame: [PipelineGraphics_CopyBlitFromFrameColor] create success !");
+            }
+            if (this->cfg_isUseCopyBlitFromFrameDepth)
+            {
+                this->m_pPipelineGraphics_CopyBlitFromFrameDepth = new VKPipelineGraphicsCopyBlitFromFrame("PipelineGraphics-CopyBlitFromFrameDepth");
+                String descriptorSetLayout = "ObjectCopyBlit-TextureFrameDepth";
+                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
+                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+
+                F_Assert(pDescriptorSetLayoutNames != nullptr &&
+                         vkDescriptorSetLayout != nullptr &&
+                         vkPipelineLayout != nullptr &&
+                         "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth")
+
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitFromFrameDepth;
+                String nameShaderVert = "vert_standard_copy_blit_from_frame";
+                String nameShaderFrag = "frag_standard_copy_blit_from_frame";
+                if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                          "",
+                                                          "",
+                                                          "",
+                                                          nameShaderFrag,
+                                                          this->m_mapVkShaderModules_Internal,
+                                                          aShaderStageCreateInfos_CopyBlitFromFrameDepth))
+                {
+                    String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth: Can not find shader used !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+
+                Mesh* pMeshBlit = FindMesh_Internal("quad");
+                F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth");
+                if (!this->m_pPipelineGraphics_CopyBlitFromFrameDepth->Init(this->poSwapChainExtent.width,
+                                                                            this->poSwapChainExtent.height,
+                                                                            this->poDepthImageFormat,
+                                                                            true,
+                                                                            pMeshBlit,
+                                                                            descriptorSetLayout,
+                                                                            pDescriptorSetLayoutNames,
+                                                                            vkDescriptorSetLayout,
+                                                                            vkPipelineLayout,
+                                                                            aShaderStageCreateInfos_CopyBlitFromFrameDepth))
+                {
+                    F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame: PipelineGraphics_CopyBlitFromFrameDepth->Init failed !");
+                    return;
+                }
+                F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlitFromFrame: [PipelineGraphics_CopyBlitFromFrameDepth] create success !");
+            }
+        }
+        void VulkanWindow::createPipelineGraphics_CopyBlitToFrame()
         {
             this->m_pPipelineGraphics_CopyBlitToFrame = new VKPipelineGraphicsCopyBlitToFrame("PipelineGraphics-CopyBlitToFrame");
             String descriptorSetLayout = "ObjectCopyBlit-TextureFrameColor";
@@ -1060,9 +1162,9 @@ namespace LostPeterVulkan
             F_Assert(pDescriptorSetLayoutNames != nullptr &&
                      vkDescriptorSetLayout != nullptr &&
                      vkPipelineLayout != nullptr &&
-                     "VulkanWindow::createPipelineGraphics_CopyBlit")
+                     "VulkanWindow::createPipelineGraphics_CopyBlitToFrame")
 
-            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlit;
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitToFrame;
             String nameShaderVert = "vert_standard_copy_blit_to_frame";
             String nameShaderFrag = "frag_standard_copy_blit_to_frame";
             if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
@@ -1071,26 +1173,26 @@ namespace LostPeterVulkan
                                                       "",
                                                       nameShaderFrag,
                                                       this->m_mapVkShaderModules_Internal,
-                                                      aShaderStageCreateInfos_CopyBlit))
+                                                      aShaderStageCreateInfos_CopyBlitToFrame))
             {
-                String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlit: Can not find shader used !";
+                String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitToFrame: Can not find shader used !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
             Mesh* pMeshBlit = FindMesh_Internal("quad");
-            F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlit");
+            F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitToFrame");
             if (!this->m_pPipelineGraphics_CopyBlitToFrame->Init(pMeshBlit,
                                                                  descriptorSetLayout,
                                                                  pDescriptorSetLayoutNames,
                                                                  vkDescriptorSetLayout,
                                                                  vkPipelineLayout,
-                                                                 aShaderStageCreateInfos_CopyBlit))
+                                                                 aShaderStageCreateInfos_CopyBlitToFrame))
             {
-                F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlit: PipelineGraphics_CopyBlit->Init failed !");
+                F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitToFrame: PipelineGraphics_CopyBlitToFrame->Init failed !");
                 return;
             }
-            F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlit: [PipelineGraphics_CopyBlit] create success !");
+            F_LogInfo("VulkanWindow::createPipelineGraphics_CopyBlitToFrame: [PipelineGraphics_CopyBlitToFrame] create success !");
         }
     void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitToFrame(const VkDescriptorImageInfo& imageInfo)
     {
@@ -1116,6 +1218,13 @@ namespace LostPeterVulkan
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
 
+    void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkImageView& imageView)
+    {
+        if (pCopyBlitFromFrame == nullptr)
+            return;
+
+        pCopyBlitFromFrame->UpdateDescriptorSets(imageView);
+    }
     void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkDescriptorImageInfo& imageInfo)
     {
         if (pCopyBlitFromFrame == nullptr)
@@ -2017,15 +2126,19 @@ namespace LostPeterVulkan
         , isComputeCullFrustumHizDepth(false)
 
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
-        , cfg_isRenderPassDefaultCustom(false)
+        
         , cfg_isRenderPassShadowMap(false)
         , cfg_isRenderPassCull(false)
         , cfg_isRenderPassTerrain(false)
+        , cfg_isRenderPassDefaultCustom(false)
+
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
         , cfg_isNegativeViewport(true)
+        , cfg_isUseCopyBlitFromFrameColor(false)
+        , cfg_isUseCopyBlitFromFrameDepth(false)
         , cfg_isUseFramebuffer_Depth(false)
         , cfg_isUseFramebuffer_Stencil(false)
         , cfg_isUseComputeShaderBeforeRender(false)
@@ -2088,6 +2201,8 @@ namespace LostPeterVulkan
         , m_pPipelineCompute_Cull(nullptr)
         , m_pPipelineCompute_Terrain(nullptr)
 
+        , m_pPipelineGraphics_CopyBlitFromFrameColor(nullptr)
+        , m_pPipelineGraphics_CopyBlitFromFrameDepth(nullptr)
         , m_pPipelineGraphics_CopyBlitToFrame(nullptr)
         , m_pPipelineGraphics_DepthShadowMap(nullptr)
         , m_pPipelineGraphics_DepthHiz(nullptr)
@@ -3671,7 +3786,7 @@ namespace LostPeterVulkan
                           this->poColorImage, 
                           this->poColorImageMemory);
 
-            createVkImageView(nameTexture,
+            createVkImageView(nameTexture + "-View",
                               this->poColorImage, 
                               VK_IMAGE_VIEW_TYPE_2D,
                               colorFormat, 
@@ -3705,7 +3820,7 @@ namespace LostPeterVulkan
                           this->poDepthImage, 
                           this->poDepthImageMemory);
 
-            createVkImageView(nameTexture,
+            createVkImageView(nameTexture + "-View",
                               this->poDepthImage, 
                               VK_IMAGE_VIEW_TYPE_2D,
                               depthFormat, 
@@ -3715,7 +3830,7 @@ namespace LostPeterVulkan
                               this->poDepthImageView);
             if (this->cfg_isUseFramebuffer_Depth)
             {
-                createVkImageView(nameTexture,
+                createVkImageView(nameTexture + "-View-Depth",
                                   this->poDepthImage, 
                                   VK_IMAGE_VIEW_TYPE_2D,
                                   depthFormat, 
@@ -3726,7 +3841,7 @@ namespace LostPeterVulkan
             }
             if (this->cfg_isUseFramebuffer_Stencil)
             {
-                createVkImageView(nameTexture,
+                createVkImageView(nameTexture + "-View-Stencil",
                               this->poDepthImage, 
                               VK_IMAGE_VIEW_TYPE_2D,
                               depthFormat, 
@@ -6750,6 +6865,15 @@ namespace LostPeterVulkan
                     sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                     destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                } 
                 else 
                 {
                     throw std::invalid_argument("VulkanWindow::transitionImageLayout: Unsupported layout transition !");
@@ -9597,6 +9721,7 @@ namespace LostPeterVulkan
                         updateRenderPass_Default(commandBuffer);
                     }
                     updateRenderPass_CustomAfterDefault(commandBuffer);
+                    updateRenderPass_BlitFromFrame(commandBuffer);
                     updateRenderPass_DepthHiz(commandBuffer);
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -9690,14 +9815,14 @@ namespace LostPeterVulkan
                         //1> Viewport
                         bindViewport(commandBuffer, this->poViewport, this->poScissor);
                     
-                        //2> Normal Render Pass
+                        //2> Default
                         drawMeshDefault(commandBuffer);
                         drawMeshTerrain(commandBuffer);
                         drawMeshDefault_Custom(commandBuffer);
                         drawMeshDefault_Editor(commandBuffer);
                         drawMeshDefault_CustomBeforeImgui(commandBuffer);
 
-                        //3> ImGui Pass
+                        //3> ImGui 
                         drawMeshDefault_Imgui(commandBuffer);
                     }
                     endRenderPass(commandBuffer);
@@ -9744,7 +9869,7 @@ namespace LostPeterVulkan
                     {
 
                     }
-                    void VulkanWindow::drawMeshDefault_Editor(VkCommandBuffer& commandBuffer)
+                     void VulkanWindow::drawMeshDefault_Editor(VkCommandBuffer& commandBuffer)
                     {
                         if (this->pEditorGrid != nullptr)
                         {
@@ -9793,6 +9918,76 @@ namespace LostPeterVulkan
                 {
 
                 }
+                void VulkanWindow::updateRenderPass_BlitFromFrame(VkCommandBuffer& commandBuffer)
+                {
+                    if (this->cfg_isUseCopyBlitFromFrameColor &&
+                        this->m_pPipelineGraphics_CopyBlitFromFrameColor != nullptr)
+                    {
+                        updateBlitFromFrame_Color(commandBuffer);
+                        beginRenderPass(commandBuffer,
+                                        "[RenderPass-CopyBlitFromFrameColor]",
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poRenderPass,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->offset,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->extent,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                        {
+                            //1> Viewport
+                            bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->rtScissor);
+                        
+                            //2> CopyBlitFromFrame Color
+                            drawBlitFromFrame_Color(commandBuffer);
+                        }
+                        endRenderPass(commandBuffer);
+                    }
+                    if (this->cfg_isUseCopyBlitFromFrameDepth &&
+                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth != nullptr)
+                    {
+                        updateBlitFromFrame_Depth(commandBuffer);
+                        beginRenderPass(commandBuffer,
+                                        "[RenderPass-CopyBlitFromFrameDepth]",
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poRenderPass,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->offset,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->extent,
+                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                        {
+                            //1> Viewport
+                            bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->rtScissor);
+                        
+                            //2> CopyBlitFromFrame Depth
+                            drawBlitFromFrame_Depth(commandBuffer);
+                        }
+                        endRenderPass(commandBuffer);
+                    }
+                }
+                    void VulkanWindow::updateBlitFromFrame_Color(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
+                    void VulkanWindow::drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
+                    void VulkanWindow::updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+                    {
+                        transitionImageLayout(commandBuffer,
+                                              this->poDepthImage,
+                                              VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                              0,
+                                              1,
+                                              0,
+                                              1,
+                                              VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+
+                        UpdateDescriptorSets_Graphics_CopyBlitFromFrame(this->m_pPipelineGraphics_CopyBlitFromFrameDepth, this->poDepthImageView_Depth);
+                    }
+                    void VulkanWindow::drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+                    {
+                        Draw_Graphics_CopyBlitFromFrame(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth);
+                    }
+
                 void VulkanWindow::updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer)
                 {
                     if (this->m_pVKRenderPassCull == nullptr ||
@@ -9801,7 +9996,8 @@ namespace LostPeterVulkan
                     {
                         return;
                     }
-
+                    
+                    updateMeshDepthHiz(commandBuffer);
                     beginRenderPass(commandBuffer,
                                     "[RenderPass-DepthHiz]",
                                     this->m_pVKRenderPassCull->poRenderPass,
@@ -9814,10 +10010,28 @@ namespace LostPeterVulkan
                         bindViewport(commandBuffer, this->m_pVKRenderPassCull->viewPort, this->m_pVKRenderPassCull->rtScissor);
                     
                         //2> DepthHiz
-                        Draw_Graphics_DepthHiz(commandBuffer);
+                        drawMeshDepthHiz(commandBuffer);
                     }
                     endRenderPass(commandBuffer);
                 }
+                    void VulkanWindow::updateMeshDepthHiz(VkCommandBuffer& commandBuffer)
+                    {
+                        transitionImageLayout(commandBuffer,
+                                              this->poDepthImage,
+                                              VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                              0,
+                                              1,
+                                              0,
+                                              1,
+                                              VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+
+                    }
+                    void VulkanWindow::drawMeshDepthHiz(VkCommandBuffer& commandBuffer)
+                    {
+                        Draw_Graphics_DepthHiz(commandBuffer);
+                    }
+
 
                     void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
                                                        const String& nameRenderPass,

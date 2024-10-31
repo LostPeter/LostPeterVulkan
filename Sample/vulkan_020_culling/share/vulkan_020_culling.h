@@ -659,6 +659,11 @@ protected:
 
         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
 
+        //virtual void updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
+        //virtual void drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
+
+        //virtual void updateMeshDepthHiz(VkCommandBuffer& commandBuffer);
+
     //cleanup
         virtual void cleanupCustom();
 

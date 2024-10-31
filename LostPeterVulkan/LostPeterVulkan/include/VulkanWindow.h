@@ -40,6 +40,8 @@ namespace LostPeterVulkan
         VKPipelineComputeTerrain* m_pPipelineCompute_Terrain;
 
         //PipelineGraphics
+        VKPipelineGraphicsCopyBlitFromFrame* m_pPipelineGraphics_CopyBlitFromFrameColor;
+        VKPipelineGraphicsCopyBlitFromFrame* m_pPipelineGraphics_CopyBlitFromFrameDepth;
         VKPipelineGraphicsCopyBlitToFrame* m_pPipelineGraphics_CopyBlitToFrame;
         VKPipelineGraphicsDepthShadowMap* m_pPipelineGraphics_DepthShadowMap;
         VKPipelineGraphicsDepthHiz* m_pPipelineGraphics_DepthHiz;
@@ -98,6 +100,7 @@ namespace LostPeterVulkan
         virtual void UpdateBuffer_Graphics_CopyBlitToFrame(const CopyBlitObjectConstants& object);
         virtual void Draw_Graphics_CopyBlitToFrame(VkCommandBuffer& commandBuffer);
         //PipelineGraphics-CopyBlitFromFrame
+        virtual void UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkImageView& imageView);
         virtual void UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkDescriptorImageInfo& imageInfo);
         virtual void UpdateBuffer_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const CopyBlitObjectConstants& object);
         virtual void Draw_Graphics_CopyBlitFromFrame(VkCommandBuffer& commandBuffer, VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame);
@@ -176,12 +179,14 @@ namespace LostPeterVulkan
 
         //PipelineGraphics
         virtual void destroyPipelineGraphics_Internal();
-            virtual void destroyPipelineGraphics_CopyBlit();
+            virtual void destroyPipelineGraphics_CopyBlitFromFrame();
+            virtual void destroyPipelineGraphics_CopyBlitToFrame();
             virtual void destroyPipelineGraphics_DepthShadowMap();
             virtual void destroyPipelineGraphics_DepthHiz();
             virtual void destroyPipelineGraphics_Terrain();
         virtual void createPipelineGraphics_Internal();
-            virtual void createPipelineGraphics_CopyBlit();
+            virtual void createPipelineGraphics_CopyBlitFromFrame();
+            virtual void createPipelineGraphics_CopyBlitToFrame();
             virtual void createPipelineGraphics_DepthShadowMap();
             virtual void createPipelineGraphics_DepthHiz();
             virtual void createPipelineGraphics_Terrain();
@@ -371,15 +376,19 @@ namespace LostPeterVulkan
         //Config
         FVector4 cfg_colorBackground;
         FVector4Vector cfg_colorValues;
-        bool cfg_isRenderPassDefaultCustom;
+        
         bool cfg_isRenderPassShadowMap;
         bool cfg_isRenderPassCull;
         bool cfg_isRenderPassTerrain;
+        bool cfg_isRenderPassDefaultCustom;
+
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
         bool cfg_isRotate;
         bool cfg_isNegativeViewport;
+        bool cfg_isUseCopyBlitFromFrameColor;
+        bool cfg_isUseCopyBlitFromFrameDepth;
         bool cfg_isUseFramebuffer_Depth;
         bool cfg_isUseFramebuffer_Stencil;
         bool cfg_isUseComputeShaderBeforeRender;
@@ -1433,7 +1442,15 @@ namespace LostPeterVulkan
                         virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_BlitFromFrame(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Color(VkCommandBuffer& commandBuffer);
+                        virtual void drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
+                        virtual void drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer);
+                        virtual void updateMeshDepthHiz(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshDepthHiz(VkCommandBuffer& commandBuffer);
+
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
                                                      const String& nameRenderPass,

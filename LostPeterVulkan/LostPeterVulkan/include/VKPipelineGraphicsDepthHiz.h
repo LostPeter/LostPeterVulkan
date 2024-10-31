@@ -68,8 +68,8 @@ namespace LostPeterVulkan
         virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                           StringVector* poDescriptorSetLayoutNames,
                                           VkBuffer vkBuffer_HizDepthCB,
-                                          VkImageView vkImageView,
-                                          VkSampler vkSampler);
+                                          const VkImageView& vkImageView,
+                                          const VkSampler& vkSampler);
     };  
 
 }; //LostPeterVulkan

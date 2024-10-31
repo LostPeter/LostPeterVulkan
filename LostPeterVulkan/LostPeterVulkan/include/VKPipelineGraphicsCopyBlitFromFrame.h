@@ -60,6 +60,7 @@ namespace LostPeterVulkan
     public:
         virtual void CleanupSwapChain();
 
+        virtual void UpdateDescriptorSets(const VkImageView& imageView);
         virtual void UpdateDescriptorSets(const VkDescriptorImageInfo& imageInfo);
         virtual void UpdateBuffer(const CopyBlitObjectConstants& object);
     };

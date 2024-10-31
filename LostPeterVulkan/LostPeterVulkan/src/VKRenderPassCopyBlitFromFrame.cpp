@@ -81,6 +81,10 @@ namespace LostPeterVulkan
             this->aClearValue.clear();
             VkClearValue clearValue = {};
             clearValue.depthStencil = { 1.0f, 0 };
+            if (!isDepth)
+            {
+                clearValue.color = { 0, 0, 0, 0 };
+            }
             this->aClearValue.push_back(clearValue);
 
             this->viewPort.x = 0.0f;
@@ -97,10 +101,12 @@ namespace LostPeterVulkan
 
         VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
         if (isDepth)
         {
             usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-            imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
         }
 
         //1> Image
@@ -128,7 +134,7 @@ namespace LostPeterVulkan
                                                     this->poImage, 
                                                     VK_IMAGE_VIEW_TYPE_2D,
                                                     format, 
-                                                    VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                    aspectFlags,
                                                     1, 
                                                     1,
                                                     this->poImageView);
@@ -180,30 +186,28 @@ namespace LostPeterVulkan
             VkSubpassDescription subpass_SceneRender = {};
             subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
             subpass_SceneRender.colorAttachmentCount = 0;
-            subpass_SceneRender.pColorAttachments = !isDepth ? &attachRef : nullptr;
-            subpass_SceneRender.pDepthStencilAttachment = isDepth ? &attachRef : nullptr;
+            if (!isDepth)
+            {
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef;
+            }
+            else
+            {
+                subpass_SceneRender.pColorAttachments = nullptr;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef;
+            }
             aSubpassDescription.push_back(subpass_SceneRender);
             
             //VkSubpassDependency
-            VkSubpassDependency subpassDependency0 = {};
-            subpassDependency0.srcSubpass = VK_SUBPASS_EXTERNAL;
-            subpassDependency0.dstSubpass = 0;
-            subpassDependency0.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            subpassDependency0.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            subpassDependency0.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            subpassDependency0.dstAccessMask = isDepth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            subpassDependency0.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-            aSubpassDependency.push_back(subpassDependency0);
-
-            VkSubpassDependency subpassDependency1 = {};
-            subpassDependency1.srcSubpass = 0;
-            subpassDependency1.dstSubpass = VK_SUBPASS_EXTERNAL;
-            subpassDependency1.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-            subpassDependency1.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            subpassDependency1.srcAccessMask = isDepth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            subpassDependency1.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-            aSubpassDependency.push_back(subpassDependency1);
+            // VkSubpassDependency subpassDependency_SceneRender = {};
+            // subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+            // subpassDependency_SceneRender.dstSubpass = 0;
+            // subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+            // subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            // subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            // subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            // subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+            // aSubpassDependency.push_back(subpassDependency_SceneRender);
 
             String nameRenderPass = "RenderPass-" + GetName();
             if (!Base::GetWindowPtr()->createVkRenderPass(nameRenderPass,

@@ -1445,10 +1445,11 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirectMulti(false)
 {
     this->isComputeCullFrustum = true;
-    this->isComputeCullFrustumHizDepth = true;
+    this->isComputeCullFrustumHizDepth = false;
 
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
+    this->cfg_isUseCopyBlitFromFrameDepth = true;
     this->cfg_isUseFramebuffer_Depth = true;
     this->cfg_isUseComputeShaderBeforeRender = true;
     this->cfg_isUseComputeShaderAfterRender = false;
@@ -3915,7 +3916,60 @@ void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
     {
         drawModelObjectRendCulls(commandBuffer);
     }
+
 }
+
+// void Vulkan_020_Culling::updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+// {
+//     transitionImageLayout(commandBuffer,
+//                           this->poDepthImage,
+//                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+//                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+//                           0,
+//                           1,
+//                           0,
+//                           1,
+//                           VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+
+//     // VkImageMemoryBarrier barrier = {};
+//     // barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+//     // barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+//     // barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+//     // barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+//     // barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+//     // barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//     // barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//     // barrier.image = this->poDepthImage;
+    
+//     // barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+//     // barrier.subresourceRange.baseMipLevel = 0;
+//     // barrier.subresourceRange.levelCount = 1;
+//     // barrier.subresourceRange.baseArrayLayer = 0;
+//     // barrier.subresourceRange.layerCount = 1;
+
+//     // pipelineBarrier(commandBuffer,
+//     //                 VK_PIPELINE_STAGE_TRANSFER_BIT, 
+//     //                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+//     //                 0,
+//     //                 0, 
+//     //                 nullptr,
+//     //                 0, 
+//     //                 nullptr,
+//     //                 1, 
+//     //                 &barrier);
+
+//     UpdateDescriptorSets_Graphics_CopyBlitFromFrame(this->m_pPipelineGraphics_CopyBlitFromFrameDepth, this->poDepthImageView_Depth);
+// }
+// void Vulkan_020_Culling::drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+// {
+    
+// }
+
+// void Vulkan_020_Culling::updateMeshDepthHiz(VkCommandBuffer& commandBuffer)
+// {
+
+// }
+
 void Vulkan_020_Culling::drawModelObjectRendCulls(VkCommandBuffer& commandBuffer)
 {
     size_t count = this->m_aModelObjectRends_All.size();

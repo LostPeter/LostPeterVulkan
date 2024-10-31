@@ -163,8 +163,8 @@ namespace LostPeterVulkan
     void VKPipelineGraphicsDepthHiz::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                                           StringVector* poDescriptorSetLayoutNames,
                                                           VkBuffer vkBuffer_HizDepthCB,
-                                                          VkImageView vkImageView,
-                                                          VkSampler vkSampler)
+                                                          const VkImageView& vkImageView,
+                                                          const VkSampler& vkSampler)
     {
         uint32_t count_descriptorsets = (uint32_t)vkDescriptorSets.size();
         for (uint32_t i = 0; i < count_descriptorsets; i++)
@@ -193,7 +193,7 @@ namespace LostPeterVulkan
                     VkDescriptorImageInfo imageInfo;
                     imageInfo.sampler = vkSampler;
                     imageInfo.imageView = vkImageView;
-                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                     Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
                                                                     vkDescriptorSets[i],
                                                                     j,
