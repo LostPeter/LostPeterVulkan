@@ -214,7 +214,7 @@ namespace LostPeterVulkan
                 F_LogInfo("VKRenderPassCull::createCullTexture: createVkSampler !");
 
                 this->poHizDepthImageInfo_Sampler = {};
-                this->poHizDepthImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                this->poHizDepthImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
                 this->poHizDepthImageInfo_Sampler.imageView = this->poHizDepthImageView_Main;
                 this->poHizDepthImageInfo_Sampler.sampler = this->poHizDepthSampler;
 
@@ -346,6 +346,39 @@ namespace LostPeterVulkan
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
         imageInfo.imageView = this->aHizDepthImageView_Mipmap[mipmap];
         imageInfo.sampler = nullptr;
+    }
+
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToGeneral(VkCommandBuffer& commandBuffer)
+    {
+        uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
+        for (uint32_t i = 0; i < count; i++)
+        {
+            Base::GetWindowPtr()->transitionImageLayout(commandBuffer,
+                                                        this->poHizDepthImage,
+                                                        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                                        VK_IMAGE_LAYOUT_GENERAL,
+                                                        i,
+                                                        1,
+                                                        0,
+                                                        1,
+                                                        VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+    }
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer)
+    {
+        uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
+        for (uint32_t i = 0; i < count; i++)
+        {
+            Base::GetWindowPtr()->transitionImageLayout(commandBuffer,
+                                                        this->poHizDepthImage,
+                                                        VK_IMAGE_LAYOUT_GENERAL,
+                                                        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                                        i,
+                                                        1,
+                                                        0,
+                                                        1,
+                                                        VK_IMAGE_ASPECT_COLOR_BIT);
+        }
     }
 
     void VKRenderPassCull::UpdateHizDepthBuffer_Render()

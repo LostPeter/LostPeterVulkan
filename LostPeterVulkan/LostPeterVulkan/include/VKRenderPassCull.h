@@ -62,6 +62,9 @@ namespace LostPeterVulkan
 
         virtual void GetDescriptorImageInfo(int mipmap, VkDescriptorImageInfo& imageInfo);
 
+        virtual void UpdateHizDepthBuffer_ImageLayoutToGeneral(VkCommandBuffer& commandBuffer);
+        virtual void UpdateHizDepthBuffer_ImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer);
+
         virtual void UpdateHizDepthBuffer_Render();
         virtual void UpdateHizDepthBuffer_Compute(float w, float h);
 

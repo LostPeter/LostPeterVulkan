@@ -124,6 +124,8 @@ namespace LostPeterVulkan
 
         //PipelineGraphics_DepthHiz
         virtual void Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer);
+        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(VkCommandBuffer& commandBuffer);
+        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
@@ -1265,7 +1267,8 @@ namespace LostPeterVulkan
                         virtual void destroyVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets);
                         virtual void createVkDescriptorSet(const String& nameDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
                         virtual void createVkDescriptorSets(const String& nameDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
-                        
+                        virtual void createVkDescriptorSets(const String& nameDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout, int countDescriptorSets, VkDescriptorSetVector& aDescriptorSets);
+
                         virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
                                                                                                        VkDescriptorType descriptorType,
                                                                                                        uint32_t descriptorCount,
@@ -1435,21 +1438,26 @@ namespace LostPeterVulkan
                         virtual void drawMeshShadowMap(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
+                        virtual void updateMeshDefault_Before(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshTerrain(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
+                        virtual void updateMeshDefault_After(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_BlitFromFrame(VkCommandBuffer& commandBuffer);
-                        virtual void updateBlitFromFrame_Color(VkCommandBuffer& commandBuffer);
-                        virtual void drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer);
-                        virtual void updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
-                        virtual void drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Color_Before(VkCommandBuffer& commandBuffer);
+                            virtual void drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Color_After(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Depth_Before(VkCommandBuffer& commandBuffer);
+                            virtual void drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer);
+                        virtual void updateBlitFromFrame_Depth_After(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer);
-                        virtual void updateMeshDepthHiz(VkCommandBuffer& commandBuffer);
-                        virtual void drawMeshDepthHiz(VkCommandBuffer& commandBuffer);
+                        virtual void updateMeshDepthHiz_Before(VkCommandBuffer& commandBuffer);
+                            virtual void drawMeshDepthHiz(VkCommandBuffer& commandBuffer);
+                        virtual void updateMeshDepthHiz_After(VkCommandBuffer& commandBuffer);
 
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 

@@ -61,7 +61,6 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_HizDepthGenerate(VK_NULL_HANDLE)
         , poPipelineLayout_HizDepthGenerate(VK_NULL_HANDLE)
         , poPipeline_HizDepthGenerate(VK_NULL_HANDLE)
-        , poDescriptorSet_HizDepthGenerate(VK_NULL_HANDLE)
 
         //CullConstants
         , poBuffer_CullCB(VK_NULL_HANDLE)
@@ -241,10 +240,25 @@ namespace LostPeterVulkan
                                      vkPipelineLayout,
                                      vkShaderModule,
                                      this->poPipeline_HizDepthGenerate,
-                                     this->poDescriptorSet_HizDepthGenerate))
+                                     this->m_pVKRenderPassCull->nHizDepthMinmapCount - 1,
+                                     this->poDescriptorSet_HizDepthGenerates))
         {
             F_LogError("*********************** VKPipelineComputeCull::InitHizDepthGenerate: createVkComputePipeline failed !");
             return false;
+        }
+
+        int count = (int)this->poDescriptorSet_HizDepthGenerates.size();
+        for (int i = 0; i < count; i++)
+        {
+            updateDescriptorSet(this->poDescriptorSet_HizDepthGenerates[i], 
+                                pDescriptorSetLayoutNames,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                i,
+                                i + 1);
         }
 
         return true;
@@ -301,6 +315,40 @@ namespace LostPeterVulkan
 
             return true;
         }
+        bool VKPipelineComputeCull::createVkComputePipeline(const String& nameComputePipeline,
+                                                            const String& descriptorSetLayout,
+                                                            StringVector* pDescriptorSetLayoutNames,
+                                                            const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                                            const VkPipelineLayout& vkPipelineLayout,
+                                                            const VkShaderModule& vkShaderModule,
+                                                            VkPipeline& vkPipeline,
+                                                            int countDescriptorSets,
+                                                            VkDescriptorSetVector& vkDescriptorSets)
+        {
+            //1> VkPipeline
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+            shaderStageInfo.module = vkShaderModule;
+            shaderStageInfo.pName = "main";
+            vkPipeline = Base::GetWindowPtr()->createVkComputePipeline(nameComputePipeline, shaderStageInfo, vkPipelineLayout);
+            if (vkPipeline == VK_NULL_HANDLE)
+            {
+                F_LogError("*********************** VKPipelineComputeCull::createVkComputePipeline: createVkComputePipeline failed !");
+                return false;
+            }
+
+            //2> VkDescriptorSet
+            Base::GetWindowPtr()->createVkDescriptorSets(descriptorSetLayout, vkDescriptorSetLayout, countDescriptorSets, vkDescriptorSets);
+            if (vkDescriptorSets.size() <= 0)
+            {
+                F_LogError("*********************** VKPipelineComputeCull::createVkComputePipeline: createVkDescriptorSets failed !");
+                return false;
+            }
+
+            return true;
+        }
+
 
     void VKPipelineComputeCull::CleanupSwapChain()
     {
@@ -342,7 +390,7 @@ namespace LostPeterVulkan
         this->poPipelineLayout_HizDepthGenerate = VK_NULL_HANDLE;
         destroyVkComputePipeline(this->poPipeline_HizDepthGenerate);  
         this->poPipeline_HizDepthGenerate = VK_NULL_HANDLE;
-        this->poDescriptorSet_HizDepthGenerate = VK_NULL_HANDLE;
+        this->poDescriptorSet_HizDepthGenerates.clear();
 
     }  
 
@@ -452,7 +500,7 @@ namespace LostPeterVulkan
     }
     void VKPipelineComputeCull::UpdateDescriptorSet_HizDepthGenerate(int mipmap0, int mipmap1)
     {
-        updateDescriptorSet(this->poDescriptorSet_HizDepthGenerate, 
+        updateDescriptorSet(this->poDescriptorSet_HizDepthGenerates[mipmap0], 
                             this->poDescriptorSetLayoutNames_HizDepthGenerate,
                             nullptr,
                             nullptr,

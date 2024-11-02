@@ -65,7 +65,7 @@ namespace LostPeterVulkan
         VkDescriptorSetLayout poDescriptorSetLayout_HizDepthGenerate;
         VkPipelineLayout poPipelineLayout_HizDepthGenerate;
         VkPipeline poPipeline_HizDepthGenerate;
-        VkDescriptorSet poDescriptorSet_HizDepthGenerate;
+        VkDescriptorSetVector poDescriptorSet_HizDepthGenerates;
 
         ////////////////////////// Buffer ///////////////////////////////////
         //CullConstants
@@ -123,6 +123,15 @@ namespace LostPeterVulkan
                                      const VkShaderModule& vkShaderModule,
                                      VkPipeline& vkPipeline,
                                      VkDescriptorSet& vkDescriptorSet);
+        bool createVkComputePipeline(const String& nameComputePipeline,
+                                     const String& descriptorSetLayout,
+                                     StringVector* pDescriptorSetLayoutNames,
+                                     const VkDescriptorSetLayout& vkDescriptorSetLayout,
+                                     const VkPipelineLayout& vkPipelineLayout,
+                                     const VkShaderModule& vkShaderModule,
+                                     VkPipeline& vkPipeline,
+                                     int countDescriptorSets,
+                                     VkDescriptorSetVector& vkDescriptorSets);
 
     public:
         virtual void CleanupSwapChain();

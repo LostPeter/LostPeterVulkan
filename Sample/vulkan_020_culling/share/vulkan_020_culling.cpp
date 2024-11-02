@@ -1445,14 +1445,13 @@ Vulkan_020_Culling::Vulkan_020_Culling(int width, int height, String name)
     , m_isDrawIndirectMulti(false)
 {
     this->isComputeCullFrustum = true;
-    this->isComputeCullFrustumHizDepth = false;
+    this->isComputeCullFrustumHizDepth = true;
 
     this->cfg_isRenderPassShadowMap = true;
     this->cfg_isRenderPassCull = true;
-    this->cfg_isUseCopyBlitFromFrameDepth = true;
     this->cfg_isUseFramebuffer_Depth = true;
     this->cfg_isUseComputeShaderBeforeRender = true;
-    this->cfg_isUseComputeShaderAfterRender = false;
+    this->cfg_isUseComputeShaderAfterRender = true;
     this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_isImgui = true;
@@ -1870,7 +1869,7 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
                 createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
             }
 
@@ -1880,7 +1879,7 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
                 createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
             }
 
@@ -1892,7 +1891,7 @@ void Vulkan_020_Culling::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
+                    String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
                     createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
             }
@@ -2349,8 +2348,8 @@ void Vulkan_020_Culling::createTextures()
                                         g_TextureBorderColors[i],
                                         isRenderTarget,
                                         isGraphicsComputeShared);
-        pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
-        pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
+        pTexture->texChunkMaxX = (int)g_TextureAnimChunks[i * 2 + 0];
+        pTexture->texChunkMaxY = (int)g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
@@ -2641,14 +2640,14 @@ void Vulkan_020_Culling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
                                                        BufferCompute* pCB_Result)
 {
     F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_020_Culling::updateDescriptorSets_Graphics")
-    size_t count_ds = poDescriptorSets.size();
-    for (size_t j = 0; j < count_ds; j++)
+    uint32_t count_ds = (uint32_t)poDescriptorSets.size();
+    for (uint32_t j = 0; j < count_ds; j++)
     {   
         VkWriteDescriptorSetVector descriptorWrites;
         int nIndexTextureFS = 0;
 
-        size_t count_names = poDescriptorSetLayoutNames->size();
-        for (size_t p = 0; p < count_names; p++)
+        uint32_t count_names = (uint32_t)poDescriptorSetLayoutNames->size();
+        for (uint32_t p = 0; p < count_names; p++)
         {
             String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
@@ -2791,8 +2790,8 @@ void Vulkan_020_Culling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
 
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
-    size_t count_names = poDescriptorSetLayoutNames->size();
-    for (size_t p = 0; p < count_names; p++)
+    uint32_t count_names = (uint32_t)poDescriptorSetLayoutNames->size();
+    for (uint32_t p = 0; p < count_names; p++)
     {
         String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
         if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
@@ -2868,23 +2867,23 @@ void Vulkan_020_Culling::updateCompute_BeforeRender_Custom(VkCommandBuffer& comm
                     pPipelineCompute->frameRand = 0;
                 }
 
-                pPipelineCompute->pTextureCopy->texInfo.x = pPipelineCompute->pTextureSource->width;
-                pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
+                pPipelineCompute->pTextureCopy->texInfo.x = (float)pPipelineCompute->pTextureSource->width;
+                pPipelineCompute->pTextureCopy->texInfo.y = (float)pPipelineCompute->pTextureSource->height;
                 pPipelineCompute->pTextureCopy->texInfo.z = 0;
                 pPipelineCompute->pTextureCopy->texInfo.w = 0;
                 if (isRand)
                 {
-                    pPipelineCompute->pTextureCopy->texOffset.x = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                    pPipelineCompute->pTextureCopy->texOffset.y = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
+                    pPipelineCompute->pTextureCopy->texOffset.x = (float)(FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width);
+                    pPipelineCompute->pTextureCopy->texOffset.y = (float)(FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height);
                     pPipelineCompute->pTextureCopy->texOffset.z = 0;
                     pPipelineCompute->pTextureCopy->texOffset.w = 0;
 
                     int seed = FMath::Rand(0, 10000);
                     int start = seed % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.x = start;
-                    pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
+                    pPipelineCompute->pTextureCopy->texIndexArray.x = (float)start;
+                    pPipelineCompute->pTextureCopy->texIndexArray.y = (float)(++start % 4);
+                    pPipelineCompute->pTextureCopy->texIndexArray.z = (float)(++start % 4);
+                    pPipelineCompute->pTextureCopy->texIndexArray.w = (float)(++start % 4);
                 }
                 pPipelineCompute->pTextureCopy->texClearColor.x = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.y = 0;
@@ -3251,7 +3250,7 @@ void Vulkan_020_Culling::modelConfig()
             size_t count_object_rend = pModelObject->aRends.size();
 
             //1> ModelObject
-            String nameObject = FUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
+            String nameObject = FUtilString::SaveSizeT(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
                 //isShow
@@ -3739,8 +3738,8 @@ void Vulkan_020_Culling::modelConfig()
                                                 TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                                                 if (pTextureFSs != nullptr)
                                                 {
-                                                    size_t count_texture = pTextureFSs->size();
-                                                    for (size_t q = 0; q < count_texture; q++)
+                                                    int count_texture = (int)pTextureFSs->size();
+                                                    for (int q = 0; q < count_texture; q++)
                                                     {
                                                         Texture* pTexture = (*pTextureFSs)[q];
 
@@ -3770,7 +3769,7 @@ void Vulkan_020_Culling::modelConfig()
                                                                 int indexTextureArray = (int)mat.aTexLayers[q].indexTextureArray;
                                                                 if (ImGui::DragInt(nameIndexTextureArray.c_str(), &indexTextureArray, 1, 0, count_tex - 1))
                                                                 {
-                                                                    mat.aTexLayers[p].indexTextureArray = indexTextureArray;
+                                                                    mat.aTexLayers[p].indexTextureArray = (float)indexTextureArray;
                                                                 }
                                                             }
                                                             else 
@@ -3918,58 +3917,6 @@ void Vulkan_020_Culling::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
     }
 
 }
-
-// void Vulkan_020_Culling::updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
-// {
-//     transitionImageLayout(commandBuffer,
-//                           this->poDepthImage,
-//                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-//                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-//                           0,
-//                           1,
-//                           0,
-//                           1,
-//                           VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-
-//     // VkImageMemoryBarrier barrier = {};
-//     // barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-//     // barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-//     // barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-//     // barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-//     // barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-//     // barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-//     // barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-//     // barrier.image = this->poDepthImage;
-    
-//     // barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-//     // barrier.subresourceRange.baseMipLevel = 0;
-//     // barrier.subresourceRange.levelCount = 1;
-//     // barrier.subresourceRange.baseArrayLayer = 0;
-//     // barrier.subresourceRange.layerCount = 1;
-
-//     // pipelineBarrier(commandBuffer,
-//     //                 VK_PIPELINE_STAGE_TRANSFER_BIT, 
-//     //                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-//     //                 0,
-//     //                 0, 
-//     //                 nullptr,
-//     //                 0, 
-//     //                 nullptr,
-//     //                 1, 
-//     //                 &barrier);
-
-//     UpdateDescriptorSets_Graphics_CopyBlitFromFrame(this->m_pPipelineGraphics_CopyBlitFromFrameDepth, this->poDepthImageView_Depth);
-// }
-// void Vulkan_020_Culling::drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
-// {
-    
-// }
-
-// void Vulkan_020_Culling::updateMeshDepthHiz(VkCommandBuffer& commandBuffer)
-// {
-
-// }
-
 void Vulkan_020_Culling::drawModelObjectRendCulls(VkCommandBuffer& commandBuffer)
 {
     size_t count = this->m_aModelObjectRends_All.size();

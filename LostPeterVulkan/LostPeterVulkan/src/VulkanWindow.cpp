@@ -1517,7 +1517,26 @@ namespace LostPeterVulkan
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(VkCommandBuffer& commandBuffer)
+    {
+        if (this->m_pVKRenderPassCull == nullptr ||
+            this->m_pPipelineGraphics_DepthHiz == nullptr)
+        {
+            return;
+        }
 
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToGeneral(commandBuffer);
+    }
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer)
+    {
+        if (this->m_pVKRenderPassCull == nullptr ||
+            this->m_pPipelineGraphics_DepthHiz == nullptr)
+        {
+            return;
+        }
+
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToColorAttachment(commandBuffer);
+    }
 
 
         void VulkanWindow::createPipelineGraphics_Terrain()
@@ -6865,6 +6884,24 @@ namespace LostPeterVulkan
                     sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                     destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) 
+                {
+                    // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL -> VK_IMAGE_LAYOUT_GENERAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+                } 
                 else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
                 {
                     // VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -6873,6 +6910,15 @@ namespace LostPeterVulkan
 
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_GENERAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
                 else 
                 {
@@ -7968,6 +8014,29 @@ namespace LostPeterVulkan
                     this->poDebug->SetVkDescriptorSetName(this->poDevice, aDescriptorSets[i], name.c_str());
                 }
             }
+            void VulkanWindow::createVkDescriptorSets(const String& nameDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout, int countDescriptorSets, VkDescriptorSetVector& aDescriptorSets)
+            {
+                std::vector<VkDescriptorSetLayout> layouts(countDescriptorSets, vkDescriptorSetLayout);
+                VkDescriptorSetAllocateInfo allocInfo = {};
+                allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+                allocInfo.descriptorPool = this->poDescriptorPool;
+                allocInfo.descriptorSetCount = static_cast<uint32_t>(countDescriptorSets);
+                allocInfo.pSetLayouts = layouts.data();
+
+                size_t count = (size_t)countDescriptorSets;
+                aDescriptorSets.resize(count);
+                if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
+                {
+                    String msg = "*********************** VulkanWindow::createVkDescriptorSets: Failed to allocate descriptor sets !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                for (size_t i = 0; i < count; i++)
+                {
+                    String name = nameDescriptorSets + FUtilString::SaveSizeT(i);
+                    this->poDebug->SetVkDescriptorSetName(this->poDevice, aDescriptorSets[i], name.c_str());
+                }
+            }
 
             VkDescriptorSetLayoutBinding VulkanWindow::createVkDescriptorSetLayoutBinding_Buffer(uint32_t binding,
                                                                                                  VkDescriptorType descriptorType,
@@ -8211,7 +8280,7 @@ namespace LostPeterVulkan
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                this->poDebug->SetVkCommandBufferName(this->poDevice, this->poCommandBufferComputeAfter, "CommandBuffer-Compute-eAfter");
+                this->poDebug->SetVkCommandBufferName(this->poDevice, this->poCommandBufferComputeAfter, "CommandBuffer-Compute-After");
 
                 F_LogInfo("<2-1-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferComputeeAfter success !");
             }
@@ -9802,117 +9871,129 @@ namespace LostPeterVulkan
                 }
                 void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
-                    beginRenderPass(commandBuffer,
-                                    "[RenderPass-Default]",
-                                    this->poRenderPass,
-                                    this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
-                                    this->poOffset,
-                                    this->poExtent,
-                                    this->cfg_colorBackground,
-                                    1.0f,
-                                    0);
+                    updateMeshDefault_Before(commandBuffer);
                     {
-                        //1> Viewport
-                        bindViewport(commandBuffer, this->poViewport, this->poScissor);
-                    
-                        //2> Default
-                        drawMeshDefault(commandBuffer);
-                        drawMeshTerrain(commandBuffer);
-                        drawMeshDefault_Custom(commandBuffer);
-                        drawMeshDefault_Editor(commandBuffer);
-                        drawMeshDefault_CustomBeforeImgui(commandBuffer);
-
-                        //3> ImGui 
-                        drawMeshDefault_Imgui(commandBuffer);
-                    }
-                    endRenderPass(commandBuffer);
-                }
-                    void VulkanWindow::drawMeshDefault(VkCommandBuffer& commandBuffer)
-                    {
-                        if (this->poVertexBuffer == nullptr)
-                            return;
-
-                        VkPipeline vkPipeline = this->poPipelineGraphics;
-                        if (this->cfg_isWireFrame)
-                            vkPipeline = this->poPipelineGraphics_WireFrame;
-                        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
-
-                        VkBuffer vertexBuffers[] = { this->poVertexBuffer };
-                        VkDeviceSize offsets[] = { 0 };
-                        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-                        if (this->poDescriptorSets.size() > 0)
+                        beginRenderPass(commandBuffer,
+                                        "[RenderPass-Default]",
+                                        this->poRenderPass,
+                                        this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
+                                        this->poOffset,
+                                        this->poExtent,
+                                        this->cfg_colorBackground,
+                                        1.0f,
+                                        0);
                         {
-                            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-                        }
-                        if (this->poIndexBuffer != VK_NULL_HANDLE)
-                        {
-                            bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-                            drawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
-                        }
-                        else
-                        {
-                            draw(commandBuffer, this->poVertexCount, 1, 0, 0);
-                        }
-                    }
-                    void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
-                    {
-                        if (!this->cfg_isRenderPassTerrain || 
-                            this->m_pVKRenderPassTerrain == nullptr ||
-                            this->m_pPipelineGraphics_Terrain == nullptr)
-                            return;
+                            //1> Viewport
+                            bindViewport(commandBuffer, this->poViewport, this->poScissor);
                         
-                        Draw_Graphics_Terrain(commandBuffer);
+                            //2> Default
+                            drawMeshDefault(commandBuffer);
+                            drawMeshTerrain(commandBuffer);
+                            drawMeshDefault_Custom(commandBuffer);
+                            drawMeshDefault_Editor(commandBuffer);
+                            drawMeshDefault_CustomBeforeImgui(commandBuffer);
+
+                            //3> ImGui 
+                            drawMeshDefault_Imgui(commandBuffer);
+                        }
+                        endRenderPass(commandBuffer);
                     }
-                    void VulkanWindow::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+                    updateMeshDefault_After(commandBuffer);
+                }
+                    void VulkanWindow::updateMeshDefault_Before(VkCommandBuffer& commandBuffer)
                     {
 
                     }
-                     void VulkanWindow::drawMeshDefault_Editor(VkCommandBuffer& commandBuffer)
-                    {
-                        if (this->pEditorGrid != nullptr)
+                        void VulkanWindow::drawMeshDefault(VkCommandBuffer& commandBuffer)
                         {
-                            if (this->cfg_isEditorGridShow)
+                            if (this->poVertexBuffer == nullptr)
+                                return;
+
+                            VkPipeline vkPipeline = this->poPipelineGraphics;
+                            if (this->cfg_isWireFrame)
+                                vkPipeline = this->poPipelineGraphics_WireFrame;
+                            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+
+                            VkBuffer vertexBuffers[] = { this->poVertexBuffer };
+                            VkDeviceSize offsets[] = { 0 };
+                            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+                            if (this->poDescriptorSets.size() > 0)
                             {
-                                this->pEditorGrid->Draw(commandBuffer);
+                                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                            }
+                            if (this->poIndexBuffer != VK_NULL_HANDLE)
+                            {
+                                bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+                                drawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
+                            }
+                            else
+                            {
+                                draw(commandBuffer, this->poVertexCount, 1, 0, 0);
                             }
                         }
-                        if (this->pEditorCameraAxis != nullptr)
+                        void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
                         {
-                            if (this->cfg_isEditorCameraAxisShow)
+                            if (!this->cfg_isRenderPassTerrain || 
+                                this->m_pVKRenderPassTerrain == nullptr ||
+                                this->m_pPipelineGraphics_Terrain == nullptr)
+                                return;
+                            
+                            Draw_Graphics_Terrain(commandBuffer);
+                        }
+                        void VulkanWindow::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+                        {
+
+                        }
+                        void VulkanWindow::drawMeshDefault_Editor(VkCommandBuffer& commandBuffer)
+                        {
+                            if (this->pEditorGrid != nullptr)
                             {
-                                this->pEditorCameraAxis->DrawQuad(commandBuffer);
+                                if (this->cfg_isEditorGridShow)
+                                {
+                                    this->pEditorGrid->Draw(commandBuffer);
+                                }
+                            }
+                            if (this->pEditorCameraAxis != nullptr)
+                            {
+                                if (this->cfg_isEditorCameraAxisShow)
+                                {
+                                    this->pEditorCameraAxis->DrawQuad(commandBuffer);
+                                }
+                            }
+                            if (this->pEditorCoordinateAxis != nullptr)
+                            {
+                                if (this->cfg_isEditorCoordinateAxisShow)
+                                {
+                                    this->pEditorCoordinateAxis->Draw(commandBuffer);
+                                }
+                            }
+                            if (this->pEditorLineFlat2DCollector != nullptr)
+                            {
+                                this->pEditorLineFlat2DCollector->Draw(commandBuffer);
+                            }
+                            if (this->pEditorLineFlat3DCollector != nullptr)
+                            {
+                                this->pEditorLineFlat3DCollector->Draw(commandBuffer);
                             }
                         }
-                        if (this->pEditorCoordinateAxis != nullptr)
+                        void VulkanWindow::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
                         {
-                            if (this->cfg_isEditorCoordinateAxisShow)
+
+                        }
+                        void VulkanWindow::drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer)
+                        {
+                            if (HasConfig_Imgui())
                             {
-                                this->pEditorCoordinateAxis->Draw(commandBuffer);
+                                ImDrawData* main_draw_data = ImGui::GetDrawData();
+                                vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+                                ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                             }
                         }
-                        if (this->pEditorLineFlat2DCollector != nullptr)
-                        {
-                            this->pEditorLineFlat2DCollector->Draw(commandBuffer);
-                        }
-                        if (this->pEditorLineFlat3DCollector != nullptr)
-                        {
-                            this->pEditorLineFlat3DCollector->Draw(commandBuffer);
-                        }
-                    }
-                    void VulkanWindow::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateMeshDefault_After(VkCommandBuffer& commandBuffer)
                     {
 
-                    }
-                    void VulkanWindow::drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer)
-                    {
-                        if (HasConfig_Imgui())
-                        {
-                            ImDrawData* main_draw_data = ImGui::GetDrawData();
-                            vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
-                            ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
-                        }
                     }
                 void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
                 {
@@ -9923,53 +10004,73 @@ namespace LostPeterVulkan
                     if (this->cfg_isUseCopyBlitFromFrameColor &&
                         this->m_pPipelineGraphics_CopyBlitFromFrameColor != nullptr)
                     {
-                        updateBlitFromFrame_Color(commandBuffer);
-                        beginRenderPass(commandBuffer,
-                                        "[RenderPass-CopyBlitFromFrameColor]",
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poRenderPass,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->offset,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->extent,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                        updateBlitFromFrame_Color_Before(commandBuffer);
                         {
-                            //1> Viewport
-                            bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->rtScissor);
-                        
-                            //2> CopyBlitFromFrame Color
-                            drawBlitFromFrame_Color(commandBuffer);
+                            beginRenderPass(commandBuffer,
+                                            "[RenderPass-CopyBlitFromFrameColor]",
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poRenderPass,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->offset,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->extent,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                            {
+                                //1> Viewport
+                                bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameColor->pVKRenderPassCopyBlitFromFrame->rtScissor);
+                            
+                                //2> CopyBlitFromFrame Color
+                                drawBlitFromFrame_Color(commandBuffer);
+                            }
+                            endRenderPass(commandBuffer);
                         }
-                        endRenderPass(commandBuffer);
+                        updateBlitFromFrame_Color_After(commandBuffer);
                     }
                     if (this->cfg_isUseCopyBlitFromFrameDepth &&
                         this->m_pPipelineGraphics_CopyBlitFromFrameDepth != nullptr)
                     {
-                        updateBlitFromFrame_Depth(commandBuffer);
-                        beginRenderPass(commandBuffer,
-                                        "[RenderPass-CopyBlitFromFrameDepth]",
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poRenderPass,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->offset,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->extent,
-                                        this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                        updateBlitFromFrame_Depth_Before(commandBuffer);
                         {
-                            //1> Viewport
-                            bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->rtScissor);
-                        
-                            //2> CopyBlitFromFrame Depth
-                            drawBlitFromFrame_Depth(commandBuffer);
+                            beginRenderPass(commandBuffer,
+                                            "[RenderPass-CopyBlitFromFrameDepth]",
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poRenderPass,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->poFrameBuffer,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->offset,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->extent,
+                                            this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->aClearValue);
+                            {
+                                //1> Viewport
+                                bindViewport(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->viewPort, this->m_pPipelineGraphics_CopyBlitFromFrameDepth->pVKRenderPassCopyBlitFromFrame->rtScissor);
+                            
+                                //2> CopyBlitFromFrame Depth
+                                drawBlitFromFrame_Depth(commandBuffer);
+                            }
+                            endRenderPass(commandBuffer);
                         }
-                        endRenderPass(commandBuffer);
+                        updateBlitFromFrame_Depth_After(commandBuffer);
                     }
                 }
-                    void VulkanWindow::updateBlitFromFrame_Color(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateBlitFromFrame_Color_Before(VkCommandBuffer& commandBuffer)
+                    {
+                        transitionImageLayout(commandBuffer,
+                                              this->poSwapChainImages[this->poSwapChainImageIndex],
+                                              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                              0,
+                                              1,
+                                              0,
+                                              1,
+                                              VK_IMAGE_ASPECT_COLOR_BIT);
+
+                        UpdateDescriptorSets_Graphics_CopyBlitFromFrame(this->m_pPipelineGraphics_CopyBlitFromFrameColor, this->poSwapChainImageViews[this->poSwapChainImageIndex]);
+                    }
+                        void VulkanWindow::drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer)
+                        {
+                            Draw_Graphics_CopyBlitFromFrame(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameColor);
+                        }
+                    void VulkanWindow::updateBlitFromFrame_Color_After(VkCommandBuffer& commandBuffer)
                     {
 
                     }
-                    void VulkanWindow::drawBlitFromFrame_Color(VkCommandBuffer& commandBuffer)
-                    {
-
-                    }
-                    void VulkanWindow::updateBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateBlitFromFrame_Depth_Before(VkCommandBuffer& commandBuffer)
                     {
                         transitionImageLayout(commandBuffer,
                                               this->poDepthImage,
@@ -9983,11 +10084,14 @@ namespace LostPeterVulkan
 
                         UpdateDescriptorSets_Graphics_CopyBlitFromFrame(this->m_pPipelineGraphics_CopyBlitFromFrameDepth, this->poDepthImageView_Depth);
                     }
-                    void VulkanWindow::drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+                        void VulkanWindow::drawBlitFromFrame_Depth(VkCommandBuffer& commandBuffer)
+                        {
+                            Draw_Graphics_CopyBlitFromFrame(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth);
+                        }
+                    void VulkanWindow::updateBlitFromFrame_Depth_After(VkCommandBuffer& commandBuffer)
                     {
-                        Draw_Graphics_CopyBlitFromFrame(commandBuffer, this->m_pPipelineGraphics_CopyBlitFromFrameDepth);
-                    }
 
+                    }
                 void VulkanWindow::updateRenderPass_DepthHiz(VkCommandBuffer& commandBuffer)
                 {
                     if (this->m_pVKRenderPassCull == nullptr ||
@@ -9997,24 +10101,27 @@ namespace LostPeterVulkan
                         return;
                     }
                     
-                    updateMeshDepthHiz(commandBuffer);
-                    beginRenderPass(commandBuffer,
-                                    "[RenderPass-DepthHiz]",
-                                    this->m_pVKRenderPassCull->poRenderPass,
-                                    this->m_pVKRenderPassCull->poFrameBuffer,
-                                    this->m_pVKRenderPassCull->offset,
-                                    this->m_pVKRenderPassCull->extent,
-                                    this->m_pVKRenderPassCull->aClearValue);
+                    updateMeshDepthHiz_Before(commandBuffer);
                     {
-                        //1> Viewport
-                        bindViewport(commandBuffer, this->m_pVKRenderPassCull->viewPort, this->m_pVKRenderPassCull->rtScissor);
-                    
-                        //2> DepthHiz
-                        drawMeshDepthHiz(commandBuffer);
+                        beginRenderPass(commandBuffer,
+                                        "[RenderPass-DepthHiz]",
+                                        this->m_pVKRenderPassCull->poRenderPass,
+                                        this->m_pVKRenderPassCull->poFrameBuffer,
+                                        this->m_pVKRenderPassCull->offset,
+                                        this->m_pVKRenderPassCull->extent,
+                                        this->m_pVKRenderPassCull->aClearValue);
+                        {
+                            //1> Viewport
+                            bindViewport(commandBuffer, this->m_pVKRenderPassCull->viewPort, this->m_pVKRenderPassCull->rtScissor);
+                        
+                            //2> DepthHiz
+                            drawMeshDepthHiz(commandBuffer);
+                        }
+                        endRenderPass(commandBuffer);
                     }
-                    endRenderPass(commandBuffer);
+                    updateMeshDepthHiz_After(commandBuffer);
                 }
-                    void VulkanWindow::updateMeshDepthHiz(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::updateMeshDepthHiz_Before(VkCommandBuffer& commandBuffer)
                     {
                         transitionImageLayout(commandBuffer,
                                               this->poDepthImage,
@@ -10025,11 +10132,15 @@ namespace LostPeterVulkan
                                               0,
                                               1,
                                               VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(commandBuffer);
                     }
-                    void VulkanWindow::drawMeshDepthHiz(VkCommandBuffer& commandBuffer)
+                        void VulkanWindow::drawMeshDepthHiz(VkCommandBuffer& commandBuffer)
+                        {
+                            Draw_Graphics_DepthHiz(commandBuffer);
+                        }
+                    void VulkanWindow::updateMeshDepthHiz_After(VkCommandBuffer& commandBuffer)
                     {
-                        Draw_Graphics_DepthHiz(commandBuffer);
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(commandBuffer);
                     }
 
 

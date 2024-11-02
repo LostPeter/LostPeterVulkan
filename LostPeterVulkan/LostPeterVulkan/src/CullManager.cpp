@@ -147,6 +147,11 @@ namespace LostPeterVulkan
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         this->pVKPipelineComputeCull->UpdateBuffer_Cull();
 
+        if (pVulkanWindow->isComputeCullFrustumHizDepth)
+        {
+            this->pVKPipelineComputeCull->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToGeneral(commandBuffer);
+        }
+
         //Unit Object
         int count_unit_object = (int)this->aCullUnitObjects.size();
         for (int i = 0; i < count_unit_object; i++)
@@ -234,6 +239,7 @@ namespace LostPeterVulkan
             }
             x = FMath::CeilI(count_object / 64.0f); 
             pVulkanWindow->dispatch(commandBuffer, x, 1, 1);
+            pVulkanWindow->pipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
         }
 
         //Unit Terrain
@@ -257,7 +263,6 @@ namespace LostPeterVulkan
     {
         if (!this->isEnable)
             return;
-        return;
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         if (!pVulkanWindow->isComputeCullFrustumHizDepth)
             return;
@@ -269,15 +274,7 @@ namespace LostPeterVulkan
         int count_mipmap = pVKRenderPassCull->nHizDepthMinmapCount;
         if (count_mipmap > 0)
         {
-            pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
-                                                         VK_PIPELINE_BIND_POINT_COMPUTE, 
-                                                         this->pVKPipelineComputeCull->poPipeline_HizDepthGenerate,
-                                                         this->pVKPipelineComputeCull->poPipelineLayout_HizDepthGenerate, 
-                                                         0, 
-                                                         1, 
-                                                         &this->pVKPipelineComputeCull->poDescriptorSet_HizDepthGenerate, 
-                                                         0, 
-                                                         nullptr);
+            
 
             for (int i = 0; i < count_mipmap - 1; i++)
             {
@@ -285,7 +282,16 @@ namespace LostPeterVulkan
                 h = FMath::Max(1, h / 2);
                 pVKRenderPassCull->UpdateHizDepthBuffer_Compute((float)w, (float)h);
                 
-                this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate(i, i + 1);
+                pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
+                                                             VK_PIPELINE_BIND_POINT_COMPUTE, 
+                                                             this->pVKPipelineComputeCull->poPipeline_HizDepthGenerate,
+                                                             this->pVKPipelineComputeCull->poPipelineLayout_HizDepthGenerate, 
+                                                             0, 
+                                                             1, 
+                                                             &this->pVKPipelineComputeCull->poDescriptorSet_HizDepthGenerates[i], 
+                                                             0, 
+                                                             nullptr);
+                //this->pVKPipelineComputeCull->UpdateDescriptorSet_HizDepthGenerate(i, i + 1);
                 
                 int x, y;
                 x = FMath::CeilI(w / 8.0f);
