@@ -126,6 +126,7 @@ namespace LostPeterVulkan
         virtual void Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer);
         virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(VkCommandBuffer& commandBuffer);
         virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer);
+        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutToShaderReadOnly(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
@@ -353,8 +354,9 @@ namespace LostPeterVulkan
         VkFenceVector poImagesInFlight;
         size_t poCurrentFrame;
         uint32_t poSwapChainImageIndex;
-
-        VkSemaphore poGraphicsWaitSemaphore;
+        
+        VkSemaphore poGraphicsWaitComputeBeforeSemaphore;
+        VkSemaphore poGraphicsSignalComputeAfterSemaphore;
         VkSemaphore poComputeBeforeWaitSemaphore;
         VkSemaphore poComputeAfterWaitSemaphore;
 

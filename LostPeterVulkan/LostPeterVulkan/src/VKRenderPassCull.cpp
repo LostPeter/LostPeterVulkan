@@ -380,6 +380,22 @@ namespace LostPeterVulkan
                                                         VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToShaderReadOnly(VkCommandBuffer& commandBuffer)
+    {
+        uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
+        for (uint32_t i = 0; i < count; i++)
+        {
+            Base::GetWindowPtr()->transitionImageLayout(commandBuffer,
+                                                        this->poHizDepthImage,
+                                                        VK_IMAGE_LAYOUT_GENERAL,
+                                                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                        i,
+                                                        1,
+                                                        0,
+                                                        1,
+                                                        VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+    }
 
     void VKRenderPassCull::UpdateHizDepthBuffer_Render()
     {
