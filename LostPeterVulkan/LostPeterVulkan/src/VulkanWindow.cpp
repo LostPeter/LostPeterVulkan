@@ -1517,7 +1517,7 @@ namespace LostPeterVulkan
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
-    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(VkCommandBuffer& commandBuffer)
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pVKRenderPassCull == nullptr ||
             this->m_pPipelineGraphics_DepthHiz == nullptr)
@@ -1525,9 +1525,9 @@ namespace LostPeterVulkan
             return;
         }
 
-        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToGeneral(commandBuffer);
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToGeneral(commandBuffer);
     }
-    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer)
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromGeneralToColorAttachment(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pVKRenderPassCull == nullptr ||
             this->m_pPipelineGraphics_DepthHiz == nullptr)
@@ -1535,9 +1535,9 @@ namespace LostPeterVulkan
             return;
         }
 
-        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToColorAttachment(commandBuffer);
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromGeneralToColorAttachment(commandBuffer);
     }
-    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutToShaderReadOnly(VkCommandBuffer& commandBuffer)
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pVKRenderPassCull == nullptr ||
             this->m_pPipelineGraphics_DepthHiz == nullptr)
@@ -1545,7 +1545,7 @@ namespace LostPeterVulkan
             return;
         }
 
-        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToShaderReadOnly(commandBuffer);
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
     }
 
 
@@ -8562,7 +8562,7 @@ namespace LostPeterVulkan
 
                         if (this->isComputeCullFrustumHizDepth)
                         {
-                            UpdateImageLayout_Graphics_DepthHizImageLayoutToShaderReadOnly(commandBuffer);
+                            UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
                         }
                         Update_Compute_Cull(commandBuffer);
                     }
@@ -10171,7 +10171,7 @@ namespace LostPeterVulkan
                                               0,
                                               1,
                                               VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-                        UpdateImageLayout_Graphics_DepthHizImageLayoutToColorAttachment(commandBuffer);
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromGeneralToColorAttachment(commandBuffer);
                     }
                         void VulkanWindow::drawMeshDepthHiz(VkCommandBuffer& commandBuffer)
                         {
@@ -10179,7 +10179,7 @@ namespace LostPeterVulkan
                         }
                     void VulkanWindow::updateMeshDepthHiz_After(VkCommandBuffer& commandBuffer)
                     {
-                        UpdateImageLayout_Graphics_DepthHizImageLayoutToGeneral(commandBuffer);
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(commandBuffer);
                     }
 
 

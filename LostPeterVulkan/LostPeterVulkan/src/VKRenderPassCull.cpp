@@ -348,7 +348,7 @@ namespace LostPeterVulkan
         imageInfo.sampler = nullptr;
     }
 
-    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToGeneral(VkCommandBuffer& commandBuffer)
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToGeneral(VkCommandBuffer& commandBuffer)
     {
         uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
         for (uint32_t i = 0; i < count; i++)
@@ -364,7 +364,7 @@ namespace LostPeterVulkan
                                                         VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
-    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToColorAttachment(VkCommandBuffer& commandBuffer)
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutFromGeneralToColorAttachment(VkCommandBuffer& commandBuffer)
     {
         uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
         for (uint32_t i = 0; i < count; i++)
@@ -380,7 +380,7 @@ namespace LostPeterVulkan
                                                         VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
-    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutToShaderReadOnly(VkCommandBuffer& commandBuffer)
+    void VKRenderPassCull::UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer)
     {
         uint32_t count = (uint32_t)this->aHizDepthImageView_Mipmap.size();
         for (uint32_t i = 0; i < count; i++)

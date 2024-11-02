@@ -146,12 +146,7 @@ namespace LostPeterVulkan
             return;
         VulkanWindow* pVulkanWindow = Base::GetWindowPtr();
         this->pVKPipelineComputeCull->UpdateBuffer_Cull();
-
-        if (pVulkanWindow->isComputeCullFrustumHizDepth)
-        {
-            this->pVKPipelineComputeCull->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutToGeneral(commandBuffer);
-        }
-
+        
         //Unit Object
         int count_unit_object = (int)this->aCullUnitObjects.size();
         for (int i = 0; i < count_unit_object; i++)
