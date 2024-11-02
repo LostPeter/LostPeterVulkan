@@ -1517,6 +1517,26 @@ namespace LostPeterVulkan
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer)
+    {
+        if (this->m_pVKRenderPassCull == nullptr ||
+            this->m_pPipelineGraphics_DepthHiz == nullptr)
+        {
+            return;
+        }
+
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
+    }
+    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromShaderReadOnlyToColorAttachment(VkCommandBuffer& commandBuffer)
+    {
+        if (this->m_pVKRenderPassCull == nullptr ||
+            this->m_pPipelineGraphics_DepthHiz == nullptr)
+        {
+            return;
+        }
+
+        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromShaderReadOnlyToColorAttachment(commandBuffer);
+    }
     void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(VkCommandBuffer& commandBuffer)
     {
         if (this->m_pVKRenderPassCull == nullptr ||
@@ -1536,16 +1556,6 @@ namespace LostPeterVulkan
         }
 
         this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromGeneralToColorAttachment(commandBuffer);
-    }
-    void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer)
-    {
-        if (this->m_pVKRenderPassCull == nullptr ||
-            this->m_pPipelineGraphics_DepthHiz == nullptr)
-        {
-            return;
-        }
-
-        this->m_pVKRenderPassCull->UpdateHizDepthBuffer_ImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
     }
 
 
@@ -6919,9 +6929,27 @@ namespace LostPeterVulkan
                     sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                     destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_GENERAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                } 
                 else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
                 {
                     // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; 
+
+                    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+                } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
                     barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
                     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; 
 
@@ -6936,15 +6964,6 @@ namespace LostPeterVulkan
 
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                } 
-                else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) 
-                {
-                    // VK_IMAGE_LAYOUT_GENERAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT; 
-
-                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
                 } 
                 else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
                 {
@@ -8557,14 +8576,15 @@ namespace LostPeterVulkan
                     void VulkanWindow::updateCompute_BeforeRender_Cull(VkCommandBuffer& commandBuffer)
                     {
                         if (!this->cfg_isRenderPassCull ||
+                            !this->isComputeCullFrustumHizDepth ||
                             this->m_pPipelineCompute_Cull == nullptr)
                             return;
 
-                        if (this->isComputeCullFrustumHizDepth)
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
                         {
-                            UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(commandBuffer);
+                            Update_Compute_Cull(commandBuffer);
                         }
-                        Update_Compute_Cull(commandBuffer);
+                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromShaderReadOnlyToColorAttachment(commandBuffer);
                     }
 
         void VulkanWindow::compute_BeforeRender()
@@ -8660,7 +8680,11 @@ namespace LostPeterVulkan
                         this->m_pPipelineCompute_Cull == nullptr)
                         return;
 
-                    Update_Compute_HizDepthGenerate(commandBuffer);
+                    UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(commandBuffer);
+                    {
+                        Update_Compute_HizDepthGenerate(commandBuffer);
+                    }
+                    UpdateImageLayout_Graphics_DepthHizImageLayoutFromGeneralToColorAttachment(commandBuffer);
                 }
 
         void VulkanWindow::compute_AfterRender()
@@ -10171,7 +10195,6 @@ namespace LostPeterVulkan
                                               0,
                                               1,
                                               VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromGeneralToColorAttachment(commandBuffer);
                     }
                         void VulkanWindow::drawMeshDepthHiz(VkCommandBuffer& commandBuffer)
                         {
@@ -10179,7 +10202,7 @@ namespace LostPeterVulkan
                         }
                     void VulkanWindow::updateMeshDepthHiz_After(VkCommandBuffer& commandBuffer)
                     {
-                        UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(commandBuffer);
+                        
                     }
 
 

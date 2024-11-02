@@ -124,9 +124,10 @@ namespace LostPeterVulkan
 
         //PipelineGraphics_DepthHiz
         virtual void Draw_Graphics_DepthHiz(VkCommandBuffer& commandBuffer);
+        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer);
+        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutFromShaderReadOnlyToColorAttachment(VkCommandBuffer& commandBuffer);
         virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToGeneral(VkCommandBuffer& commandBuffer);
         virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutFromGeneralToColorAttachment(VkCommandBuffer& commandBuffer);
-        virtual void UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer);
 
         //PipelineGraphics_Terrain
         virtual void UpdateDescriptorSets_Graphics_Terrain();
