@@ -154,6 +154,13 @@ public:
             //Clean
             CleanupSwapChain();
             F_DELETE(pPipelineGraphics)
+            size_t count = this->aPipelineComputes.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                VKPipelineCompute* p = this->aPipelineComputes[i];
+                F_DELETE(p)
+            }
+            this->aPipelineComputes.clear();
         }
 
         void CleanupSwapChain()
@@ -199,9 +206,8 @@ public:
             for (size_t i = 0; i < count; i++)
             {
                 VKPipelineCompute* p = this->aPipelineComputes[i];
-                F_DELETE(p)
+                p->CleanupSwapChain();
             }
-            this->aPipelineComputes.clear();
         }
 
         void RecreateSwapChain()

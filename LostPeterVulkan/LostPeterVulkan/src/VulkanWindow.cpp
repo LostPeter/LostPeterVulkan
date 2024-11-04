@@ -3368,6 +3368,8 @@ namespace LostPeterVulkan
         if (this->poPhysicalDeviceFeatures.fillModeNonSolid)
             this->poPhysicalEnabledFeatures.fillModeNonSolid = VK_TRUE;
 
+        if (this->poPhysicalDeviceFeatures.geometryShader)
+            this->poPhysicalEnabledFeatures.geometryShader = VK_TRUE;
         if (this->poPhysicalDeviceFeatures.tessellationShader)
             this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
         if (this->poPhysicalDeviceFeatures.multiDrawIndirect)
@@ -4759,18 +4761,16 @@ namespace LostPeterVulkan
             this->poInFlightFences.resize(s_maxFramesInFight);
             this->poImagesInFlight.resize(this->poSwapChainImages.size(), nullptr);
 
-            VkSemaphoreCreateInfo semaphoreInfo = {};
-            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-            VkFenceCreateInfo fenceInfo = {};
-            fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-            fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
-                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poPresentCompleteSemaphores[i]) != VK_SUCCESS ||
-                    vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poRenderCompleteSemaphores[i]) != VK_SUCCESS ||
-                    vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
+                String nameFix = FUtilString::SaveSizeT(i);
+                String nameSemaphorePresentComplete = "Semaphore-PresentComplete-" + nameFix;
+                String nameSemaphoreRenderComplete = "Semaphore-RenderComplete-" + nameFix;
+                String nameFenceInFlight = "Fence-InFlight-" + nameFix; 
+
+                if (!createVkSemaphore(nameSemaphorePresentComplete, 0, this->poPresentCompleteSemaphores[i]) ||
+                    !createVkSemaphore(nameSemaphoreRenderComplete, 0, this->poRenderCompleteSemaphores[i]) ||
+                    !createVkFence(nameFenceInFlight, VK_FENCE_CREATE_SIGNALED_BIT, this->poInFlightFences[i])) 
                 {
                     String msg = "*********************** VulkanWindow::createPresentRenderSyncObjects: Failed to create present/render synchronization objects for a frame !";
                     F_LogError(msg.c_str());
@@ -4782,24 +4782,23 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::createRenderComputeSyncObjects()
         {
-            VkSemaphoreCreateInfo semaphoreInfo = {};
-            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
             //1> Compute Before WaitSemaphore
             if (this->cfg_isUseComputeShaderBeforeRender)
             {
                 //Compute Before Wait Semaphore
-                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeBeforeWaitSemaphore) != VK_SUCCESS)
+                String nameSemaphoreComputeWaitBefore = "Semaphore-ComputeWaitBefore";
+                if (!createVkSemaphore(nameSemaphoreComputeWaitBefore, 0, this->poComputeBeforeWaitSemaphore))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore Before!";
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create: " + nameSemaphoreComputeWaitBefore;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                //Graphics Wait ComputeBefore Semaphore;
-                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsWaitComputeBeforeSemaphore) != VK_SUCCESS)
+                //Graphics Wait ComputeBefore Semaphore
+                String nameSemaphoreGraphicsWaitComputeBefore = "Semaphore-GraphicsWaitComputeBefore";
+                if (!createVkSemaphore(nameSemaphoreGraphicsWaitComputeBefore, 0, this->poGraphicsWaitComputeBeforeSemaphore))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create Graphics Wait ComputeBefore Semaphore !";
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create: " + nameSemaphoreGraphicsWaitComputeBefore;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4815,43 +4814,93 @@ namespace LostPeterVulkan
             if (this->cfg_isUseComputeShaderAfterRender)
             {
                 //Compute After Wait Semaphore
-                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeAfterWaitSemaphore) != VK_SUCCESS)
+                String nameSemaphoreComputeWaitAfter = "Semaphore-ComputeWaitAfter";
+                if (!createVkSemaphore(nameSemaphoreComputeWaitAfter, 0, this->poComputeAfterWaitSemaphore))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore After!";
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create: " + nameSemaphoreComputeWaitAfter;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                //Graphics Signal ComputeAfter Semaphore;
-                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsSignalComputeAfterSemaphore) != VK_SUCCESS)
+                //Graphics Signal ComputeAfter Semaphore
+                String nameSemaphoreGraphicsSignalComputeAfter = "Semaphore-GraphicsSignalComputeAfter";
+                if (!createVkSemaphore(nameSemaphoreGraphicsSignalComputeAfter, 0, this->poGraphicsSignalComputeAfterSemaphore))
                 {
-                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create Graphics Signal ComputeAfter Semaphore !";
+                    String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create: " + nameSemaphoreGraphicsSignalComputeAfter;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                VkSubmitInfo submitInfo = {};
-                submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-                submitInfo.signalSemaphoreCount = 1;
-                submitInfo.pSignalSemaphores = &this->poGraphicsSignalComputeAfterSemaphore;
-                vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
-                vkQueueWaitIdle(this->poQueueGraphics);
             }
             
             F_LogInfo("<1-10-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
-
-            void VulkanWindow::destroyVkFence(VkFence vkFence)
+            bool VulkanWindow::createVkSemaphore(const String& nameSemaphore,
+                                                 VkSemaphoreCreateFlags flags,
+                                                 VkSemaphore& vkSemaphore)
             {
-                if (vkFence != VK_NULL_HANDLE)
+                VkSemaphoreCreateInfo semaphoreInfo = {};
+                semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+                semaphoreInfo.flags = flags;
+
+                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &vkSemaphore) != VK_SUCCESS)
                 {
-                    vkDestroyFence(this->poDevice, vkFence, nullptr);
+                    F_LogError("*********************** VulkanWindow::createVkSemaphore: Failed to create VkSemaphore: [%s] !", nameSemaphore.c_str());
+                    return false;
                 }
+                this->poDebug->SetVkSemaphoreName(this->poDevice, vkSemaphore, nameSemaphore.c_str());
+
+                return true;
             }
             void VulkanWindow::destroyVkSemaphore(VkSemaphore vkSemaphore)
             {   
                 if (vkSemaphore != VK_NULL_HANDLE)
                 {
                     vkDestroySemaphore(this->poDevice, vkSemaphore, nullptr);
+                }
+            }
+
+            bool VulkanWindow::createVkFence(const String& nameFence,
+                                             VkFenceCreateFlags flags,
+                                             VkFence& vkFence)
+            {
+                VkFenceCreateInfo fenceInfo = {};
+                fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+                fenceInfo.flags = flags;
+
+                if (vkCreateFence(this->poDevice, &fenceInfo, nullptr, &vkFence) != VK_SUCCESS)
+                {
+                    F_LogError("*********************** VulkanWindow::createVkFence: Failed to create VkFence: [%s] !", nameFence.c_str());
+                    return false;
+                }
+                this->poDebug->SetVkFenceName(this->poDevice, vkFence, nameFence.c_str());
+
+                return true;
+            }
+            VkResult VulkanWindow::getFenceStatus(VkFence vkFence)
+            {
+                return vkGetFenceStatus(this->poDevice, vkFence);
+            }
+            VkResult VulkanWindow::waitForFence(VkFence vkFence, VkBool32 waitAll, uint64_t timeout)
+            {
+                return vkWaitForFences(this->poDevice, 1, &vkFence, waitAll, timeout);
+            }
+            VkResult VulkanWindow::waitForFences(VkFenceVector& vkFences, VkBool32 waitAll, uint64_t timeout)
+            {
+                return vkWaitForFences(this->poDevice,(uint32_t)vkFences.size(), vkFences.data(), waitAll, timeout);
+            }
+            VkResult VulkanWindow::resetVkFence(VkFence vkFence)
+            {
+                return vkResetFences(this->poDevice, 1, &vkFence);
+            }
+            VkResult VulkanWindow::resetVkFences(VkFenceVector& vkFences)
+            {
+                return vkResetFences(this->poDevice, (uint32_t)vkFences.size(), vkFences.data());
+            }
+            void VulkanWindow::destroyVkFence(VkFence vkFence)
+            {
+                if (vkFence != VK_NULL_HANDLE)
+                {
+                    vkDestroyFence(this->poDevice, vkFence, nullptr);
                 }
             }
 
@@ -8696,6 +8745,7 @@ namespace LostPeterVulkan
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers = &this->poCommandBufferComputeAfter;
             submitInfo.pWaitDstStageMask = &waitStageMask;
+            VkSemaphoreVector aWaitSemaphores;
             if (this->poGraphicsSignalComputeAfterSemaphore != VK_NULL_HANDLE)
             {
                 submitInfo.waitSemaphoreCount = 1;
@@ -8722,7 +8772,7 @@ namespace LostPeterVulkan
 
     bool VulkanWindow::beginRender()
     {
-        vkWaitForFences(this->poDevice, 1, &this->poInFlightFences[this->poCurrentFrame], VK_TRUE, UINT64_MAX);
+        waitForFence(this->poInFlightFences[this->poCurrentFrame], VK_TRUE, UINT64_MAX);
 
         VkResult result = vkAcquireNextImageKHR(this->poDevice, this->poSwapChain, UINT64_MAX, this->poPresentCompleteSemaphores[this->poCurrentFrame], nullptr, &this->poSwapChainImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -10379,7 +10429,7 @@ namespace LostPeterVulkan
             //1> Wait
             if (this->poImagesInFlight[this->poSwapChainImageIndex] != VK_NULL_HANDLE)
             {
-                vkWaitForFences(this->poDevice, 1, &this->poImagesInFlight[this->poSwapChainImageIndex], VK_TRUE, UINT64_MAX);
+                waitForFence(this->poImagesInFlight[this->poSwapChainImageIndex], VK_TRUE, UINT64_MAX);
             }
             this->poImagesInFlight[this->poSwapChainImageIndex] = this->poInFlightFences[this->poCurrentFrame];
 
@@ -10389,14 +10439,13 @@ namespace LostPeterVulkan
             VkSemaphoreVector aWaitSemaphores;
             if (this->poComputeBeforeWaitSemaphore != VK_NULL_HANDLE)
                 aWaitSemaphores.push_back(this->poComputeBeforeWaitSemaphore);
-            VkSemaphore presentCompleteSemaphore = this->poPresentCompleteSemaphores[this->poCurrentFrame];
-            aWaitSemaphores.push_back(presentCompleteSemaphore);
+            aWaitSemaphores.push_back(this->poPresentCompleteSemaphores[this->poCurrentFrame]);
 
             VkSemaphoreVector aSignalSemaphores;
             if (this->poGraphicsWaitComputeBeforeSemaphore != VK_NULL_HANDLE)
                 aSignalSemaphores.push_back(this->poGraphicsWaitComputeBeforeSemaphore);
             if (this->poGraphicsSignalComputeAfterSemaphore != VK_NULL_HANDLE)
-                aSignalSemaphores.push_back(this->poGraphicsSignalComputeAfterSemaphore);
+               aSignalSemaphores.push_back(this->poGraphicsSignalComputeAfterSemaphore);
             aSignalSemaphores.push_back(this->poRenderCompleteSemaphores[this->poCurrentFrame]);
 
             VkSubmitInfo submitInfo = {};
@@ -10412,7 +10461,7 @@ namespace LostPeterVulkan
             //SignalSemaphores
             submitInfo.signalSemaphoreCount = static_cast<uint32_t>(aSignalSemaphores.size());
             submitInfo.pSignalSemaphores = aSignalSemaphores.data();
-            vkResetFences(this->poDevice, 1, &this->poInFlightFences[this->poCurrentFrame]);
+            resetVkFence(this->poInFlightFences[this->poCurrentFrame]);
             if (vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, this->poInFlightFences[this->poCurrentFrame]) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::render: Failed to submit render command buffer !";

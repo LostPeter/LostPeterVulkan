@@ -649,6 +649,16 @@ void Vulkan_012_Shadering::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
+    //Geometry Enable
+    if (this->poPhysicalDeviceFeatures.geometryShader)
+    {
+        this->poPhysicalEnabledFeatures.geometryShader = VK_TRUE;
+    }
+    else
+    {
+        F_LogError("*********************** Vulkan_012_Shadering::setUpEnabledFeatures: geometryShader is not supported !");
+    }
+
     //Tessellation Enable
     if (this->poPhysicalDeviceFeatures.tessellationShader)
     {

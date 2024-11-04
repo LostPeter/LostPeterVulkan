@@ -737,8 +737,20 @@ namespace LostPeterVulkan
                 virtual void createPresentRenderSyncObjects();
                 virtual void createRenderComputeSyncObjects();
 
-                    virtual void destroyVkFence(VkFence vkFence);
+                    virtual bool createVkSemaphore(const String& nameSemaphore,
+                                                   VkSemaphoreCreateFlags flags,
+                                                   VkSemaphore& vkSemaphore);
                     virtual void destroyVkSemaphore(VkSemaphore vkSemaphore);
+
+                    virtual bool createVkFence(const String& nameFence,
+                                               VkFenceCreateFlags flags,
+                                               VkFence& vkFence);
+                    virtual VkResult getFenceStatus(VkFence vkFence);
+                    virtual VkResult waitForFence(VkFence vkFence, VkBool32 waitAll, uint64_t timeout);
+                    virtual VkResult waitForFences(VkFenceVector& vkFences, VkBool32 waitAll, uint64_t timeout);
+                    virtual VkResult resetVkFence(VkFence vkFence);
+                    virtual VkResult resetVkFences(VkFenceVector& vkFences);
+                    virtual void destroyVkFence(VkFence vkFence);
 
         //Load Assets
         virtual void loadAssets();
