@@ -15,6 +15,7 @@
 #include "FPreMacro.h"
 
 //GLM
+#define GLM_FORCE_CXX11
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED

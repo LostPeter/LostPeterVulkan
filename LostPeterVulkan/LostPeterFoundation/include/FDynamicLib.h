@@ -32,6 +32,7 @@
 	#define DYNLIB_UNLOAD(a)		dlclose(a)
 
 #elif F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID 
+	#include <dlfcn.h>
 	#define DYNLIB_HANDLE			void*
 	#define DYNLIB_LOAD(a)			dlopen(a,RTLD_LAZY | RTLD_GLOBAL)
 	#define DYNLIB_GETSYM(a,b)		dlsym(a,b)

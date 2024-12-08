@@ -74,16 +74,16 @@
 
 
 ///////////////////////////// Platform //////////////////////////////////////////////
-#if defined(__APPLE_CC__)				//ios
+#if defined(__ANDROID__)				//android
+	#undef  F_PLATFORM
+	#define F_PLATFORM				F_PLATFORM_ANDROID
+#elif defined(__APPLE_CC__)				//ios
 	#undef  F_PLATFORM
 	#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 60000 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
 		#define F_PLATFORM			F_PLATFORM_iOS
 	#else
 		#define F_PLATFORM			F_PLATFORM_MAC
 	#endif
-#elif defined(__ANDROID__)				//android
-	#undef  F_PLATFORM
-	#define F_PLATFORM				F_PLATFORM_ANDROID
 #elif defined(LINUX)					//linux
 	#undef  F_PLATFORM
 	#define F_PLATFORM				F_PLATFORM_LINUX
@@ -102,7 +102,7 @@
 #elif defined(__ppc__) || defined(__ppc64__) || defined(_M_PPC)
 	#define F_CPU 		F_CPU_PPC
 #elif defined(__arm__) || defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM) || defined(_M_ARM64)
-	#define F_CPU 		
+	#define F_CPU 		F_CPU_ARM
 #elif defined(__mips__) || defined(__mips64) || defined(__mips64_) || defined(_M_MIPS)
 	#define F_CPU 		F_CPU_MIPS
 #else

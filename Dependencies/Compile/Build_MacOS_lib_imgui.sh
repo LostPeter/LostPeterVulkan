@@ -14,7 +14,7 @@ rebuild=${2}
 
 # mode only can be gl3, gles3_android, gles3_ios, glfw_gl3, glfw_vulkan, metal
 m_gl3="gl3"
-m_gles_android="gles3_android"
+m_gles3_android="gles3_android"
 m_gles_ios="gles3_ios"
 m_metal="metal"
 m_glfw_gl3="glfw_gl3"
@@ -23,14 +23,14 @@ m_glfw_metal="glfw_metal"
 
 mode=${m_glfw_vulkan}
 if [ [ "$mode" != "$m_gl3" ]\
-    && [ "$mode" != "$m_gles_android" ]\
+    && [ "$mode" != "$m_gles3_android" ]\
     && [ "$mode" != "$m_gles_ios" ]\
     && [ "$mode" != "$m_metal" ]\
     && [ "$mode" != "$m_glfw_gl3" ]\
     && [ "$mode" != "$m_glfw_vulkan" ]\
     && [ "$mode" != "$m_glfw_metal" ] ]; then
 
-    echo "wrong mode type: ["$mode"], only can be [$m_gl3][$m_gles_android][$m_gles_ios][$m_metal][$m_glfw_gl3][$m_glfw_vulkan][$m_glfw_metal]"
+    echo "wrong mode type: ["$mode"], only can be [$m_gl3][$m_gles3_android][$m_gles_ios][$m_metal][$m_glfw_gl3][$m_glfw_vulkan][$m_glfw_metal]"
     exit 1
 fi
 echo "mode: $mode, $debug"
@@ -89,8 +89,17 @@ done
 if [ "$mode" == "$m_gl3" ]; then 
     echo "mode: $mode"
 
-elif [ "$mode" == "$m_gles_android" ]; then 
+elif [ "$mode" == "$m_gles3_android" ]; then 
     echo "mode: $mode"
+
+    folderSrc_GlES3_Android="../Sources/"$name"/impl_gles3_android"
+    folderDst_GlES3_Android="../Include/Android/"$name"_"$mode"/impl_gles3_android/"
+    mkdir -p $folderDst_GlES3_Android
+
+    for file in ${folderSrc_GlES3_Android}/*.h
+    do 
+        cp -rfp $file $folderDst_GlES3_Android
+    done
 
 elif [ "$mode" == "$m_gles_ios" ]; then 
     echo "mode: $mode"

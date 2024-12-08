@@ -17,6 +17,12 @@
 [[vk::binding(1)]] SamplerState texture2DSampler  : register(s1);
 
 
+[[vk::binding(0)]]cbuffer copyBlitObjectConsts          : register(b0) 
+{
+    CopyBlitObjectConstants copyBlitObjectConsts;
+}
+
+
 float4 main(VSInput_Color4TexCood2 input) : SV_TARGET
 {
     float4 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgba;
