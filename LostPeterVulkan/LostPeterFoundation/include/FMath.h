@@ -491,6 +491,9 @@ namespace LostPeterFoundation
 		static FColor GetAsBGRA(const BGRA val);					
 		static FColor GetAsABGR(const ABGR val);		
 
+        static FColor ToGamma(const FColor& color, float gamma = 2.2f);
+        static FColor ToLinear(const FColor& color, float gamma = 0.454545f);
+
 	public:
         //Zero
         static bool Zero(float f, float fEpsilon)

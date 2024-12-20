@@ -338,6 +338,25 @@ namespace LostPeterFoundation
         return FColor(r, g, b, a);
 	}	
 
+    FColor FMath::ToGamma(const FColor& color, float gamma /*= 2.2f*/)
+    {
+        FColor colorGamma;
+        colorGamma.x = pow(color.x, gamma);
+        colorGamma.y = pow(color.y, gamma);
+        colorGamma.z = pow(color.z, gamma);
+        colorGamma.w = color.w;
+        return colorGamma;
+    }
+    FColor FMath::ToLinear(const FColor& color, float gamma /*= 0.454545f*/)
+    {
+        FColor colorLinear;
+        colorLinear.x = pow(color.x, gamma);
+        colorLinear.y = pow(color.y, gamma);
+        colorLinear.z = pow(color.z, gamma);
+        colorLinear.w = color.w;
+        return colorLinear;
+    }
+
 
     static bool float_equal(float& f1, float&f2)
     {
