@@ -9,7 +9,7 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 SET(NAME_PROJECT "LostPeterFoundation")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)
@@ -24,7 +24,7 @@ else ()
 endif ()
 
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 17)
 
 #MESSAGE(STATUS "HOME dir: $ENV{HOME}")
 MESSAGE(STATUS "Binary dir: ${PROJECT_BINARY_DIR}")
