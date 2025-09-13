@@ -170,7 +170,7 @@ License:
 
 ### <013> vulkan_013_indirectdraw
 [Vulkan学习例子013: vulkan_013_indirectdraw DrawIndirect/MultiDrawIndirect渲染](https://zhuanlan.zhihu.com/p/620624592)
-* sample013: Vulkan DrawIndirect /MultiDrawIndirect usage
+* sample013: Vulkan DrawIndirect/MultiDrawIndirect usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_013_indirectdraw.png)
 
@@ -182,7 +182,7 @@ License:
 
 ### <015> vulkan_015_multiview
 [Vulkan学习例子015: vulkan_015_multiview 多视口渲染](https://zhuanlan.zhihu.com/p/624939246)
-* sample015: Vulkan RenderPass，Multi RenderPass usage
+* sample015: Vulkan RenderPass，Multi View usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_015_multiview.png)
 

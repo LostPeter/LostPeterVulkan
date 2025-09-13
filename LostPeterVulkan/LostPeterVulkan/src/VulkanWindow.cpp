@@ -2321,7 +2321,7 @@ namespace LostPeterVulkan
 
         if (this->pCamera != nullptr)
         {
-            this->pCamera->PerspectiveLH(glm::radians(this->cfg_cameraFov), this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
+            this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
         }
     }
 
