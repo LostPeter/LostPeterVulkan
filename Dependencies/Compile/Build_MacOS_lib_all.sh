@@ -26,5 +26,4 @@ rebuild=${2}
 ./Build_MacOS_lib_glfw.sh $debug $rebuild
 ./Build_MacOS_lib_imgui.sh $debug $rebuild
 ./Build_MacOS_lib_assimp.sh $debug $rebuild
-./Build_MacOS_lib_zthread.sh $debug $rebuild
 ./Build_MacOS_lib_spirv-cross.sh $debug $rebuild
