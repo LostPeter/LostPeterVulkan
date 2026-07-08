@@ -261,7 +261,7 @@ public:
         ModelMesh* pMesh;
 
         //Texture
-        TexturePtrShaderSortMap mapModelTexturesShaderSort;
+        VKTexturePtrShaderSortMap mapModelTexturesShaderSort;
 
         //Shader
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
@@ -344,28 +344,28 @@ public:
         }
 
     ////Textures
-        void AddTexture(const String& nameShaderSort, Texture* pTexture)
+        void AddTexture(const String& nameShaderSort, VKTexture* pTexture)
         {
-            TexturePtrVector* pVector = nullptr;
-            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            VKTexturePtrVector* pVector = nullptr;
+            VKTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
             {
-                TexturePtrVector aMTs;
+                VKTexturePtrVector aMTs;
                 this->mapModelTexturesShaderSort[nameShaderSort] = aMTs;
                 itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             }
             itFind->second.push_back(pTexture);
         }
-        Texture* GetTexture(const String& nameShaderSort, int index)
+        VKTexture* GetTexture(const String& nameShaderSort, int index)
         {
-            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            VKTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return itFind->second.at(index);
         }
-        TexturePtrVector* GetTextures(const String& nameShaderSort)
+        VKTexturePtrVector* GetTextures(const String& nameShaderSort)
         {
-            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            VKTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return &(itFind->second);
@@ -390,8 +390,8 @@ public:
     ModelMeshPtrVector m_aModelMesh;
     ModelMeshPtrMap m_mapModelMesh;    
 
-    TexturePtrVector m_aModelTexture;
-    TexturePtrMap m_mapModelTexture;
+    VKTexturePtrVector m_aModelTexture;
+    VKTexturePtrMap m_mapModelTexture;
 
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrVector m_aModelObjects_Render;
@@ -465,7 +465,7 @@ private:
 ////Texture
     void destroyTextures();
     void createTextures();
-    Texture* findTexture(const String& nameTexture);
+    VKTexture* findTexture(const String& nameTexture);
 
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();

@@ -40,7 +40,7 @@ namespace LostPeterVulkan
         return nullptr; 
     }
         
-    BufferCompute* CullUnitTerrain::GetResultCB()
+    VKBufferCompute* CullUnitTerrain::GetResultCB()
     {
         return nullptr; 
     }

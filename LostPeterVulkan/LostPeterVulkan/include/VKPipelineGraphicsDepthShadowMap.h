@@ -90,18 +90,18 @@ namespace LostPeterVulkan
         //Cull Instance
         virtual void CreateDescriptorSet_ShadowMapDepthCull(const String& nameDescriptorSets, VkDescriptorSetVector& vkDescriptorSets);
         virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets,
-                                                            BufferUniform* pCB_CullInstance,
-                                                            BufferCompute* pCB_CullObjectInstances,
-                                                            BufferCompute* pCB_Result);
+                                                            VKBufferUniform* pCB_CullInstance,
+                                                            VKBufferCompute* pCB_CullObjectInstances,
+                                                            VKBufferCompute* pCB_Result);
 
 
     protected:
         virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                           StringVector* poDescriptorSetLayoutNames,
                                           VkBuffer vkBuffer_ObjectWorldCB,
-                                          BufferUniform* pCB_CullInstance,
-                                          BufferCompute* pCB_CullObjectInstances,
-                                          BufferCompute* pCB_Result);
+                                          VKBufferUniform* pCB_CullInstance,
+                                          VKBufferCompute* pCB_CullObjectInstances,
+                                          VKBufferCompute* pCB_Result);
     };  
 
 }; //LostPeterVulkan

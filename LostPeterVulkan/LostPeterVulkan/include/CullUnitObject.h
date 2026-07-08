@@ -27,13 +27,13 @@ namespace LostPeterVulkan
 
     public:
         virtual int GetLodCount() = 0;
-        virtual BufferCompute* GetLodArgsCB() = 0;
+        virtual VKBufferCompute* GetLodArgsCB() = 0;
 
         virtual int GetObjectDataCount() = 0;
         virtual CullObjectConstantsVector* GetObjectDatas() = 0;
-        virtual BufferCompute* GetObjectDataCB() = 0;
+        virtual VKBufferCompute* GetObjectDataCB() = 0;
 
-        virtual BufferCompute* GetClipCB() { return nullptr; }
+        virtual VKBufferCompute* GetClipCB() { return nullptr; }
 
         virtual void UpdateBuffer() = 0;
     };

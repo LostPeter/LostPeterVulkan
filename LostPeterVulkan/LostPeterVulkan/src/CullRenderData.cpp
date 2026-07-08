@@ -13,8 +13,8 @@
 #include "../include/CullManager.h"
 #include "../include/CullUnit.h"
 #include "../include/CullLodData.h"
-#include "../include/BufferCompute.h"
-#include "../include/BufferUniform.h"
+#include "../include/VKBufferCompute.h"
+#include "../include/VKBufferUniform.h"
 #include "../include/Mesh.h"
 
 namespace LostPeterVulkan
@@ -87,8 +87,8 @@ namespace LostPeterVulkan
         int count_instance = (int)this->pCullLodData->aInstanceDatas.size();
         if (this->pBuffer_CullObjectInstances == nullptr)
         {
-            String nameCB = "BufferCompute-CullObjectInstances-" + this->pCullLodData->pMesh->GetName();
-            this->pBuffer_CullObjectInstances = new BufferCompute(nameCB, count_instance, sizeof(CullObjectInstanceConstants));
+            String nameCB = "VKBufferCompute-CullObjectInstances-" + this->pCullLodData->pMesh->GetName();
+            this->pBuffer_CullObjectInstances = new VKBufferCompute(nameCB, count_instance, sizeof(CullObjectInstanceConstants));
         }
         this->pBuffer_CullObjectInstances->UpdateBuffer(0, count_instance * sizeof(CullObjectInstanceConstants), &this->pCullLodData->aInstanceDatas[0]);
     }
@@ -98,8 +98,8 @@ namespace LostPeterVulkan
         this->cullInstance.nObjectOffset = this->nObjectOffset;
         if (this->pBuffer_CullInstance == nullptr)
         {
-            String nameCB = "BufferUniform-CullInstance-" + this->pCullLodData->pMesh->GetName();
-            this->pBuffer_CullInstance = new BufferUniform(nameCB, 1, sizeof(CullInstanceConstants));
+            String nameCB = "VKBufferUniform-CullInstance-" + this->pCullLodData->pMesh->GetName();
+            this->pBuffer_CullInstance = new VKBufferUniform(nameCB, 1, sizeof(CullInstanceConstants));
         }
         this->pBuffer_CullInstance->UpdateBuffer(0, sizeof(CullInstanceConstants), &this->cullInstance);
     }

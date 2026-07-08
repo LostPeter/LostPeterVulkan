@@ -12,8 +12,8 @@
 #include "../include/CullTerrainStatic.h"
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
-#include "../include/BufferCompute.h"
-#include "../include/BufferIndirectCommand.h"
+#include "../include/VKBufferCompute.h"
+#include "../include/VKBufferIndirectCommand.h"
 #include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/Mesh.h"
@@ -56,7 +56,7 @@ namespace LostPeterVulkan
         return 0;
     }
 
-    BufferIndirectCommand* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
+    VKBufferIndirectCommand* CullTerrainStatic::CullUnitTerrainStatic::GetRenderArgsCB()
     {
         return nullptr; 
     }

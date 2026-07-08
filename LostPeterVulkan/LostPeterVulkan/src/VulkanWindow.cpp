@@ -476,7 +476,7 @@ namespace LostPeterVulkan
         size_t count = this->m_aTextures_Internal.size();
         for (size_t i = 0; i < count; i++)
         {
-            Texture* pTexture = this->m_aTextures_Internal[i];
+            VKTexture* pTexture = this->m_aTextures_Internal[i];
             delete pTexture;
         }
         this->m_aTextures_Internal.clear();
@@ -496,16 +496,16 @@ namespace LostPeterVulkan
             String pathTextures = g_TexturePaths_Internal[5 * i + 4];
 
             StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-            Texture* pTexture = new Texture(0,
-                                            nameTexture,
-                                            aPathTexture,
-                                            typeTexture,
-                                            g_TextureFormats_Internal[i],
-                                            g_TextureFilters_Internal[i],
-                                            g_TextureAddressings_Internal[i],
-                                            g_TextureBorderColors_Internal[i],
-                                            isRenderTarget,
-                                            isGraphicsComputeShared);
+            VKTexture* pTexture = new VKTexture(0,
+												nameTexture,
+												aPathTexture,
+												typeTexture,
+												g_TextureFormats_Internal[i],
+												g_TextureFilters_Internal[i],
+												g_TextureAddressings_Internal[i],
+												g_TextureBorderColors_Internal[i],
+												isRenderTarget,
+												isGraphicsComputeShared);
             pTexture->texChunkMaxX = 0;
             pTexture->texChunkMaxY = 0; 
             if (pTexture->texChunkMaxX > 0 && 
@@ -532,9 +532,9 @@ namespace LostPeterVulkan
                       pathTextures.c_str());
         }
     }
-    Texture* VulkanWindow::FindTexture_Internal(const String& nameTexture)
+    VKTexture* VulkanWindow::FindTexture_Internal(const String& nameTexture)
     {
-        TexturePtrMap::iterator itFind = this->m_mapTextures_Internal.find(nameTexture);
+        VKTexturePtrMap::iterator itFind = this->m_mapTextures_Internal.find(nameTexture);
         if (itFind == this->m_mapTextures_Internal.end())
         {
             return nullptr;
@@ -1394,7 +1394,7 @@ namespace LostPeterVulkan
 
     }
 
-    void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result)
+    void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, VKBufferUniform* pCB_CullInstance, VKBufferCompute* pCB_CullObjectInstances, VKBufferCompute* pCB_Result)
     {
         this->m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(pescriptorSets, pCB_CullInstance, pCB_CullObjectInstances, pCB_Result);
     }

@@ -32,10 +32,10 @@ namespace LostPeterVulkan
         int nMaxMaterialCount;
 
         CullLodData* pCullLodData;
-        BufferCompute* pBuffer_CullObjectInstances;
+        VKBufferCompute* pBuffer_CullObjectInstances;
 
         CullInstanceConstants cullInstance;
-        BufferUniform* pBuffer_CullInstance;
+        VKBufferUniform* pBuffer_CullInstance;
 
     public:
         void Destroy();

@@ -52,8 +52,8 @@ namespace LostPeterVulkan
         MeshPtrMap m_mapMeshes_Internal;    
 
         //Texture
-        TexturePtrVector m_aTextures_Internal;
-        TexturePtrMap m_mapTextures_Internal;
+        VKTexturePtrVector m_aTextures_Internal;
+        VKTexturePtrMap m_mapTextures_Internal;
 
         //DescriptorSetLayouts
         VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts_Internal;
@@ -73,7 +73,7 @@ namespace LostPeterVulkan
         virtual Mesh* FindMesh_Internal(const String& nameMesh);
 
         //Texture
-        virtual Texture* FindTexture_Internal(const String& nameTexture);
+        virtual VKTexture* FindTexture_Internal(const String& nameTexture);
 
         //DescriptorSetLayouts
         virtual VkDescriptorSetLayout FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
@@ -115,7 +115,7 @@ namespace LostPeterVulkan
             virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart);
         virtual void Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer);
         //CullInstance
-        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, BufferUniform* pCB_CullInstance, BufferCompute* pCB_CullObjectInstances, BufferCompute* pCB_Result);
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, VKBufferUniform* pCB_CullInstance, VKBufferCompute* pCB_CullObjectInstances, VKBufferCompute* pCB_Result);
         virtual bool Draw_Graphics_CullInstance_DepthShadowMapCullBegin(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_CullInstance_DepthShadowMapCull(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub);

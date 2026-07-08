@@ -20,8 +20,8 @@
 #include "../include/CullObjectDynamic.h"
 #include "../include/VKRenderPassCull.h"
 #include "../include/VKPipelineComputeCull.h"
-#include "../include/BufferCompute.h"
-#include "../include/BufferIndirectCommand.h"
+#include "../include/VKBufferCompute.h"
+#include "../include/VKBufferIndirectCommand.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
 
@@ -165,7 +165,7 @@ namespace LostPeterVulkan
             pUnitObject->UpdateBuffer();
 
             //Clear
-            BufferIndirectCommand* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
+            VKBufferIndirectCommand* pCB_RenderArgs = pUnitObject->GetRenderArgsCB();
             this->pVKPipelineComputeCull->UpdateDescriptorSet_CullClearArgs(pCB_RenderArgs);
             pVulkanWindow->bindPipelineAndDescriptorSets(commandBuffer, 
                                                          VK_PIPELINE_BIND_POINT_COMPUTE, 
@@ -181,12 +181,12 @@ namespace LostPeterVulkan
             pVulkanWindow->pipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
             //Test
-            BufferCompute* pCB_CullObjects = pUnitObject->GetObjectDataCB();
-            BufferCompute* pCB_LodArgs = pUnitObject->GetLodArgsCB();
-            BufferCompute* pCB_Result = pUnitObject->GetResultCB();
+            VKBufferCompute* pCB_CullObjects = pUnitObject->GetObjectDataCB();
+            VKBufferCompute* pCB_LodArgs = pUnitObject->GetLodArgsCB();
+            VKBufferCompute* pCB_Result = pUnitObject->GetResultCB();
             if (pVulkanWindow->isComputeCullFrustumHizDepth)
             {
-                BufferCompute* pCB_Clip = pUnitObject->GetClipCB();
+                VKBufferCompute* pCB_Clip = pUnitObject->GetClipCB();
                 if (pCB_Clip != nullptr)
                 {   
                     this->pVKPipelineComputeCull->UpdateDescriptorSet_CullFrustumDepthHizClip(pCB_CullObjects, pCB_RenderArgs, pCB_LodArgs, pCB_Result, pCB_Clip);
@@ -320,8 +320,8 @@ namespace LostPeterVulkan
                 continue;
             int count_lod = pUnitObject->GetLodCount();
 
-            BufferIndirectCommand* pRenderArg = pUnitObject->GetRenderArgsCB();
-            BufferCompute* pResult = pUnitObject->GetResultCB();
+            VKBufferIndirectCommand* pRenderArg = pUnitObject->GetRenderArgsCB();
+            VKBufferCompute* pResult = pUnitObject->GetResultCB();
 
             for (int j = 0; j < count_render; j++)
             {

@@ -22,6 +22,11 @@
 #include "VulkanWindow.h"
 
 #include "VKDebug.h"
+#include "VKBuffer.h"
+#include "VKBufferCompute.h"
+#include "VKBufferIndirectCommand.h"
+#include "VKBufferStorage.h"
+#include "VKBufferUniform.h"
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"
@@ -37,12 +42,9 @@
 #include "VKRenderPassCull.h"
 #include "VKRenderPassShadowMap.h"
 #include "VKRenderPassTerrain.h"
+#include "VKTexture.h"
 
 #include "Base.h"
-#include "BufferCompute.h"
-#include "BufferIndirectCommand.h"
-#include "BufferStorage.h"
-#include "BufferUniform.h"
 #include "CullLodData.h"
 #include "CullRenderData.h"
 #include "CullManager.h"
@@ -61,7 +63,6 @@
 
 #include "Mesh.h"
 #include "MeshSub.h"
-#include "Texture.h"
 
 namespace LostPeterVulkan
 {	

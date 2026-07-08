@@ -30,8 +30,8 @@ namespace LostPeterVulkan
         VkPipeline poPipeline;
         VkDescriptorSet poDescriptorSet;
         
-        Texture* pTextureSource;
-        Texture* pTextureTarget;
+        VKTexture* pTextureSource;
+        VKTexture* pTextureTarget;
         TextureCopyConstants* pTextureCopy;
         VkBuffer poBuffer_TextureCopy;  
         VkDeviceMemory poBufferMemory_TextureCopy;

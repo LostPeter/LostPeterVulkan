@@ -12,8 +12,8 @@
 #include "../include/CullObjectStatic.h"
 #include "../include/VulkanWindow.h"
 #include "../include/CullManager.h"
-#include "../include/BufferCompute.h"
-#include "../include/BufferIndirectCommand.h"
+#include "../include/VKBufferCompute.h"
+#include "../include/VKBufferIndirectCommand.h"
 #include "../include/CullLodData.h"
 #include "../include/CullRenderData.h"
 #include "../include/Mesh.h"
@@ -83,22 +83,22 @@ namespace LostPeterVulkan
         {
             //pCB_CullObjects
             {
-                this->pCB_CullObjects = new BufferCompute("BufferCompute-Static-CullObjects", CullObjectStatic::s_nInstanceCountMax, sizeof(CullObjectConstants));
+                this->pCB_CullObjects = new VKBufferCompute("VKBufferCompute-Static-CullObjects", CullObjectStatic::s_nInstanceCountMax, sizeof(CullObjectConstants));
             }
             //pCB_LodArgs
             {
                 int count_lodArgs = this->nLodCount * CullObjectStatic::s_nRenderCountMax * 2;
-                this->pCB_LodArgs = new BufferCompute("BufferCompute-Static-LodArgs", count_lodArgs, sizeof(float));
+                this->pCB_LodArgs = new VKBufferCompute("VKBufferCompute-Static-LodArgs", count_lodArgs, sizeof(float));
             }
             //pCB_RenderArgs
             {
                 int count_render = this->nLodCount * CullObjectStatic::s_nRenderCountMax;
-                this->pCB_RenderArgs = new BufferIndirectCommand("BufferIndirectCommand-Static-RenderArgs", count_render);
+                this->pCB_RenderArgs = new VKBufferIndirectCommand("VKBufferIndirectCommand-Static-RenderArgs", count_render);
             }
             //pCB_Result
             {
                 int count_result = this->nLodCount * CullObjectStatic::s_nInstanceCountMax;
-                this->pCB_Result = new BufferCompute("BufferCompute-Static-Result", count_result, sizeof(uint));
+                this->pCB_Result = new VKBufferCompute("VKBufferCompute-Static-Result", count_result, sizeof(uint));
             }
         }
 
@@ -116,7 +116,7 @@ namespace LostPeterVulkan
         return this->nRenderArgsCount;
     }
 
-    BufferIndirectCommand* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
+    VKBufferIndirectCommand* CullObjectStatic::CullUnitObjectStatic::GetRenderArgsCB()
     {
         return this->pCB_RenderArgs; 
     }
@@ -148,17 +148,17 @@ namespace LostPeterVulkan
         return this->nLodCount;
     }
 
-    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetObjectDataCB()
+    VKBufferCompute* CullObjectStatic::CullUnitObjectStatic::GetObjectDataCB()
     {
         return this->pCB_CullObjects; 
     }
 
-    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetLodArgsCB()
+    VKBufferCompute* CullObjectStatic::CullUnitObjectStatic::GetLodArgsCB()
     {
         return this->pCB_LodArgs; 
     }
 
-    BufferCompute* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
+    VKBufferCompute* CullObjectStatic::CullUnitObjectStatic::GetResultCB()
     {
         return this->pCB_Result;
     }

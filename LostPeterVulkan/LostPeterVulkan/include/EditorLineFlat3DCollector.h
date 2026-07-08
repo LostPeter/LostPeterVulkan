@@ -112,7 +112,7 @@ namespace LostPeterVulkan
             static const int s_nStepCount;
 
         public:
-            BufferStorage* pBufferStorage;
+            VKBufferStorage* pBufferStorage;
             int nObjectCountMax;
 
         protected:
@@ -137,7 +137,7 @@ namespace LostPeterVulkan
             virtual void UpdateDescriptorSets();
 
         protected:
-            BufferStorage* createBufferStorage(int count);
+            VKBufferStorage* createBufferStorage(int count);
             void increaseBufferStorage();
         };
         typedef std::vector<BufferStorageLineFlat3D*> BufferStorageLineFlat3DPtrVector;
@@ -252,7 +252,7 @@ namespace LostPeterVulkan
         virtual void destroyDescriptorSets_Graphics();
         virtual void createDescriptorSets_Graphics();
         virtual void updateDescriptorSets_Graphics();
-            void updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, BufferStorage* pBufferStorage);
+            void updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, VKBufferStorage* pBufferStorage);
         virtual void destroyMeshes();
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();

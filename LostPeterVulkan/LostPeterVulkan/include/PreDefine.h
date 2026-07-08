@@ -547,6 +547,11 @@ namespace LostPeterVulkan
     class VulkanWindow;
 
     class VKDebug;
+	class VKBuffer;
+	class VKBufferCompute;
+    class VKBufferIndirectCommand;
+    class VKBufferStorage;
+    class VKBufferUniform;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineCompute;
@@ -562,6 +567,19 @@ namespace LostPeterVulkan
     class VKRenderPassCull;
     class VKRenderPassShadowMap;
     class VKRenderPassTerrain;
+	class VKTexture;
+
+
+	typedef std::vector<VKBuffer*> VKBufferPtrVector;
+    typedef std::map<String, VKBuffer*> VKBufferPtrMap;
+	typedef std::vector<VKBufferCompute*> VKBufferComputePtrVector;
+    typedef std::map<String, VKBufferCompute*> VKBufferComputePtrMap;
+	typedef std::vector<VKBufferIndirectCommand*> VKBufferIndirectCommandPtrVector;
+    typedef std::map<String, VKBufferIndirectCommand*> VKBufferIndirectCommandPtrMap;
+	typedef std::vector<VKBufferStorage*> VKBufferStoragePtrVector;
+    typedef std::map<String, VKBufferStorage*> VKBufferStoragePtrMap;
+	typedef std::vector<VKBufferUniform*> VKBufferUniformPtrVector;
+    typedef std::map<String, VKBufferUniform*> VKBufferUniformPtrMap;
 
     typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
     typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;
@@ -572,12 +590,12 @@ namespace LostPeterVulkan
     typedef std::vector<VKPipelineGraphics*> VKPipelineGraphicsPtrVector;
     typedef std::map<String, VKPipelineGraphics*> VKPipelineGraphicsPtrMap;
 
+	typedef std::vector<VKTexture*> VKTexturePtrVector;
+    typedef std::map<String, VKTexture*> VKTexturePtrMap;
+    typedef std::map<String, VKTexturePtrVector> VKTexturePtrShaderSortMap;
+
 
     class Base;
-    class BufferCompute;
-    class BufferIndirectCommand;
-    class BufferStorage;
-    class BufferUniform;
     class CullLodData;
     class CullRenderData;
     class CullManager;
@@ -595,14 +613,7 @@ namespace LostPeterVulkan
     class EditorLineFlat3DCollector;
     class Mesh;
     class MeshSub;
-    class Texture;
-
-    typedef std::vector<BufferCompute*> BufferComputePtrVector;
-    typedef std::map<String, BufferCompute*> BufferComputePtrMap;
-    typedef std::vector<BufferIndirectCommand*> BufferIndirectCommandPtrVector;
-    typedef std::map<String, BufferIndirectCommand*> BufferIndirectCommandPtrMap;
-    typedef std::vector<BufferUniform*> BufferUniformPtrVector;
-    typedef std::map<String, BufferUniform*> BufferUniformPtrMap;
+    
 
     typedef std::vector<CullLodData*> CullLodDataPtrVector;
     typedef std::map<String, CullLodData*> CullLodDataPtrMap;
@@ -618,13 +629,9 @@ namespace LostPeterVulkan
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
-    
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
 
-    typedef std::vector<Texture*> TexturePtrVector;
-    typedef std::map<String, Texture*> TexturePtrMap;
-    typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
 }; //LostPeterVulkan
 

@@ -12,8 +12,8 @@
 #include "../include/VKPipelineGraphicsDepthShadowMap.h"
 #include "../include/VKRenderPassShadowMap.h"
 #include "../include/VulkanWindow.h"
-#include "../include/BufferCompute.h"
-#include "../include/BufferUniform.h"
+#include "../include/VKBufferCompute.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -281,9 +281,9 @@ namespace LostPeterVulkan
         }
     }
     void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, 
-                                                                                  BufferUniform* pCB_CullInstance,
-                                                                                  BufferCompute* pCB_CullObjectInstances,
-                                                                                  BufferCompute* pCB_Result)
+                                                                                  VKBufferUniform* pCB_CullInstance,
+                                                                                  VKBufferCompute* pCB_CullObjectInstances,
+                                                                                  VKBufferCompute* pCB_Result)
     {
         updateDescriptorSets(*pescriptorSets,
                              poDescriptorSetLayoutNames_ShadowMapDepthCull,
@@ -296,9 +296,9 @@ namespace LostPeterVulkan
     void VKPipelineGraphicsDepthShadowMap::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                                                 StringVector* poDescriptorSetLayoutNames,
                                                                 VkBuffer vkBuffer_ObjectWorldCB,
-                                                                BufferUniform* pCB_CullInstance,
-                                                                BufferCompute* pCB_CullObjectInstances,
-                                                                BufferCompute* pCB_Result)
+                                                                VKBufferUniform* pCB_CullInstance,
+                                                                VKBufferCompute* pCB_CullObjectInstances,
+                                                                VKBufferCompute* pCB_Result)
     {
         uint32_t count_descriptorsets = (uint32_t)vkDescriptorSets.size();
         for (uint32_t i = 0; i < count_descriptorsets; i++)

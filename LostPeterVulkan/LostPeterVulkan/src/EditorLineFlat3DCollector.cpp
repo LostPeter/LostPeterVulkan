@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/BufferStorage.h"
+#include "../include/VKBufferStorage.h"
 
 namespace LostPeterVulkan
 {
@@ -58,10 +58,10 @@ namespace LostPeterVulkan
     {
         this->pBufferStorage = createBufferStorage(this->nObjectCountMax);
     }
-        BufferStorage* EditorLineFlat3DCollector::BufferStorageLineFlat3D::createBufferStorage(int count)
+        VKBufferStorage* EditorLineFlat3DCollector::BufferStorageLineFlat3D::createBufferStorage(int count)
         {
-            String nameBuffer = "BufferStorage-" + this->pMesh->GetName() + FUtilString::SaveInt(count);
-            BufferStorage* pBufferStorageNew = new BufferStorage(nameBuffer, count, sizeof(LineFlat3DObjectConstants));
+            String nameBuffer = "VKBufferStorage-" + this->pMesh->GetName() + FUtilString::SaveInt(count);
+            VKBufferStorage* pBufferStorageNew = new VKBufferStorage(nameBuffer, count, sizeof(LineFlat3DObjectConstants));
             void* pBuffer = pBufferStorageNew->GetBuffer();
 
             if (this->pBufferStorage != nullptr)
@@ -1092,7 +1092,7 @@ namespace LostPeterVulkan
             p->UpdateDescriptorSets();
         }
     }
-        void EditorLineFlat3DCollector::updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, BufferStorage* pBufferStorage)
+        void EditorLineFlat3DCollector::updateDescriptorSets(const StringVector& aNamesDescriptorSetLayout, const VkDescriptorSetVector& vkDescriptorSets, VKBufferStorage* pBufferStorage)
         {
             F_Assert(pBufferStorage != nullptr && "EditorLineFlat3DCollector::updateDescriptorSets")
             uint32_t count_ds = (uint32_t)vkDescriptorSets.size();
