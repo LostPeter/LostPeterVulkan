@@ -32,7 +32,11 @@ call ./Build_Windows_Sample.bat vulkan_016_geometry %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_017_collision %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_018_subpass %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_019_shadowmap %debug% %rebuild%
-call ./Build_Windows_Sample.bat vulkan_020_culling %debug% %rebuild%
-call ./Build_Windows_Sample.bat vulkan_021_terrain %debug% %rebuild%
-call ./Build_Windows_Sample.bat vulkan_022_sky %debug% %rebuild%
-call ./Build_Windows_Sample.bat vulkan_023_fog %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_020_terrain %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_021_sky %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_022_objectstatic %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_023_objectdynamic %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_024_grasstree %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_025_water %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_026_fog %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_027_gpuculling %debug% %rebuild%
