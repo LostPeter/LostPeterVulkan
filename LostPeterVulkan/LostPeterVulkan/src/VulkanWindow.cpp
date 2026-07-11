@@ -740,13 +740,13 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::destroyUniform_PassCB()
         {
-            size_t count = this->poBuffers_PassCB.size();
+			size_t count = this->poBuffers_PassCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                destroyVkBuffer(this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
+				F_DELETE(this->poBuffers_PassCB[i])
             }
             this->poBuffers_PassCB.clear();
-            this->poBuffersMemory_PassCB.clear();
+			
         }
         
     void VulkanWindow::createUniformCB_Internal()
@@ -759,17 +759,20 @@ namespace LostPeterVulkan
             VkDeviceSize bufferSize = sizeof(PassConstants);
             size_t count = this->poSwapChainImages.size();
             this->poBuffers_PassCB.resize(count);
-            this->poBuffersMemory_PassCB.resize(count);
-
             for (size_t i = 0; i < count; i++) 
             {
                 String nameBuffer = "PassConstants-" + FUtilString::SaveSizeT(i);
-                createVkBuffer(nameBuffer,
-                               bufferSize, 
-                               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                               this->poBuffers_PassCB[i], 
-                               this->poBuffersMemory_PassCB[i]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+                               										  bufferSize, 
+																	  (uint8*)(&this->passCB),
+                                                                      false);
+				if (!pBufferUniform)
+                {
+                    String msg = "*********************** VulkanWindow::createUniform_PassCB: create buffer uniform: [" + nameBuffer + "] failed !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                this->poBuffers_PassCB[i] = pBufferUniform;
             }
             F_LogInfo("VulkanWindow::createUniform_PassCB: Create Uniform Pass constant buffer success !");
         }
@@ -5125,10 +5128,10 @@ namespace LostPeterVulkan
 	{
 		if (pBufferUniform == nullptr)
         	return;
-
-		pBufferUniform->Update(offset,
-							   bufSize,
-							   pBuf);
+ 
+		pBufferUniform->UpdateBuffer(offset,
+							         bufSize,
+							         pBuf);
 	}
 
 	//BufferIndirectCommand
@@ -8160,7 +8163,7 @@ namespace LostPeterVulkan
                     //(0) PassConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[i];
+                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[i]->GetVKBufferUniform();
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8987,7 +8990,7 @@ namespace LostPeterVulkan
             }
                 void VulkanWindow::updateCBs_Pass()
                 {
-                    if (this->poBuffersMemory_PassCB.size() <= 0)
+                    if (this->poBuffers_PassCB.size() <= 0)
                         return;
 
                     //TransformConstants/CameraConstants
@@ -9048,8 +9051,10 @@ namespace LostPeterVulkan
                     }
 
                     //Update Buffer
-                    VkDeviceMemory& memory = this->poBuffersMemory_PassCB[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(PassConstants), &this->passCB, memory);
+					VKBufferUniform* pBufferUniform = this->poBuffers_PassCB[this->poSwapChainImageIndex];
+					pBufferUniform->UpdateBuffer(0,
+												 sizeof(PassConstants),
+												 (uint8*)&this->passCB);
                 }
                     void VulkanWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {

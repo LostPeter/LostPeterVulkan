@@ -106,9 +106,9 @@ namespace LostPeterVulkan
         }
 		else
 		{		
-			this->pBuffer_CullInstance->Update(0,
-											   sizeof(CullInstanceConstants),
-											   (uint8*)&this->cullInstance);
+			this->pBuffer_CullInstance->UpdateBuffer(0,
+											   		 sizeof(CullInstanceConstants),
+											   		 (uint8*)&this->cullInstance);
 		}
     }
     

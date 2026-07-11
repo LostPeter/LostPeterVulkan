@@ -32,8 +32,7 @@ namespace LostPeterVulkan
 
         //Uniform ConstantBuffer
         PassConstants passCB;
-        VkBufferVector poBuffers_PassCB;
-        VkDeviceMemoryVector poBuffersMemory_PassCB;
+		VKBufferUniformPtrVector poBuffers_PassCB;
 
         //PipelineCompute
         VKPipelineComputeCull* m_pPipelineCompute_Cull;

@@ -496,7 +496,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 //(0) PassConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                    bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -568,7 +568,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 //(0) PassConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass_Outline  = {};
-                    bufferInfo_Pass_Outline.buffer = this->poBuffers_PassCB[j];
+                    bufferInfo_Pass_Outline.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
                     bufferInfo_Pass_Outline.offset = 0;
                     bufferInfo_Pass_Outline.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,

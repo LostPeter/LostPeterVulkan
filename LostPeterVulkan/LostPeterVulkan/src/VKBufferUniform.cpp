@@ -69,7 +69,7 @@ namespace LostPeterVulkan
 		return true;
     }
     
-    void VKBufferUniform::Update()
+    void VKBufferUniform::UpdateBuffer()
     {
         if (this->pBuffer == nullptr ||
             this->poBufferMemory_Uniform == VK_NULL_HANDLE)
@@ -81,15 +81,15 @@ namespace LostPeterVulkan
 											 this->pBuffer, 
 											 this->poBufferMemory_Uniform);
     }
-    void VKBufferUniform::Update(size_t offset, 
-								 size_t bufSize, 
-								 uint8* pBuf)
+    void VKBufferUniform::UpdateBuffer(size_t offset, 
+									   size_t bufSize, 
+									   uint8* pBuf)
     {
-        F_Assert(offset >= 0 && offset < this->nBufferSize && bufSize <= this->nBufferSize && "VKBufferUniform::Update")
+        F_Assert(offset >= 0 && offset < this->nBufferSize && bufSize <= this->nBufferSize && "VKBufferUniform::UpdateBuffer")
 
         uint8* pData = this->pBuffer + offset;
         memcpy(pData, pBuf, bufSize);
-        Update();
+        UpdateBuffer();
     }
 
 }; //LostPeterVulkan

@@ -12,8 +12,8 @@
 #include "../include/VKPipelineGraphicsDepthShadowMap.h"
 #include "../include/VKRenderPassShadowMap.h"
 #include "../include/VulkanWindow.h"
-#include "../include/VKBufferCompute.h"
 #include "../include/VKBufferUniform.h"
+#include "../include/VKBufferCompute.h"
 
 namespace LostPeterVulkan
 {
@@ -312,7 +312,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBufferUniform();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

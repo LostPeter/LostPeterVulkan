@@ -2653,7 +2653,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
