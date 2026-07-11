@@ -552,6 +552,8 @@ namespace LostPeterVulkan
     class VKBufferIndirectCommand;
     class VKBufferStorage;
     class VKBufferUniform;
+	class VKBufferVertex;
+	class VKBufferVertexIndex;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineCompute;
@@ -580,6 +582,10 @@ namespace LostPeterVulkan
     typedef std::map<String, VKBufferStorage*> VKBufferStoragePtrMap;
 	typedef std::vector<VKBufferUniform*> VKBufferUniformPtrVector;
     typedef std::map<String, VKBufferUniform*> VKBufferUniformPtrMap;
+	typedef std::vector<VKBufferVertex*> VKBufferVertexPtrVector;
+    typedef std::map<String, VKBufferVertex*> VKBufferVertexPtrMap;
+	typedef std::vector<VKBufferVertexIndex*> VKBufferVertexIndexPtrVector;
+    typedef std::map<String, VKBufferVertexIndex*> VKBufferVertexIndexPtrMap;
 
     typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
     typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;

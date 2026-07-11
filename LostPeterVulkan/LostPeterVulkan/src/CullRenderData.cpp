@@ -99,9 +99,17 @@ namespace LostPeterVulkan
         if (this->pBuffer_CullInstance == nullptr)
         {
             String nameCB = "VKBufferUniform-CullInstance-" + this->pCullLodData->pMesh->GetName();
-            this->pBuffer_CullInstance = new VKBufferUniform(nameCB, 1, sizeof(CullInstanceConstants));
+            this->pBuffer_CullInstance = new VKBufferUniform(nameCB);
+			this->pBuffer_CullInstance->Init(sizeof(CullInstanceConstants),
+											 (uint8*)&this->cullInstance,
+											 false);
         }
-        this->pBuffer_CullInstance->UpdateBuffer(0, sizeof(CullInstanceConstants), &this->cullInstance);
+		else
+		{		
+			this->pBuffer_CullInstance->Update(0,
+											   sizeof(CullInstanceConstants),
+											   (uint8*)&this->cullInstance);
+		}
     }
     
 }; //LostPeterVulkan

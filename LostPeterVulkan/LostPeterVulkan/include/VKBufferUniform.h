@@ -20,28 +20,30 @@ namespace LostPeterVulkan
     {
     public:
         VKBufferUniform(const String& nameUniformBuffer);
-        VKBufferUniform(const String& nameUniformBuffer, int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         virtual ~VKBufferUniform();
 
     public:
-        int nCount;
-        int nStride;
+		size_t nBufferSize;
+        uint8* pBuffer;
+        bool bIsDelete;
 
-        uint8* pBuffer_Uniform;
         VkBuffer poBuffer_Uniform;  
         VkDeviceMemory poBufferMemory_Uniform;
 
     public:
-        F_FORCEINLINE int GetBufferSize() const { return nCount * nStride; }
-        F_FORCEINLINE void* GetBuffer() const { return pBuffer_Uniform; }
+        F_FORCEINLINE int GetBufferSize() const { return this->nBufferSize; }
+        F_FORCEINLINE void* GetBuffer() const { return this->pBuffer; }
         
     public:
         virtual void Destroy();
-        void Init(int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        bool Init(size_t bufSize, 
+				  uint8* pBuf,
+				  bool isDelete);
 
-    public:
-        void UpdateBuffer();
-        void UpdateBuffer(size_t offset, size_t bufSize, void* pBuf);
+        void Update();
+        void Update(size_t offset, 
+					size_t bufSize, 
+					uint8* pBuf);
 
     };
 

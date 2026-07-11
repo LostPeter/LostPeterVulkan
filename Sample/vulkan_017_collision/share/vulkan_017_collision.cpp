@@ -5193,12 +5193,12 @@ void Vulkan_017_Collision::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
 
-    VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+    VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
     VkDeviceSize offsets[] = { 0 };
     bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pMeshSub->poIndexBuffer != nullptr)
+    if (pMeshSub->GetVKBufferIndex() != nullptr)
     {
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
     }
 
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
@@ -5208,7 +5208,7 @@ void Vulkan_017_Collision::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->poIndexBuffer != nullptr)
+        if (pMeshSub->GetVKBufferIndex() != nullptr)
         {
             drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }
@@ -5224,7 +5224,7 @@ void Vulkan_017_Collision::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->poIndexBuffer != nullptr)
+        if (pMeshSub->GetVKBufferIndex() != nullptr)
         {
             drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }

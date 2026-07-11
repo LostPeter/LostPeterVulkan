@@ -27,6 +27,8 @@
 #include "VKBufferIndirectCommand.h"
 #include "VKBufferStorage.h"
 #include "VKBufferUniform.h"
+#include "VKBufferVertex.h"
+#include "VKBufferVertexIndex.h"
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"

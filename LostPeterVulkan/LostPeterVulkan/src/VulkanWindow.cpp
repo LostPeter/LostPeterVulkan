@@ -1206,10 +1206,10 @@ namespace LostPeterVulkan
     {
         Mesh* pMesh = this->m_pPipelineGraphics_CopyBlitToFrame->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
         VkDeviceSize offsets[] = { 0 };
         bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
         if (this->cfg_isWireFrame)
             bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlitToFrame->poPipeline_WireFrame);
         else
@@ -1246,10 +1246,10 @@ namespace LostPeterVulkan
 
         Mesh* pMesh = pCopyBlitFromFrame->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
         VkDeviceSize offsets[] = { 0 };
         bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipeline);
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipelineLayout, 0, 1, &pCopyBlitFromFrame->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
@@ -1372,15 +1372,15 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart)
     {   
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
         VkDeviceSize offsets[] = { 0 };
         bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pMeshSub->poIndexBuffer != nullptr)
+        if (pMeshSub->GetVKBufferIndex() != nullptr)
         {
-            bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
         }
 
-        if (pMeshSub->poIndexBuffer != nullptr)
+        if (pMeshSub->GetVKBufferIndex() != nullptr)
         {
             drawIndexed(commandBuffer, pMeshSub->poIndexCount, instanceCount, 0, 0, instanceStart);
         }
@@ -1423,12 +1423,12 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullUnit(VkCommandBuffer& commandBuffer, const VkBuffer& bufferIndirectCmd, int index, MeshSub* pMeshSub)
         {
-            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
             VkDeviceSize offsets[] = { 0 };
             bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            if (pMeshSub->poIndexBuffer != nullptr)
+            if (pMeshSub->GetVKBufferIndex() != nullptr)
             {
-                bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
             }
             
             drawIndexedIndirect(commandBuffer, bufferIndirectCmd, index * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
@@ -1509,10 +1509,10 @@ namespace LostPeterVulkan
         this->m_pVKRenderPassCull->UpdateHizDepthBuffer_Render();
         Mesh* pMesh = this->m_pPipelineGraphics_DepthHiz->pMesh;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
         VkDeviceSize offsets[] = { 0 };
         bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipeline_HizDepth);
         bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
@@ -5019,7 +5019,129 @@ namespace LostPeterVulkan
         {
 
         }
-    void VulkanWindow::createVertexBuffer(const String& nameBuffer,
+
+
+	//BufferVertex
+	VKBufferVertex* VulkanWindow::createBufferVertex(const String& nameBuffer,
+													 FMeshVertexType type,
+													 size_t bufSize,
+													 uint8* pBuf,
+													 bool isDelete,
+													 bool isNeedUpdate)
+	{
+		VKBufferVertex* pBufferVertex = new VKBufferVertex(nameBuffer);
+		if (!pBufferVertex->Init(type, 
+								 bufSize, 
+								 pBuf,
+								 isDelete,
+								 isNeedUpdate))
+		{
+			F_LogError("*********************** VulkanWindow::createBufferVertex: Failed to create buffer vertex: [%s] !", nameBuffer.c_str());
+			F_DELETE(pBufferVertex)
+			return nullptr;
+		}
+		return pBufferVertex;
+	}
+	void VulkanWindow::updateBufferVertex(VKBufferVertex* pBufferVertex,
+										  size_t offset,
+										  size_t bufSize, 
+										  uint8* pBuf)
+	{
+		if (pBufferVertex == nullptr)
+                        return;
+
+		pBufferVertex->UpdateVertex(offset,
+									bufSize,
+									pBuf);
+	}
+
+	//BufferVertexIndex
+	VKBufferVertexIndex* VulkanWindow::createBufferVertexIndex(const String& nameBuffer,
+															   FMeshVertexType type,
+															   size_t bufSize_Vertex, 
+															   uint8* pBuf_Vertex,
+															   bool isDelete_Vertex,
+															   size_t bufSize_Index, 
+															   uint8* pBuf_Index,
+															   bool isDelete_Index,
+															   bool isNeedUpdate)
+	{
+		VKBufferVertexIndex* pBufferVertexIndex = new VKBufferVertexIndex(nameBuffer);
+		if (!pBufferVertexIndex->Init(type,
+									  bufSize_Vertex, 
+									  pBuf_Vertex, 
+									  isDelete_Vertex,
+									  bufSize_Index,
+									  pBuf_Index,
+									  isDelete_Index,
+									  isNeedUpdate))
+		{
+			F_LogError("*********************** VulkanWindow::createBufferVertexIndex: Failed to create buffer vertex index: [%s] !", nameBuffer.c_str());
+			F_DELETE(pBufferVertexIndex)
+			return nullptr;
+		}
+		return pBufferVertexIndex;
+	}
+	void VulkanWindow::updateBufferVertexIndex(VKBufferVertexIndex* pBufferVertexIndex,
+											   size_t offset_Vertex,
+											   size_t bufSize_Vertex, 
+											   uint8* pBuf_Vertex,
+											   size_t offset_Index,
+											   size_t bufSize_Index, 
+											   uint8* pBuf_Index)
+	{
+		if (pBufferVertexIndex == nullptr)
+			return;
+
+		pBufferVertexIndex->UpdateVertex(offset_Vertex,  
+										 bufSize_Vertex,
+										 pBuf_Vertex);
+		pBufferVertexIndex->UpdateIndex(offset_Index,
+										bufSize_Index,
+									 	pBuf_Index);					
+	}
+
+	//BufferUniform
+	VKBufferUniform* VulkanWindow::createBufferUniform(const String& nameBuffer,
+													   size_t bufSize, 
+													   uint8* pBuf,
+													   bool isDelete)
+	{
+		VKBufferUniform* pBufferUniform = new VKBufferUniform(nameBuffer);
+		if (!pBufferUniform->Init(bufSize,
+								  pBuf, 
+								  isDelete))
+		{
+			F_LogError("*********************** VulkanWindow::createBufferUniform: Failed to create buffer uniform: [%s] !", nameBuffer.c_str());
+			F_DELETE(pBufferUniform)
+			return nullptr;
+		}
+		return pBufferUniform;
+	}
+    void VulkanWindow::updateBufferUniform(VKBufferUniform* pBufferUniform,
+										   size_t offset,
+										   size_t bufSize, 
+										   uint8* pBuf)
+	{
+		if (pBufferUniform == nullptr)
+        	return;
+
+		pBufferUniform->Update(offset,
+							   bufSize,
+							   pBuf);
+	}
+
+	//BufferIndirectCommand
+
+
+	//BufferStorage
+
+
+	//BufferCompute
+
+
+
+    bool VulkanWindow::createVertexBuffer(const String& nameBuffer,
                                           size_t bufSize, 
                                           void* pBuf, 
                                           VkBuffer& vertexBuffer, 
@@ -5027,16 +5149,17 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createVertexBuffer(nameBuffer,
-                           bufSize,
-                           pBuf,
-                           vertexBuffer,
-                           vertexBufferMemory,
-                           stagingBuffer,
-                           stagingBufferMemory);
+        bool bRet = createVertexBuffer(nameBuffer,
+									   bufSize,
+									   pBuf,
+									   vertexBuffer,
+									   vertexBufferMemory,
+									   stagingBuffer,
+									   stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+		return bRet;
     }
-    void VulkanWindow::createVertexBuffer(const String& nameBuffer,
+    bool VulkanWindow::createVertexBuffer(const String& nameBuffer,
                                           size_t bufSize, 
                                           void* pBuf, 
                                           VkBuffer& vertexBuffer, 
@@ -5060,6 +5183,8 @@ namespace LostPeterVulkan
                        vertexBuffer,
                        vertexBufferMemory);
         copyVkBuffer(stagingBuffer, vertexBuffer, bufSize);
+		
+		return true;
     }
     void VulkanWindow::updateVertexBuffer(size_t bufSize, 
                                           void* pBuf, 
@@ -5067,7 +5192,8 @@ namespace LostPeterVulkan
     {
         updateVKBuffer(0, bufSize, pBuf, vertexBufferMemory);
     }   
-    void VulkanWindow::createIndexBuffer(const String& nameBuffer,
+	
+    bool VulkanWindow::createIndexBuffer(const String& nameBuffer,
                                          size_t bufSize, 
                                          void* pBuf, 
                                          VkBuffer& indexBuffer, 
@@ -5075,16 +5201,17 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createIndexBuffer(nameBuffer,
-                          bufSize,
-                          pBuf,
-                          indexBuffer,
-                          indexBufferMemory,
-                          stagingBuffer,
-                          stagingBufferMemory);
+        bool bRet = createIndexBuffer(nameBuffer,
+									  bufSize,
+									  pBuf,
+									  indexBuffer,
+									  indexBufferMemory,
+									  stagingBuffer,
+									  stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+		return bRet;
     }
-    void VulkanWindow::createIndexBuffer(const String& nameBuffer,
+    bool VulkanWindow::createIndexBuffer(const String& nameBuffer,
                                          size_t bufSize, 
                                          void* pBuf, 
                                          VkBuffer& indexBuffer, 
@@ -5108,6 +5235,8 @@ namespace LostPeterVulkan
                        indexBuffer, 
                        indexBufferMemory);
         copyVkBuffer(stagingBuffer, indexBuffer, bufSize);    
+		
+		return true;
     }
     void VulkanWindow::updateIndexBuffer(size_t bufSize, 
                                          void* pBuf, 
@@ -5115,7 +5244,41 @@ namespace LostPeterVulkan
     {
         updateVKBuffer(0, bufSize, pBuf, indexBufferMemory);
     }   
-        void VulkanWindow::createVkBuffer(const String& nameBuffer,
+
+	bool VulkanWindow::createUniformBuffer(const String& nameBuffer,
+										   size_t bufSize, 
+										   void* pBuf, 
+										   VkBuffer& uniformBuffer, 
+										   VkDeviceMemory& uniformBufferMemory)
+	{
+		if (!createVkBuffer(nameBuffer, 
+							bufSize, 
+							VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+							VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+							uniformBuffer, 
+							uniformBufferMemory))
+		{
+			F_LogError("*********************** VulkanWindow::createUniformBuffer: Failed to create buffer uniform: [%s] !", nameBuffer.c_str());
+			return false;
+		}
+
+		if (pBuf != nullptr)
+		{
+			updateUniformBuffer(bufSize,
+								pBuf,
+							    uniformBufferMemory);
+		}
+
+		return true;
+	}
+	void VulkanWindow::updateUniformBuffer(size_t bufSize, 
+										   void* pBuf, 
+										   VkDeviceMemory& uniformBufferMemory)
+	{
+		updateVKBuffer(0, bufSize, pBuf, uniformBufferMemory);
+	}
+
+        bool VulkanWindow::createVkBuffer(const String& nameBuffer,
                                           VkDeviceSize size, 
                                           VkBufferUsageFlags usage, 
                                           VkMemoryPropertyFlags properties, 
@@ -5151,6 +5314,8 @@ namespace LostPeterVulkan
             }
             this->poDebug->SetVkDeviceMemoryName(this->poDevice, bufferMemory, nameBuffer.c_str());
             vkBindBufferMemory(this->poDevice, buffer, bufferMemory, 0);
+
+			return true;
         }
             uint32_t VulkanWindow::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
             {

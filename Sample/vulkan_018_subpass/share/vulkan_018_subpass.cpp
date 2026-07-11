@@ -1670,12 +1670,12 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
             ModelObject* pModelObject = pRend->pModelObject;
             MeshSub* pMeshSub = pRend->pMeshSub;
 
-            VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
             VkDeviceSize offsets[] = { 0 };
             bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            if (pMeshSub->poIndexBuffer != nullptr)
+            if (pMeshSub->GetVKBufferIndex() != nullptr)
             {
-                bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
             }
 
             drawModelObjectRendPipeline(commandBuffer, 
@@ -1716,7 +1716,7 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
                 {
                     bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                 }
-                if (pMeshSub->poIndexBuffer != nullptr)
+                if (pMeshSub->GetVKBufferIndex() != nullptr)
                 {
                     drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
                 }
@@ -1732,7 +1732,7 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
                 {
                     bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                 }
-                if (pMeshSub->poIndexBuffer != nullptr)
+                if (pMeshSub->GetVKBufferIndex() != nullptr)
                 {
                     drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
                 }

@@ -37,6 +37,10 @@ namespace LostPeterVulkan
         FSphere sphere;
         FAABB aabb;
 
+		//VKBufferVertex/VKBufferVertexIndex
+        VKBufferVertex* pBufferVertex;
+        VKBufferVertexIndex* pBufferVertexIndex;
+
         //Vertex
         FMeshVertexType poTypeVertex;
         FMeshVertexPCVector vertices_Pos3Color4;
@@ -48,23 +52,21 @@ namespace LostPeterVulkan
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
-        VkBuffer poVertexBuffer_Staging;
-        VkDeviceMemory poVertexBufferMemory_Staging;
 
         //Index
         std::vector<uint32_t> indices;
         uint32_t poIndexCount;
         size_t poIndexBuffer_Size;
         void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
-        VkBuffer poIndexBuffer_Staging;
-        VkDeviceMemory poIndexBufferMemory_Staging;
 
         //Instance
         uint32_t instanceCount;
+
+	public:
+		const VkBuffer& GetVKBufferVertex() const;
+		const VkDeviceMemory& GetVKBufferVertexMemory() const;
+		const VkBuffer& GetVKBufferIndex() const;
+		const VkDeviceMemory& GetVKBufferIndexMemory() const;
 
     public:
         void Destroy();

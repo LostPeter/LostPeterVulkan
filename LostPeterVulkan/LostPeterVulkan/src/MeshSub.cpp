@@ -12,6 +12,8 @@
 #include "../include/MeshSub.h"
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
+#include "../include/VKBufferVertex.h"
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -29,24 +31,20 @@ namespace LostPeterVulkan
         , isNeedUpdate_VertexBuffer(isUpdateVertexBuffer)
         , isNeedUpdate_IndexBuffer(isUpdateIndexBuffer)
 
+		//VKBufferVertex/VKBufferVertexIndex
+        , pBufferVertex(nullptr)
+        , pBufferVertexIndex(nullptr)
+
         //Vertex
         , poTypeVertex(_poTypeVertex)
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
         , poVertexBuffer_Data(nullptr)
-        , poVertexBuffer(VK_NULL_HANDLE)
-        , poVertexBufferMemory(VK_NULL_HANDLE)
-        , poVertexBuffer_Staging(VK_NULL_HANDLE)
-        , poVertexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Index
         , poIndexCount(0)
         , poIndexBuffer_Size(0)
         , poIndexBuffer_Data(nullptr)
-        , poIndexBuffer(VK_NULL_HANDLE)
-        , poIndexBufferMemory(VK_NULL_HANDLE)
-        , poIndexBuffer_Staging(VK_NULL_HANDLE)
-        , poIndexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Instance
         , instanceCount(1)
@@ -59,36 +57,35 @@ namespace LostPeterVulkan
     }
     void MeshSub::Destroy()
     {
-        //Vertex
-        if (this->poVertexBuffer != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-        }
-        this->poVertexBuffer = VK_NULL_HANDLE;
-        this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-        if (this->poVertexBuffer_Staging != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBufferMemory_Staging);
-        }
-        this->poVertexBuffer_Staging = VK_NULL_HANDLE;
-        this->poVertexBufferMemory_Staging = VK_NULL_HANDLE;
-
-        //Index
-        if (this->poIndexBuffer != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-        }
-        this->poIndexBuffer = VK_NULL_HANDLE;
-        this->poIndexBufferMemory = VK_NULL_HANDLE;
-
-        if (this->poIndexBuffer_Staging != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBufferMemory_Staging);
-        }
-        this->poIndexBuffer_Staging = VK_NULL_HANDLE;
-        this->poIndexBufferMemory_Staging = VK_NULL_HANDLE;
+		F_DELETE(pBufferVertex)
+        F_DELETE(pBufferVertexIndex)
     }
+
+	const VkBuffer& MeshSub::GetVKBufferVertex() const 
+	{ 
+		if (this->pBufferVertexIndex != nullptr)
+		{
+			return this->pBufferVertexIndex->GetVKBufferVertex();
+		}
+		return this->pBufferVertex->GetVKBufferVertex();
+	}
+	const VkDeviceMemory& MeshSub::GetVKBufferVertexMemory() const 
+	{ 
+		if (this->pBufferVertexIndex != nullptr)
+		{
+			return this->pBufferVertexIndex->GetVKBufferVertexMemory();
+		}
+		return this->pBufferVertex->GetVKBufferVertexMemory();
+	}
+	const VkBuffer& MeshSub::GetVKBufferIndex() const 
+	{ 
+		return this->pBufferVertexIndex->GetVKBufferIndex(); 
+	}
+	const VkDeviceMemory& MeshSub::GetVKBufferIndexMemory() const 
+	{ 
+		return this->pBufferVertexIndex->GetVKBufferIndexMemory(); 
+	}
+
     uint32_t MeshSub::GetVertexSize() 
     {
         if (this->vertices_Pos3Color4Tex2.size() > 0)
@@ -163,49 +160,39 @@ namespace LostPeterVulkan
                   (int)this->vertices_Pos3Color4.size(),
                   (int)this->indices.size());
 
-        //2> createVertexBuffer
-        if (!this->isNeedUpdate_VertexBuffer)
-        {
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
-                                                     this->poVertexBuffer_Size, 
-                                                     this->poVertexBuffer_Data, 
-                                                     this->poVertexBuffer, 
-                                                     this->poVertexBufferMemory);
-        }
-        else
-        {
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
-                                                     this->poVertexBuffer_Size, 
-                                                     this->poVertexBuffer_Data, 
-                                                     this->poVertexBuffer, 
-                                                     this->poVertexBufferMemory,
-                                                     this->poVertexBuffer_Staging, 
-                                                     this->poVertexBufferMemory_Staging);
-        }
-
-        //3> createIndexBuffer
+		//2> createBufferVertexIndex or createBufferVertex
         if (this->poIndexBuffer_Size > 0 &&
             this->poIndexBuffer_Data != nullptr)
         {
-            if (!this->isNeedUpdate_VertexBuffer)
+			this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + this->nameMeshSub,
+                                                                                     this->poTypeVertex,
+                                                                                     this->poVertexBuffer_Size, 
+                                                                                     (uint8*)this->poVertexBuffer_Data, 
+                                                                                     false,
+                                                                                     this->poIndexBuffer_Size, 
+                                                                                     (uint8*)this->poIndexBuffer_Data, 
+                                                                                     false,
+																					 this->isNeedUpdate_VertexBuffer);
+			if (this->pBufferVertexIndex == nullptr)
             {
-                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
-                                                        this->poIndexBuffer_Size, 
-                                                        this->poIndexBuffer_Data, 
-                                                        this->poIndexBuffer, 
-                                                        this->poIndexBufferMemory);
-            }   
-            else
-            {
-                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
-                                                        this->poIndexBuffer_Size, 
-                                                        this->poIndexBuffer_Data, 
-                                                        this->poIndexBuffer, 
-                                                        this->poIndexBufferMemory,
-                                                        this->poIndexBuffer_Staging, 
-                                                        this->poIndexBufferMemory_Staging);
+                F_LogError("*********************** MeshSub::CreateMeshSub: create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
             }
         }
+		else
+		{
+			this->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + this->nameMeshSub,
+                                                                           this->poTypeVertex,
+                                                                           this->poVertexBuffer_Size, 
+                                                                           (uint8*)this->poVertexBuffer_Data, 
+                                                                           false,
+																		   this->isNeedUpdate_VertexBuffer);
+            if (this->pBufferVertex == nullptr)
+            {
+                F_LogError("*********************** MeshSub::CreateMeshSub: create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
+            }
+		}
 
         return true;
     }
@@ -422,49 +409,39 @@ namespace LostPeterVulkan
             return false; 
         }
 
-        //2> createVertexBuffer
-        if (!this->isNeedUpdate_VertexBuffer)
-        {
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
-                                                     this->poVertexBuffer_Size, 
-                                                     this->poVertexBuffer_Data, 
-                                                     this->poVertexBuffer, 
-                                                     this->poVertexBufferMemory);
-        }
-        else
-        {
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-" + this->nameMeshSub,
-                                                     this->poVertexBuffer_Size, 
-                                                     this->poVertexBuffer_Data, 
-                                                     this->poVertexBuffer, 
-                                                     this->poVertexBufferMemory,
-                                                     this->poVertexBuffer_Staging, 
-                                                     this->poVertexBufferMemory_Staging);
-        }
-
-        //3> createIndexBuffer
+        //2> createBufferVertexIndex or createBufferVertex
         if (this->poIndexBuffer_Size > 0 &&
             this->poIndexBuffer_Data != nullptr)
         {
-            if (!this->isNeedUpdate_VertexBuffer)
+			this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + this->nameMeshSub,
+                                                                                     this->poTypeVertex,
+                                                                                     this->poVertexBuffer_Size, 
+                                                                                     (uint8*)this->poVertexBuffer_Data, 
+                                                                                     false,
+                                                                                     this->poIndexBuffer_Size, 
+                                                                                     (uint8*)this->poIndexBuffer_Data, 
+                                                                                     false,
+																					 this->isNeedUpdate_VertexBuffer);
+			if (this->pBufferVertexIndex == nullptr)
             {
-                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
-                                                        this->poIndexBuffer_Size, 
-                                                        this->poIndexBuffer_Data, 
-                                                        this->poIndexBuffer, 
-                                                        this->poIndexBufferMemory);
-            }   
-            else
-            {
-                Base::GetWindowPtr()->createIndexBuffer("Index-" + this->nameMeshSub,
-                                                        this->poIndexBuffer_Size, 
-                                                        this->poIndexBuffer_Data, 
-                                                        this->poIndexBuffer, 
-                                                        this->poIndexBufferMemory,
-                                                        this->poIndexBuffer_Staging, 
-                                                        this->poIndexBufferMemory_Staging);
+                F_LogError("*********************** MeshSub::CreateMeshSub: create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
             }
         }
+		else
+		{
+			this->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + this->nameMeshSub,
+                                                                           this->poTypeVertex,
+                                                                           this->poVertexBuffer_Size, 
+                                                                           (uint8*)this->poVertexBuffer_Data, 
+                                                                           false,
+																		   this->isNeedUpdate_VertexBuffer);
+            if (this->pBufferVertex == nullptr)
+            {
+                F_LogError("*********************** MeshSub::CreateMeshSub: create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
+            }
+		}
 
         return true;
     }
@@ -523,23 +500,27 @@ namespace LostPeterVulkan
 
     void MeshSub::UpdateVertexBuffer()
     {
-        if (!this->isNeedUpdate_VertexBuffer ||
-            this->poVertexBuffer_Staging == VK_NULL_HANDLE ||
-            this->poVertexBufferMemory_Staging == VK_NULL_HANDLE)
-            return;
-        
-        Base::GetWindowPtr()->updateVKBuffer(0, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBufferMemory_Staging);
-        Base::GetWindowPtr()->copyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBuffer, this->poVertexBuffer_Size);
+		if (this->pBufferVertexIndex != nullptr)
+        {
+            this->pBufferVertexIndex->UpdateVertex(0,
+                                             	   this->poVertexBuffer_Size, 
+                                             	   (uint8*)this->poVertexBuffer_Data);
+        }
+        else if (this->pBufferVertex != nullptr)
+        {
+            this->pBufferVertex->UpdateVertex(0,
+											  this->poVertexBuffer_Size, 
+											  (uint8*)this->poVertexBuffer_Data);
+        }
     }
     void MeshSub::UpdateIndexBuffer()
     {
-        if (!this->isNeedUpdate_IndexBuffer ||
-            this->poIndexBuffer_Staging == VK_NULL_HANDLE ||
-            this->poIndexBufferMemory_Staging == VK_NULL_HANDLE)
-            return;
-
-        Base::GetWindowPtr()->updateVKBuffer(0, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBufferMemory_Staging);
-        Base::GetWindowPtr()->copyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBuffer, this->poIndexBuffer_Size);
+        if (this->pBufferVertexIndex != nullptr)
+        {
+            this->pBufferVertexIndex->UpdateIndex(0,
+                                             	  this->poIndexBuffer_Size, 
+                                                  (uint8*)this->poIndexBuffer_Data);
+        }
     }
 
 }; //LostPeterVulkan

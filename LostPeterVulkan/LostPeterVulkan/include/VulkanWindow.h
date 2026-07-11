@@ -761,12 +761,62 @@ namespace LostPeterVulkan
                     virtual void loadModel();
                         virtual void loadModel_Default();
                         virtual void loadModel_Custom();
-                    virtual void createVertexBuffer(const String& nameBuffer,
+
+					//BufferVertex
+					virtual VKBufferVertex* createBufferVertex(const String& nameBuffer,
+															   FMeshVertexType type,
+															   size_t bufSize,
+                                                    		   uint8* pBuf,
+															   bool isDelete,
+															   bool isNeedUpdate);
+					virtual void updateBufferVertex(VKBufferVertex* pBufferVertex,
+												    size_t offset,
+                                                    size_t bufSize, 
+                                                    uint8* pBuf);
+
+					//BufferVertexIndex
+					virtual VKBufferVertexIndex* createBufferVertexIndex(const String& nameBuffer,
+                                                                         FMeshVertexType type,
+                                                                         size_t bufSize_Vertex, 
+                                                                         uint8* pBuf_Vertex,
+                                                                         bool isDelete_Vertex,
+                                                                         size_t bufSize_Index, 
+                                                                         uint8* pBuf_Index,
+                                                                         bool isDelete_Index,
+																		 bool isNeedUpdate);
+                    virtual void updateBufferVertexIndex(VKBufferVertexIndex* pBufferVertexIndex,
+                                                         size_t offset_Vertex,
+                                                         size_t bufSize_Vertex, 
+                                                         uint8* pBuf_Vertex,
+														 size_t offset_Index,
+                                                         size_t bufSize_Index, 
+                                                         uint8* pBuf_Index);
+
+					//BufferUniform
+					virtual VKBufferUniform* createBufferUniform(const String& nameBuffer,
+                                                                 size_t bufSize, 
+                                                                 uint8* pBuf,
+                                                                 bool isDelete);
+                    virtual void updateBufferUniform(VKBufferUniform* pBufferUniform,
+                                                     size_t offset,
+                                                     size_t bufSize, 
+                                                     uint8* pBuf);
+
+					//BufferIndirectCommand
+
+
+					//BufferStorage
+
+
+					//BufferCompute
+
+
+                    virtual bool createVertexBuffer(const String& nameBuffer,
                                                     size_t bufSize, 
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
                                                     VkDeviceMemory& vertexBufferMemory);
-                    virtual void createVertexBuffer(const String& nameBuffer,
+                    virtual bool createVertexBuffer(const String& nameBuffer,
                                                     size_t bufSize, 
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
@@ -776,22 +826,35 @@ namespace LostPeterVulkan
                     virtual void updateVertexBuffer(size_t bufSize, 
                                                     void* pBuf, 
                                                     VkDeviceMemory& vertexBufferMemory);
-                    virtual void createIndexBuffer(const String& nameBuffer,
+
+                    virtual bool createIndexBuffer(const String& nameBuffer,
                                                    size_t bufSize, 
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory);
-                    virtual void createIndexBuffer(const String& nameBuffer,
+                    virtual bool createIndexBuffer(const String& nameBuffer,
                                                    size_t bufSize, 
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory,
                                                    VkBuffer& stagingBuffer,
                                                    VkDeviceMemory& stagingBufferMemory);
-                     virtual void updateIndexBuffer(size_t bufSize, 
-                                                    void* pBuf, 
-                                                    VkDeviceMemory& indexBufferMemory);
-                        virtual void createVkBuffer(const String& nameBuffer,
+                    virtual void updateIndexBuffer(size_t bufSize, 
+                                                   void* pBuf, 
+                                                   VkDeviceMemory& indexBufferMemory);
+					
+					virtual bool createUniformBuffer(const String& nameBuffer,
+                                                     size_t bufSize, 
+                                                     void* pBuf, 
+                                                     VkBuffer& uniformBuffer, 
+                                                     VkDeviceMemory& uniformBufferMemory);
+					virtual void updateUniformBuffer(size_t bufSize, 
+                                                     void* pBuf, 
+                                                     VkDeviceMemory& uniformBufferMemory);
+					
+					
+
+                        virtual bool createVkBuffer(const String& nameBuffer,
                                                     VkDeviceSize size, 
                                                     VkBufferUsageFlags usage, 
                                                     VkMemoryPropertyFlags properties, 
