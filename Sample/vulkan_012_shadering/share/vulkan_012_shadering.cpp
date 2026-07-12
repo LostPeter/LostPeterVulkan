@@ -606,15 +606,39 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLoc
                   (int)this->indices.size());
     }
 
-    //2> createVertexBuffer
-    this->pWindow->createVertexBuffer("Vertex-" + this->nameMesh, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
-
-    //3> createIndexBuffer
+    //2> createBufferVertexIndex or createBufferVertex
     if (this->poIndexBuffer_Size > 0 &&
         this->poIndexBuffer_Data != nullptr)
     {
-        this->pWindow->createIndexBuffer("Index-" + this->nameMesh, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+        this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + this->nameMesh,
+																				 this->poTypeVertex,
+																				 this->poVertexBuffer_Size, 
+																				 (uint8*)this->poVertexBuffer_Data, 
+																				 false,
+																				 this->poIndexBuffer_Size, 
+																				 (uint8*)this->poIndexBuffer_Data, 
+																				 false,
+																				 false);
+		if (this->pBufferVertexIndex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_012_Shadering::ModelMesh::LoadMesh: create buffer vertex index failed: [%s] !", this->nameMesh.c_str());
+			return false;
+		}
     }
+	else
+	{
+		this->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + this->nameMesh,
+																	   this->poTypeVertex,
+																	   this->poVertexBuffer_Size, 
+																	   (uint8*)this->poVertexBuffer_Data, 
+																	   false,
+																	   false);
+		if (this->pBufferVertex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_012_Shadering::ModelMesh::LoadMesh: create buffer vertex failed: [%s] !", this->nameMesh.c_str());
+			return false;
+		}
+	}
 
     return true;
 }
@@ -2172,15 +2196,7 @@ void Vulkan_012_Shadering::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         if (!pModelObject->isShow)
             continue;
         ModelMesh* pMesh = pModelObject->pMesh;
-
-        VkBuffer vertexBuffers[] = { pMesh->poVertexBuffer };
-        VkDeviceSize offsets[] = { 0 };
-        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pMesh->poIndexBuffer != nullptr)
-        {
-            bindIndexBuffer(commandBuffer, pMesh->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        }
-
+		
         if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {
             bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipeline_WireFrame);
@@ -2204,13 +2220,15 @@ void Vulkan_012_Shadering::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
 }
 void Vulkan_012_Shadering::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
 {
-    if (pModelObject->pMesh->poIndexBuffer != nullptr)
+	if (pModelObject->pMesh->pBufferVertex != nullptr)
     {
-        drawIndexed(commandBuffer, pModelObject->pMesh->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+		pModelObject->pMesh->pBufferVertex->BindVertexBuffer(commandBuffer);
+		draw(commandBuffer, pModelObject->pMesh->poVertexCount, pModelObject->countInstance, 0, 0);
     }
-    else
+    else if (pModelObject->pMesh->pBufferVertexIndex != nullptr)
     {
-        draw(commandBuffer, pModelObject->pMesh->poVertexCount, pModelObject->countInstance, 0, 0);
+		pModelObject->pMesh->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+		drawIndexed(commandBuffer, pModelObject->pMesh->poIndexCount, pModelObject->countInstance, 0, 0, 0);
     }
 }
 

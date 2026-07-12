@@ -777,15 +777,9 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 /////////////////////////// ModelObjectRendIndirect /////////////
 void Vulkan_015_MultiView::ModelObjectRendIndirect::Destroy()
 {
-    //Vertex
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-    this->poVertexBuffer = VK_NULL_HANDLE;
-    this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-    //Index
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-    this->poIndexBuffer = VK_NULL_HANDLE;
-    this->poIndexBufferMemory = VK_NULL_HANDLE;
+    //Vertex/Index
+	F_DELETE(this->pBufferVertex)
+	F_DELETE(this->pBufferVertexIndex)
 
     CleanupSwapChain();
 
@@ -890,15 +884,39 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
     this->poIndexBuffer_Data =  &this->indices[0];
 
-    //2> createVertexBuffer
-    this->pRend->pModelObject->pWindow->createVertexBuffer("Vertex-" + this->nameObjectRendIndirect, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
-
-    //3> createIndexBuffer
+    //2> createBufferVertexIndex or createBufferVertex
     if (this->poIndexBuffer_Size > 0 &&
         this->poIndexBuffer_Data != nullptr)
     {
-        this->pRend->pModelObject->pWindow->createIndexBuffer("Index-" + this->nameObjectRendIndirect, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+		this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + this->nameObjectRendIndirect,
+																				 this->poTypeVertex,
+																				 this->poVertexBuffer_Size, 
+																				 (uint8*)this->poVertexBuffer_Data, 
+																				 false,
+																				 this->poIndexBuffer_Size, 
+																				 (uint8*)this->poIndexBuffer_Data, 
+																				 false,
+																				 false);
+		if (this->pBufferVertexIndex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex index failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			return;
+		}
     }
+	else
+	{
+		this->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + this->nameObjectRendIndirect,
+																	   this->poTypeVertex,
+																	   this->poVertexBuffer_Size, 
+																	   (uint8*)this->poVertexBuffer_Data, 
+																	   false,
+																	   false);
+		if (this->pBufferVertex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			return;
+		}
+	}
 }
 
 void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
@@ -3162,14 +3180,6 @@ void Vulkan_015_MultiView::drawModelObjectRendIndirect(VkCommandBuffer& commandB
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
 
-    VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pRendIndirect->poIndexBuffer != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-    }
-
     if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
     {
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
@@ -3186,6 +3196,15 @@ void Vulkan_015_MultiView::drawModelObjectRendIndirect(VkCommandBuffer& commandB
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
+
+	if (pRendIndirect->pBufferVertex != nullptr)
+	{
+		pRendIndirect->pBufferVertex->BindVertexBuffer(commandBuffer);
+	}
+	else if (pRendIndirect->pBufferVertexIndex != nullptr)
+	{
+		pRendIndirect->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+	}
 
     uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)

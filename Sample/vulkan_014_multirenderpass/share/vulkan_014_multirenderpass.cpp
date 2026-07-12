@@ -775,15 +775,9 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 /////////////////////////// ModelObjectRendIndirect /////////////
 void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::Destroy()
 {
-    //Vertex
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-    this->poVertexBuffer = VK_NULL_HANDLE;
-    this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-    //Index
-    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-    this->poIndexBuffer = VK_NULL_HANDLE;
-    this->poIndexBufferMemory = VK_NULL_HANDLE;
+    //Vertex/Index
+	F_DELETE(this->pBufferVertex)
+	F_DELETE(this->pBufferVertexIndex)
 
     CleanupSwapChain();
 
@@ -870,12 +864,14 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer
     //Vertex
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
     {
+		this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tex2.size();
         this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
     }
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
     {
+		this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tangent3Tex2;
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
         this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
@@ -888,15 +884,39 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
     this->poIndexBuffer_Data =  &this->indices[0];
 
-    //2> createVertexBuffer
-    this->pRend->pModelObject->pWindow->createVertexBuffer("Vertex-" + this->nameObjectRendIndirect, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
-
-    //3> createIndexBuffer
+    //2> createBufferVertexIndex or createBufferVertex
     if (this->poIndexBuffer_Size > 0 &&
         this->poIndexBuffer_Data != nullptr)
     {
-        this->pRend->pModelObject->pWindow->createIndexBuffer("Index-" + this->nameObjectRendIndirect, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+		this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + this->nameObjectRendIndirect,
+																				 this->poTypeVertex,
+																				 this->poVertexBuffer_Size, 
+																				 (uint8*)this->poVertexBuffer_Data, 
+																				 false,
+																				 this->poIndexBuffer_Size, 
+																				 (uint8*)this->poIndexBuffer_Data, 
+																				 false,
+																				 false);
+		if (this->pBufferVertexIndex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex index failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			return;
+		}
     }
+	else
+	{
+		this->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + this->nameObjectRendIndirect,
+																	   this->poTypeVertex,
+																	   this->poVertexBuffer_Size, 
+																	   (uint8*)this->poVertexBuffer_Data, 
+																	   false,
+																	   false);
+		if (this->pBufferVertex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			return;
+		}
+	}
 }
 
 void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
@@ -3039,14 +3059,6 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirect(VkCommandBuffer& co
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
 
-    VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pRendIndirect->poIndexBuffer != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-    }
-
     if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
     {
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
@@ -3063,6 +3075,15 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirect(VkCommandBuffer& co
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
+
+	if (pRendIndirect->pBufferVertex != nullptr)
+	{
+		pRendIndirect->pBufferVertex->BindVertexBuffer(commandBuffer);
+	}
+	else if (pRendIndirect->pBufferVertexIndex != nullptr)
+	{
+		pRendIndirect->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+	}
 
     uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)
@@ -3095,14 +3116,6 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
 
-    VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pMeshSub->GetVKBufferIndex() != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-    }
-
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
     {
         bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
@@ -3110,14 +3123,17 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->GetVKBufferIndex() != nullptr)
-        {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-        }
-        else
-        {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-        }
+        
+		if (pMeshSub->pBufferVertex != nullptr)
+		{
+			pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
+			draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+		}
+		else if (pMeshSub->pBufferVertexIndex != nullptr)
+		{
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+			drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+		}
     }
     else
     {
@@ -3126,14 +3142,17 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->GetVKBufferIndex() != nullptr)
-        {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-        }
-        else
-        {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-        }
+
+		if (pMeshSub->pBufferVertex != nullptr)
+		{
+			pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
+			draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+		}
+		else if (pMeshSub->pBufferVertexIndex != nullptr)
+		{
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+			drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+		}
     }
 }
 

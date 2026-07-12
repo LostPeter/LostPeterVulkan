@@ -38,19 +38,15 @@ public:
             , isNoDepthWrite(false)
             , isNoDepthTestWrite(false)
 
-            //Vertex
+            //Vertex/Index
             , poVertexCount(0)
             , poVertexBuffer_Size(0)
             , poVertexBuffer_Data(nullptr)
-            , poVertexBuffer(VK_NULL_HANDLE)
-            , poVertexBufferMemory(VK_NULL_HANDLE)
-
-            //Index
             , poIndexCount(0)
             , poIndexBuffer_Size(0)
             , poIndexBuffer_Data(nullptr)
-            , poIndexBuffer(VK_NULL_HANDLE)
-            , poIndexBufferMemory(VK_NULL_HANDLE)
+            , pBufferVertex(nullptr)
+            , pBufferVertexIndex(nullptr)
 
             //Uniform
             , poMatWorld(1.0f)
@@ -97,15 +93,9 @@ public:
         }
         ~ModelObject()
         {
-            //Vertex
-            this->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-            this->poVertexBuffer = VK_NULL_HANDLE;
-            this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-            //Index
-            this->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-            this->poIndexBuffer = VK_NULL_HANDLE;
-            this->poIndexBufferMemory = VK_NULL_HANDLE;
+            //Vertex/Index
+			F_DELETE(this->pBufferVertex)
+			F_DELETE(this->pBufferVertexIndex)
 
             //Uniform
             size_t count = this->poBuffers_ObjectCB.size();
@@ -152,21 +142,17 @@ public:
         bool isNoDepthWrite;
         bool isNoDepthTestWrite;
 
-        //Vertex
+		//Vertex/Index
         std::vector<FVertex_Pos3Color4Tex2> vertices;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
-
-        //Index
         std::vector<uint32_t> indices;
         uint32_t poIndexCount;
         size_t poIndexBuffer_Size;
         void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
+		VKBufferVertex* pBufferVertex;
+		VKBufferVertexIndex* pBufferVertexIndex;
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;

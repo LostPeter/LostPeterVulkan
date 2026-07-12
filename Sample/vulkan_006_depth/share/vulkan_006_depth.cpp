@@ -175,15 +175,39 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
               (int)pModelObject->vertices.size(), 
               (int)pModelObject->indices.size());
 
-    //2> createVertexBuffer
-    createVertexBuffer("Vertex-" + pModelObject->nameModel, pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
-
-    //3> createIndexBuffer
+    //2> createBufferVertexIndex or createBufferVertex
     if (pModelObject->poIndexBuffer_Size > 0 &&
         pModelObject->poIndexBuffer_Data != nullptr)
-    {
-        createIndexBuffer("Index-" + pModelObject->nameModel, pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
-    }
+    {	
+		pModelObject->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + pModelObject->nameModel,
+																						 this->poTypeVertex,
+																						 pModelObject->poVertexBuffer_Size, 
+																						 (uint8*)pModelObject->poVertexBuffer_Data, 
+																						 false,
+																						 pModelObject->poIndexBuffer_Size, 
+																						 (uint8*)pModelObject->poIndexBuffer_Data, 
+																						 false,
+																						 false);
+		if (pModelObject->pBufferVertexIndex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_006_Depth::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", pModelObject->nameModel.c_str());
+			return false;
+		}
+	}
+	else
+	{
+		pModelObject->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + pModelObject->nameModel,
+																			   this->poTypeVertex,
+																			   pModelObject->poVertexBuffer_Size, 
+																			   (uint8*)pModelObject->poVertexBuffer_Data, 
+																			   false,
+																			   false);
+		if (pModelObject->pBufferVertex == nullptr)
+		{
+			F_LogError("*********************** Vulkan_006_Depth::loadModel_VertexIndex: create buffer vertex failed: [%s] !", pModelObject->nameModel.c_str());
+			return false;
+		}
+	}
 
     return true;
 }
@@ -600,23 +624,25 @@ void Vulkan_006_Depth::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
                 bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics);
             }
         }
-        
-        VkBuffer vertexBuffers[] = { pModelObject->poVertexBuffer };
-        VkDeviceSize offsets[] = { 0 };
-        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
         if (pModelObject->poDescriptorSets.size() > 0)
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pModelObject->poIndexBuffer != nullptr)
+
+        if (pModelObject->pBufferVertex != nullptr)
         {
-            bindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+			pModelObject->pBufferVertex->BindVertexBuffer(commandBuffer);
+			draw(commandBuffer, pModelObject->poVertexCount, 1, 0, 0);
+        }
+        else if (pModelObject->pBufferVertexIndex != nullptr)
+        {
+			pModelObject->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             drawIndexed(commandBuffer, pModelObject->poIndexCount, 1, 0, 0, 0);
         }
-        else
-        {
-            draw(commandBuffer, pModelObject->poVertexCount, 1, 0, 0);
-        }
+		else
+		{
+			F_Assert(false && "Vulkan_006_Depth::drawMeshDefault_Custom")
+		}
     }
 }
 
