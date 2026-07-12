@@ -146,6 +146,8 @@ namespace LostPeterVulkan
 
     void EditorBase::Draw(VkCommandBuffer& commandBuffer)
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         size_t count_mesh = this->aMeshes.size();
         for (size_t i = 0; i < count_mesh; i++)
         {
@@ -157,14 +159,14 @@ namespace LostPeterVulkan
 
                 VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
                 VkDeviceSize offsets[] = { 0 };
-                Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-                Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-                if (Base::GetWindowPtr()->cfg_isWireFrame)
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+                pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+                if (pWindow->cfg_isWireFrame)
+                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
-                Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+                pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
             }
         }
     }   

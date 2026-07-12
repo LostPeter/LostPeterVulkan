@@ -28,11 +28,8 @@ namespace LostPeterVulkan
 
     public:
         LineFlat2DObjectConstants lineFlat2DObjectCB;
-        VkBuffer poBuffers_ObjectCB;
-        VkDeviceMemory poBuffersMemory_ObjectCB;
-
-        
-
+		VKBufferUniform* poBufferUniform_ObjectCB;
+		
     public:
         virtual void Destroy();
 

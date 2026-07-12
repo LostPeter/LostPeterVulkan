@@ -57,12 +57,10 @@ namespace LostPeterVulkan
         FColor poColorBackground;
 
         PassConstants passCB;
-        VkBuffer poBuffers_PassCB;
-        VkDeviceMemory poBuffersMemory_PassCB;
+		VKBufferUniform* poBufferUniform_PassCB;
 
         std::vector<CameraAxisObjectConstants> cameraAxisObjectCBs;
-        VkBuffer poBuffers_ObjectCB;
-        VkDeviceMemory poBuffersMemory_ObjectCB;
+		VKBufferUniform* poBufferUniform_ObjectCB;
 
     //Quad Blit
     public:
@@ -79,8 +77,7 @@ namespace LostPeterVulkan
 
         //Uniform Buffer
         CopyBlitObjectConstants copyBlitObjectCB;
-        VkBuffer poBuffers_CopyBlitObjectCB;
-        VkDeviceMemory poBuffersMemory_CopyBlitObjectCB;
+		VKBufferUniform* poBufferUniform_CopyBlitObjectCB;
 
     protected:
         bool isNeedUpdate;

@@ -179,8 +179,7 @@ namespace LostPeterVulkan
     EditorCoordinateAxis::EditorCoordinateAxis()
         : EditorBase("EditorCoordinateAxis")
 
-        , poBuffers_ObjectCB(VK_NULL_HANDLE)
-        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+        , poBufferUniform_ObjectCB(nullptr)
 
         , scaleCoordinate(1.0f)
         , vPos(FMath::ms_v3Zero)
@@ -393,10 +392,9 @@ namespace LostPeterVulkan
                 break;
             }
         }
-        
-        size_t bufSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
-        void* pBuf = &this->coordinateAxisObjectCBs[0];
-        Base::GetWindowPtr()->updateVKBuffer(0, bufSize, pBuf, this->poBuffersMemory_ObjectCB);
+		this->poBufferUniform_ObjectCB->UpdateBuffer(0,
+												     sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size(),
+													 (uint8*)(this->coordinateAxisObjectCBs.data()));
     }
         void EditorCoordinateAxis::UpdateCBs_Move()
         {
@@ -1485,6 +1483,8 @@ namespace LostPeterVulkan
     }
     void EditorCoordinateAxis::initBufferUniforms()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //CoordinateAxis
         {
             this->coordinateAxisObjectCBs.clear();
@@ -1501,9 +1501,10 @@ namespace LostPeterVulkan
                 consts.color = s_aColors_Default[i];
                 this->coordinateAxisObjectCBs.push_back(consts);
             }
-            
-            VkDeviceSize bufferSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
-            Base::GetWindowPtr()->createVkBuffer("EditorCoordinateAxis-CoordinateAxisObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+			this->poBufferUniform_ObjectCB = pWindow->createBufferUniform("EditorCoordinateAxis-CoordinateAxisObjectConstants",
+																		  sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 
+																		  (uint8*)(this->coordinateAxisObjectCBs.data()),
+																		  false);
 
             //Quad
             Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex]; 
@@ -1679,7 +1680,7 @@ namespace LostPeterVulkan
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCoordinateAxis)) //ObjectCoordinateAxis
                 {
                     VkDescriptorBufferInfo bufferInfo_ObjectCameraAxis = {};
-                    bufferInfo_ObjectCameraAxis.buffer = this->poBuffers_ObjectCB;
+                    bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVKBufferUniform();
                     bufferInfo_ObjectCameraAxis.offset = 0;
                     bufferInfo_ObjectCameraAxis.range = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1701,12 +1702,7 @@ namespace LostPeterVulkan
     }
     void EditorCoordinateAxis::destroyBufferUniforms()
     {
-        if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
-        }
-        this->poBuffers_ObjectCB = VK_NULL_HANDLE;
-        this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
+		F_DELETE(this->poBufferUniform_ObjectCB)
         this->coordinateAxisObjectCBs.clear();
     }
     void EditorCoordinateAxis::destroyPipelineGraphics()

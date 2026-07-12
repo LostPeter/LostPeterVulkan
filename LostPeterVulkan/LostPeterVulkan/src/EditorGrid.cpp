@@ -23,8 +23,7 @@ namespace LostPeterVulkan
     EditorGrid::EditorGrid()
         : EditorBase("EditorGrid")
 
-        , poBuffers_ObjectCB(VK_NULL_HANDLE)
-        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+        , pBufferUniform(nullptr)
         , isNeedUpdate(true)
     {
 
@@ -47,8 +46,10 @@ namespace LostPeterVulkan
         if (!IsNeedUpdate())
             return;
         SetIsNeedUpdate(false);
-
-        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(GridObjectConstants), &gridObjectCB, this->poBuffersMemory_ObjectCB);
+		
+		this->pBufferUniform->UpdateBuffer(0,
+										   sizeof(GridObjectConstants), 
+										   (uint8*)(&this->gridObjectCB));
     }
     void EditorGrid::initConfigs()
     {
@@ -94,8 +95,10 @@ namespace LostPeterVulkan
     }
     void EditorGrid::initBufferUniforms()
     {
-        VkDeviceSize bufferSize = sizeof(GridObjectConstants);
-        Base::GetWindowPtr()->createVkBuffer("EditorGrid-GridObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+		this->pBufferUniform = Base::GetWindowPtr()->createBufferUniform("EditorGrid-GridObjectConstants",
+																		 sizeof(GridObjectConstants),
+																		 (uint8*)(&this->gridObjectCB),
+																		 false);
         SetIsNeedUpdate(true);
     }
     void EditorGrid::initPipelineGraphics()
@@ -212,7 +215,7 @@ namespace LostPeterVulkan
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
                 {
                     VkDescriptorBufferInfo bufferInfo_ObjectGrid = {};
-                    bufferInfo_ObjectGrid.buffer = this->poBuffers_ObjectCB;
+                    bufferInfo_ObjectGrid.buffer = this->pBufferUniform->GetVKBufferUniform();
                     bufferInfo_ObjectGrid.offset = 0;
                     bufferInfo_ObjectGrid.range = sizeof(GridObjectConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -234,12 +237,7 @@ namespace LostPeterVulkan
     }
     void EditorGrid::destroyBufferUniforms()
     {
-        if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
-        }
-        this->poBuffers_ObjectCB = VK_NULL_HANDLE;
-        this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
+		F_DELETE(this->pBufferUniform)
     }
     void EditorGrid::destroyPipelineGraphics()
     {

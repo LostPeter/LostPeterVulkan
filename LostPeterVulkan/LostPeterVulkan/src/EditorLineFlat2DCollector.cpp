@@ -11,6 +11,7 @@
 
 #include "../include/EditorLineFlat2DCollector.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -19,8 +20,7 @@ namespace LostPeterVulkan
     EditorLineFlat2DCollector::EditorLineFlat2DCollector()
         : EditorBase("EditorLineFlat2DCollector")
 
-        , poBuffers_ObjectCB(VK_NULL_HANDLE)
-        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+        , poBufferUniform_ObjectCB(nullptr)
     {
 
     }

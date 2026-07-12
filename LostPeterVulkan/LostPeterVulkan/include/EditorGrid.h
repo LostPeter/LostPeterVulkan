@@ -28,8 +28,7 @@ namespace LostPeterVulkan
 
     public:
         GridObjectConstants gridObjectCB;
-        VkBuffer poBuffers_ObjectCB;
-        VkDeviceMemory poBuffersMemory_ObjectCB;
+		VKBufferUniform* pBufferUniform;
 
         void SetColor(FColor& color)
         {

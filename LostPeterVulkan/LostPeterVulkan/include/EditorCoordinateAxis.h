@@ -84,8 +84,7 @@ namespace LostPeterVulkan
 
     public:
         std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
-        VkBuffer poBuffers_ObjectCB;
-        VkDeviceMemory poBuffersMemory_ObjectCB;
+		VKBufferUniform* poBufferUniform_ObjectCB;
 
     protected:
         float scaleCoordinate;

@@ -15,6 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VKMultiRenderPass.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -53,10 +54,8 @@ namespace LostPeterVulkan
         , pCamera(nullptr)
         , poColorBackground(0.0f, 0.0f, 0.0f, 0.0f)
 
-        , poBuffers_PassCB(VK_NULL_HANDLE)
-        , poBuffersMemory_PassCB(VK_NULL_HANDLE)
-        , poBuffers_ObjectCB(VK_NULL_HANDLE)
-        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+		, poBufferUniform_PassCB(nullptr)
+		, poBufferUniform_ObjectCB(nullptr)
         , isNeedUpdate(true)
 
         //Quad Blit
@@ -64,8 +63,7 @@ namespace LostPeterVulkan
         , poDescriptorSetLayout_CopyBlit(VK_NULL_HANDLE)
         , poPipelineLayout_CopyBlit(VK_NULL_HANDLE)
         , pPipelineGraphics_CopyBlit(nullptr)
-        , poBuffers_CopyBlitObjectCB(VK_NULL_HANDLE)
-        , poBuffersMemory_CopyBlitObjectCB(VK_NULL_HANDLE)
+        , poBufferUniform_CopyBlitObjectCB(nullptr)
     {
 
     }
@@ -85,14 +83,18 @@ namespace LostPeterVulkan
     }
     void EditorCameraAxis::UpdateCBs()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //Pass
         {
-            FVector3 vDir = Base::GetWindowPtr()->pCamera->GetDir();
+            FVector3 vDir = pWindow->pCamera->GetDir();
             FVector3 vPos = -vDir * s_fCameraDistance;
             this->pCamera->LookAtLH(vPos, s_vCameraLookTarget, s_vCameraUp);
             this->pCamera->UpdateViewMatrix();
-            Base::GetWindowPtr()->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(PassConstants), &this->passCB, this->poBuffersMemory_PassCB);
+            pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+			this->poBufferUniform_PassCB->UpdateBuffer(0,
+													   sizeof(PassConstants), 
+													   (uint8*)&this->passCB);
         }
         
         if (!IsNeedUpdate())
@@ -101,15 +103,21 @@ namespace LostPeterVulkan
 
         //CameraAxis
         {
-            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), &this->cameraAxisObjectCBs[0], this->poBuffersMemory_ObjectCB);
+			this->poBufferUniform_ObjectCB->UpdateBuffer(0,
+														 sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(),
+														 (uint8*)(this->cameraAxisObjectCBs.data()));
         }
         //Quad Blit
         {
-            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->copyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
+			this->poBufferUniform_CopyBlitObjectCB->UpdateBuffer(0,
+																 sizeof(CopyBlitObjectConstants),
+																 (uint8*)(&this->copyBlitObjectCB));
         }
     }
     void EditorCameraAxis::Draw(VkCommandBuffer& commandBuffer)
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         uint32_t instanceStart = 0;
         size_t count_mesh = s_nMeshCameraAxisCount;
         for (size_t i = 0; i < count_mesh; i++)
@@ -122,32 +130,34 @@ namespace LostPeterVulkan
 
                 VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
                 VkDeviceSize offsets[] = { 0 };
-                Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-                Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-                if (Base::GetWindowPtr()->cfg_isWireFrame)
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+                pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+                if (pWindow->cfg_isWireFrame)
+                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
-                Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+                pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
                 instanceStart += pMeshSub->instanceCount;
             }
         }
     }   
     void EditorCameraAxis::DrawQuad(VkCommandBuffer& commandBuffer)
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex];
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
         VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
         VkDeviceSize offsets[] = { 0 };
-        Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-        if (Base::GetWindowPtr()->cfg_isWireFrame)
-            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
+        pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+        if (pWindow->cfg_isWireFrame)
+            pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
         else
-            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
-        Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
-        Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+            pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
+        pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+        pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
     void EditorCameraAxis::initConfigs()
     {
@@ -263,11 +273,16 @@ namespace LostPeterVulkan
         }
     void EditorCameraAxis::initBufferUniforms()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //CameraAxis
         {
             //Pass
-            Base::GetWindowPtr()->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-PassConstants", sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
+            pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+			this->poBufferUniform_PassCB = pWindow->createBufferUniform("EditorCameraAxis-PassConstants", 
+																		sizeof(PassConstants), 
+																		(uint8*)(&this->passCB),
+																		false);
 
             this->cameraAxisObjectCBs.clear();
             int indexConst = 0;
@@ -327,8 +342,10 @@ namespace LostPeterVulkan
                 this->cameraAxisObjectCBs.push_back(constsAABB);
                 indexConst++;
             }
-            VkDeviceSize bufferSize = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
-            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-CameraAxisObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+			this->poBufferUniform_ObjectCB = pWindow->createBufferUniform("EditorCameraAxis-CameraAxisObjectConstants",
+																		  sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), 
+																		  (uint8*)(this->cameraAxisObjectCBs.data()),
+																		  false);
 
             Mesh* pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
             MeshSub* pMeshSub = pMesh->aMeshSubs[0];
@@ -339,15 +356,17 @@ namespace LostPeterVulkan
         }
         //Quad Blit
         {
-            float width = (float)Base::GetWindowPtr()->poSwapChainExtent.width;
-            float height = (float)Base::GetWindowPtr()->poSwapChainExtent.height;
+            float width = (float)pWindow->poSwapChainExtent.width;
+            float height = (float)pWindow->poSwapChainExtent.height;
             this->copyBlitObjectCB.offsetX = 1.0f - s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.offsetY = 1.0f - s_fBlitAreaHeight / height;
             this->copyBlitObjectCB.scaleX = 2.0f * s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.scaleY = 2.0f * s_fBlitAreaHeight / height;
-            VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
-            Base::GetWindowPtr()->createVkBuffer("EditorCameraAxis-CopyBlitObjectConstants", bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
-        }
+			this->poBufferUniform_CopyBlitObjectCB = pWindow->createBufferUniform("EditorCameraAxis-CopyBlitObjectConstants",
+																				  sizeof(CopyBlitObjectConstants),
+																				  (uint8*)(&this->copyBlitObjectCB),
+																				  false);
+		}
         SetIsNeedUpdate(true);
     }
     void EditorCameraAxis::initDescriptorSetLayout()
@@ -570,7 +589,7 @@ namespace LostPeterVulkan
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->poBuffers_PassCB;
+                        bufferInfo_Pass.buffer = this->poBufferUniform_PassCB->GetVKBufferUniform();
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -583,7 +602,7 @@ namespace LostPeterVulkan
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCameraAxis)) //ObjectCameraAxis
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectCameraAxis = {};
-                        bufferInfo_ObjectCameraAxis.buffer = this->poBuffers_ObjectCB;
+                        bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVKBufferUniform();
                         bufferInfo_ObjectCameraAxis.offset = 0;
                         bufferInfo_ObjectCameraAxis.range = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -619,7 +638,7 @@ namespace LostPeterVulkan
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectCopyBlit = {};
-                        bufferInfo_ObjectCopyBlit.buffer = this->poBuffers_CopyBlitObjectCB;
+                        bufferInfo_ObjectCopyBlit.buffer = this->poBufferUniform_CopyBlitObjectCB->GetVKBufferUniform();
                         bufferInfo_ObjectCopyBlit.offset = 0;
                         bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -654,31 +673,16 @@ namespace LostPeterVulkan
     {
         //PassConstants
         {
-            if (this->poBuffers_PassCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
-            }
-            this->poBuffers_PassCB = VK_NULL_HANDLE;
-            this->poBuffersMemory_PassCB = VK_NULL_HANDLE;
+			F_DELETE(this->poBufferUniform_PassCB)
         }
         //CameraAxis
         {
-            if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
-            }
-            this->poBuffers_ObjectCB = VK_NULL_HANDLE;
-            this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
+			F_DELETE(this->poBufferUniform_ObjectCB)
             this->cameraAxisObjectCBs.clear();
         }
         //Quad Blit
         {
-            if (this->poBuffers_CopyBlitObjectCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
-            }
-            this->poBuffers_CopyBlitObjectCB = VK_NULL_HANDLE;
-            this->poBuffersMemory_CopyBlitObjectCB = VK_NULL_HANDLE;
+			F_DELETE(this->poBufferUniform_CopyBlitObjectCB)
         }
     }
     void EditorCameraAxis::destroyPipelineGraphics()
