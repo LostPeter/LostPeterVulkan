@@ -67,7 +67,7 @@ namespace LostPeterVulkan
 								 uint8* pBuf);
 
     public:
-        void BindVertexIndexBuffer();
+        void BindVertexIndexBuffer(VkCommandBuffer& commandBuffer);
 
     protected:
         virtual void destroyBuffer();

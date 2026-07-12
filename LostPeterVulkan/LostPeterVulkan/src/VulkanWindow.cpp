@@ -2131,13 +2131,11 @@ namespace LostPeterVulkan
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
         , poVertexBuffer_Data(nullptr)
-        , poVertexBuffer(VK_NULL_HANDLE)
-        , poVertexBufferMemory(VK_NULL_HANDLE)
         , poIndexCount(0)
         , poIndexBuffer_Size(0)
         , poIndexBuffer_Data(nullptr)
-        , poIndexBuffer(VK_NULL_HANDLE)
-        , poIndexBufferMemory(VK_NULL_HANDLE)
+        , pBufferVertex(nullptr)
+        , pBufferVertexIndex(nullptr)
         , poMatWorld(FMath::Identity4x4())
 
         , poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
@@ -4973,27 +4971,33 @@ namespace LostPeterVulkan
             //1> loadModel
             loadModel();
 
-            //2> createVertexBuffer
+            //2> createBufferVertexIndex
             if (this->poVertexBuffer_Size > 0 &&
-                this->poVertexBuffer_Data != nullptr)
+				this->poVertexBuffer_Data != nullptr &&
+				this->poIndexBuffer_Size > 0 &&
+				this->poIndexBuffer_Data != nullptr)
             {
-                createVertexBuffer("Vertex-" + this->nameTitle,
-                                   this->poVertexBuffer_Size, 
-                                   this->poVertexBuffer_Data, 
-                                   this->poVertexBuffer, 
-                                   this->poVertexBufferMemory);
+				this->pBufferVertexIndex = createBufferVertexIndex("VertexIndex-" + this->nameTitle,
+																   this->poTypeVertex,
+																   this->poVertexBuffer_Size,
+																   (uint8*)this->poVertexBuffer_Data,
+																   false,
+																   this->poIndexBuffer_Size,
+																   (uint8*)this->poIndexBuffer_Data,
+																   false,
+																   false);
             }
-
-            //3> createIndexBuffer
-            if (this->poIndexBuffer_Size > 0 &&
-                this->poIndexBuffer_Data != nullptr)
-            {
-                createIndexBuffer("Index-" + this->nameTitle,
-                                  this->poIndexBuffer_Size, 
-                                  this->poIndexBuffer_Data, 
-                                  this->poIndexBuffer, 
-                                  this->poIndexBufferMemory);
-            }
+			//3> createBufferVertex
+			else if (this->poVertexBuffer_Size > 0 &&
+                     this->poVertexBuffer_Data != nullptr)
+			{
+				this->pBufferVertex = createBufferVertex("Vertex-" + this->nameTitle,
+														 this->poTypeVertex,
+														 this->poVertexBuffer_Size, 
+														 (uint8*)this->poVertexBuffer_Data, 
+														 false,
+														 false);
+			}
         }
         F_LogInfo("**<2-1-1> VulkanWindow::loadVertexIndexBuffer finish **");
     }
@@ -10189,32 +10193,33 @@ namespace LostPeterVulkan
                     }
                         void VulkanWindow::drawMeshDefault(VkCommandBuffer& commandBuffer)
                         {
-                            if (this->poVertexBuffer == nullptr)
+                            if (this->pBufferVertexIndex == nullptr && 
+								this->pBufferVertex == nullptr)
                                 return;
 
                             VkPipeline vkPipeline = this->poPipelineGraphics;
                             if (this->cfg_isWireFrame)
                                 vkPipeline = this->poPipelineGraphics_WireFrame;
                             bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
-
-                            VkBuffer vertexBuffers[] = { this->poVertexBuffer };
-                            VkDeviceSize offsets[] = { 0 };
-                            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-
                             if (this->poDescriptorSets.size() > 0)
                             {
                                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                             }
-                            if (this->poIndexBuffer != VK_NULL_HANDLE)
-                            {
-                                bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-                                drawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
-                            }
-                            else
-                            {
-                                draw(commandBuffer, this->poVertexCount, 1, 0, 0);
-                            }
+							if (this->pBufferVertex != nullptr)
+							{
+								this->pBufferVertex->BindVertexBuffer(commandBuffer);
+								draw(commandBuffer, this->poVertexCount, 1, 0, 0);
+							}
+							else if (this->pBufferVertexIndex != nullptr)
+							{
+								this->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+								drawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
+							}
+							else
+							{
+								F_Assert(false && "VulkanWindow::drawMeshDefault")
+							}
                         }
                         void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
                         {
@@ -10724,24 +10729,14 @@ namespace LostPeterVulkan
             }
             void VulkanWindow::cleanupVertexIndexBuffer()
             {
-                //1> VertexBuffer
-                if (this->poVertexBuffer != VK_NULL_HANDLE)
-                {
-                    destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-                }
-                this->poVertexBuffer = VK_NULL_HANDLE;
-                this->poVertexBufferMemory = VK_NULL_HANDLE;
+				//1> VertexBuffer/pBufferVertexIndex
+                F_DELETE(this->pBufferVertex)
+                F_DELETE(this->pBufferVertexIndex)
+
+                //2> Data
                 this->poVertexCount = 0;
                 this->poVertexBuffer_Size = 0;
                 this->poVertexBuffer_Data = nullptr;
-
-                //2> IndexBuffer
-                if (this->poIndexBuffer != VK_NULL_HANDLE)
-                {
-                    destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-                }
-                this->poIndexBuffer = VK_NULL_HANDLE;
-                this->poIndexBufferMemory = VK_NULL_HANDLE;
                 this->poIndexCount = 0;
                 this->poIndexBuffer_Size = 0;
                 this->poIndexBuffer_Data = nullptr;

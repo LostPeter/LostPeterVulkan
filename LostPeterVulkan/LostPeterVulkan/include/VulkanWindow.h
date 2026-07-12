@@ -323,13 +323,11 @@ namespace LostPeterVulkan
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
         uint32_t poIndexCount;
         size_t poIndexBuffer_Size;
         void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
+		VKBufferVertex* pBufferVertex;
+        VKBufferVertexIndex* pBufferVertexIndex;
         FMatrix4 poMatWorld;
 
         FMeshVertexType poTypeVertex;

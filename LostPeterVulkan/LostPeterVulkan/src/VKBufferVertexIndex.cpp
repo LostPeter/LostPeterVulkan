@@ -190,9 +190,12 @@ namespace LostPeterVulkan
 
 	}
 
-	void VKBufferVertexIndex::BindVertexIndexBuffer()
+	void VKBufferVertexIndex::BindVertexIndexBuffer(VkCommandBuffer& commandBuffer)
 	{
-		
+		VkBuffer vertexBuffers[] = { this->poVertexBuffer };
+		VkDeviceSize offsets[] = { 0 };
+		Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+		Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 	}
 
 }; //LostPeterVulkan

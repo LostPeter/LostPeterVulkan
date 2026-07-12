@@ -113,12 +113,13 @@ namespace LostPeterVulkan
         
         Base::GetWindowPtr()->updateVKBuffer(offset, bufSize, pBuf, this->poVertexBufferMemory_Staging);
         Base::GetWindowPtr()->copyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBuffer, bufSize);
-
 	}
 
-	void VKBufferVertex::BindVertexBuffer()
+	void VKBufferVertex::BindVertexBuffer(VkCommandBuffer& commandBuffer)
 	{
-
+		VkBuffer vertexBuffers[] = { this->poVertexBuffer };
+		VkDeviceSize offsets[] = { 0 };
+		Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
 	}
 
 }; //LostPeterVulkan
