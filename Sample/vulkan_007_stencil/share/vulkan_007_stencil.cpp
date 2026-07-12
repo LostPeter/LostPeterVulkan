@@ -433,7 +433,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(2) MaterialConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Material = {};
-                    bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j];
+                    bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
                     bufferInfo_Material.offset = 0;
                     bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -446,7 +446,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(3) InstanceConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Instance = {};
-                    bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                    bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
                     bufferInfo_Instance.offset = 0;
                     bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -505,7 +505,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(2) MaterialConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Material_Outline = {};
-                    bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j];
+                    bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
                     bufferInfo_Material_Outline.offset = 0;
                     bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * this->materialCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
@@ -518,7 +518,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(3) InstanceConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Instance_Outline = {};
-                    bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j];
+                    bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
                     bufferInfo_Instance_Outline.offset = 0;
                     bufferInfo_Instance_Outline.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,

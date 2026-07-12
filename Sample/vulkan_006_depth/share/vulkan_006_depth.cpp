@@ -406,7 +406,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(2) MaterialConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j];
+                bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -419,7 +419,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(3) InstanceConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

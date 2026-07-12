@@ -7360,21 +7360,27 @@ namespace LostPeterVulkan
     void VulkanWindow::createObjectCB()
     {
         buildObjectCB();
-        VkDeviceSize bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
 
+		size_t count_object = this->objectCBs.size();
+		if (count_object <= 0)
+			return;
+        VkDeviceSize bufferSize = sizeof(ObjectConstants) * count_object;
         size_t count = this->poSwapChainImages.size();
         this->poBuffers_ObjectCB.resize(count);
-        this->poBuffersMemory_ObjectCB.resize(count);
-
         for (size_t i = 0; i < count; i++) 
         {
             String nameBuffer = "Object-" + FUtilString::SaveSizeT(i);
-            createVkBuffer(nameBuffer,
-                           bufferSize, 
-                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                           this->poBuffers_ObjectCB[i], 
-                           this->poBuffersMemory_ObjectCB[i]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(this->objectCBs.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** VulkanWindow::createObjectCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			this->poBuffers_ObjectCB[i] = pBufferUniform;
         }
         F_LogInfo("<2-1-3-1> VulkanWindow::createObjectCB finish !");
     }
@@ -7386,21 +7392,27 @@ namespace LostPeterVulkan
     void VulkanWindow::createMaterialCB()
     {
         buildMaterialCB();
-        VkDeviceSize bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
 
+		size_t count_material = this->materialCBs.size();
+		if (count_material <= 0)
+			return;
+        VkDeviceSize bufferSize = sizeof(MaterialConstants) * count_material;
         size_t count = this->poSwapChainImages.size();
         this->poBuffers_MaterialCB.resize(count);
-        this->poBuffersMemory_MaterialCB.resize(count);
-
         for (size_t i = 0; i < count; i++) 
         {
             String nameBuffer = "Material-" + FUtilString::SaveSizeT(i);
-            createVkBuffer(nameBuffer,
-                           bufferSize, 
-                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                           this->poBuffers_MaterialCB[i], 
-                           this->poBuffersMemory_MaterialCB[i]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(this->materialCBs.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** VulkanWindow::createMaterialCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			this->poBuffers_MaterialCB[i] = pBufferUniform;
         }
         F_LogInfo("<2-1-3-2> VulkanWindow::createMaterialCB finish !");
     }
@@ -7412,21 +7424,27 @@ namespace LostPeterVulkan
     void VulkanWindow::createInstanceCB()
     {
         buildInstanceCB();
-        VkDeviceSize bufferSize = sizeof(InstanceConstants) * this->instanceCBs.size();
 
+		size_t count_instance = this->instanceCBs.size();
+		if (count_instance <= 0)
+			return;
+        VkDeviceSize bufferSize = sizeof(InstanceConstants) * count_instance;
         size_t count = this->poSwapChainImages.size();
         this->poBuffers_InstanceCB.resize(count);
-        this->poBuffersMemory_InstanceCB.resize(count);
-
         for (size_t i = 0; i < count; i++) 
         {
             String nameBuffer = "Instance-" + FUtilString::SaveSizeT(i);
-            createVkBuffer(nameBuffer,
-                           bufferSize, 
-                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                           this->poBuffers_InstanceCB[i], 
-                           this->poBuffersMemory_InstanceCB[i]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(this->instanceCBs.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** VulkanWindow::createInstanceCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			this->poBuffers_InstanceCB[i] = pBufferUniform;
         }
         F_LogInfo("<2-1-3-3> VulkanWindow::createInstanceCB finish !");
     }
@@ -8180,7 +8198,7 @@ namespace LostPeterVulkan
                     //(1) ObjectConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Object = {};
-                        bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i];
+                        bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i]->GetVKBufferUniform();
                         bufferInfo_Object.offset = 0;
                         bufferInfo_Object.range = sizeof(ObjectConstants) * this->objectCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8193,7 +8211,7 @@ namespace LostPeterVulkan
                     //(2) MaterialConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Material = {};
-                        bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i];
+                        bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i]->GetVKBufferUniform();
                         bufferInfo_Material.offset = 0;
                         bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8206,7 +8224,7 @@ namespace LostPeterVulkan
                     //(3) InstanceConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Instance = {};
-                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i];
+                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i]->GetVKBufferUniform();
                         bufferInfo_Instance.offset = 0;
                         bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -9079,8 +9097,9 @@ namespace LostPeterVulkan
                     }   
                 void VulkanWindow::updateCBs_Objects()
                 {
-                    if (this->poBuffersMemory_ObjectCB.size() <= 0)
+                    if (this->poBuffers_ObjectCB.size() <= 0)
                         return;
+
                     size_t count = this->objectCBs.size();
                     if (count >= MAX_OBJECT_COUNT)
                     {
@@ -9090,8 +9109,11 @@ namespace LostPeterVulkan
 
                     updateCBs_ObjectsContent();
 
-                    VkDeviceMemory& memory = this->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(ObjectConstants) * count, this->objectCBs.data(), memory);
+					//Update Buffer
+                    VKBufferUniform* pBufferUniform = this->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+                    pBufferUniform->UpdateBuffer(0, 
+                                           		 sizeof(ObjectConstants) * count,
+                                           		 (uint8*)this->objectCBs.data());
                 }
                     void VulkanWindow::updateCBs_ObjectsContent()
                     {
@@ -9100,8 +9122,8 @@ namespace LostPeterVulkan
                         {
                             float time = this->pTimer->GetTimeSinceStart();
                             objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
-                                                            time * glm::radians(90.0f), 
-                                                            FVector3(0.0f, 1.0f, 0.0f));
+                                                              time * glm::radians(90.0f), 
+                                                              FVector3(0.0f, 1.0f, 0.0f));
                         }
                         else
                         {
@@ -9110,8 +9132,9 @@ namespace LostPeterVulkan
                     }
                 void VulkanWindow::updateCBs_Materials()
                 {
-                    if (this->poBuffersMemory_MaterialCB.size() <= 0)
+                    if (this->poBuffers_MaterialCB.size() <= 0)
                         return;
+
                     size_t count = this->materialCBs.size();
                     if (count >= MAX_MATERIAL_COUNT)
                     {
@@ -9121,8 +9144,10 @@ namespace LostPeterVulkan
 
                     updateCBs_MaterialsContent();
 
-                    VkDeviceMemory& memory = this->poBuffersMemory_MaterialCB[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(MaterialConstants) * count, this->materialCBs.data(), memory);
+					VKBufferUniform* pBufferUniform = this->poBuffers_MaterialCB[this->poSwapChainImageIndex];
+                    pBufferUniform->UpdateBuffer(0, 
+                                           		 sizeof(MaterialConstants) * count,
+                                           		 (uint8*)this->materialCBs.data());
                 }
                     void VulkanWindow::updateCBs_MaterialsContent()
                     {   
@@ -9130,8 +9155,9 @@ namespace LostPeterVulkan
                     }
                 void VulkanWindow::updateCBs_Instances()
                 {
-                    if (this->poBuffersMemory_InstanceCB.size() <= 0)
+                    if (this->poBuffers_InstanceCB.size() <= 0)
                         return;
+
                     size_t count = this->instanceCBs.size();
                     if (count >= MAX_INSTANCE_COUNT)
                     {
@@ -9141,8 +9167,10 @@ namespace LostPeterVulkan
 
                     updateCBs_InstancesContent();
 
-                    VkDeviceMemory& memory = this->poBuffersMemory_InstanceCB[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(InstanceConstants) * count, this->instanceCBs.data(), memory);
+					VKBufferUniform* pBufferUniform = this->poBuffers_InstanceCB[this->poSwapChainImageIndex];
+                    pBufferUniform->UpdateBuffer(0, 
+                                           		 sizeof(InstanceConstants) * count,
+                                           		 (uint8*)this->instanceCBs.data());
                 }
                     void VulkanWindow::updateCBs_InstancesContent()
                     {
@@ -10853,29 +10881,26 @@ namespace LostPeterVulkan
                 size_t count = 0;
 
                 //1> ConstBuffers
-                count = this->poBuffers_ObjectCB.size();
+				count = this->poBuffers_ObjectCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+                    F_DELETE(this->poBuffers_ObjectCB[i])
                 }
                 this->poBuffers_ObjectCB.clear();
-                this->poBuffersMemory_ObjectCB.clear();
 
                 count = this->poBuffers_MaterialCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    destroyVkBuffer(this->poBuffers_MaterialCB[i], this->poBuffersMemory_MaterialCB[i]);
+					F_DELETE(this->poBuffers_MaterialCB[i])
                 }
                 this->poBuffers_MaterialCB.clear();
-                this->poBuffersMemory_MaterialCB.clear();
 
                 count = this->poBuffers_InstanceCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    destroyVkBuffer(this->poBuffers_InstanceCB[i], this->poBuffersMemory_InstanceCB[i]);
+					F_DELETE(this->poBuffers_InstanceCB[i])
                 }
                 this->poBuffers_InstanceCB.clear();
-                this->poBuffersMemory_InstanceCB.clear();
 
                 //2> Pipelines
                 destroyVkPipeline(this->poPipelineGraphics);

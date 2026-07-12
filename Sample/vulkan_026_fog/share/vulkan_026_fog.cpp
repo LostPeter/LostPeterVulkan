@@ -1876,7 +1876,7 @@ void Vulkan_026_Fog::createDescriptorSets_Graphics(VkDescriptorSetVector& poDesc
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]; 
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform(); 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

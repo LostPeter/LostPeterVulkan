@@ -2123,7 +2123,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]; 
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform(); 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

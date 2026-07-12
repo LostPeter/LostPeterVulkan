@@ -488,7 +488,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             //(3) InstanceConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

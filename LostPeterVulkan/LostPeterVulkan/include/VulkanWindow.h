@@ -454,16 +454,13 @@ namespace LostPeterVulkan
 
         //Constants Buffer
         std::vector<ObjectConstants> objectCBs;
-        VkBufferVector poBuffers_ObjectCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
+		VKBufferUniformPtrVector poBuffers_ObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
-        VkBufferVector poBuffers_MaterialCB;
-        VkDeviceMemoryVector poBuffersMemory_MaterialCB;
+		VKBufferUniformPtrVector poBuffers_MaterialCB;
 
         std::vector<InstanceConstants> instanceCBs;
-        VkBufferVector poBuffers_InstanceCB;
-        VkDeviceMemoryVector poBuffersMemory_InstanceCB;
+		VKBufferUniformPtrVector poBuffers_InstanceCB;
 
         //Camera
         FCamera* pCamera; //Eye Left
