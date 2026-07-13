@@ -278,22 +278,19 @@ public:
         bool isTransparent;
         bool isCastShadow;
 
-        //Vertex
+        //Vertex/Index
+		FMeshVertexType poTypeVertex;
         std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
         std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         size_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
-        
-        //Index
         std::vector<uint32_t> indices;
         size_t poIndexCount;
         size_t poIndexBuffer_Size;
         void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
+        VKBufferVertex* pBufferVertex;
+		VKBufferVertexIndex* pBufferVertexIndex;
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
@@ -330,19 +327,15 @@ public:
             , isTransparent(false)
             , isCastShadow(false)
 
-            //Vertex
+            //Vertex/Index
             , poVertexCount(0)
             , poVertexBuffer_Size(0)
             , poVertexBuffer_Data(nullptr)
-            , poVertexBuffer(VK_NULL_HANDLE)
-            , poVertexBufferMemory(VK_NULL_HANDLE)
-
-            //Index
             , poIndexCount(0)
             , poIndexBuffer_Size(0)
             , poIndexBuffer_Data(nullptr)
-            , poIndexBuffer(VK_NULL_HANDLE)
-            , poIndexBufferMemory(VK_NULL_HANDLE)
+            , pBufferVertex(nullptr)
+            , pBufferVertexIndex(nullptr)
 
             //IndirectCommand
             , countIndirectDraw(0)

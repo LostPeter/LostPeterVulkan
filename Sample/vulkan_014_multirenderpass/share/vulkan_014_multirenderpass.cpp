@@ -3123,17 +3123,6 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        
-		if (pMeshSub->pBufferVertex != nullptr)
-		{
-			pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
-			draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-		}
-		else if (pMeshSub->pBufferVertexIndex != nullptr)
-		{
-			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-			drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-		}
     }
     else
     {
@@ -3142,18 +3131,18 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-
-		if (pMeshSub->pBufferVertex != nullptr)
-		{
-			pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
-			draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
-		}
-		else if (pMeshSub->pBufferVertexIndex != nullptr)
-		{
-			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-			drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
-		}
     }
+
+	if (pMeshSub->pBufferVertex != nullptr)
+	{
+		pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
+		draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+	}
+	else if (pMeshSub->pBufferVertexIndex != nullptr)
+	{
+		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+		drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+	}
 }
 
 void Vulkan_014_MultiRenderPass::cleanupCustom()

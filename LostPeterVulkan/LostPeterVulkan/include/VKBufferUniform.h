@@ -31,8 +31,8 @@ namespace LostPeterVulkan
         VkDeviceMemory poBufferMemory_Uniform;
 
     public:
-        F_FORCEINLINE int GetBufferSize() const { return this->nBufferSize; }
-        F_FORCEINLINE void* GetBuffer() const { return this->pBuffer; }
+        F_FORCEINLINE size_t GetBufferSize() const { return this->nBufferSize; }
+        F_FORCEINLINE uint8* GetBuffer() const { return this->pBuffer; }
 		F_FORCEINLINE const VkBuffer& GetVKBufferUniform() const { return this->poBuffer_Uniform; }
 		F_FORCEINLINE const VkDeviceMemory& GetVKBufferUniformMemory() const { return this->poBufferMemory_Uniform; }
         

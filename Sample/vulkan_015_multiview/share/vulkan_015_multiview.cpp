@@ -866,12 +866,14 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     //Vertex
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
     {
+		this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tex2.size();
         this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
     }
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
     {
+		this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tangent3Tex2;
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
         this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];

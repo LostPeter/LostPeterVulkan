@@ -2424,7 +2424,7 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         if (!pModelObject->isShow)
             continue;
         ModelMesh* pMesh = pModelObject->pMesh;
-		
+
         if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {
             bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipeline_WireFrame);
@@ -2432,7 +2432,6 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
             {
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipelineLayout, 0, 1, &pModelObject->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
             }
-            drawModelObject(commandBuffer, pModelObject);
         }
         else
         {
@@ -2441,9 +2440,8 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
             {
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipelineLayout, 0, 1, &pModelObject->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
             }
-            drawModelObject(commandBuffer, pModelObject);
         }
-        
+        drawModelObject(commandBuffer, pModelObject);
     }
 }
 void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)

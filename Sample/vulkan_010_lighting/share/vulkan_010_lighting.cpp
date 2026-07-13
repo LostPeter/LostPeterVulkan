@@ -781,7 +781,6 @@ void Vulkan_010_Lighting::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
             {
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
             }
-            drawModelObject(commandBuffer, pModelObject);
         }
         else
         {
@@ -790,9 +789,8 @@ void Vulkan_010_Lighting::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
             {
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
             }
-            drawModelObject(commandBuffer, pModelObject);
         }
-		
+		drawModelObject(commandBuffer, pModelObject);
     }
 }
 void Vulkan_010_Lighting::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
