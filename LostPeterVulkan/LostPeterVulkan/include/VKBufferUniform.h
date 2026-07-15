@@ -24,28 +24,20 @@ namespace LostPeterVulkan
 
     public:
 		size_t nBufferSize;
-        uint8* pBuffer;
+        uint8* pBuffer_Uniform;
         bool bIsDelete;
-
-        VkBuffer poBuffer_Uniform;  
-        VkDeviceMemory poBufferMemory_Uniform;
 
     public:
         F_FORCEINLINE size_t GetBufferSize() const { return this->nBufferSize; }
-        F_FORCEINLINE uint8* GetBuffer() const { return this->pBuffer; }
-		F_FORCEINLINE const VkBuffer& GetVKBufferUniform() const { return this->poBuffer_Uniform; }
-		F_FORCEINLINE const VkDeviceMemory& GetVKBufferUniformMemory() const { return this->poBufferMemory_Uniform; }
+        F_FORCEINLINE uint8* GetBuffer() const { return this->pBuffer_Uniform; }
         
     public:
         virtual void Destroy();
-        bool Init(size_t bufSize, 
-				  uint8* pBuf,
-				  bool isDelete);
+        bool Init(size_t bufSize, uint8* pBuf, bool isDelete);
 
-        void UpdateBuffer();
-        void UpdateBuffer(size_t offset, 
-						  size_t bufSize, 
-						  uint8* pBuf);
+	public:
+        virtual void UpdateBuffer();
+        virtual void UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf);
 
     };
 

@@ -25,8 +25,6 @@ namespace LostPeterVulkan
 
     public:
         std::vector<VkDrawIndexedIndirectCommand> indirectCommandCBs;
-        VkBuffer poBuffer_IndirectCommand;  
-        VkDeviceMemory poBufferMemory_IndirectCommand;
 
     public:
         F_FORCEINLINE int GetBufferSize() const { return (int)this->indirectCommandCBs.size() * sizeof(VkDrawIndexedIndirectCommand); }
@@ -34,10 +32,12 @@ namespace LostPeterVulkan
 
     public:
         virtual void Destroy();
-        void Init(int count);
+        bool Init(int count);
 
     public:
-        void UpdateBuffer();
+        virtual void UpdateBuffer();
+		virtual void UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf);
+
         void UpdateBuffer(int index, const VkDrawIndexedIndirectCommand& vkCmd);
 
     };

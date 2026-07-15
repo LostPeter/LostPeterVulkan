@@ -192,7 +192,7 @@ namespace LostPeterVulkan
                 this->aCullObjectConstants[pRenderData->nObjectOffset + i] = cullObject;
             }
         }
-        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), this->aCullObjectConstants.data());
+        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), (uint8*)this->aCullObjectConstants.data());
 
     }
 
@@ -275,7 +275,7 @@ namespace LostPeterVulkan
         this->pCB_LodArgs->UpdateBuffer();
         this->pCB_RenderArgs->UpdateBuffer();
         this->pCB_Result->UpdateBuffer();
-        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), this->aCullObjectConstants.data());
+        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), (uint8*)this->aCullObjectConstants.data());
     }
     void CullObjectDynamic::CullUnitObjectDynamic::RemoveCullRenderData(CullRenderData* pCullRenderData)
     {
@@ -381,7 +381,7 @@ namespace LostPeterVulkan
         this->pCB_LodArgs->UpdateBuffer();
         this->pCB_RenderArgs->UpdateBuffer();
         this->pCB_Result->UpdateBuffer();
-        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), this->aCullObjectConstants.data());
+        this->pCB_CullObjects->UpdateBuffer(0, this->aCullObjectConstants.size() * sizeof(CullObjectConstants), (uint8*)this->aCullObjectConstants.data());
     }
 
 

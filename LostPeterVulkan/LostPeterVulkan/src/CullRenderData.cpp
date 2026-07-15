@@ -90,7 +90,7 @@ namespace LostPeterVulkan
             String nameCB = "VKBufferCompute-CullObjectInstances-" + this->pCullLodData->pMesh->GetName();
             this->pBuffer_CullObjectInstances = new VKBufferCompute(nameCB, count_instance, sizeof(CullObjectInstanceConstants));
         }
-        this->pBuffer_CullObjectInstances->UpdateBuffer(0, count_instance * sizeof(CullObjectInstanceConstants), &this->pCullLodData->aInstanceDatas[0]);
+        this->pBuffer_CullObjectInstances->UpdateBuffer(0, count_instance * sizeof(CullObjectInstanceConstants), (uint8*)&this->pCullLodData->aInstanceDatas[0]);
     }
 
     void CullRenderData::RefreshCullInstance()

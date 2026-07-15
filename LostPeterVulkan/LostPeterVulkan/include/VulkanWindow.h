@@ -796,15 +796,6 @@ namespace LostPeterVulkan
                                                      size_t bufSize, 
                                                      uint8* pBuf);
 
-					//BufferIndirectCommand
-
-
-					//BufferStorage
-
-
-					//BufferCompute
-
-
                     virtual bool createVertexBuffer(const String& nameBuffer,
                                                     size_t bufSize, 
                                                     void* pBuf, 

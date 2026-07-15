@@ -26,10 +26,7 @@ namespace LostPeterVulkan
     public:
         int nCount;
         int nStride;
-
         uint8* pBuffer_Compute;
-        VkBuffer poBuffer_Compute;  
-        VkDeviceMemory poBufferMemory_Compute;
 
     public:
         F_FORCEINLINE int GetBufferSize() const { return nCount * nStride; }
@@ -37,11 +34,13 @@ namespace LostPeterVulkan
         
     public:
         virtual void Destroy();
-        void Init(int count, int stride, VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+        bool Init(int count, 
+				  int stride, 
+				  VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
     public:
-        void UpdateBuffer();
-        void UpdateBuffer(size_t offset, size_t bufSize, void* pBuf);
+        virtual void UpdateBuffer();
+        virtual void UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf);
 
     };
 

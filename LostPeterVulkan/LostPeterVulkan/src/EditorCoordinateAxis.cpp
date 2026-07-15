@@ -1667,7 +1667,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBufferUniform();
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBuffer();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1680,7 +1680,7 @@ namespace LostPeterVulkan
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCoordinateAxis)) //ObjectCoordinateAxis
                 {
                     VkDescriptorBufferInfo bufferInfo_ObjectCameraAxis = {};
-                    bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVKBufferUniform();
+                    bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVKBuffer();
                     bufferInfo_ObjectCameraAxis.offset = 0;
                     bufferInfo_ObjectCameraAxis.range = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

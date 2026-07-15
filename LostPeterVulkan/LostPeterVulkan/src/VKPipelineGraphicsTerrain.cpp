@@ -290,7 +290,7 @@ namespace LostPeterVulkan
             //<0> PassConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBufferUniform();
+                bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

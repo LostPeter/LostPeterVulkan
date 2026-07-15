@@ -404,7 +404,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(0) PassConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -430,7 +430,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(2) MaterialConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
+                bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j]->GetVKBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -443,7 +443,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(3) InstanceConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer();
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

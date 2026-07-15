@@ -312,7 +312,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBufferUniform();
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBuffer();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -343,7 +343,7 @@ namespace LostPeterVulkan
                     if (pCB_CullInstance != VK_NULL_HANDLE)
                     {
                         VkDescriptorBufferInfo bufferInfo_CullInstance = {};
-                        bufferInfo_CullInstance.buffer = pCB_CullInstance->poBuffer_Uniform;
+                        bufferInfo_CullInstance.buffer = pCB_CullInstance->GetVKBuffer();
                         bufferInfo_CullInstance.offset = 0;
                         bufferInfo_CullInstance.range = sizeof(CullInstanceConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -359,7 +359,7 @@ namespace LostPeterVulkan
                     if (pCB_CullObjectInstances != nullptr)
                     {
                         VkDescriptorBufferInfo bufferInfo_CullObjectInstance = {};
-                        bufferInfo_CullObjectInstance.buffer = pCB_CullObjectInstances->poBuffer_Compute;
+                        bufferInfo_CullObjectInstance.buffer = pCB_CullObjectInstances->GetVKBuffer();
                         bufferInfo_CullObjectInstance.offset = 0;
                         bufferInfo_CullObjectInstance.range = (VkDeviceSize)pCB_CullObjectInstances->GetBufferSize();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
@@ -375,7 +375,7 @@ namespace LostPeterVulkan
                     if (pCB_Result != nullptr)
                     {
                         VkDescriptorBufferInfo bufferInfo_Result = {};
-                        bufferInfo_Result.buffer = pCB_Result->poBuffer_Compute;
+                        bufferInfo_Result.buffer = pCB_Result->GetVKBuffer();
                         bufferInfo_Result.offset = 0;
                         bufferInfo_Result.range = (VkDeviceSize)pCB_Result->GetBufferSize();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,

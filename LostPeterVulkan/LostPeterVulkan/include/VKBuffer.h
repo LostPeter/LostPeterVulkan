@@ -23,11 +23,35 @@ namespace LostPeterVulkan
         virtual ~VKBuffer();
 
     public:
-        
+		VkBuffer poBuffer; 
+        VkDeviceMemory poBufferMemory;
+		VkBuffer poBuffer_Staging;
+        VkDeviceMemory poBufferMemory_Staging;
+
+	public:
+		F_FORCEINLINE const VkBuffer& GetVKBuffer() const { return this->poBuffer; }
+		F_FORCEINLINE const VkDeviceMemory& GetVKBufferMemory() const { return this->poBufferMemory; }
+		F_FORCEINLINE const VkBuffer& GetVKBuffer_Staging() const { return this->poBuffer_Staging; }
+		F_FORCEINLINE const VkDeviceMemory& GetVKBufferMemory_Staging() const { return this->poBufferMemory_Staging; }
 
     public:
-        virtual void Destroy() = 0;
-        
+        virtual void Destroy();
+
+
+		virtual void UpdateBuffer() = 0;
+        virtual void UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf) = 0;
+
+	public:
+		virtual void destroyVkBuffer();
+		virtual bool createVkBuffer(const String& nameBuffer, 
+									VkDeviceSize bufferSize,
+								    VkBufferUsageFlags usage, 
+                                    VkMemoryPropertyFlags properties);
+
+		virtual void updateVkBuffer(size_t offset, 
+									size_t bufSize, 
+									void* pBuf, 
+									VkMemoryMapFlags flags = 0);
     };
 
 }; //LostPeterVulkan

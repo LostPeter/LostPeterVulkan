@@ -2673,7 +2673,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2712,7 +2712,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform(); 
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer(); 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2727,7 +2727,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
                 if (pCB_CullInstance != VK_NULL_HANDLE)
                 {
                     VkDescriptorBufferInfo bufferInfo_CullInstance = {};
-                    bufferInfo_CullInstance.buffer = pCB_CullInstance->poBuffer_Uniform;
+                    bufferInfo_CullInstance.buffer = pCB_CullInstance->GetVKBuffer();
                     bufferInfo_CullInstance.offset = 0;
                     bufferInfo_CullInstance.range = sizeof(CullInstanceConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2765,7 +2765,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
                 if (pCB_CullObjectInstances != nullptr)
                 {
                     VkDescriptorBufferInfo bufferInfo_InstanceCull = {};
-                    bufferInfo_InstanceCull.buffer = pCB_CullObjectInstances->poBuffer_Compute;
+                    bufferInfo_InstanceCull.buffer = pCB_CullObjectInstances->GetVKBuffer();
                     bufferInfo_InstanceCull.offset = 0;
                     bufferInfo_InstanceCull.range = (VkDeviceSize)pCB_CullObjectInstances->GetBufferSize();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
@@ -2781,7 +2781,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
                 if (pCB_Result != nullptr)
                 {
                     VkDescriptorBufferInfo bufferInfo_Result = {};
-                    bufferInfo_Result.buffer = pCB_Result->poBuffer_Compute;
+                    bufferInfo_Result.buffer = pCB_Result->GetVKBuffer();
                     bufferInfo_Result.offset = 0;
                     bufferInfo_Result.range = (VkDeviceSize)pCB_Result->GetBufferSize();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,
@@ -3982,7 +3982,7 @@ void Vulkan_027_GPUCulling::drawModelObjectRendCull(VkCommandBuffer& commandBuff
     }
 
     VKBufferIndirectCommand* pBufferIndirectCommand = pRend->pCullRenderData->pCullUnit->GetRenderArgsCB();
-    drawIndexedIndirect(commandBuffer, pBufferIndirectCommand->poBuffer_IndirectCommand, pRend->pCullRenderData->nRenderIndex * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+    drawIndexedIndirect(commandBuffer, pBufferIndirectCommand->GetVKBuffer(), pRend->pCullRenderData->nRenderIndex * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
 }
 
 void Vulkan_027_GPUCulling::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)

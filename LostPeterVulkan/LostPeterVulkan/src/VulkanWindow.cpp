@@ -8185,7 +8185,7 @@ namespace LostPeterVulkan
                     //(0) PassConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[i]->GetVKBufferUniform();
+                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[i]->GetVKBuffer();
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8198,7 +8198,7 @@ namespace LostPeterVulkan
                     //(1) ObjectConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Object = {};
-                        bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i]->GetVKBufferUniform();
+                        bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i]->GetVKBuffer();
                         bufferInfo_Object.offset = 0;
                         bufferInfo_Object.range = sizeof(ObjectConstants) * this->objectCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8211,7 +8211,7 @@ namespace LostPeterVulkan
                     //(2) MaterialConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Material = {};
-                        bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i]->GetVKBufferUniform();
+                        bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i]->GetVKBuffer();
                         bufferInfo_Material.offset = 0;
                         bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -8224,7 +8224,7 @@ namespace LostPeterVulkan
                     //(3) InstanceConstants
                     {
                         VkDescriptorBufferInfo bufferInfo_Instance = {};
-                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i]->GetVKBufferUniform();
+                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i]->GetVKBuffer();
                         bufferInfo_Instance.offset = 0;
                         bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,

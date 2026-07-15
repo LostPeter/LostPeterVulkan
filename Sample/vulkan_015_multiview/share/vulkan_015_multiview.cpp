@@ -2104,7 +2104,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2143,7 +2143,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform(); 
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer(); 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

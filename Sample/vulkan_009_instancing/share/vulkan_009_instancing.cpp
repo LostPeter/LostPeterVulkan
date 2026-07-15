@@ -549,7 +549,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(0) PassConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
+                    bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -575,7 +575,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(2) MaterialConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Material = {};
-                    bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
+                    bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j]->GetVKBuffer();
                     bufferInfo_Material.offset = 0;
                     bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; 
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -588,7 +588,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(3) InstanceConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Instance = {};
-                    bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
+                    bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer();
                     bufferInfo_Instance.offset = 0;
                     bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -621,7 +621,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(0) PassConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass_Outline  = {};
-                    bufferInfo_Pass_Outline.buffer = this->poBuffers_PassCB[j]->GetVKBufferUniform();
+                    bufferInfo_Pass_Outline.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
                     bufferInfo_Pass_Outline.offset = 0;
                     bufferInfo_Pass_Outline.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
@@ -647,7 +647,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(2) MaterialConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Material_Outline = {};
-                    bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j]->GetVKBufferUniform();
+                    bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j]->GetVKBuffer();
                     bufferInfo_Material_Outline.offset = 0;
                     bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
@@ -660,7 +660,7 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 //(3) InstanceConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Instance_Outline = {};
-                    bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j]->GetVKBufferUniform();
+                    bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer();
                     bufferInfo_Instance_Outline.offset = 0;
                     bufferInfo_Instance_Outline.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
@@ -885,7 +885,7 @@ void Vulkan_009_Instancing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffe
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
-		
+
         if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {
             bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);

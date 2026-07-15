@@ -18,11 +18,8 @@ namespace LostPeterVulkan
         : VKBuffer(nameUniformBuffer)
     
         , nBufferSize(0)
-        , pBuffer(nullptr)
+        , pBuffer_Uniform(nullptr)
 		, bIsDelete(true)
-
-        , poBuffer_Uniform(VK_NULL_HANDLE)
-        , poBufferMemory_Uniform(VK_NULL_HANDLE)
     {
 
     }
@@ -34,18 +31,13 @@ namespace LostPeterVulkan
 
     void VKBufferUniform::Destroy()
     {
+		VKBuffer::Destroy();
+
 		if (this->bIsDelete)
 		{
-			F_DELETE_T(this->pBuffer)
+			F_DELETE_T(this->pBuffer_Uniform)
 		}
-        this->pBuffer = nullptr;
-
-        if (this->poBuffer_Uniform != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_Uniform, this->poBufferMemory_Uniform);
-        }
-        this->poBuffer_Uniform = VK_NULL_HANDLE;
-        this->poBufferMemory_Uniform = VK_NULL_HANDLE;
+        this->pBuffer_Uniform = nullptr;
     }
 
     bool VKBufferUniform::Init(size_t bufSize, 
@@ -53,41 +45,39 @@ namespace LostPeterVulkan
 							   bool isDelete)
     {
 		this->nBufferSize = bufSize;
-        this->pBuffer = pBuf;
+        this->pBuffer_Uniform = pBuf;
         this->bIsDelete = isDelete;
 
-		const String& nameBuffer = GetName();
-		if (!Base::GetWindowPtr()->createUniformBuffer(nameBuffer,
-													   bufSize, 
-													   pBuf, 
-													   this->poBuffer_Uniform,
-													   this->poBufferMemory_Uniform))
-        {
-            F_LogError("*********************** VKBufferUniform::Init: Failed to create buffer uniform: [%s] !", nameBuffer.c_str());
-            return false;
-        }
+		if (!createVkBuffer(this->name, 
+							bufSize, 
+							VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+							VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))
+		{
+			F_LogError("*********************** VKBufferUniform::Init: Failed to create buffer: [%s] !", this->name.c_str());
+			return false;
+		}
+		UpdateBuffer();
+
 		return true;
     }
     
     void VKBufferUniform::UpdateBuffer()
     {
-        if (this->pBuffer == nullptr ||
-            this->poBufferMemory_Uniform == VK_NULL_HANDLE)
-        {
-            return;
-        }
-        Base::GetWindowPtr()->updateVKBuffer(0, 
-											 this->nBufferSize, 
-											 this->pBuffer, 
-											 this->poBufferMemory_Uniform);
+		if (this->pBuffer_Uniform == nullptr)
+			return;
+
+		updateVkBuffer(0, 
+					   GetBufferSize(), 
+					   this->pBuffer_Uniform);
     }
     void VKBufferUniform::UpdateBuffer(size_t offset, 
 									   size_t bufSize, 
 									   uint8* pBuf)
     {
-        F_Assert(offset >= 0 && offset < this->nBufferSize && bufSize <= this->nBufferSize && "VKBufferUniform::UpdateBuffer")
+		size_t size = GetBufferSize();
+        F_Assert(offset >= 0 && offset < size && bufSize <= size && "VKBufferUniform::UpdateBuffer")
 
-        uint8* pData = this->pBuffer + offset;
+        uint8* pData = this->pBuffer_Uniform + offset;
         memcpy(pData, pBuf, bufSize);
         UpdateBuffer();
     }

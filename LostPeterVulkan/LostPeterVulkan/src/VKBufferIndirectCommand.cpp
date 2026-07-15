@@ -17,8 +17,6 @@ namespace LostPeterVulkan
     VKBufferIndirectCommand::VKBufferIndirectCommand(const String& nameUniformBuffer)
         : VKBuffer(nameUniformBuffer)
 
-        , poBuffer_IndirectCommand(VK_NULL_HANDLE)
-        , poBufferMemory_IndirectCommand(VK_NULL_HANDLE)
     {
 
     }
@@ -26,8 +24,6 @@ namespace LostPeterVulkan
     VKBufferIndirectCommand::VKBufferIndirectCommand(const String& nameUniformBuffer, int count)
         : VKBuffer(nameUniformBuffer)
         
-        , poBuffer_IndirectCommand(VK_NULL_HANDLE)
-        , poBufferMemory_IndirectCommand(VK_NULL_HANDLE)
     {
         Init(count);
     }
@@ -39,36 +35,50 @@ namespace LostPeterVulkan
 
     void VKBufferIndirectCommand::Destroy()
     {
+		VKBuffer::Destroy();
+
         this->indirectCommandCBs.clear();
-        if (this->poBuffer_IndirectCommand != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_IndirectCommand, this->poBufferMemory_IndirectCommand);
-        }
-        this->poBuffer_IndirectCommand = VK_NULL_HANDLE;
-        this->poBufferMemory_IndirectCommand = VK_NULL_HANDLE;
     }
 
-    void VKBufferIndirectCommand::Init(int count)
+    bool VKBufferIndirectCommand::Init(int count)
     {
         Destroy();
-
         if (count <= 0)
-            return;
+        {
+			F_LogError("*********************** VKBufferIndirectCommand::Init: Empty buffer: [%s] !", this->name.c_str());
+			return false;
+		}
 
         this->indirectCommandCBs.resize(count);
         VkDeviceSize bufferSize = count * sizeof(VkDrawIndexedIndirectCommand);
-        Base::GetWindowPtr()->createVkBuffer(this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_IndirectCommand, this->poBufferMemory_IndirectCommand);
+
+		if (!createVkBuffer(this->name, 
+							bufferSize, 
+							VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, 
+							VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))
+		{
+			F_LogError("*********************** VKBufferIndirectCommand::Init: Failed to create buffer: [%s] !", this->name.c_str());
+			return false;
+		}
         UpdateBuffer();
+
+		return true;
     }
     
     void VKBufferIndirectCommand::UpdateBuffer()
     {
-        if (this->poBufferMemory_IndirectCommand == VK_NULL_HANDLE)
-        {
+        if (this->indirectCommandCBs.size() <= 0)
             return;
-        }
-        Base::GetWindowPtr()->updateVKBuffer(0, (size_t)GetBufferSize(), &this->indirectCommandCBs[0], this->poBufferMemory_IndirectCommand);
+
+		updateVkBuffer(0, 
+					   (size_t)GetBufferSize(), 
+					   &this->indirectCommandCBs[0]);
     }
+	void VKBufferIndirectCommand::UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf)
+	{
+		F_Assert(false && "VKBufferIndirectCommand::UpdateBuffer")
+	}
+
     void VKBufferIndirectCommand::UpdateBuffer(int index, const VkDrawIndexedIndirectCommand& vkCmd)
     {
         F_Assert(index >= 0 && index < (int)this->indirectCommandCBs.size() && "VKBufferIndirectCommand::UpdateBuffer")
