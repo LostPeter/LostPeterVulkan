@@ -43,10 +43,10 @@ namespace LostPeterVulkan
         VkDeviceMemory poIndexBufferMemory_Staging;
 
 	public:
-		F_FORCEINLINE const VkBuffer& GetVKBufferVertex() const { return this->poVertexBuffer; }
-		F_FORCEINLINE const VkDeviceMemory& GetVKBufferVertexMemory() const { return this->poVertexBufferMemory; }
-		F_FORCEINLINE const VkBuffer& GetVKBufferIndex() const { return this->poIndexBuffer; }
-		F_FORCEINLINE const VkDeviceMemory& GetVKBufferIndexMemory() const { return this->poIndexBufferMemory; }
+		F_FORCEINLINE const VkBuffer& GetVkBufferVertex() const { return this->poVertexBuffer; }
+		F_FORCEINLINE const VkDeviceMemory& GetVkBufferVertexMemory() const { return this->poVertexBufferMemory; }
+		F_FORCEINLINE const VkBuffer& GetVkBufferIndex() const { return this->poIndexBuffer; }
+		F_FORCEINLINE const VkDeviceMemory& GetVkBufferIndexMemory() const { return this->poIndexBufferMemory; }
 
     public:
         virtual void Destroy();

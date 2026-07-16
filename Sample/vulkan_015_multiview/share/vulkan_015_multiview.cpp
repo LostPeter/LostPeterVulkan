@@ -3261,7 +3261,7 @@ void Vulkan_015_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
 
         if (pMeshSub != nullptr)
         {
-            if (pMeshSub->GetVKBufferIndex() != nullptr)
+            if (pMeshSub->GetVkBufferIndex() != nullptr)
             {
                 drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
             }
@@ -3285,7 +3285,7 @@ void Vulkan_015_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
 
         if (pMeshSub != nullptr)
         {
-            if (pMeshSub->GetVKBufferIndex() != nullptr)
+            if (pMeshSub->GetVkBufferIndex() != nullptr)
             {
                 drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
             }

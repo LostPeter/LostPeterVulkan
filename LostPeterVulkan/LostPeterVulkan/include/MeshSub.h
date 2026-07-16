@@ -63,10 +63,10 @@ namespace LostPeterVulkan
         uint32_t instanceCount;
 
 	public:
-		const VkBuffer& GetVKBufferVertex() const;
-		const VkDeviceMemory& GetVKBufferVertexMemory() const;
-		const VkBuffer& GetVKBufferIndex() const;
-		const VkDeviceMemory& GetVKBufferIndexMemory() const;
+		const VkBuffer& GetVkBufferVertex() const;
+		const VkDeviceMemory& GetVkBufferVertexMemory() const;
+		const VkBuffer& GetVkBufferIndex() const;
+		const VkDeviceMemory& GetVkBufferIndexMemory() const;
 
     public:
         void Destroy();

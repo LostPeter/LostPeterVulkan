@@ -15,6 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VKBufferUniform.h"
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -1113,30 +1114,18 @@ namespace LostPeterVulkan
                 Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
             else
                 Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-
-            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-            VkDeviceSize offsets[] = { 0 };
-            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
         void EditorCoordinateAxis::DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
             Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
-
-            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-            VkDeviceSize offsets[] = { 0 };
-            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
         void EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
-            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-            VkDeviceSize offsets[] = { 0 };
-            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-            
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);   
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
 

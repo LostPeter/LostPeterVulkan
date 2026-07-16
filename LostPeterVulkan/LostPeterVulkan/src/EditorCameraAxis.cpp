@@ -16,6 +16,7 @@
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VKMultiRenderPass.h"
 #include "../include/VKBufferUniform.h"
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -127,11 +128,7 @@ namespace LostPeterVulkan
             for (size_t j = 0; j < count_mesh_sub; j++)
             {
                 MeshSub* pMeshSub = pMesh->aMeshSubs[j];
-
-                VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-                VkDeviceSize offsets[] = { 0 };
-                pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-                pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+				pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
                 if (pWindow->cfg_isWireFrame)
                     pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
@@ -148,10 +145,7 @@ namespace LostPeterVulkan
 
         Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex];
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
-        VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-        VkDeviceSize offsets[] = { 0 };
-        pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
         if (pWindow->cfg_isWireFrame)
             pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
         else

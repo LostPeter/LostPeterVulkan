@@ -61,29 +61,29 @@ namespace LostPeterVulkan
         F_DELETE(pBufferVertexIndex)
     }
 
-	const VkBuffer& MeshSub::GetVKBufferVertex() const 
+	const VkBuffer& MeshSub::GetVkBufferVertex() const 
 	{ 
 		if (this->pBufferVertexIndex != nullptr)
 		{
-			return this->pBufferVertexIndex->GetVKBufferVertex();
+			return this->pBufferVertexIndex->GetVkBufferVertex();
 		}
-		return this->pBufferVertex->GetVKBufferVertex();
+		return this->pBufferVertex->GetVkBufferVertex();
 	}
-	const VkDeviceMemory& MeshSub::GetVKBufferVertexMemory() const 
+	const VkDeviceMemory& MeshSub::GetVkBufferVertexMemory() const 
 	{ 
 		if (this->pBufferVertexIndex != nullptr)
 		{
-			return this->pBufferVertexIndex->GetVKBufferVertexMemory();
+			return this->pBufferVertexIndex->GetVkBufferVertexMemory();
 		}
-		return this->pBufferVertex->GetVKBufferVertexMemory();
+		return this->pBufferVertex->GetVkBufferVertexMemory();
 	}
-	const VkBuffer& MeshSub::GetVKBufferIndex() const 
+	const VkBuffer& MeshSub::GetVkBufferIndex() const 
 	{ 
-		return this->pBufferVertexIndex->GetVKBufferIndex(); 
+		return this->pBufferVertexIndex->GetVkBufferIndex(); 
 	}
-	const VkDeviceMemory& MeshSub::GetVKBufferIndexMemory() const 
+	const VkDeviceMemory& MeshSub::GetVkBufferIndexMemory() const 
 	{ 
-		return this->pBufferVertexIndex->GetVKBufferIndexMemory(); 
+		return this->pBufferVertexIndex->GetVkBufferIndexMemory(); 
 	}
 
     uint32_t MeshSub::GetVertexSize() 

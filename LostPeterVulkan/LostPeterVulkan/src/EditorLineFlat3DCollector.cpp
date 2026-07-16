@@ -15,7 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKBufferStorage.h"
-
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -441,10 +441,7 @@ namespace LostPeterVulkan
             pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &pLineFlat3D->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
             
             MeshSub* pMeshSub = pLineFlat3D->pMesh->aMeshSubs[0];
-            VkBuffer vertexBuffers[] = { pMeshSub->GetVKBufferVertex() };
-            VkDeviceSize offsets[] = { 0 };
-            pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            pWindow->bindIndexBuffer(commandBuffer, pMeshSub->GetVKBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
+			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, count_instance, 0, 0, 0);
         }
     }
