@@ -333,7 +333,7 @@ namespace LostPeterVulkan
                 
                 pVulkanWindow->Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(commandBuffer, pRenderData->pDescriptorSets_ShadowMapDepthCull);
                 pVulkanWindow->Draw_Graphics_CullInstance_DepthShadowMapCullUnit(commandBuffer,
-                                                                                 pRenderArg->GetVKBuffer(),
+                                                                                 pRenderArg->GetVkBuffer(),
                                                                                  pRenderData->nRenderIndex,
                                                                                  pLodData->pMesh->GetMeshSub(0));
             }

@@ -1109,7 +1109,7 @@ namespace LostPeterVulkan
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBuffer();
+                        bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVkBuffer();
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1122,7 +1122,7 @@ namespace LostPeterVulkan
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat3D)) //ObjectLineFlat3D
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectLineFlat3D = {};
-                        bufferInfo_ObjectLineFlat3D.buffer = pBufferStorage->GetVKBuffer();
+                        bufferInfo_ObjectLineFlat3D.buffer = pBufferStorage->GetVkBuffer();
                         bufferInfo_ObjectLineFlat3D.offset = 0;
                         bufferInfo_ObjectLineFlat3D.range = pBufferStorage->GetBufferSize();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1135,7 +1135,7 @@ namespace LostPeterVulkan
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferObjectLineFlat3D)) //BufferObjectLineFlat3D
                     {
                         VkDescriptorBufferInfo bufferInfo_BufferObjectLineFlat3D = {};
-                        bufferInfo_BufferObjectLineFlat3D.buffer = pBufferStorage->GetVKBuffer();
+                        bufferInfo_BufferObjectLineFlat3D.buffer = pBufferStorage->GetVkBuffer();
                         bufferInfo_BufferObjectLineFlat3D.offset = 0;
                         bufferInfo_BufferObjectLineFlat3D.range = pBufferStorage->GetBufferSize();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Storage(descriptorWrites,

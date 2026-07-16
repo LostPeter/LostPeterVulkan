@@ -473,7 +473,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             //(0) PassConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVkBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -512,7 +512,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             //(3) InstanceConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer();
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVkBuffer();
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,

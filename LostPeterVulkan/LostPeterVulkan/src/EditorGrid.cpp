@@ -202,7 +202,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVKBuffer();
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVkBuffer();
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -215,7 +215,7 @@ namespace LostPeterVulkan
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
                 {
                     VkDescriptorBufferInfo bufferInfo_ObjectGrid = {};
-                    bufferInfo_ObjectGrid.buffer = this->pBufferUniform->GetVKBuffer();
+                    bufferInfo_ObjectGrid.buffer = this->pBufferUniform->GetVkBuffer();
                     bufferInfo_ObjectGrid.offset = 0;
                     bufferInfo_ObjectGrid.range = sizeof(GridObjectConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

@@ -39,7 +39,7 @@ namespace LostPeterVulkan
 		virtual void UpdateBuffer(size_t offset, size_t bufSize, uint8* pBuf);
 
         void UpdateBuffer(int index, const VkDrawIndexedIndirectCommand& vkCmd);
-
+		void UpdateBuffer(const std::vector<VkDrawIndexedIndirectCommand>& vkCmds);
     };
 
 }; //LostPeterVulkan

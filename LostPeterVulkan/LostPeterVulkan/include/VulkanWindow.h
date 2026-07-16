@@ -796,6 +796,25 @@ namespace LostPeterVulkan
                                                      size_t bufSize, 
                                                      uint8* pBuf);
 
+					//BufferIndirectCommand
+					virtual VKBufferIndirectCommand* createBufferIndirectCommand(const String& nameBuffer,
+																				 int count);
+					virtual void updateBufferIndirectCommand(VKBufferIndirectCommand* pBufferIndirectCommand);
+
+
+					//BufferStorage
+					virtual VKBufferStorage* createBufferStorage(const String& nameBuffer,
+																 int count,
+																 int stride);
+					virtual void updateBufferStorage(VKBufferStorage* pBufferStorage);
+
+					//BufferCompute
+					virtual VKBufferCompute* createBufferCompute(const String& nameBuffer,
+																 int count,
+																 int stride);
+					virtual void updateBufferCompute(VKBufferCompute* pBufferCompute);
+
+
                     virtual bool createVertexBuffer(const String& nameBuffer,
                                                     size_t bufSize, 
                                                     void* pBuf, 

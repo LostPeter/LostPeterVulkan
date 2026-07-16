@@ -305,8 +305,7 @@ public:
         //IndirectCommand 
         std::vector<VkDrawIndexedIndirectCommand> indirectCommandCBs;
         uint32_t countIndirectDraw;
-        VkBuffer poBuffer_indirectCommandCB;
-        VkDeviceMemory poBuffersMemory_indirectCommandCB;
+		VKBufferIndirectCommand* poBuffer_indirectCommandCB;
 
 
         ModelObjectRendIndirect(const String& _nameObjectRendIndirect)
@@ -331,8 +330,7 @@ public:
 
             //IndirectCommand
             , countIndirectDraw(0)
-            , poBuffer_indirectCommandCB(VK_NULL_HANDLE)
-            , poBuffersMemory_indirectCommandCB(VK_NULL_HANDLE)
+            , poBuffer_indirectCommandCB(nullptr)
         {
             
         }

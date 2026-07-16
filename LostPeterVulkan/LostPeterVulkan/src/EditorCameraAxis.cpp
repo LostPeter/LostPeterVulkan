@@ -589,7 +589,7 @@ namespace LostPeterVulkan
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->poBufferUniform_PassCB->GetVKBuffer();
+                        bufferInfo_Pass.buffer = this->poBufferUniform_PassCB->GetVkBuffer();
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -602,7 +602,7 @@ namespace LostPeterVulkan
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCameraAxis)) //ObjectCameraAxis
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectCameraAxis = {};
-                        bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVKBuffer();
+                        bufferInfo_ObjectCameraAxis.buffer = this->poBufferUniform_ObjectCB->GetVkBuffer();
                         bufferInfo_ObjectCameraAxis.offset = 0;
                         bufferInfo_ObjectCameraAxis.range = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -638,7 +638,7 @@ namespace LostPeterVulkan
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectCopyBlit = {};
-                        bufferInfo_ObjectCopyBlit.buffer = this->poBufferUniform_CopyBlitObjectCB->GetVKBuffer();
+                        bufferInfo_ObjectCopyBlit.buffer = this->poBufferUniform_CopyBlitObjectCB->GetVkBuffer();
                         bufferInfo_ObjectCopyBlit.offset = 0;
                         bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

@@ -1348,13 +1348,8 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     this->poDescriptorSets.clear();
 
     //3> IndirectCommand Buffer
-    if (this->poBuffer_indirectCommandCB != VK_NULL_HANDLE)
-    {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
-    }
+	F_DELETE(this->poBuffer_indirectCommandCB)
     this->indirectCommandCBs.clear();
-    this->poBuffer_indirectCommandCB = VK_NULL_HANDLE;
-    this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
 void Vulkan_017_Collision::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
@@ -1518,9 +1513,15 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
     //2> IndirectCommand Buffer
     {
-        bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
-        this->pRend->pModelObject->pWindow->createVkBuffer("VkDrawIndexedIndirectCommand", bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
-    }
+		String nameBuffer = "VkDrawIndexedIndirectCommand";
+		this->poBuffer_indirectCommandCB = Base::GetWindowPtr()->createBufferIndirectCommand(nameBuffer, (int)this->indirectCommandCBs.size());
+		if (this->poBuffer_indirectCommandCB == nullptr)
+		{
+			String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer indirect command: [" + nameBuffer + "] failed !";
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+		}
+	}
 }
 
 void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
@@ -4073,7 +4074,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVKBuffer();
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j]->GetVkBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4138,7 +4139,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVKBuffer(); 
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]->GetVkBuffer(); 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4493,8 +4494,7 @@ void Vulkan_017_Collision::updateCBs_Custom()
 
             //IndirectCommand
             {
-                size_t count_indirectcommand = pRendIndirect->indirectCommandCBs.size();
-                updateVKBuffer(0, sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand, pRendIndirect->indirectCommandCBs.data(), pRendIndirect->poBuffersMemory_indirectCommandCB);
+                pRendIndirect->poBuffer_indirectCommandCB->UpdateBuffer(pRendIndirect->indirectCommandCBs);
             }
         }
     }
@@ -5186,13 +5186,13 @@ void Vulkan_017_Collision::drawModelObjectRendIndirect(VkCommandBuffer& commandB
     uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)
     {
-        drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
+        drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB->GetVkBuffer(), 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
     }
     else
     {
         for (uint32_t i = 0; i < drawCount; i++)
         {
-            drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+            drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB->GetVkBuffer(), i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
 }

@@ -86,5 +86,15 @@ namespace LostPeterVulkan
         this->indirectCommandCBs[index] = vkCmd;
         UpdateBuffer();
     }
+	void VKBufferIndirectCommand::UpdateBuffer(const std::vector<VkDrawIndexedIndirectCommand>& vkCmds)
+	{
+		F_Assert(vkCmds.size() <= this->indirectCommandCBs.size() && "VKBufferIndirectCommand::UpdateBuffer")
+		
+		for (size_t i = 0; i < vkCmds.size(); i++)
+		{
+			this->indirectCommandCBs[i] = vkCmds[i];
+		}
+		UpdateBuffer();
+	}
 
 }; //LostPeterVulkan
