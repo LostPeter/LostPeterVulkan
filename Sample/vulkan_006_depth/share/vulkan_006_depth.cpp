@@ -110,8 +110,8 @@ void Vulkan_006_Depth::loadModel_Custom()
             throw std::runtime_error(msg.c_str());
         }
         pModelObject->poMatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0],
-                                                     g_tranformModels[i * 3 + 1],
-                                                     g_tranformModels[i * 3 + 2]); 
+                                                  g_tranformModels[i * 3 + 1],
+                                                  g_tranformModels[i * 3 + 2]); 
 
         //Texture
         if (!loadModel_Texture(pModelObject))
@@ -242,11 +242,20 @@ void Vulkan_006_Depth::createCustomCB()
 
         VkDeviceSize bufferSize = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
         pModelObject->poBuffers_ObjectCB.resize(count_sci);
-        pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
             String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(pModelObject->objectCBs.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** Vulkan_006_Depth::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			pModelObject->poBuffers_ObjectCB[j] = pBufferUniform;
         }
     }
 }
@@ -417,7 +426,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             //(1) ObjectConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -495,8 +504,11 @@ void Vulkan_006_Depth::updateCBs_Custom()
                 objectCB.g_MatWorld = pModelObject->poMatWorld;
             }
         }
-        VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-        updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
+
+		VKBufferUniform* pBufferUniform = pModelObject->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+		pBufferUniform->UpdateBuffer(0, 
+									 sizeof(ObjectConstants) * count_object,
+									 (uint8*)pModelObject->objectCBs.data());
     }
 }
 

@@ -101,11 +101,10 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+				F_DELETE(this->poBuffers_ObjectCB[i])
             }
-            this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
-            this->poBuffersMemory_ObjectCB.clear();
+			this->objectCBs.clear();
 
             //Texture
             this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
@@ -156,8 +155,7 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        VkBufferVector poBuffers_ObjectCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
+		VKBufferUniformPtrVector poBuffers_ObjectCB;
         FMatrix4 poMatWorld;
 
         //Texture

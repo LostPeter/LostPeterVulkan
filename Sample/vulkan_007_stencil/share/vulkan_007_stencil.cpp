@@ -112,8 +112,8 @@ void Vulkan_007_Stencil::loadModel_Custom()
             throw std::runtime_error(msg.c_str());
         }
         pModelObject->poMatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0],
-                                                     g_tranformModels[i * 3 + 1],
-                                                     g_tranformModels[i * 3 + 2]); 
+                                                  g_tranformModels[i * 3 + 1],
+                                                  g_tranformModels[i * 3 + 2]); 
 
         //Texture
         if (!loadModel_Texture(pModelObject))
@@ -246,11 +246,20 @@ void Vulkan_007_Stencil::createCustomCB()
 
         VkDeviceSize bufferSize = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
         pModelObject->poBuffers_ObjectCB.resize(count_sci);
-        pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
             String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(pModelObject->objectCBs.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** Vulkan_007_Stencil::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			pModelObject->poBuffers_ObjectCB[j] = pBufferUniform;
         }
 
         //2> Outline
@@ -262,11 +271,20 @@ void Vulkan_007_Stencil::createCustomCB()
 
         bufferSize = sizeof(ObjectConstants_Outline) * pModelObject->objectCBs_Outline.size();
         pModelObject->poBuffers_ObjectCB_Outline.resize(count_sci);
-        pModelObject->poBuffersMemory_ObjectCB_Outline.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
             String nameBuffer = "ObjectConstants_Outline-" + FUtilString::SavePointI(FPointI(i,j));
-            createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
+			VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																  bufferSize,
+																  (uint8*)(pModelObject->objectCBs_Outline.data()),
+																  false);
+			if (!pBufferUniform)
+			{
+				String msg = "*********************** Vulkan_007_Stencil::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			pModelObject->poBuffers_ObjectCB_Outline[j] = pBufferUniform;
         }
     }
 }
@@ -444,7 +462,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(1) ObjectConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Object = {};
-                    bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                    bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j]->GetVkBuffer();
                     bufferInfo_Object.offset = 0;
                     bufferInfo_Object.range = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -516,7 +534,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 //(1) ObjectConstants
                 {
                     VkDescriptorBufferInfo bufferInfo_Object_Outline = {};
-                    bufferInfo_Object_Outline.buffer = pModelObject->poBuffers_ObjectCB_Outline[j];
+                    bufferInfo_Object_Outline.buffer = pModelObject->poBuffers_ObjectCB_Outline[j]->GetVkBuffer();
                     bufferInfo_Object_Outline.offset = 0;
                     bufferInfo_Object_Outline.range = sizeof(ObjectConstants_Outline) * pModelObject->objectCBs_Outline.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
@@ -600,13 +618,17 @@ void Vulkan_007_Stencil::updateCBs_Custom()
         }
         //Stencil
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										sizeof(ObjectConstants) * count_object,
+										(uint8*)pModelObject->objectCBs.data());
         }
         //Outline
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB_Outline[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants_Outline) * count_object, pModelObject->objectCBs_Outline.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_ObjectCB_Outline[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										sizeof(ObjectConstants_Outline) * count_object,
+										(uint8*)pModelObject->objectCBs_Outline.data());
         }
     }
 }

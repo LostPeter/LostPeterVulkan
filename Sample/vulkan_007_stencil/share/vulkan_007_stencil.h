@@ -125,20 +125,18 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+				F_DELETE(this->poBuffers_ObjectCB[i])
             }
-            this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
-            this->poBuffersMemory_ObjectCB.clear();
+            this->objectCBs.clear();
 
             count = this->poBuffers_ObjectCB_Outline.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_Outline[i], this->poBuffersMemory_ObjectCB_Outline[i]);
+				F_DELETE(this->poBuffers_ObjectCB_Outline[i])
             }
-            this->objectCBs_Outline.clear();
             this->poBuffers_ObjectCB_Outline.clear();
-            this->poBuffersMemory_ObjectCB_Outline.clear();
+            this->objectCBs_Outline.clear();
 
             //Pipeline
             this->pWindow->destroyVkPipeline(this->poPipelineGraphics_WireFrame);
@@ -180,13 +178,11 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        VkBufferVector poBuffers_ObjectCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
+		VKBufferUniformPtrVector poBuffers_ObjectCB;
         FMatrix4 poMatWorld;
 
         std::vector<ObjectConstants_Outline> objectCBs_Outline;
-        VkBufferVector poBuffers_ObjectCB_Outline;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB_Outline;
+        VKBufferUniformPtrVector poBuffers_ObjectCB_Outline;
 
         //Texture
         uint32_t poMipMapCount;
