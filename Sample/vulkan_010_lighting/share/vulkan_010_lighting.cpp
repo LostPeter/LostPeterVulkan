@@ -283,18 +283,15 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->instanceMatWorld.clear();
-        pModelObject->objectCBs.clear();
-        pModelObject->materialCBs.clear();
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
             objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
-                                                           g_tranformModels[i * 3 + 1],
-                                                           g_tranformModels[i * 3 + 2]);
-            pModelObject->objectCBs.push_back(objectConstants);
-            pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                                                        g_tranformModels[i * 3 + 1],
+                                                        g_tranformModels[i * 3 + 2]);
+            pModelObject->objectCBs[j] = objectConstants;
+			pModelObject->instanceMatWorld[j] = objectConstants.g_MatWorld;
 
             //MaterialConstants
             MaterialConstants materialConstants;
@@ -303,29 +300,55 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.factorSpecular = FMath::RandomColor(false);
             materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
             materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
-            pModelObject->materialCBs.push_back(materialConstants);
+            pModelObject->materialCBs[j] = materialConstants;
         }
         
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pModelObject->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pModelObject->poBuffers_ObjectCB[j])
+			}
+			pModelObject->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pModelObject->poBuffers_ObjectCB.resize(count_sci);
-            pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pModelObject->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_010_Lighting::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pModelObject->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pModelObject->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pModelObject->poBuffers_materialCB[j])
+			}
+			pModelObject->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pModelObject->poBuffers_materialCB.resize(count_sci);
-            pModelObject->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pModelObject->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_010_Lighting::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pModelObject->poBuffers_materialCB.push_back(pBufferUniform);
             }
         }
     }
@@ -486,7 +509,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             //(1) ObjectConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -499,7 +522,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             //(2) MaterialConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -549,7 +572,7 @@ void Vulkan_010_Lighting::updateCBs_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        size_t count_object = pModelObject->objectCBs.size();
+        size_t count_object = (size_t)pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -571,14 +594,18 @@ void Vulkan_010_Lighting::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pModelObject->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pModelObject->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pModelObject->materialCBs.data());
         }
     }
 }

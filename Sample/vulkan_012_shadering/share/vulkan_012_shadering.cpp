@@ -843,19 +843,16 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->instanceMatWorld.clear();
-        pModelObject->objectCBs.clear();
-        pModelObject->materialCBs.clear();
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
-                                                                 g_ObjectTranforms[i * 3 + 1],
-                                                                 g_ObjectTranforms[i * 3 + 2]);
-                pModelObject->objectCBs.push_back(objectConstants);
-                pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                                                            g_ObjectTranforms[i * 3 + 1],
+                                                            g_ObjectTranforms[i * 3 + 2]);
+                pModelObject->objectCBs[j] = objectConstants;
+				pModelObject->instanceMatWorld[j] = objectConstants.g_MatWorld;
             }
 
             //MaterialConstants
@@ -891,7 +888,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                     }
                 }
-                pModelObject->materialCBs.push_back(materialConstants);
+				pModelObject->materialCBs[j] = materialConstants;
             }
 
             //TessellationConstants
@@ -901,7 +898,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 1.0f;
                 tessellationConstants.tessLevelInner = 1.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pModelObject->tessellationCBs.push_back(tessellationConstants);
+				pModelObject->tessellationCBs[j] = tessellationConstants;
             }
 
             //GeometryConstants
@@ -911,55 +908,107 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 geometryConstants.width = 0.05f;
                 geometryConstants.height = 3.0f;
                 geometryConstants.length = 0.02f;
-                pModelObject->geometryCBs.push_back(geometryConstants);
+				pModelObject->geometryCBs[j] = geometryConstants;
             }
         }
         
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pModelObject->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pModelObject->poBuffers_ObjectCB[j])
+			}
+			pModelObject->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pModelObject->poBuffers_ObjectCB.resize(count_sci);
-            pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pModelObject->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_012_Shadering::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pModelObject->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pModelObject->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pModelObject->poBuffers_materialCB[j])
+			}
+			pModelObject->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pModelObject->poBuffers_materialCB.resize(count_sci);
-            pModelObject->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pModelObject->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_012_Shadering::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pModelObject->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pModelObject->isUsedTessellation)
             {
+				for (size_t j = 0; j < pModelObject->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pModelObject->poBuffers_tessellationCB[j])
+				}
+				pModelObject->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pModelObject->poBuffers_tessellationCB.resize(count_sci);
-                pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pModelObject->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_012_Shadering::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pModelObject->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
 
             //GeometryConstants
             if (pModelObject->isUsedGeometry)
             {
+				for (size_t j = 0; j < pModelObject->poBuffers_geometryCB.size(); j++) 
+				{
+					F_DELETE(pModelObject->poBuffers_geometryCB[j])
+				}
+				pModelObject->poBuffers_geometryCB.clear();
                 bufferSize = sizeof(GeometryConstants) * MAX_OBJECT_COUNT;
-                pModelObject->poBuffers_geometryCB.resize(count_sci);
-                pModelObject->poBuffersMemory_geometryCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "GeometryConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_geometryCB[j], pModelObject->poBuffersMemory_geometryCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pModelObject->geometryCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_012_Shadering::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pModelObject->poBuffers_geometryCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -1469,7 +1518,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
                     {
                         VkDescriptorBufferInfo bufferInfo_Object = {};
-                        bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                        bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j]->GetVkBuffer();
                         bufferInfo_Object.offset = 0;
                         bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1482,7 +1531,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
                     {
                         VkDescriptorBufferInfo bufferInfo_Material = {};
-                        bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
+                        bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j]->GetVkBuffer();
                         bufferInfo_Material.offset = 0;
                         bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1508,7 +1557,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
                     {
                         VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                        bufferInfo_Tessellation.buffer = pModelObject->poBuffers_tessellationCB[j];
+                        bufferInfo_Tessellation.buffer = pModelObject->poBuffers_tessellationCB[j]->GetVkBuffer();
                         bufferInfo_Tessellation.offset = 0;
                         bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1521,7 +1570,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Geometry)) //Geometry
                     {
                         VkDescriptorBufferInfo bufferInfo_Geometry = {};
-                        bufferInfo_Geometry.buffer = pModelObject->poBuffers_geometryCB[j];
+                        bufferInfo_Geometry.buffer = pModelObject->poBuffers_geometryCB[j]->GetVkBuffer();
                         bufferInfo_Geometry.offset = 0;
                         bufferInfo_Geometry.range = sizeof(GeometryConstants) * MAX_OBJECT_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1727,7 +1776,7 @@ void Vulkan_012_Shadering::updateCBs_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        size_t count_object = pModelObject->objectCBs.size();
+        size_t count_object = (size_t)pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -1761,28 +1810,36 @@ void Vulkan_012_Shadering::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pModelObject->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pModelObject->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pModelObject->materialCBs.data());
         }
 
         //TessellationConstants
         if (pModelObject->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pModelObject->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pModelObject->tessellationCBs.data());
         }
 
         //GeometryConstants
         if (pModelObject->isUsedGeometry)
         {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_geometryCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(GeometryConstants) * count_object, pModelObject->geometryCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pModelObject->poBuffers_geometryCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(GeometryConstants) * count_object,
+										 (uint8*)pModelObject->geometryCBs.data());
         }
     }
 }
