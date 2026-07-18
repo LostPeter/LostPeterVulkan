@@ -47,20 +47,15 @@ public:
         VkPipelineShaderStageCreateInfoMap mapShaderStageCreateInfos_Computes;
 
         //Uniform
-        int countInstance;
-
         std::vector<ObjectConstants> objectCBs;
-        VkBufferVector poBuffers_ObjectCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
+        VKBufferUniformPtrVector poBuffers_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
-        VkBufferVector poBuffers_materialCB;
-        VkDeviceMemoryVector poBuffersMemory_materialCB;
+        VKBufferUniformPtrVector poBuffers_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        VkBufferVector poBuffers_tessellationCB;
-        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
+        VKBufferUniformPtrVector poBuffers_tessellationCB;
         bool isUsedTessellation;
 
         //Pipeline Graphics
@@ -109,7 +104,6 @@ public:
             , isTransparent(false)
 
             //Uniform
-            , countInstance(1)
             , isUsedTessellation(false)
 
             //Pipeline Graphics
@@ -143,6 +137,11 @@ public:
             cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
 
             this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-Model");
+
+			this->objectCBs.resize(MAX_OBJECT_COUNT);
+			this->instanceMatWorld.resize(MAX_OBJECT_COUNT);
+			this->materialCBs.resize(MAX_MATERIAL_COUNT);
+			this->tessellationCBs.resize(MAX_OBJECT_COUNT);
         }
         ~ModelObjectRend()
         {
@@ -170,29 +169,26 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+				F_DELETE(this->poBuffers_ObjectCB[i])
             }
+			this->poBuffers_ObjectCB.clear();
             this->objectCBs.clear();
-            this->poBuffers_ObjectCB.clear();
-            this->poBuffersMemory_ObjectCB.clear();
 
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+				F_DELETE(this->poBuffers_materialCB[i])
             }
+			this->poBuffers_materialCB.clear();
             this->materialCBs.clear();
-            this->poBuffers_materialCB.clear();
-            this->poBuffersMemory_materialCB.clear();
 
             count = this->poBuffers_tessellationCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+				F_DELETE(this->poBuffers_tessellationCB[i])
             }
+			this->poBuffers_tessellationCB.clear();
             this->tessellationCBs.clear();
-            this->poBuffers_tessellationCB.clear();
-            this->poBuffersMemory_tessellationCB.clear();
 
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();
@@ -305,16 +301,13 @@ public:
 
         //Uniform
         std::vector<ObjectConstants> objectCBs;
-        VkBufferVector poBuffers_ObjectCB;
-        VkDeviceMemoryVector poBuffersMemory_ObjectCB;
+        VKBufferUniformPtrVector poBuffers_ObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
-        VkBufferVector poBuffers_materialCB;
-        VkDeviceMemoryVector poBuffersMemory_materialCB;
+        VKBufferUniformPtrVector poBuffers_materialCB;
 
         std::vector<TessellationConstants> tessellationCBs;
-        VkBufferVector poBuffers_tessellationCB;
-        VkDeviceMemoryVector poBuffersMemory_tessellationCB;
+        VKBufferUniformPtrVector poBuffers_tessellationCB;
         bool isUsedTessellation;
 
         //VkDescriptorSets
@@ -350,7 +343,9 @@ public:
             , countIndirectDraw(0)
             , poBuffer_indirectCommandCB(nullptr)
         {
-            
+            this->objectCBs.resize(MAX_OBJECT_COUNT);
+			this->materialCBs.resize(MAX_MATERIAL_COUNT);
+			this->tessellationCBs.resize(MAX_OBJECT_COUNT);
         }
 
         ~ModelObjectRendIndirect()

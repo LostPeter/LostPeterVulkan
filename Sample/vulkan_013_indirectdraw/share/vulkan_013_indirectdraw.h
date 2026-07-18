@@ -44,8 +44,6 @@ public:
         VkPipelineShaderStageCreateInfoMap mapShaderStageCreateInfos_Computes;
 
         //Uniform
-        int countInstance;
-
         std::vector<ObjectConstants> objectCBs;
         VKBufferUniformPtrVector poBuffers_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
@@ -103,7 +101,6 @@ public:
             , isTransparent(false)
 
             //Uniform
-            , countInstance(1)
             , isUsedTessellation(false)
 
             //Pipeline Graphics

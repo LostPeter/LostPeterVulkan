@@ -872,7 +872,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-			if (this->poBuffers_materialCB.size() <= 0)
+			if (this->poBuffers_tessellationCB.size() <= 0)
 			{
 				for (size_t j = 0; j < count_sci; j++) 
 				{
@@ -2171,7 +2171,7 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = (size_t)pRend->countInstance;
+        size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
