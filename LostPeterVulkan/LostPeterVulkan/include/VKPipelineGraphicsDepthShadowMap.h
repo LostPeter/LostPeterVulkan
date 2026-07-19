@@ -83,6 +83,7 @@ namespace LostPeterVulkan
         virtual void UpdateBuffer_ObjectWorld_Clear();
         virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
         virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
+		virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects, int count);
         virtual void UpdateBuffer_ObjectWorld_Update();
 
         virtual void UpdateDescriptorSet_ShadowMapDepth();

@@ -169,7 +169,6 @@ public:
 				F_DELETE(this->poBuffers_ObjectCB[i])
             }
 			this->poBuffers_ObjectCB.clear();
-            this->objectCBs.clear();
 
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -177,7 +176,6 @@ public:
 				F_DELETE(this->poBuffers_materialCB[i])
             }
 			this->poBuffers_materialCB.clear();
-            this->materialCBs.clear();
 
             count = this->poBuffers_tessellationCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -185,7 +183,6 @@ public:
 				F_DELETE(this->poBuffers_tessellationCB[i])
             }
 			this->poBuffers_tessellationCB.clear();
-            this->tessellationCBs.clear();
 
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();

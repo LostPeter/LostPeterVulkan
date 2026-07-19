@@ -774,9 +774,6 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
         int count_instance = pRend->pModelObject->countInstance;
         bool isObjectLighting = g_Object_IsLightings[indexObject];
 
-        pRend->instanceMatWorld.clear();
-        pRend->objectCBs.clear();
-        pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
@@ -785,8 +782,8 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                pRend->objectCBs[j] = objectConstants;
+				pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
             }
 
             //MaterialConstants
@@ -822,7 +819,7 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                     }
                 }
-                pRend->materialCBs.push_back(materialConstants);
+                pRend->materialCBs[j] = materialConstants;
             }
 
             //TessellationConstants
@@ -832,42 +829,81 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 3.0f;
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pRend->tessellationCBs.push_back(tessellationConstants);
+				pRend->tessellationCBs[j] = tessellationConstants;
             }
         }
         
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pRend->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_ObjectCB[j])
+			}
+			pRend->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pRend->poBuffers_ObjectCB.resize(count_sci);
-            pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pRend->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_materialCB[j])
+			}
+			pRend->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pRend->poBuffers_materialCB.resize(count_sci);
-            pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
             {
+				for (size_t j = 0; j < pRend->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_tessellationCB[j])
+				}
+				pRend->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_tessellationCB.resize(count_sci);
-                pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -1444,7 +1480,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pRend->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1457,7 +1493,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pRend->poBuffers_materialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1483,7 +1519,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.buffer = pRend->poBuffers_tessellationCB[j]->GetVkBuffer();
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1575,7 +1611,7 @@ void Vulkan_018_SubPass::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = pRend->objectCBs.size();
+        size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -1603,21 +1639,27 @@ void Vulkan_018_SubPass::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pRend->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pRend->materialCBs.data());
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pRend->tessellationCBs.data());
         }
     }
 }

@@ -687,7 +687,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_023_Water::ModelObjectRendIndirect::Destroy()
+void Vulkan_025_Water::ModelObjectRendIndirect::Destroy()
 {
     //Vertex/Index
 	F_DELETE(this->pBufferVertex)
@@ -700,7 +700,7 @@ void Vulkan_023_Water::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_023_Water::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_025_Water::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -708,29 +708,23 @@ void Vulkan_023_Water::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+		F_DELETE(this->poBuffers_ObjectCB[i])
     }
-    this->objectCBs.clear();
     this->poBuffers_ObjectCB.clear();
-    this->poBuffersMemory_ObjectCB.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+		F_DELETE(this->poBuffers_materialCB[i])
     }
-    this->materialCBs.clear();
     this->poBuffers_materialCB.clear();
-    this->poBuffersMemory_materialCB.clear();
 
     count = this->poBuffers_tessellationCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+		F_DELETE(this->poBuffers_tessellationCB[i])
     }
-    this->tessellationCBs.clear();
     this->poBuffers_tessellationCB.clear();
-    this->poBuffersMemory_tessellationCB.clear();
 
     //2> VkDescriptorSets
     this->poDescriptorSets.clear();
@@ -740,9 +734,9 @@ void Vulkan_023_Water::ModelObjectRendIndirect::CleanupSwapChain()
     this->indirectCommandCBs.clear();
 }
 
-void Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_025_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    F_Assert(_aRends.size() > 0 && "Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer")
+    F_Assert(_aRends.size() > 0 && "Vulkan_025_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -787,7 +781,7 @@ void Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer(const Mod
     }
     else
     {
-        F_Assert(false && "Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
+        F_Assert(false && "Vulkan_025_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -808,7 +802,7 @@ void Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer(const Mod
 																				 false);
 		if (this->pBufferVertexIndex == nullptr)
 		{
-			F_LogError("*********************** Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex index failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			F_LogError("*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex index failed: [%s] !", this->nameObjectRendIndirect.c_str());
 			return;
 		}
     }
@@ -822,13 +816,13 @@ void Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer(const Mod
 																	   false);
 		if (this->pBufferVertex == nullptr)
 		{
-			F_LogError("*********************** Vulkan_023_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex failed: [%s] !", this->nameObjectRendIndirect.c_str());
+			F_LogError("*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupVertexIndexBuffer: create buffer vertex failed: [%s] !", this->nameObjectRendIndirect.c_str());
 			return;
 		}
 	}
 }
 
-void Vulkan_023_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_025_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -836,36 +830,66 @@ void Vulkan_023_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffe
     //1> Uniform Buffer
     {
         //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-        this->poBuffers_ObjectCB.resize(count_sci);
-        this->poBuffersMemory_ObjectCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
-        }
+		if (this->poBuffers_ObjectCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(ObjectConstants) * this->objectCBs.size(),
+																										  (uint8*)(this->objectCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_ObjectCB.push_back(pBufferUniform);
+			}
+		}
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-        this->poBuffers_materialCB.resize(count_sci);
-        this->poBuffersMemory_materialCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
-        }
+		if (this->poBuffers_materialCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(MaterialConstants) * this->materialCBs.size(),
+																										  (uint8*)(this->materialCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_materialCB.push_back(pBufferUniform);
+			}
+		}
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
-            this->poBuffers_tessellationCB.resize(count_sci);
-            this->poBuffersMemory_tessellationCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
-                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
-            }
+			if (this->poBuffers_tessellationCB.size() <= 0)
+			{
+				for (size_t j = 0; j < count_sci; j++) 
+				{
+					String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
+					VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																											  sizeof(TessellationConstants) * this->tessellationCBs.size(),
+																											  (uint8*)(this->tessellationCBs.data()),
+																											  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					this->poBuffers_tessellationCB.push_back(pBufferUniform);
+				}
+			}
         }
     }
 
@@ -875,35 +899,37 @@ void Vulkan_023_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffe
 		this->poBuffer_indirectCommandCB = Base::GetWindowPtr()->createBufferIndirectCommand(nameBuffer, (int)this->indirectCommandCBs.size());
 		if (this->poBuffer_indirectCommandCB == nullptr)
 		{
-			String msg = "*********************** Vulkan_023_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer indirect command: [" + nameBuffer + "] failed !";
+			String msg = "*********************** Vulkan_025_Water::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer indirect command: [" + nameBuffer + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
 		}
     }
 }
 
-void Vulkan_023_Water::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_025_Water::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
-    this->objectCBs.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-
+    int count_index = 0;
     size_t count_rend = this->aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-        if (pRend->isUsedTessellation)
-        {
-            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-        }
+        for (int j = 0; j < pR->pModelObject->countInstance; j++)
+		{
+			this->objectCBs[count_index] = pR->objectCBs[j];
+			this->materialCBs[count_index] = pR->materialCBs[j];
+			if (pRend->isUsedTessellation)
+			{
+				this->tessellationCBs[count_index] = pR->tessellationCBs[j];
+			}
+
+			count_index ++;
+		}
     }
 }
 
-void Vulkan_023_Water::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_025_Water::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -936,7 +962,7 @@ void Vulkan_023_Water::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 
 
-Vulkan_023_Water::Vulkan_023_Water(int width, int height, String name)
+Vulkan_025_Water::Vulkan_025_Water(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
@@ -956,7 +982,7 @@ Vulkan_023_Water::Vulkan_023_Water(int width, int height, String name)
     this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
-void Vulkan_023_Water::setUpEnabledFeatures()
+void Vulkan_025_Water::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -967,21 +993,21 @@ void Vulkan_023_Water::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        F_LogError("*********************** Vulkan_023_Water::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        F_LogError("*********************** Vulkan_025_Water::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_023_Water::createDescriptorSetLayout_Custom()
+void Vulkan_025_Water::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_023_Water::createCamera()
+void Vulkan_025_Water::createCamera()
 {
     this->pCamera = new FCamera();
     cameraReset();
 }
-void Vulkan_023_Water::cameraReset()
+void Vulkan_025_Water::cameraReset()
 {
     VulkanWindow::cameraReset();
 
@@ -990,7 +1016,7 @@ void Vulkan_023_Water::cameraReset()
     this->pCamera->SetFarZ(100000.0f);
 }
 
-void Vulkan_023_Water::loadModel_Custom()
+void Vulkan_025_Water::loadModel_Custom()
 {
     createMeshes();
     createTextures();
@@ -1008,7 +1034,7 @@ void Vulkan_023_Water::loadModel_Custom()
             //Mesh
             {
                 Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
-                F_Assert(pMesh != nullptr && "Vulkan_023_Water::loadModel_Custom")
+                F_Assert(pMesh != nullptr && "Vulkan_025_Water::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1038,7 +1064,7 @@ void Vulkan_023_Water::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_023_Water::loadModel_Custom")
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_025_Water::loadModel_Custom")
 
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -1196,16 +1222,16 @@ void Vulkan_023_Water::loadModel_Custom()
 
     }
 }
-void Vulkan_023_Water::createIndirectCommands()
+void Vulkan_025_Water::createIndirectCommands()
 {
 
 }
 
-void Vulkan_023_Water::createCustomCB()
+void Vulkan_025_Water::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_023_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_025_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -1219,19 +1245,16 @@ void Vulkan_023_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
         int count_instance = pRend->pModelObject->countInstance;
         bool isObjectLighting = g_Object_IsLightings[indexObject];
 
-        pRend->instanceMatWorld.clear();
-        pRend->objectCBs.clear();
-        pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_ObjectRend_Tranforms[3 * i + 1],
-                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
+                pRend->objectCBs[j] = objectConstants;
+				pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
             }
 
             //MaterialConstants
@@ -1267,7 +1290,7 @@ void Vulkan_023_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                     }
                 }
-                pRend->materialCBs.push_back(materialConstants);
+                pRend->materialCBs[j] = materialConstants;
             }
 
             //TessellationConstants
@@ -1277,42 +1300,81 @@ void Vulkan_023_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 3.0f;
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pRend->tessellationCBs.push_back(tessellationConstants);
+                pRend->tessellationCBs[j] = tessellationConstants;
             }
         }
         
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pRend->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_ObjectCB[j])
+			}
+			pRend->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pRend->poBuffers_ObjectCB.resize(count_sci);
-            pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_025_Water::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pRend->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_materialCB[j])
+			}
+			pRend->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pRend->poBuffers_materialCB.resize(count_sci);
-            pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_025_Water::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
             {
+				for (size_t j = 0; j < pRend->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_tessellationCB[j])
+				}
+				pRend->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_tessellationCB.resize(count_sci);
-                pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_025_Water::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -1338,7 +1400,7 @@ void Vulkan_023_Water::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_023_Water::createCustomBeforePipeline()
+void Vulkan_025_Water::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -1349,7 +1411,7 @@ void Vulkan_023_Water::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_023_Water::createGraphicsPipeline_Custom()
+void Vulkan_025_Water::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1377,7 +1439,7 @@ void Vulkan_023_Water::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1387,21 +1449,21 @@ void Vulkan_023_Water::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1421,11 +1483,11 @@ void Vulkan_023_Water::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_023_Water::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_025_Water::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1456,15 +1518,15 @@ void Vulkan_023_Water::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "*********************** Vulkan_025_Water::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            F_LogInfo("Vulkan_023_Water::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_025_Water::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_023_Water::createComputePipeline_Custom()
+void Vulkan_025_Water::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1481,7 +1543,7 @@ void Vulkan_023_Water::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1489,7 +1551,7 @@ void Vulkan_023_Water::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1501,21 +1563,21 @@ void Vulkan_023_Water::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1523,7 +1585,7 @@ void Vulkan_023_Water::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_023_Water::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_025_Water::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1531,7 +1593,7 @@ void Vulkan_023_Water::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_023_Water::destroyMeshes()
+void Vulkan_025_Water::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1542,7 +1604,7 @@ void Vulkan_023_Water::destroyMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_023_Water::createMeshes()
+void Vulkan_025_Water::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1571,7 +1633,7 @@ void Vulkan_023_Water::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "*********************** Vulkan_023_Water::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_025_Water::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1579,11 +1641,11 @@ void Vulkan_023_Water::createMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_023_Water::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_025_Water::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Mesh* Vulkan_023_Water::findMesh(const String& nameMesh)
+Mesh* Vulkan_025_Water::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1594,7 +1656,7 @@ Mesh* Vulkan_023_Water::findMesh(const String& nameMesh)
 }
 
 
-void Vulkan_023_Water::destroyTextures()
+void Vulkan_025_Water::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1605,7 +1667,7 @@ void Vulkan_023_Water::destroyTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_023_Water::createTextures()
+void Vulkan_025_Water::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1648,14 +1710,14 @@ void Vulkan_023_Water::createTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_023_Water::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_025_Water::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-VKTexture* Vulkan_023_Water::findTexture(const String& nameTexture)
+VKTexture* Vulkan_025_Water::findTexture(const String& nameTexture)
 {
     VKTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -1666,7 +1728,7 @@ VKTexture* Vulkan_023_Water::findTexture(const String& nameTexture)
 }
 
 
-void Vulkan_023_Water::destroyDescriptorSetLayouts()
+void Vulkan_025_Water::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1677,7 +1739,7 @@ void Vulkan_023_Water::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_023_Water::createDescriptorSetLayouts()
+void Vulkan_025_Water::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1686,7 +1748,7 @@ void Vulkan_023_Water::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "*********************** Vulkan_023_Water::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_025_Water::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1694,10 +1756,10 @@ void Vulkan_023_Water::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        F_LogInfo("Vulkan_023_Water::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_025_Water::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_023_Water::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_025_Water::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -1706,7 +1768,7 @@ VkDescriptorSetLayout Vulkan_023_Water::findDescriptorSetLayout(const String& na
     }
     return itFind->second;
 }
-StringVector* Vulkan_023_Water::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_025_Water::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -1717,7 +1779,7 @@ StringVector* Vulkan_023_Water::findDescriptorSetLayoutNames(const String& nameD
 }
 
 
-void Vulkan_023_Water::destroyShaderModules()
+void Vulkan_025_Water::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -1728,7 +1790,7 @@ void Vulkan_023_Water::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_023_Water::createShaderModules()
+void Vulkan_025_Water::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1739,11 +1801,11 @@ void Vulkan_023_Water::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_023_Water::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_025_Water::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_023_Water::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_025_Water::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -1754,7 +1816,7 @@ VkShaderModule Vulkan_023_Water::findShaderModule(const String& nameShaderModule
 }
 
 
-void Vulkan_023_Water::destroyPipelineLayouts()
+void Vulkan_025_Water::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -1764,7 +1826,7 @@ void Vulkan_023_Water::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_023_Water::createPipelineLayouts()
+void Vulkan_025_Water::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -1772,7 +1834,7 @@ void Vulkan_023_Water::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_023_Water::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_025_Water::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1781,7 +1843,7 @@ void Vulkan_023_Water::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            F_LogError("*********************** Vulkan_023_Water::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_025_Water::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1789,7 +1851,7 @@ void Vulkan_023_Water::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_023_Water::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_025_Water::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -1801,7 +1863,7 @@ VkPipelineLayout Vulkan_023_Water::findPipelineLayout(const String& namePipeline
 
 
 
-void Vulkan_023_Water::createDescriptorSets_Custom()
+void Vulkan_025_Water::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -1836,12 +1898,12 @@ void Vulkan_023_Water::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                       ModelObjectRend* pRend, 
-                                                       ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_025_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+                                                     ModelObjectRend* pRend, 
+                                                     ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_023_Water::createDescriptorSets_Graphics")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_025_Water::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1871,7 +1933,7 @@ void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDe
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j]->GetVkBuffer() : pRend->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1884,7 +1946,7 @@ void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDe
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j]->GetVkBuffer() : pRend->poBuffers_materialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1910,7 +1972,7 @@ void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDe
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j]->GetVkBuffer() : pRend->poBuffers_tessellationCB[j]->GetVkBuffer();
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1970,7 +2032,7 @@ void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDe
             }
             else
             {
-                String msg = "*********************** Vulkan_023_Water::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "*********************** Vulkan_025_Water::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1978,11 +2040,11 @@ void Vulkan_023_Water::createDescriptorSets_Graphics(VkDescriptorSetVector& poDe
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_023_Water::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
+void Vulkan_025_Water::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                   ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_023_Water::createDescriptorSets_Compute")
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_025_Water::createDescriptorSets_Compute")
     createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -2034,7 +2096,7 @@ void Vulkan_023_Water::createDescriptorSets_Compute(VKPipelineCompute* pPipeline
         }
         else
         {
-            String msg = "*********************** Vulkan_023_Water::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "*********************** Vulkan_025_Water::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2042,7 +2104,7 @@ void Vulkan_023_Water::createDescriptorSets_Compute(VKPipelineCompute* pPipeline
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_023_Water::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_025_Water::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2101,7 +2163,7 @@ void Vulkan_023_Water::updateCompute_BeforeRender_Custom(VkCommandBuffer& comman
     }
 }
 
-void Vulkan_023_Water::updateCBs_Custom()
+void Vulkan_025_Water::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -2110,7 +2172,7 @@ void Vulkan_023_Water::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = pRend->objectCBs.size();
+        size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -2138,21 +2200,27 @@ void Vulkan_023_Water::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pRend->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pRend->materialCBs.data());
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pRend->tessellationCBs.data());
         }
     }
 
@@ -2169,21 +2237,27 @@ void Vulkan_023_Water::updateCBs_Custom()
             
             //ObjectConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(ObjectConstants) * pRendIndirect->objectCBs.size(),
+											 (uint8*)pRendIndirect->objectCBs.data());
             }
 
             //MaterialConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_materialCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(MaterialConstants) * pRendIndirect->materialCBs.size(),
+											 (uint8*)pRendIndirect->materialCBs.data());
             }
 
             //TessellationConstants
             if (pRendIndirect->pRend->isUsedTessellation)
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(TessellationConstants) * pRendIndirect->tessellationCBs.size(),
+											 (uint8*)pRendIndirect->tessellationCBs.data());
             }
 
             //IndirectCommand
@@ -2194,7 +2268,7 @@ void Vulkan_023_Water::updateCBs_Custom()
     }
 }
 
-void Vulkan_023_Water::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_025_Water::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2235,13 +2309,13 @@ void Vulkan_023_Water::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& com
     }
 }
 
-bool Vulkan_023_Water::beginRenderImgui()
+bool Vulkan_025_Water::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_023_Water", &windowOpened, 0);
+    ImGui::Begin("Vulkan_025_Water", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -2263,7 +2337,7 @@ bool Vulkan_023_Water::beginRenderImgui()
 
     return true;
 }
-void Vulkan_023_Water::modelConfig()
+void Vulkan_025_Water::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -2728,13 +2802,13 @@ void Vulkan_023_Water::modelConfig()
     }
 }
 
-void Vulkan_023_Water::endRenderImgui()
+void Vulkan_025_Water::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_023_Water::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_025_Water::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -2759,7 +2833,7 @@ void Vulkan_023_Water::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
-void Vulkan_023_Water::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_025_Water::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -2787,7 +2861,7 @@ void Vulkan_023_Water::drawModelObjectRendIndirects(VkCommandBuffer& commandBuff
         }
     }
 }   
-void Vulkan_023_Water::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_025_Water::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -2832,7 +2906,7 @@ void Vulkan_023_Water::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffe
     }
 }
 
-void Vulkan_023_Water::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_025_Water::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2844,7 +2918,7 @@ void Vulkan_023_Water::drawModelObjectRends(VkCommandBuffer& commandBuffer, Mode
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_023_Water::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_025_Water::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
@@ -2878,7 +2952,7 @@ void Vulkan_023_Water::drawModelObjectRend(VkCommandBuffer& commandBuffer, Model
 	}
 }
 
-void Vulkan_023_Water::cleanupCustom()
+void Vulkan_025_Water::cleanupCustom()
 {   
     destroyTextures();
     destroyMeshes();
@@ -2896,7 +2970,7 @@ void Vulkan_023_Water::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_023_Water::cleanupSwapChain_Custom()
+void Vulkan_025_Water::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2911,7 +2985,7 @@ void Vulkan_023_Water::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_023_Water::recreateSwapChain_Custom()
+void Vulkan_025_Water::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

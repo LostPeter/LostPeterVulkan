@@ -1352,6 +1352,10 @@ namespace LostPeterVulkan
         {
             this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_AddList(objects);
         }
+		void VulkanWindow::UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects, int count)
+		{	
+			this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_AddList(objects, count);
+		}
     void VulkanWindow::UpdateBuffer_ObjectWorld_End()
     {
         this->m_pPipelineGraphics_DepthShadowMap->UpdateBuffer_ObjectWorld_Update();

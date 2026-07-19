@@ -383,29 +383,23 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+		F_DELETE(this->poBuffers_ObjectCB[i])
     }
-    this->objectCBs.clear();
-    this->poBuffers_ObjectCB.clear();
-    this->poBuffersMemory_ObjectCB.clear();
+	this->poBuffers_ObjectCB.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+		F_DELETE(this->poBuffers_materialCB[i])
     }
-    this->materialCBs.clear();
-    this->poBuffers_materialCB.clear();
-    this->poBuffersMemory_materialCB.clear();
+	this->poBuffers_materialCB.clear();
 
     count = this->poBuffers_tessellationCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+		F_DELETE(this->poBuffers_tessellationCB[i])
     }
-    this->tessellationCBs.clear();
-    this->poBuffers_tessellationCB.clear();
-    this->poBuffersMemory_tessellationCB.clear();
+	this->poBuffers_tessellationCB.clear();
 
     //2> VkDescriptorSets
     this->poDescriptorSets.clear();
@@ -511,36 +505,66 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandB
     //1> Uniform Buffer
     {
         //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-        this->poBuffers_ObjectCB.resize(count_sci);
-        this->poBuffersMemory_ObjectCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
-        }
+		if (this->poBuffers_ObjectCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(ObjectConstants) * this->objectCBs.size(),
+																										  (uint8*)(this->objectCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_ObjectCB.push_back(pBufferUniform);
+			}
+		}
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-        this->poBuffers_materialCB.resize(count_sci);
-        this->poBuffersMemory_materialCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
-        }
+		if (this->poBuffers_materialCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(MaterialConstants) * this->materialCBs.size(),
+																										  (uint8*)(this->materialCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_materialCB.push_back(pBufferUniform);
+			}
+		}
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
-            this->poBuffers_tessellationCB.resize(count_sci);
-            this->poBuffersMemory_tessellationCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
-                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
-            }
+			if (this->poBuffers_tessellationCB.size() <= 0)
+			{
+				for (size_t j = 0; j < count_sci; j++) 
+				{
+					String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
+					VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																											  sizeof(TessellationConstants) * this->tessellationCBs.size(),
+																											  (uint8*)(this->tessellationCBs.data()),
+																											  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					this->poBuffers_tessellationCB.push_back(pBufferUniform);
+				}
+			}
         }
     }
 
@@ -559,22 +583,24 @@ void Vulkan_019_ShadowMap::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
 void Vulkan_019_ShadowMap::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
-    this->objectCBs.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-
+	int count_index = 0;
     size_t count_rend = this->aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-        if (pRend->isUsedTessellation)
-        {
-            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-        }
+        for (int j = 0; j < pR->pModelObject->countInstance; j++)
+		{
+			this->objectCBs[count_index] = pR->objectCBs[j];
+			this->materialCBs[count_index] = pR->materialCBs[j];
+			if (pRend->isUsedTessellation)
+			{
+				this->tessellationCBs[count_index] = pR->tessellationCBs[j];
+			}
+
+			count_index ++;
+		}
     }
 }
 
@@ -921,9 +947,6 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
         bool isObjectCastShadow = pRend->isCastShadow;
         bool isObjectReceiveShadow = pRend->isReceiveShadow;
 
-        pRend->instanceMatWorld.clear();
-        pRend->objectCBs.clear();
-        pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
             //ObjectConstants
@@ -932,8 +955,8 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                pRend->objectCBs[j] = objectConstants;
+				pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
             }
 
             //MaterialConstants
@@ -971,7 +994,7 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                     }
                 }
-                pRend->materialCBs.push_back(materialConstants);
+                pRend->materialCBs[j] = materialConstants;
             }
 
             //TessellationConstants
@@ -981,42 +1004,81 @@ void Vulkan_019_ShadowMap::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 3.0f;
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pRend->tessellationCBs.push_back(tessellationConstants);
+                pRend->tessellationCBs[j] = tessellationConstants;
             }
         }
         
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pRend->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_ObjectCB[j])
+			}
+			pRend->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pRend->poBuffers_ObjectCB.resize(count_sci);
-            pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_019_ShadowMap::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pRend->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_materialCB[j])
+			}
+			pRend->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pRend->poBuffers_materialCB.resize(count_sci);
-            pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_019_ShadowMap::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
             {
+				for (size_t j = 0; j < pRend->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_tessellationCB[j])
+				}
+				pRend->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_tessellationCB.resize(count_sci);
-                pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_019_ShadowMap::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -1608,7 +1670,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j]->GetVkBuffer() : pRend->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1621,7 +1683,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j]->GetVkBuffer() : pRend->poBuffers_materialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1647,7 +1709,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j]->GetVkBuffer() : pRend->poBuffers_tessellationCB[j]->GetVkBuffer();
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -1858,7 +1920,7 @@ void Vulkan_019_ShadowMap::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = pRend->objectCBs.size();
+		size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -1886,21 +1948,27 @@ void Vulkan_019_ShadowMap::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pRend->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pRend->materialCBs.data());
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pRend->tessellationCBs.data());
         }
     }
 
@@ -1913,25 +1981,30 @@ void Vulkan_019_ShadowMap::updateCBs_Custom()
         if (pRendIndirect != nullptr)
         {
             pRendIndirect->UpdateUniformBuffer();
-            size_t count_object = pRendIndirect->objectCBs.size();
             
             //ObjectConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(ObjectConstants) * pRendIndirect->objectCBs.size(),
+											 (uint8*)pRendIndirect->objectCBs.data());
             }
 
             //MaterialConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_materialCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(MaterialConstants) * pRendIndirect->materialCBs.size(),
+											 (uint8*)pRendIndirect->materialCBs.data());
             }
 
             //TessellationConstants
             if (pRendIndirect->pRend->isUsedTessellation)
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(TessellationConstants) * pRendIndirect->tessellationCBs.size(),
+											 (uint8*)pRendIndirect->tessellationCBs.data());
             }
 
             //IndirectCommand
@@ -2000,10 +2073,9 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
                     !pRend->isCastShadow)
                     continue;
                 
-                int instanceCount = (int)pRend->objectCBs.size();
-                //F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
-                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
-                instanceStart += instanceCount;
+                int instanceCount = (int)pRend->pModelObject->countInstance;
+                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs, instanceCount);
+                instanceStart += pRend->pModelObject->countInstance;
             }
         }
         UpdateBuffer_ObjectWorld_End();
@@ -2019,8 +2091,7 @@ void Vulkan_019_ShadowMap::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
                     !pRend->isCastShadow)
                     continue;
 
-                int instanceCount = (int)pRend->objectCBs.size();
-                //F_LogInfo("2222222222: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+                int instanceCount = (int)pRend->pModelObject->countInstance;
                 Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub, instanceCount, instanceStart);
                 instanceStart += instanceCount;
             }

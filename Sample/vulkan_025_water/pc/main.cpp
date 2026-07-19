@@ -15,6 +15,6 @@
 
 int main()
 {
-    Vulkan_023_Water sample(1280, 720, "LostPeter - Vulkan_023_Water");
+    Vulkan_025_Water sample(1280, 720, "LostPeter - Vulkan_025_Water");
     return App::Run(&sample);
 }

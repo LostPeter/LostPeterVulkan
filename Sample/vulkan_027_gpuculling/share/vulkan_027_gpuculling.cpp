@@ -1232,29 +1232,23 @@ void Vulkan_027_GPUCulling::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+        F_DELETE(this->poBuffers_ObjectCB[i])
     }
-    this->objectCBs.clear();
     this->poBuffers_ObjectCB.clear();
-    this->poBuffersMemory_ObjectCB.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+		F_DELETE(this->poBuffers_materialCB[i])
     }
-    this->materialCBs.clear();
     this->poBuffers_materialCB.clear();
-    this->poBuffersMemory_materialCB.clear();
 
     count = this->poBuffers_tessellationCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+		F_DELETE(this->poBuffers_tessellationCB[i])
     }
-    this->tessellationCBs.clear();
     this->poBuffers_tessellationCB.clear();
-    this->poBuffersMemory_tessellationCB.clear();
 
     //2> VkDescriptorSets
     this->poDescriptorSets.clear();
@@ -1360,36 +1354,66 @@ void Vulkan_027_GPUCulling::ModelObjectRendIndirect::SetupUniformIndirectCommand
     //1> Uniform Buffer
     {
         //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-        this->poBuffers_ObjectCB.resize(count_sci);
-        this->poBuffersMemory_ObjectCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
-        }
+		if (this->poBuffers_ObjectCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(ObjectConstants) * this->objectCBs.size(),
+																										  (uint8*)(this->objectCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_027_GPUCulling::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_ObjectCB.push_back(pBufferUniform);
+			}
+		}
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-        this->poBuffers_materialCB.resize(count_sci);
-        this->poBuffersMemory_materialCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
-        }
+		if (this->poBuffers_materialCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(MaterialConstants) * this->materialCBs.size(),
+																										  (uint8*)(this->materialCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_027_GPUCulling::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_materialCB.push_back(pBufferUniform);
+			}
+		}
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
-            this->poBuffers_tessellationCB.resize(count_sci);
-            this->poBuffersMemory_tessellationCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
-                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
-            }
+			if (this->poBuffers_tessellationCB.size() <= 0)
+			{
+				for (size_t j = 0; j < count_sci; j++) 
+				{
+					String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
+					VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																											  sizeof(TessellationConstants) * this->tessellationCBs.size(),
+																											  (uint8*)(this->tessellationCBs.data()),
+																											  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_027_GPUCulling::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					this->poBuffers_tessellationCB.push_back(pBufferUniform);
+				}
+			}
         }
     }
 
@@ -1408,22 +1432,24 @@ void Vulkan_027_GPUCulling::ModelObjectRendIndirect::SetupUniformIndirectCommand
 
 void Vulkan_027_GPUCulling::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
-    this->objectCBs.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-
+    int count_index = 0;
     size_t count_rend = this->aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-        if (pRend->isUsedTessellation)
-        {
-            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-        }
+		for (int j = 0; j < pR->pModelObject->countInstance; j++)
+		{
+			this->objectCBs[count_index] = pR->objectCBs[j];
+			this->materialCBs[count_index] = pR->materialCBs[j];
+			if (pRend->isUsedTessellation)
+			{
+				this->tessellationCBs[count_index] = pR->tessellationCBs[j];
+			}
+
+			count_index ++;
+		}
     }
 }
 
@@ -1799,9 +1825,6 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->pCullLodData->pMesh = pRend->pMeshSub->pMesh;
         }
         
-        pRend->instanceMatWorld.clear();
-        pRend->objectCBs.clear();
-        pRend->materialCBs.clear();
         pRend->aPointerBoundAABB_Line.clear();
         pRend->aPointerBoundAABB_Line.resize(count_instance);
         pRend->aPointerBoundSphere_Line.clear();
@@ -1817,8 +1840,8 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
             objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                         g_ObjectRend_Tranforms[3 * i + 1],
                                                         g_ObjectRend_Tranforms[3 * i + 2]);
-            pRend->objectCBs.push_back(objectConstants);
-            pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+			pRend->objectCBs[j] = objectConstants;
+			pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
             pRend->aPointerBoundAABB_Line[j] = nullptr;
             pRend->aPointerBoundSphere_Line[j] = nullptr;
             pRend->aPointerBoundAABB_Flat[j] = nullptr;
@@ -1858,7 +1881,7 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                 }
             }
-            pRend->materialCBs.push_back(materialConstants);
+            pRend->materialCBs[j] = materialConstants;
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
@@ -1867,7 +1890,7 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 3.0f;
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pRend->tessellationCBs.push_back(tessellationConstants);
+                pRend->tessellationCBs[j] = tessellationConstants;
             }
 
             //Cull
@@ -1885,35 +1908,74 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
         if (isCreateVkBuffer)
         {
             //ObjectConstants
+			for (size_t j = 0; j < pRend->poBuffers_ObjectCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_ObjectCB[j])
+			}
+			pRend->poBuffers_ObjectCB.clear();
             bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pRend->poBuffers_ObjectCB.resize(count_sci);
-            pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->objectCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_ObjectCB.push_back(pBufferUniform);
             }
 
             //MaterialConstants
+			for (size_t j = 0; j < pRend->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_materialCB[j])
+			}
+			pRend->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pRend->poBuffers_materialCB.resize(count_sci);
-            pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
             {
+				for (size_t j = 0; j < pRend->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_tessellationCB[j])
+				}
+				pRend->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_tessellationCB.resize(count_sci);
-                pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI((int)i, (int)j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -2652,13 +2714,13 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
     }
 }
 void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
-                                                       VkDescriptorSetVector& poDescriptorSets, 
-                                                       StringVector* poDescriptorSetLayoutNames,
-                                                       const VkBufferVector& poBuffersObjectCB,
-                                                       const VkBufferVector& poBuffersMaterialCB,
-                                                       VKBufferUniform* pCB_CullInstance,
-                                                       VKBufferCompute* pCB_CullObjectInstances,
-                                                       VKBufferCompute* pCB_Result)
+                                                          VkDescriptorSetVector& poDescriptorSets, 
+                                                          StringVector* poDescriptorSetLayoutNames,
+                                                          const VKBufferUniformPtrVector& poBuffersObjectCB,
+                                                          const VKBufferUniformPtrVector& poBuffersMaterialCB,
+                                                          VKBufferUniform* pCB_CullInstance,
+                                                          VKBufferCompute* pCB_CullObjectInstances,
+                                                          VKBufferCompute* pCB_Result)
 {
     F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_027_GPUCulling::updateDescriptorSets_Graphics")
     uint32_t count_ds = (uint32_t)poDescriptorSets.size();
@@ -2687,7 +2749,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = poBuffersObjectCB[j];
+                bufferInfo_Object.buffer = poBuffersObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2700,7 +2762,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = poBuffersMaterialCB[j];
+                bufferInfo_Material.buffer = poBuffersMaterialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2804,7 +2866,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
     }
 }
 void Vulkan_027_GPUCulling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
-                                                      VKPipelineCompute* pPipelineCompute)
+                                                         VKPipelineCompute* pPipelineCompute)
 {
     StringVector* poDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_027_GPUCulling::updateDescriptorSets_Compute")
@@ -2934,7 +2996,7 @@ void Vulkan_027_GPUCulling::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = pRend->objectCBs.size();
+        size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             //ObjectConstants
@@ -2962,21 +3024,27 @@ void Vulkan_027_GPUCulling::updateCBs_Custom()
 
         //ObjectConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(ObjectConstants) * count_object,
+										 (uint8*)pRend->objectCBs.data());
         }
 
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pRend->materialCBs.data());
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pRend->tessellationCBs.data());
         }
     }
 
@@ -2993,21 +3061,27 @@ void Vulkan_027_GPUCulling::updateCBs_Custom()
             
             //ObjectConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(ObjectConstants) * pRendIndirect->objectCBs.size(),
+											 (uint8*)pRendIndirect->objectCBs.data());
             }
 
             //MaterialConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_materialCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(MaterialConstants) * pRendIndirect->materialCBs.size(),
+											 (uint8*)pRendIndirect->materialCBs.data());
             }
 
             //TessellationConstants
             if (pRendIndirect->pRend->isUsedTessellation)
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(TessellationConstants) * pRendIndirect->tessellationCBs.size(),
+											 (uint8*)pRendIndirect->tessellationCBs.data());
             }
 
             //IndirectCommand
@@ -3081,10 +3155,9 @@ void Vulkan_027_GPUCulling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer
                     !pRend->isCastShadow ||
                     (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
                     continue;
-                
-                int instanceCount = (int)pRend->objectCBs.size();
-                //F_LogInfo("1111111111: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
-                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs);
+				
+				int instanceCount = (int)pRend->pModelObject->countInstance;
+                UpdateBuffer_ObjectWorld_AddList(pRend->objectCBs, instanceCount);
                 instanceStart += instanceCount;
             }
         }
@@ -3102,8 +3175,7 @@ void Vulkan_027_GPUCulling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer
                     (pRend->isCanCulling && pRend->pCullLodData != nullptr && pRend->pCullRenderData != nullptr && isCulling))
                     continue;
 
-                int instanceCount = (int)pRend->objectCBs.size();
-                //F_LogInfo("2222222222: instance count: [%d], start: [%d] ", instanceCount, instanceStart);
+				int instanceCount = (int)pRend->pModelObject->countInstance;
                 Draw_Graphics_DepthShadowMap(commandBuffer, pRend->pMeshSub, instanceCount, instanceStart);
                 instanceStart += instanceCount;
             }
@@ -3960,13 +4032,14 @@ void Vulkan_027_GPUCulling::drawModelObjectRendCull(VkCommandBuffer& commandBuff
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
 
-    VkBuffer vertexBuffers[] = { pMeshSub->GetVkBufferVertex() };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pMeshSub->GetVkBufferIndex() != nullptr)
-    {
-        bindIndexBuffer(commandBuffer, pMeshSub->GetVkBufferIndex(), 0, VK_INDEX_TYPE_UINT32);
-    }
+	if (pMeshSub->pBufferVertex != nullptr)
+	{
+		pMeshSub->pBufferVertex->BindVertexBuffer(commandBuffer);
+	}
+	else if (pMeshSub->pBufferVertexIndex != nullptr)
+	{
+		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+	}
 
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
     {

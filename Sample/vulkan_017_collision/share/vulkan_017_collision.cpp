@@ -1300,49 +1300,39 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+		F_DELETE(this->poBuffers_ObjectCB[i])
     }
-    this->objectCBs.clear();
     this->poBuffers_ObjectCB.clear();
-    this->poBuffersMemory_ObjectCB.clear();
 
     //ObjectLineFlat2D
     count = this->poBuffers_ObjectCB_LineFlat2D.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat2D[i], this->poBuffersMemory_ObjectCB_LineFlat2D[i]);
+		F_DELETE(this->poBuffers_ObjectCB_LineFlat2D[i])
     }
-    this->objectCBs_LineFlat2D.clear();
     this->poBuffers_ObjectCB_LineFlat2D.clear();
-    this->poBuffersMemory_ObjectCB_LineFlat2D.clear();
 
     //ObjectLineFlat3D
     count = this->poBuffers_ObjectCB_LineFlat3D.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat3D[i], this->poBuffersMemory_ObjectCB_LineFlat3D[i]);
+		F_DELETE(this->poBuffers_ObjectCB_LineFlat3D[i])
     }
-    this->objectCBs_LineFlat3D.clear();
     this->poBuffers_ObjectCB_LineFlat3D.clear();
-    this->poBuffersMemory_ObjectCB_LineFlat3D.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+		F_DELETE(this->poBuffers_materialCB[i])
     }
-    this->materialCBs.clear();
     this->poBuffers_materialCB.clear();
-    this->poBuffersMemory_materialCB.clear();
 
     count = this->poBuffers_tessellationCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+		F_DELETE(this->poBuffers_tessellationCB[i])
     }
-    this->tessellationCBs.clear();
     this->poBuffers_tessellationCB.clear();
-    this->poBuffersMemory_tessellationCB.clear();
 
     //2> VkDescriptorSets
     this->poDescriptorSets.clear();
@@ -1452,62 +1442,112 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
             if (!this->pRend->isGeometryLine && !this->pRend->isGeometryFlat)
             {
                 //ObjectConstants
-                bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-                this->poBuffers_ObjectCB.resize(count_sci);
-                this->poBuffersMemory_ObjectCB.resize(count_sci);
-                for (size_t j = 0; j < count_sci; j++) 
-                {
-                    String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
-                    this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
-                }
+				if (this->poBuffers_ObjectCB.size() <= 0)
+				{
+					for (size_t j = 0; j < count_sci; j++) 
+					{
+						String nameBuffer = "ObjectConstants-" + FUtilString::SaveSizeT(j);
+						VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																												  sizeof(ObjectConstants) * this->objectCBs.size(),
+																												  (uint8*)(this->objectCBs.data()),
+																												  false);
+						if (!pBufferUniform)
+						{
+							String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+							F_LogError(msg.c_str());
+							throw std::runtime_error(msg);
+						}
+						this->poBuffers_ObjectCB.push_back(pBufferUniform);
+					}
+				}
             }
             else
             {
                 //ObjectLineFlat3D
-                bufferSize = sizeof(LineFlat3DObjectConstants) * this->objectCBs_LineFlat3D.size();
-                this->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
-                this->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
-                for (size_t j = 0; j < count_sci; j++) 
-                {
-                    String nameBuffer = "LineFlat3DObjectConstants-" + FUtilString::SaveSizeT(j);
-                    this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat3D[j], this->poBuffersMemory_ObjectCB_LineFlat3D[j]);
-                }
+				if (this->poBuffers_ObjectCB_LineFlat3D.size() <= 0)
+				{
+					for (size_t j = 0; j < count_sci; j++) 
+					{
+						String nameBuffer = "LineFlat3DObjectConstants-" + FUtilString::SaveSizeT(j);
+						VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																												  sizeof(LineFlat3DObjectConstants) * this->objectCBs_LineFlat3D.size(),
+																												  (uint8*)(this->objectCBs_LineFlat3D.data()),
+																												  false);
+						if (!pBufferUniform)
+						{
+							String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+							F_LogError(msg.c_str());
+							throw std::runtime_error(msg);
+						}
+						this->poBuffers_ObjectCB_LineFlat3D.push_back(pBufferUniform);
+					}
+				}
             }
         }
         else
         {
             //ObjectLineFlat2D
-            bufferSize = sizeof(LineFlat2DObjectConstants) * this->objectCBs_LineFlat2D.size();
-            this->poBuffers_ObjectCB_LineFlat2D.resize(count_sci);
-            this->poBuffersMemory_ObjectCB_LineFlat2D.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                String nameBuffer = "LineFlat2DObjectConstants-" + FUtilString::SaveSizeT(j);
-                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat2D[j], this->poBuffersMemory_ObjectCB_LineFlat2D[j]);
-            }
+			if (this->poBuffers_ObjectCB_LineFlat2D.size() <= 0)
+			{
+				for (size_t j = 0; j < count_sci; j++) 
+				{
+					String nameBuffer = "LineFlat2DObjectConstants-" + FUtilString::SaveSizeT(j);
+					VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																											  sizeof(LineFlat2DObjectConstants) * this->objectCBs_LineFlat2D.size(),
+																											  (uint8*)(this->objectCBs_LineFlat2D.data()),
+																											  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					this->poBuffers_ObjectCB_LineFlat2D.push_back(pBufferUniform);
+				}
+			}
         }
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
-        this->poBuffers_materialCB.resize(count_sci);
-        this->poBuffersMemory_materialCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
-        {
-            String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
-            this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
-        }
+		if (this->poBuffers_materialCB.size() <= 0)
+		{
+			for (size_t j = 0; j < count_sci; j++) 
+			{
+				String nameBuffer = "MaterialConstants-" + FUtilString::SaveSizeT(j);
+				VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																										  sizeof(MaterialConstants) * this->materialCBs.size(),
+																										  (uint8*)(this->materialCBs.data()),
+																										  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				this->poBuffers_materialCB.push_back(pBufferUniform);
+			}
+		}
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
-            this->poBuffers_tessellationCB.resize(count_sci);
-            this->poBuffersMemory_tessellationCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
-                this->pRend->pModelObject->pWindow->createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
-            }
+			if (this->poBuffers_tessellationCB.size() <= 0)
+			{
+				for (size_t j = 0; j < count_sci; j++) 
+				{
+					String nameBuffer = "TessellationConstants-" + FUtilString::SaveSizeT(j);
+					VKBufferUniform* pBufferUniform = this->pRend->pModelObject->pWindow->createBufferUniform(nameBuffer,
+																											  sizeof(TessellationConstants) * this->tessellationCBs.size(),
+																											  (uint8*)(this->tessellationCBs.data()),
+																											  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					this->poBuffers_tessellationCB.push_back(pBufferUniform);
+				}
+			}
         }
     }
 
@@ -1526,34 +1566,34 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
 void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
-    this->objectCBs.clear();
-    this->objectCBs_LineFlat2D.clear();
-    this->objectCBs_LineFlat3D.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-
+	int count_index = 0;
     size_t count_rend = this->aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        if (pR->isGeometry3D)
-        {
-            if (!pR->isGeometryLine && !pR->isGeometryFlat)
-                this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-            else
-                this->objectCBs_LineFlat3D.insert(this->objectCBs_LineFlat3D.end(), pR->objectCBs_LineFlat3D.begin(), pR->objectCBs_LineFlat3D.end());
-        }
-        else
-        {
-            this->objectCBs_LineFlat2D.insert(this->objectCBs_LineFlat2D.end(), pR->objectCBs_LineFlat2D.begin(), pR->objectCBs_LineFlat2D.end());
-        }
-        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-        if (pRend->isUsedTessellation)
-        {
-            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-        }
+		for (int j = 0; j < pR->pModelObject->countInstance; j++)
+		{
+			if (pR->isGeometry3D)
+			{
+				if (!pR->isGeometryLine && !pR->isGeometryFlat)
+					this->objectCBs[count_index] = pR->objectCBs[j];
+				else
+					this->objectCBs_LineFlat3D[count_index] = pR->objectCBs_LineFlat3D[j];
+			}
+			else
+			{
+				this->objectCBs_LineFlat2D[count_index] = pR->objectCBs_LineFlat2D[j];
+			}
+			this->materialCBs[count_index] = pR->materialCBs[j];
+			if (pRend->isUsedTessellation)
+			{
+				this->tessellationCBs[count_index] = pR->tessellationCBs[j];
+			}
+
+			count_index ++;
+		}
     }
 }
 
@@ -2024,7 +2064,7 @@ bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay
         isCollision = false;
     }
     FMeshCreateParam_LineLine3D* pLineLine3D = (FMeshCreateParam_LineLine3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2047,7 +2087,7 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle3D(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_LineTriangle3D* pLineTriangle3D = (FMeshCreateParam_LineTriangle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2071,7 +2111,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuad3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_LineQuad3D* pLineQuad3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2096,7 +2136,7 @@ bool Vulkan_017_Collision::IsCollision_LineGrid3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_LineGrid3D* pLineGrid3D = (FMeshCreateParam_LineGrid3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2121,7 +2161,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuadConvex3D(double x, double y, cons
 {
     bool isCollision = false;
     FMeshCreateParam_LineQuad3D* pLineQuadConvex3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2146,7 +2186,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuadConcave3D(double x, double y, con
 {
     bool isCollision = false;
     FMeshCreateParam_LineQuad3D* pLineQuadConcave3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2171,7 +2211,7 @@ bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FR
 {
     bool isCollision = false;
     FMeshCreateParam_LineCircle3D* pLineCircle3D = (FMeshCreateParam_LineCircle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2196,7 +2236,7 @@ bool Vulkan_017_Collision::IsCollision_LineAABB3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FAABB& aabb = pRend->pMeshSub->aabb;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2219,7 +2259,7 @@ bool Vulkan_017_Collision::IsCollision_LineSphere3D(double x, double y, const FR
 {
     bool isCollision = false;
     FSphere& sphere = pRend->pMeshSub->sphere;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2242,7 +2282,7 @@ bool Vulkan_017_Collision::IsCollision_LineCylinder3D(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_LineCylinder3D* pLineCylinder3D = (FMeshCreateParam_LineCylinder3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2267,7 +2307,7 @@ bool Vulkan_017_Collision::IsCollision_LineCapsule3D(double x, double y, const F
 {
     bool isCollision = false;
     FMeshCreateParam_LineCapsule3D* pLineCapsule3D = (FMeshCreateParam_LineCapsule3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2292,7 +2332,7 @@ bool Vulkan_017_Collision::IsCollision_LineCone3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_LineCone3D* pLineCone3D = (FMeshCreateParam_LineCone3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2318,7 +2358,7 @@ bool Vulkan_017_Collision::IsCollision_LineTorus3D(double x, double y, const FRa
 {
     bool isCollision = false;
     FMeshCreateParam_LineTorus3D* pLineTorus3D = (FMeshCreateParam_LineTorus3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2346,7 +2386,7 @@ bool Vulkan_017_Collision::IsCollision_FlatTriangle3D(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_FlatTriangle3D* pFlatTriangle3D = (FMeshCreateParam_FlatTriangle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2370,7 +2410,7 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_FlatQuad3D* pFlatQuad3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2395,7 +2435,7 @@ bool Vulkan_017_Collision::IsCollision_FlatQuadConvex3D(double x, double y, cons
 {
     bool isCollision = false;
     FMeshCreateParam_FlatQuad3D* pFlatQuadConvex3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2420,7 +2460,7 @@ bool Vulkan_017_Collision::IsCollision_FlatQuadConcave3D(double x, double y, con
 {
     bool isCollision = false;
     FMeshCreateParam_FlatQuad3D* pFlatQuadConcave3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2445,7 +2485,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FR
 {
     bool isCollision = false;
     FMeshCreateParam_FlatCircle3D* pFlatCircle3D = (FMeshCreateParam_FlatCircle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2469,7 +2509,7 @@ bool Vulkan_017_Collision::IsCollision_FlatAABB3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FAABB& aabb = pRend->pMeshSub->aabb;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2492,7 +2532,7 @@ bool Vulkan_017_Collision::IsCollision_FlatSphere3D(double x, double y, const FR
 {
     bool isCollision = false;
     FSphere& sphere = pRend->pMeshSub->sphere;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2515,7 +2555,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCylinder3D(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_FlatCylinder3D* pFlatCylinder3D = (FMeshCreateParam_FlatCylinder3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2540,7 +2580,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCapsule3D(double x, double y, const F
 {
     bool isCollision = false;
     FMeshCreateParam_FlatCapsule3D* pFlatCapsule3D = (FMeshCreateParam_FlatCapsule3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2565,7 +2605,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCone3D(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_FlatCone3D* pFlatCone3D = (FMeshCreateParam_FlatCone3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2591,7 +2631,7 @@ bool Vulkan_017_Collision::IsCollision_FlatTorus3D(double x, double y, const FRa
 {
     bool isCollision = false;
     FMeshCreateParam_FlatTorus3D* pFlatTorus3D = (FMeshCreateParam_FlatTorus3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs_LineFlat3D.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
@@ -2619,7 +2659,7 @@ bool Vulkan_017_Collision::IsCollision_EntityTriangle(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_EntityTriangle* pEntityTriangle = (FMeshCreateParam_EntityTriangle*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2644,7 +2684,7 @@ bool Vulkan_017_Collision::IsCollision_EntityQuad(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_EntityQuad* pEntityQuad = (FMeshCreateParam_EntityQuad*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2670,7 +2710,7 @@ bool Vulkan_017_Collision::IsCollision_EntityGrid(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_EntityGrid* pEntityGrid = (FMeshCreateParam_EntityGrid*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2696,7 +2736,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCircle(double x, double y, const FR
 {
     bool isCollision = false;
     FMeshCreateParam_EntityCircle* pEntityCircle = (FMeshCreateParam_EntityCircle*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2721,7 +2761,7 @@ bool Vulkan_017_Collision::IsCollision_EntityAABB(double x, double y, const FRay
 {
     bool isCollision = false;
     FAABB& aabb = pRend->pMeshSub->aabb;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2745,7 +2785,7 @@ bool Vulkan_017_Collision::IsCollision_EntitySphere(double x, double y, const FR
 {
     bool isCollision = false;
     FSphere& sphere = pRend->pMeshSub->sphere;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2769,7 +2809,7 @@ bool Vulkan_017_Collision::IsCollision_EntityGeoSphere(double x, double y, const
 {
     bool isCollision = false;
     FSphere& sphere = pRend->pMeshSub->sphere;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2793,7 +2833,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCylinder(double x, double y, const 
 {
     bool isCollision = false;
     FMeshCreateParam_EntityCylinder* pEntityCylinder = (FMeshCreateParam_EntityCylinder*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2819,7 +2859,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCapsule(double x, double y, const F
 {
     bool isCollision = false;
     FMeshCreateParam_EntityCapsule* pEntityCapsule = (FMeshCreateParam_EntityCapsule*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2845,7 +2885,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCone(double x, double y, const FRay
 {
     bool isCollision = false;
     FMeshCreateParam_EntityCone* pEntityCone = (FMeshCreateParam_EntityCone*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -2872,7 +2912,7 @@ bool Vulkan_017_Collision::IsCollision_EntityTorus(double x, double y, const FRa
 {
     bool isCollision = false;
     FMeshCreateParam_EntityTorus* pEntityTorus = (FMeshCreateParam_EntityTorus*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    size_t count = pRend->objectCBs.size();
+    size_t count = (size_t)pRend->pModelObject->countInstance;
     for (size_t i = 0; i < count; i++)
     {
         ObjectConstants& obj = pRend->objectCBs[i];
@@ -3307,11 +3347,6 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
         int count_instance = pRend->pModelObject->countInstance;
         bool isObjectLighting = g_Object_IsLightings[indexObject];
 
-        pRend->instanceMatWorld.clear();
-        pRend->objectCBs.clear();
-        pRend->objectCBs_LineFlat2D.clear();
-        pRend->objectCBs_LineFlat3D.clear();
-        pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
             if (pRend->isGeometry3D)
@@ -3323,8 +3358,8 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                     objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                                 g_ObjectRend_Tranforms[3 * i + 1],
                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
-                    pRend->objectCBs.push_back(objectConstants);
-                    pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+					pRend->objectCBs[j] = objectConstants;
+					pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
                 }
                 else
                 {
@@ -3358,8 +3393,8 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                         case F_MeshGeometry_FlatCone3D:         { objectConstants.color = s_color_FlatCone3D;           break; }
                         case F_MeshGeometry_FlatTorus3D:        { objectConstants.color = s_color_FlatTorus3D;          break; }
                     }
-                    pRend->objectCBs_LineFlat3D.push_back(objectConstants);
-                    pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+					pRend->objectCBs_LineFlat3D[j] = objectConstants;
+					pRend->instanceMatWorld[j] = objectConstants.g_MatWorld;
                 }
             }
             else
@@ -3379,7 +3414,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                     case F_MeshGeometry_FlatQuad2D:         { objectConstants.color = s_color_FlatQuad2D;           break; }
                     case F_MeshGeometry_FlatCircle2D:       { objectConstants.color = s_color_FlatCircle2D;         break; }
                 }
-                pRend->objectCBs_LineFlat2D.push_back(objectConstants);
+				pRend->objectCBs_LineFlat2D[j] = objectConstants;
             }
 
             //MaterialConstants
@@ -3433,7 +3468,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
 
                     }
                 }
-                pRend->materialCBs.push_back(materialConstants);
+				pRend->materialCBs[j] = materialConstants;
             }
 
             //TessellationConstants
@@ -3443,7 +3478,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 tessellationConstants.tessLevelOuter = 3.0f;
                 tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
-                pRend->tessellationCBs.push_back(tessellationConstants);
+				pRend->tessellationCBs[j] = tessellationConstants;
             }
         }
         
@@ -3454,61 +3489,126 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 //ObjectConstants
                 if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
                 {
+					for (size_t j = 0; j < pRend->poBuffers_ObjectCB.size(); j++) 
+					{
+						F_DELETE(pRend->poBuffers_ObjectCB[j])
+					}
+					pRend->poBuffers_ObjectCB.clear();
                     bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-                    pRend->poBuffers_ObjectCB.resize(count_sci);
-                    pRend->poBuffersMemory_ObjectCB.resize(count_sci);
                     for (size_t j = 0; j < count_sci; j++) 
                     {
                         String nameBuffer = "ObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                        createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+						VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																			  bufferSize,
+																			  (uint8*)(pRend->objectCBs.data()),
+																			  false);
+						if (!pBufferUniform)
+						{
+							String msg = "*********************** Vulkan_017_Collision::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+							F_LogError(msg.c_str());
+							throw std::runtime_error(msg);
+						}
+						pRend->poBuffers_ObjectCB.push_back(pBufferUniform);
                     }
                 }
                 else
                 {
                     //ObjectLineFlat3D
+					for (size_t j = 0; j < pRend->poBuffers_ObjectCB_LineFlat3D.size(); j++) 
+					{
+						F_DELETE(pRend->poBuffers_ObjectCB_LineFlat3D[j])
+					}
+					pRend->poBuffers_ObjectCB_LineFlat3D.clear();
                     bufferSize = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
-                    pRend->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
-                    pRend->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
                     for (size_t j = 0; j < count_sci; j++) 
                     {
                         String nameBuffer = "LineFlat3DObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                        createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat3D[j], pRend->poBuffersMemory_ObjectCB_LineFlat3D[j]);
+						VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																			  bufferSize,
+																			  (uint8*)(pRend->objectCBs_LineFlat3D.data()),
+																			  false);
+						if (!pBufferUniform)
+						{
+							String msg = "*********************** Vulkan_017_Collision::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+							F_LogError(msg.c_str());
+							throw std::runtime_error(msg);
+						}
+						pRend->poBuffers_ObjectCB_LineFlat3D.push_back(pBufferUniform);
                     }
                 }
             }
             else
             {
                 //ObjectLineFlat2D
+				for (size_t j = 0; j < pRend->poBuffers_ObjectCB_LineFlat2D.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_ObjectCB_LineFlat2D[j])
+				}
+				pRend->poBuffers_ObjectCB_LineFlat2D.clear();
                 bufferSize = sizeof(LineFlat2DObjectConstants) * MAX_OBJECT_LINEFLAT_2D_COUNT;
-                pRend->poBuffers_ObjectCB_LineFlat2D.resize(count_sci);
-                pRend->poBuffersMemory_ObjectCB_LineFlat2D.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "LineFlat2DObjectConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat2D[j], pRend->poBuffersMemory_ObjectCB_LineFlat2D[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->objectCBs_LineFlat2D.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_017_Collision::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_ObjectCB_LineFlat2D.push_back(pBufferUniform);
                 }
             }
             
             //MaterialConstants
+			for (size_t j = 0; j < pRend->poBuffers_materialCB.size(); j++) 
+			{
+				F_DELETE(pRend->poBuffers_materialCB[j])
+			}
+			pRend->poBuffers_materialCB.clear();
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-            pRend->poBuffers_materialCB.resize(count_sci);
-            pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 String nameBuffer = "MaterialConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+				VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																	  bufferSize,
+																	  (uint8*)(pRend->materialCBs.data()),
+																	  false);
+				if (!pBufferUniform)
+				{
+					String msg = "*********************** Vulkan_017_Collision::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg);
+				}
+				pRend->poBuffers_materialCB.push_back(pBufferUniform);
             }
 
             //TessellationConstants
             if (pRend->isUsedTessellation)
             {
+				for (size_t j = 0; j < pRend->poBuffers_tessellationCB.size(); j++) 
+				{
+					F_DELETE(pRend->poBuffers_tessellationCB[j])
+				}
+				pRend->poBuffers_tessellationCB.clear();
                 bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_tessellationCB.resize(count_sci);
-                pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     String nameBuffer = "TessellationConstants-" + FUtilString::SavePointI(FPointI(i,j));
-                    createVkBuffer(nameBuffer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+					VKBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
+																		  bufferSize,
+																		  (uint8*)(pRend->tessellationCBs.data()),
+																		  false);
+					if (!pBufferUniform)
+					{
+						String msg = "*********************** Vulkan_017_Collision::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg);
+					}
+					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
                 }
             }
         }
@@ -4087,7 +4187,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j]->GetVkBuffer() : pRend->poBuffers_ObjectCB[j]->GetVkBuffer();
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4100,7 +4200,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat2D)) //ObjectLineFlat2D
             {
                 VkDescriptorBufferInfo bufferInfo_ObjectLineFlat = {};
-                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat2D[j] : pRend->poBuffers_ObjectCB_LineFlat2D[j];
+                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat2D[j]->GetVkBuffer() : pRend->poBuffers_ObjectCB_LineFlat2D[j]->GetVkBuffer();
                 bufferInfo_ObjectLineFlat.offset = 0;
                 bufferInfo_ObjectLineFlat.range = sizeof(LineFlat2DObjectConstants) * MAX_OBJECT_LINEFLAT_2D_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4113,7 +4213,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat3D)) //ObjectLineFlat3D
             {
                 VkDescriptorBufferInfo bufferInfo_ObjectLineFlat = {};
-                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat3D[j] : pRend->poBuffers_ObjectCB_LineFlat3D[j];
+                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat3D[j]->GetVkBuffer() : pRend->poBuffers_ObjectCB_LineFlat3D[j]->GetVkBuffer();
                 bufferInfo_ObjectLineFlat.offset = 0;
                 bufferInfo_ObjectLineFlat.range = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4126,7 +4226,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j]->GetVkBuffer() : pRend->poBuffers_materialCB[j]->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4152,7 +4252,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j]->GetVkBuffer() : pRend->poBuffers_tessellationCB[j]->GetVkBuffer();
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -4352,18 +4452,7 @@ void Vulkan_017_Collision::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = 0;
-        if (pRend->isGeometry3D)
-        {
-            if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
-                count_object = pRend->objectCBs.size();
-            else
-                count_object = pRend->objectCBs_LineFlat3D.size();
-        }
-        else
-        {
-            count_object = pRend->objectCBs_LineFlat2D.size();
-        }
+		size_t count_object = (size_t)pRend->pModelObject->countInstance;
         for (size_t j = 0; j < count_object; j++)
         {
             if (pRend->isGeometry3D)
@@ -4415,32 +4504,42 @@ void Vulkan_017_Collision::updateCBs_Custom()
         {
             if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
             {
-                VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(ObjectConstants) * count_object,
+											 (uint8*)pRend->objectCBs.data());
             }
             else
             {
-                VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(LineFlat3DObjectConstants) * count_object, pRend->objectCBs_LineFlat3D.data(), memory);
+				VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(LineFlat3DObjectConstants) * count_object,
+											 (uint8*)pRend->objectCBs_LineFlat3D.data());
             }
         }
         else
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(LineFlat2DObjectConstants) * count_object, pRend->objectCBs_LineFlat2D.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(LineFlat2DObjectConstants) * count_object,
+										 (uint8*)pRend->objectCBs_LineFlat2D.data());
         }
         
         //MaterialConstants
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_materialCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(MaterialConstants) * count_object,
+										 (uint8*)pRend->materialCBs.data());
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
+			VKBufferUniform* pBufferUniform = pRend->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+			pBufferUniform->UpdateBuffer(0, 
+										 sizeof(TessellationConstants) * count_object,
+										 (uint8*)pRend->tessellationCBs.data());
         }
     }
 
@@ -4459,37 +4558,44 @@ void Vulkan_017_Collision::updateCBs_Custom()
                 if (!pRendIndirect->pRend->isGeometryLine && !pRendIndirect->pRend->isGeometryFlat)
                 {
                     //ObjectConstants
-                    size_t count_object = pRendIndirect->objectCBs.size();
-                    VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
+					VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB[this->poSwapChainImageIndex];
+					pBufferUniform->UpdateBuffer(0, 
+											     sizeof(ObjectConstants) * pRendIndirect->objectCBs.size(),
+											 	 (uint8*)pRendIndirect->objectCBs.data());
                 }
                 else
                 {
                     //ObjectLineFlat3D
-                    size_t count_object = pRendIndirect->objectCBs_LineFlat3D.size();
-                    VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
-                    updateVKBuffer(0, sizeof(LineFlat3DObjectConstants) * count_object, pRendIndirect->objectCBs_LineFlat3D.data(), memory);
+					VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+					pBufferUniform->UpdateBuffer(0, 
+											     sizeof(LineFlat3DObjectConstants) * pRendIndirect->objectCBs_LineFlat3D.size(),
+											 	 (uint8*)pRendIndirect->objectCBs_LineFlat3D.data());
                 }
             }
             else
             {
                 //ObjectLineFlat2D
-                size_t count_object = pRendIndirect->objectCBs_LineFlat2D.size();
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(LineFlat2DObjectConstants) * count_object, pRendIndirect->objectCBs_LineFlat2D.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(LineFlat2DObjectConstants) * pRendIndirect->objectCBs_LineFlat2D.size(),
+											 (uint8*)pRendIndirect->objectCBs_LineFlat2D.data());
             }
 
             //MaterialConstants
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_materialCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(MaterialConstants) * pRendIndirect->materialCBs.size(),
+											 (uint8*)pRendIndirect->materialCBs.data());
             }
 
             //TessellationConstants
             if (pRendIndirect->pRend->isUsedTessellation)
             {
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
+				VKBufferUniform* pBufferUniform = pRendIndirect->poBuffers_tessellationCB[this->poSwapChainImageIndex];
+				pBufferUniform->UpdateBuffer(0, 
+											 sizeof(TessellationConstants) * pRendIndirect->tessellationCBs.size(),
+											 (uint8*)pRendIndirect->tessellationCBs.data());
             }
 
             //IndirectCommand

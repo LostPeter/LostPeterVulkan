@@ -250,6 +250,16 @@ namespace LostPeterVulkan
             this->objectWorldCBs.push_back(objects[i]);
         }
     }
+	void VKPipelineGraphicsDepthShadowMap::UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects, int count)
+	{
+		size_t count_object = objects.size();
+        for (size_t i = 0; i < count_object; i++)
+        {
+			if (i > count - 1)
+				break;
+            this->objectWorldCBs.push_back(objects[i]);
+        }
+	}
     void VKPipelineGraphicsDepthShadowMap::UpdateBuffer_ObjectWorld_Update()
     {
         if (this->objectWorldCBs.size() <= 0)

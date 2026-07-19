@@ -109,6 +109,7 @@ namespace LostPeterVulkan
         virtual void UpdateBuffer_ObjectWorld_Begin();
             virtual void UpdateBuffer_ObjectWorld_AddOne(const ObjectConstants& object);
             virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects);
+			virtual void UpdateBuffer_ObjectWorld_AddList(const std::vector<ObjectConstants> objects, int count);
         virtual void UpdateBuffer_ObjectWorld_End();
         virtual bool Draw_Graphics_DepthShadowMapBegin(VkCommandBuffer& commandBuffer);
             virtual void Draw_Graphics_DepthShadowMap(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceCount, int instanceStart);
