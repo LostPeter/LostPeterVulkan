@@ -136,7 +136,6 @@ public:
                 F_DELETE(this->poBuffers_ObjectCB[i])
             }
             this->poBuffers_ObjectCB.clear();
-            this->objectCBs.clear();
 
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -144,7 +143,6 @@ public:
 				F_DELETE(this->poBuffers_materialCB[i])
             }
             this->poBuffers_materialCB.clear();
-            this->materialCBs.clear();
 
             count = this->poBuffers_ObjectCB_Outline.size();
             for (size_t i = 0; i < count; i++) 
@@ -152,7 +150,6 @@ public:
 				F_DELETE(this->poBuffers_ObjectCB_Outline[i])
             }
             this->poBuffers_ObjectCB_Outline.clear();
-            this->objectCBs_Outline.clear();
 
             //Pipeline
             this->pWindow->destroyVkPipeline(this->poPipelineGraphics_WireFrame);
