@@ -27,7 +27,7 @@
 #define MAX_OBJECT_LINEFLAT_2D_COUNT    2048
 #define MAX_OBJECT_LINEFLAT_3D_COUNT    512
 #define MAX_TEXTURE_COUNT               16
-#define MAX_MATERIAL_COUNT              64
+#define MAX_MATERIAL_COUNT              96
 #define MAX_INSTANCE_COUNT              4096
 #define MAX_CULL_INSTANCE_COUNT         16384
 #define MAX_TERRAIN_SPLAT_COUNT         16
