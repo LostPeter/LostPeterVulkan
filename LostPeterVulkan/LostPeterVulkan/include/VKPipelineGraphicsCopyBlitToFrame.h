@@ -31,9 +31,8 @@ namespace LostPeterVulkan
         VkPipeline poPipeline;
         VkDescriptorSetVector poDescriptorSets;
 
-        CopyBlitObjectConstants m_objectCB_CopyBlit;
-        VkBuffer m_vkBuffer_CopyBlit;
-        VkDeviceMemory m_vkBuffersMemory_CopyBlit;
+        CopyBlitObjectConstants objectCB_CopyBlit;
+		VKBufferUniform* pBuffer_CopyBlit;
 
         Mesh* pMeshBlit;
 

@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/VKRenderPassCopyBlitFromFrame.h"
 #include "../include/Mesh.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -26,8 +27,7 @@ namespace LostPeterVulkan
         , poPipelineLayout(VK_NULL_HANDLE)
         , poPipeline(VK_NULL_HANDLE)
         
-        , m_vkBuffer_CopyBlit(VK_NULL_HANDLE)
-        , m_vkBuffersMemory_CopyBlit(VK_NULL_HANDLE)
+        , pBuffer_CopyBlit(nullptr)
 
         , pMeshBlit(nullptr)
     {
@@ -47,12 +47,7 @@ namespace LostPeterVulkan
     }
         void VKPipelineGraphicsCopyBlitFromFrame::destroyBufferCopyBlitObject()
         {
-            if (this->m_vkBuffer_CopyBlit != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
-            }
-            this->m_vkBuffer_CopyBlit = VK_NULL_HANDLE;
-            this->m_vkBuffersMemory_CopyBlit = VK_NULL_HANDLE;
+			F_DELETE(this->pBuffer_CopyBlit)
         }
 
     bool VKPipelineGraphicsCopyBlitFromFrame::Init(uint32_t width, 
@@ -90,7 +85,7 @@ namespace LostPeterVulkan
         }
 
         //1> VkBuffer
-        if (this->m_vkBuffer_CopyBlit == VK_NULL_HANDLE)
+        if (this->pBuffer_CopyBlit == nullptr)
         {
             if (!createBufferCopyBlitObject())
             {
@@ -148,13 +143,21 @@ namespace LostPeterVulkan
     }
         bool VKPipelineGraphicsCopyBlitFromFrame::createBufferCopyBlitObject()
         {
-            this->m_objectCB_CopyBlit.offsetX = 0.0f;
-            this->m_objectCB_CopyBlit.offsetY = 0.0f;
-            this->m_objectCB_CopyBlit.scaleX = 2.0f;
-            this->m_objectCB_CopyBlit.scaleY = 2.0f;
-            VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
-            Base::GetWindowPtr()->createVkBuffer("CopyBlitObjectConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->m_vkBuffer_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
-            UpdateBuffer(this->m_objectCB_CopyBlit);
+            this->objectCB_CopyBlit.offsetX = 0.0f;
+            this->objectCB_CopyBlit.offsetY = 0.0f;
+            this->objectCB_CopyBlit.scaleX = 2.0f;
+            this->objectCB_CopyBlit.scaleY = 2.0f;
+			String nameBuffer = "CopyBlitObjectConstants-" + this->name;
+			this->pBuffer_CopyBlit = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+																			   sizeof(CopyBlitObjectConstants), 
+																		  	   (uint8*)&this->objectCB_CopyBlit,
+																		  	   false);
+			if (!this->pBuffer_CopyBlit)
+			{
+				String msg = "*********************** VKPipelineGraphicsCopyBlitFromFrame::createBufferCopyBlitObject: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
             return true;
         }
 
@@ -196,7 +199,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
                 {
                     VkDescriptorBufferInfo bufferInfo_ObjectCopyBlit = {};
-                    bufferInfo_ObjectCopyBlit.buffer = this->m_vkBuffer_CopyBlit;
+                    bufferInfo_ObjectCopyBlit.buffer = this->pBuffer_CopyBlit->GetVkBuffer();
                     bufferInfo_ObjectCopyBlit.offset = 0;
                     bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -239,8 +242,12 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsCopyBlitFromFrame::UpdateBuffer(const CopyBlitObjectConstants& object)
     {
-        m_objectCB_CopyBlit = object;
-        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->m_objectCB_CopyBlit, this->m_vkBuffersMemory_CopyBlit);
+		if (this->pBuffer_CopyBlit == nullptr)
+			return;
+        this->objectCB_CopyBlit = object;
+		this->pBuffer_CopyBlit->UpdateBuffer(0,				
+											 sizeof(CopyBlitObjectConstants), 
+											 (uint8*)&this->objectCB_CopyBlit);
     }
 
 }; //LostPeterVulkan

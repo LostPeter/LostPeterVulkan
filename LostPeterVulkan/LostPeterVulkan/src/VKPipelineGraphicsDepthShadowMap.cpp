@@ -36,8 +36,7 @@ namespace LostPeterVulkan
         , poPipeline_ShadowMapDepthCull(VK_NULL_HANDLE)
         
         //ObjectConstants
-        , poBuffer_ObjectWorldCB(VK_NULL_HANDLE)
-        , poBufferMemory_ObjectWorldCB(VK_NULL_HANDLE)
+        , poBuffer_ObjectWorldCB(nullptr)
 
     {
 
@@ -55,19 +54,14 @@ namespace LostPeterVulkan
     }
         void VKPipelineGraphicsDepthShadowMap::destroyBufferObjectWorldCB()
         {
-            if (this->poBuffer_ObjectWorldCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_ObjectWorldCB, this->poBufferMemory_ObjectWorldCB);
-            }
-            this->poBuffer_ObjectWorldCB = VK_NULL_HANDLE;
-            this->poBufferMemory_ObjectWorldCB = VK_NULL_HANDLE;
+			F_DELETE(this->poBuffer_ObjectWorldCB)
             this->objectWorldCBs.clear();
         }
 
     bool VKPipelineGraphicsDepthShadowMap::Init()
     {
         //ObjectConstants
-        if (this->poBuffer_ObjectWorldCB == VK_NULL_HANDLE)
+        if (this->poBuffer_ObjectWorldCB == nullptr)
         {
             if (!createBufferObjectWorldCB())
             {
@@ -105,7 +99,7 @@ namespace LostPeterVulkan
         updateDescriptorSets(this->poDescriptorSets_ShadowMapDepth, 
                              pDescriptorSetLayoutNames,
                              this->poBuffer_ObjectWorldCB,
-                             VK_NULL_HANDLE,
+                             nullptr,
                              nullptr,
                              nullptr);
 
@@ -140,12 +134,17 @@ namespace LostPeterVulkan
     }
         bool VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB()
         {
-            Base::GetWindowPtr()->createVkBuffer("ObjectConstants-" + this->name,
-                                                 sizeof(ObjectConstants) * MAX_OBJECT_COUNT, 
-                                                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                                                 this->poBuffer_ObjectWorldCB, 
-                                                 this->poBufferMemory_ObjectWorldCB);
+			String nameBuffer = "ObjectConstants-" + this->name;
+			this->poBuffer_ObjectWorldCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+																					 sizeof(ObjectConstants) * MAX_OBJECT_COUNT, 
+																					 nullptr,
+																					 false);
+			if (!this->poBuffer_ObjectWorldCB)
+			{
+				String msg = "*********************** VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}												
             F_LogInfo("VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB: Create Uniform ObjectWorld constant buffer success !");
             return true;
         }
@@ -265,9 +264,11 @@ namespace LostPeterVulkan
         if (this->objectWorldCBs.size() <= 0)
             return;
 
-        if (this->poBufferMemory_ObjectWorldCB != VK_NULL_HANDLE)
+        if (this->poBuffer_ObjectWorldCB != nullptr)
         {
-            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(ObjectConstants) * this->objectWorldCBs.size(), this->objectWorldCBs.data(), this->poBufferMemory_ObjectWorldCB);
+			this->poBuffer_ObjectWorldCB->UpdateBuffer(0,
+													   sizeof(ObjectConstants) * this->objectWorldCBs.size(),
+													   (uint8*)this->objectWorldCBs.data());
         }
     }
 
@@ -276,7 +277,7 @@ namespace LostPeterVulkan
         updateDescriptorSets(this->poDescriptorSets_ShadowMapDepth, 
                              this->poDescriptorSetLayoutNames_ShadowMapDepth,
                              this->poBuffer_ObjectWorldCB,
-                             VK_NULL_HANDLE,
+                             nullptr,
                              nullptr,
                              nullptr);
     }
@@ -297,7 +298,7 @@ namespace LostPeterVulkan
     {
         updateDescriptorSets(*pescriptorSets,
                              poDescriptorSetLayoutNames_ShadowMapDepthCull,
-                             VK_NULL_HANDLE,
+                             nullptr,
                              pCB_CullInstance,
                              pCB_CullObjectInstances,
                              pCB_Result);
@@ -305,7 +306,7 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsDepthShadowMap::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                                                 StringVector* poDescriptorSetLayoutNames,
-                                                                VkBuffer vkBuffer_ObjectWorldCB,
+                                                                VKBufferUniform* pCB_ObjectWorld,
                                                                 VKBufferUniform* pCB_CullInstance,
                                                                 VKBufferCompute* pCB_CullObjectInstances,
                                                                 VKBufferCompute* pCB_Result)
@@ -334,10 +335,10 @@ namespace LostPeterVulkan
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
                 {
-                    if (vkBuffer_ObjectWorldCB != VK_NULL_HANDLE)
+                    if (pCB_ObjectWorld != nullptr)
                     {
                         VkDescriptorBufferInfo bufferInfo_Object = {};
-                        bufferInfo_Object.buffer = vkBuffer_ObjectWorldCB;
+                        bufferInfo_Object.buffer = pCB_ObjectWorld->GetVkBuffer();
                         bufferInfo_Object.offset = 0;
                         bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

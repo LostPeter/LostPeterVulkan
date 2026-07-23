@@ -77,9 +77,18 @@ namespace LostPeterVulkan
 		size_t size = GetBufferSize();
         F_Assert(offset >= 0 && offset < size && bufSize <= size && "VKBufferUniform::UpdateBuffer")
 
-        uint8* pData = this->pBuffer_Uniform + offset;
-        memcpy(pData, pBuf, bufSize);
-        UpdateBuffer();
+		if (this->pBuffer_Uniform == nullptr)
+		{
+			updateVkBuffer(offset, 
+					   	   bufSize, 
+					   	   pBuf);
+		}
+		else
+		{
+			uint8* pData = this->pBuffer_Uniform + offset;
+			memcpy(pData, pBuf, bufSize);
+			UpdateBuffer();
+		}
     }
 
 }; //LostPeterVulkan

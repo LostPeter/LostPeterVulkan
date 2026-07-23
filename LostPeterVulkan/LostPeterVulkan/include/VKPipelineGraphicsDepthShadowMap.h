@@ -42,8 +42,7 @@ namespace LostPeterVulkan
 
         //ObjectConstants
         std::vector<ObjectConstants> objectWorldCBs;
-        VkBuffer poBuffer_ObjectWorldCB;
-        VkDeviceMemory poBufferMemory_ObjectWorldCB;
+		VKBufferUniform* poBuffer_ObjectWorldCB;
         
 
     public:
@@ -99,7 +98,7 @@ namespace LostPeterVulkan
     protected:
         virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                           StringVector* poDescriptorSetLayoutNames,
-                                          VkBuffer vkBuffer_ObjectWorldCB,
+                                          VKBufferUniform* pCB_ObjectWorld,
                                           VKBufferUniform* pCB_CullInstance,
                                           VKBufferCompute* pCB_CullObjectInstances,
                                           VKBufferCompute* pCB_Result);
