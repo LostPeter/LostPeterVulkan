@@ -11,6 +11,7 @@
 
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -33,25 +34,19 @@ namespace LostPeterVulkan
         , poTerrainVertexCount(0)
         , poTerrainVertexBuffer_Size(0)
         , poTerrainVertexBuffer_Data(nullptr)
-        , poTerrainVertexBuffer(VK_NULL_HANDLE)
-        , poTerrainVertexBufferMemory(VK_NULL_HANDLE)
         , poTerrainIndexCount(0)
         , poTerrainIndexBuffer_Size(0)
         , poTerrainIndexBuffer_Data(nullptr)
-        , poTerrainIndexBuffer(VK_NULL_HANDLE)
-        , poTerrainIndexBufferMemory(VK_NULL_HANDLE)
+        , poBufferVertexIndex_MeshWhole(nullptr)
 
         //Mesh Instance
         , poTerrainVertexCount_Instance(0)
         , poTerrainVertexBuffer_Size_Instance(0)
         , poTerrainVertexBuffer_Data_Instance(nullptr)
-        , poTerrainVertexBuffer_Instance(VK_NULL_HANDLE)
-        , poTerrainVertexBufferMemory_Instance(VK_NULL_HANDLE)
         , poTerrainIndexCount_Instance(0)
         , poTerrainIndexBuffer_Size_Instance(0)
         , poTerrainIndexBuffer_Data_Instance(nullptr)
-        , poTerrainIndexBuffer_Instance(VK_NULL_HANDLE)
-        , poTerrainIndexBufferMemory_Instance(VK_NULL_HANDLE)
+        , poBufferVertexIndex_MeshInstance(nullptr)
 
         //HeightMap
         , poTerrainHeightMapImage(VK_NULL_HANDLE)
@@ -95,49 +90,25 @@ namespace LostPeterVulkan
 
         //Mesh Whole
         this->poTerrain_Pos3Color4Normal3Tex2.clear();
-        if (this->poTerrainVertexBuffer != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
-        }
-        this->poTerrainVertexBuffer = VK_NULL_HANDLE;
-        this->poTerrainVertexBufferMemory = VK_NULL_HANDLE;
         this->poTerrainVertexCount = 0;
         this->poTerrainVertexBuffer_Size = 0;
         this->poTerrainVertexBuffer_Data = nullptr;
-
         this->poTerrain_Indices.clear();
-        if (this->poTerrainIndexBuffer != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poTerrainIndexBuffer, this->poTerrainIndexBufferMemory);
-        }
-        this->poTerrainIndexBuffer = VK_NULL_HANDLE;
-        this->poTerrainIndexBufferMemory = VK_NULL_HANDLE;
         this->poTerrainIndexCount = 0;
         this->poTerrainIndexBuffer_Size = 0;
         this->poTerrainIndexBuffer_Data = nullptr;
+		F_DELETE(this->poBufferVertexIndex_MeshWhole)
 
         //Mesh Instance
         this->poTerrain_Pos3Color4Normal3Tex2_Instance.clear();
-        if (this->poTerrainVertexBuffer_Instance != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poTerrainVertexBuffer_Instance, this->poTerrainVertexBufferMemory_Instance);
-        }
-        this->poTerrainVertexBuffer_Instance = VK_NULL_HANDLE;
-        this->poTerrainVertexBufferMemory_Instance = VK_NULL_HANDLE;
         this->poTerrainVertexCount_Instance = 0;
         this->poTerrainVertexBuffer_Size_Instance = 0;
         this->poTerrainVertexBuffer_Data_Instance = nullptr;
-
         this->poTerrain_Indices_Instance.clear();
-        if (this->poTerrainIndexBuffer_Instance != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poTerrainIndexBuffer_Instance, this->poTerrainIndexBufferMemory_Instance);
-        }
-        this->poTerrainIndexBuffer_Instance = VK_NULL_HANDLE;
-        this->poTerrainIndexBufferMemory_Instance = VK_NULL_HANDLE;
         this->poTerrainIndexCount_Instance = 0;
         this->poTerrainIndexBuffer_Size_Instance = 0;
         this->poTerrainIndexBuffer_Data_Instance = nullptr;
+		F_DELETE(this->poBufferVertexIndex_MeshInstance)
 
         //TerrainHeightMapImage
         if (this->poTerrainHeightMapImage != VK_NULL_HANDLE)
@@ -307,19 +278,22 @@ namespace LostPeterVulkan
                       (int)this->poTerrain_Pos3Color4Normal3Tex2.size(), 
                       (int)this->poTerrain_Indices.size());
 
-            //2> createVertexBuffer
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-Whole-" + this->name,
-                                                     this->poTerrainVertexBuffer_Size, 
-                                                     this->poTerrainVertexBuffer_Data, 
-                                                     this->poTerrainVertexBuffer, 
-                                                     this->poTerrainVertexBufferMemory);
-
-            //3> createIndexBuffer
-            Base::GetWindowPtr()->createIndexBuffer("Index-Whole-" + this->name,
-                                                    this->poTerrainIndexBuffer_Size, 
-                                                    this->poTerrainIndexBuffer_Data, 
-                                                    this->poTerrainIndexBuffer, 
-                                                    this->poTerrainIndexBufferMemory);
+            //2> createBufferVertexIndex
+			this->poBufferVertexIndex_MeshWhole = Base::GetWindowPtr()->createBufferVertexIndex("Vertex-Whole-" + this->name,
+																								F_MeshVertex_Pos3Color4Normal3Tex2,
+																								this->poTerrainVertexBuffer_Size, 
+																								(uint8*)this->poTerrainVertexBuffer_Data, 
+																								false,
+																								this->poTerrainIndexBuffer_Size, 
+																								(uint8*)this->poTerrainIndexBuffer_Data, 
+																								false,
+																								false);
+			if (this->poBufferVertexIndex_MeshWhole == nullptr)
+			{
+				String msg = "*********************** VKRenderPassTerrain::setupTerrainGeometryWhole: Failed to create terrain vertex whole !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg.c_str());
+			}
         }
         void VKRenderPassTerrain::setupTerrainGeometryInstance()
         {
@@ -377,19 +351,22 @@ namespace LostPeterVulkan
                       (int)this->poTerrainInstanceCount,
                       (int)c_nInstanceGridVertexCount);
 
-            //2> createVertexBuffer
-            Base::GetWindowPtr()->createVertexBuffer("Vertex-Instance-" + this->name,
-                                                     this->poTerrainVertexBuffer_Size_Instance, 
-                                                     this->poTerrainVertexBuffer_Data_Instance, 
-                                                     this->poTerrainVertexBuffer_Instance, 
-                                                     this->poTerrainVertexBufferMemory_Instance);
-
-            //3> createIndexBuffer
-            Base::GetWindowPtr()->createIndexBuffer("Index-Instance-" + this->name,
-                                                    this->poTerrainIndexBuffer_Size_Instance, 
-                                                    this->poTerrainIndexBuffer_Data_Instance, 
-                                                    this->poTerrainIndexBuffer_Instance, 
-                                                    this->poTerrainIndexBufferMemory_Instance);
+            //2> createBufferVertexIndex
+			this->poBufferVertexIndex_MeshInstance = Base::GetWindowPtr()->createBufferVertexIndex("Vertex-Whole-" + this->name,
+																								   F_MeshVertex_Pos3Color4Normal3Tex2,
+																								   this->poTerrainVertexBuffer_Size_Instance, 
+																								   (uint8*)this->poTerrainVertexBuffer_Data_Instance, 
+																								   false,
+																								   this->poTerrainIndexBuffer_Size_Instance, 
+																								   (uint8*)this->poTerrainIndexBuffer_Data_Instance, 
+																								   false,
+																								   false);
+			if (this->poBufferVertexIndex_MeshInstance == nullptr)
+			{
+				String msg = "*********************** VKRenderPassTerrain::setupTerrainGeometryInstance: Failed to create terrain vertex instance !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg.c_str());
+			}
         }
         void VKRenderPassTerrain::setupTerrainTexture()
         {

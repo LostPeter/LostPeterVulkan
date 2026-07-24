@@ -43,8 +43,7 @@ namespace LostPeterVulkan
 
         //HizDepthConstants
         HizDepthConstants hizDepthCB;
-        VkBuffer poBuffer_HizDepthCB;  
-        VkDeviceMemory poBufferMemory_HizDepthCB;
+        VKBufferUniform* poBuffer_HizDepthCB;  
 
         //RenderPass/FrameBuffer
         VkOffset2D offset;

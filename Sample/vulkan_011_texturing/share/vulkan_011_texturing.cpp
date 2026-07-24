@@ -1874,7 +1874,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     pPipelineCompute->CreateTextureCopy();
 
                     VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-                    bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
+                    bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy->GetVkBuffer();
                     bufferInfo_TextureCopy.offset = 0;
                     bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites,

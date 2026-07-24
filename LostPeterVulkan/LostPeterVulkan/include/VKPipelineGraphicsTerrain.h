@@ -34,16 +34,13 @@ namespace LostPeterVulkan
         VkDescriptorSetVector poDescriptorSets;
 
         std::vector<TerrainObjectConstants> terrainObjectCBs;
-        VkBuffer poBuffer_TerrainObjectCB;
-        VkDeviceMemory poBufferMemory_TerrainObjectCB;
+        VKBufferUniform* poBuffer_TerrainObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
-        VkBuffer poBuffer_MaterialCB;
-        VkDeviceMemory poBufferMemory_MaterialCB;
+        VKBufferUniform* poBuffer_MaterialCB;
 
         TerrainConstants terrainCB;
-        VkBuffer poBuffer_TerrainCB;
-        VkDeviceMemory poBufferMemory_TerrainCB;
+        VKBufferUniform* poBuffer_TerrainCB;
 
     public: 
         void Destroy();

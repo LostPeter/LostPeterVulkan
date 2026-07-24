@@ -11,6 +11,7 @@
 
 #include "../include/VKPipelineCompute.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -25,8 +26,7 @@ namespace LostPeterVulkan
         , pTextureTarget(nullptr)
         
         , pTextureCopy(nullptr)
-        , poBuffer_TextureCopy(VK_NULL_HANDLE)
-        , poBufferMemory_TextureCopy(VK_NULL_HANDLE)
+        , poBuffer_TextureCopy(nullptr)
         , frameRand(0)
     {
 
@@ -57,18 +57,22 @@ namespace LostPeterVulkan
     {
         DestroyTextureCopy();
         this->pTextureCopy = new TextureCopyConstants();
-        VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-        Base::GetWindowPtr()->createVkBuffer("TextureCopyConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+		String nameBuffer = "TextureCopyConstants-" + this->name;
+		this->poBuffer_TextureCopy = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+																			   sizeof(TextureCopyConstants),
+																			   (uint8*)this->pTextureCopy,
+																			   false);
+		if (!this->poBuffer_TextureCopy)
+		{
+			String msg = "*********************** VKPipelineCompute::CreateTextureCopy: create buffer uniform: [" + nameBuffer + "] failed !";
+			F_LogError(msg.c_str());
+			throw std::runtime_error(msg);
+		}
     }
     void VKPipelineCompute::DestroyTextureCopy()
     {
         F_DELETE(this->pTextureCopy)
-        if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
-        }
-        this->poBuffer_TextureCopy = VK_NULL_HANDLE;
-        this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
+		F_DELETE(this->poBuffer_TextureCopy)
     }
 
 }; //LostPeterVulkan

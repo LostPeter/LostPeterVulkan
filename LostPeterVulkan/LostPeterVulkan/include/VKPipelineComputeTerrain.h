@@ -33,8 +33,7 @@ namespace LostPeterVulkan
         VkDescriptorSet poDescriptorSet;
         
         TextureCopyConstants* pTextureCopy;
-        VkBuffer poBuffer_TextureCopy;  
-        VkDeviceMemory poBufferMemory_TextureCopy;
+        VKBufferUniform* poBuffer_TextureCopy;  
 
         bool isNormalUpdated;
         bool isNormalUpdated_Sustained;

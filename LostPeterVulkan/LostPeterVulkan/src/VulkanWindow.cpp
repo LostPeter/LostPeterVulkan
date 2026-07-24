@@ -1633,11 +1633,7 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::Draw_Graphics_Terrain_Whole(VkCommandBuffer& commandBuffer)
         {
-            VkBuffer vertexBuffers[] = { this->m_pVKRenderPassTerrain->poTerrainVertexBuffer };
-            VkDeviceSize offsets[] = { 0 };
-            bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            bindIndexBuffer(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-            
+			this->m_pVKRenderPassTerrain->poBufferVertexIndex_MeshWhole->BindVertexIndexBuffer(commandBuffer);
             if (this->cfg_isWireFrame)
                 bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline_WireFrame);
             else

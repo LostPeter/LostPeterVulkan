@@ -42,28 +42,22 @@ namespace LostPeterVulkan
         uint32_t poTerrainVertexCount;
         size_t poTerrainVertexBuffer_Size;
         void* poTerrainVertexBuffer_Data;
-        VkBuffer poTerrainVertexBuffer;
-        VkDeviceMemory poTerrainVertexBufferMemory;
         std::vector<uint32_t> poTerrain_Indices;
         uint32_t poTerrainIndexCount;
         size_t poTerrainIndexBuffer_Size;
         void* poTerrainIndexBuffer_Data;
-        VkBuffer poTerrainIndexBuffer;
-        VkDeviceMemory poTerrainIndexBufferMemory;
+		VKBufferVertexIndex* poBufferVertexIndex_MeshWhole;
 
         //Mesh Instance
         std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2_Instance;
         uint32_t poTerrainVertexCount_Instance;
         size_t poTerrainVertexBuffer_Size_Instance;
         void* poTerrainVertexBuffer_Data_Instance;
-        VkBuffer poTerrainVertexBuffer_Instance;
-        VkDeviceMemory poTerrainVertexBufferMemory_Instance;
         std::vector<uint32_t> poTerrain_Indices_Instance;
         uint32_t poTerrainIndexCount_Instance;
         size_t poTerrainIndexBuffer_Size_Instance;
         void* poTerrainIndexBuffer_Data_Instance;
-        VkBuffer poTerrainIndexBuffer_Instance;
-        VkDeviceMemory poTerrainIndexBufferMemory_Instance;
+		VKBufferVertexIndex* poBufferVertexIndex_MeshInstance;
 
         //HeightMap
         VkImage poTerrainHeightMapImage;

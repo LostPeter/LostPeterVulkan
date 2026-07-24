@@ -12,6 +12,7 @@
 #include "../include/VKPipelineGraphicsDepthHiz.h"
 #include "../include/VKRenderPassCull.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -162,7 +163,7 @@ namespace LostPeterVulkan
     }
     void VKPipelineGraphicsDepthHiz::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                                           StringVector* poDescriptorSetLayoutNames,
-                                                          VkBuffer vkBuffer_HizDepthCB,
+                                                          VKBufferUniform* pBuffer_HizDepthCB,
                                                           const VkImageView& vkImageView,
                                                           const VkSampler& vkSampler)
     {
@@ -178,7 +179,7 @@ namespace LostPeterVulkan
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_HizDepth)) //HizDepth
                 {
                     VkDescriptorBufferInfo bufferInfo_HizDepth = {};
-                    bufferInfo_HizDepth.buffer = vkBuffer_HizDepthCB;
+                    bufferInfo_HizDepth.buffer = pBuffer_HizDepthCB->GetVkBuffer();
                     bufferInfo_HizDepth.offset = 0;
                     bufferInfo_HizDepth.range = sizeof(HizDepthConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,

@@ -11,6 +11,7 @@
 
 #include "../include/VKRenderPassCull.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
 {
@@ -32,8 +33,7 @@ namespace LostPeterVulkan
         , nHizDepthHeight(s_nHizDepthWidth / 2)
         , nHizDepthMinmapCount(9)
 
-        , poBuffer_HizDepthCB(VK_NULL_HANDLE)
-        , poBufferMemory_HizDepthCB(VK_NULL_HANDLE)
+        , poBuffer_HizDepthCB(nullptr)
 
         , poRenderPass(VK_NULL_HANDLE)
         , poFrameBuffer(VK_NULL_HANDLE)
@@ -89,17 +89,12 @@ namespace LostPeterVulkan
     } 
         void VKRenderPassCull::destroyBufferHizDepth()
         {
-            if (this->poBuffer_HizDepthCB != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
-            }
-            this->poBuffer_HizDepthCB = VK_NULL_HANDLE;
-            this->poBufferMemory_HizDepthCB = VK_NULL_HANDLE;
+			F_DELETE(this->poBuffer_HizDepthCB)
         }
 
     bool VKRenderPassCull::Init()
     {
-        if (this->poBuffer_HizDepthCB == VK_NULL_HANDLE)
+        if (this->poBuffer_HizDepthCB == nullptr)
         {
             if (!createBufferHizDepth())
             {
@@ -124,8 +119,17 @@ namespace LostPeterVulkan
         {
             destroyBufferHizDepth();
 
-            VkDeviceSize bufferSize = sizeof(HizDepthConstants);
-            Base::GetWindowPtr()->createVkBuffer("HizDepthConstants-" + this->name, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_HizDepthCB, this->poBufferMemory_HizDepthCB);
+			String nameBuffer = "HizDepthConstants-" + this->name;
+			this->poBuffer_HizDepthCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+																				  sizeof(HizDepthConstants), 
+																				  (uint8*)&this->hizDepthCB,
+																				  false);
+			if (!this->poBuffer_HizDepthCB)
+			{
+				String msg = "*********************** VKRenderPassCull::createBufferHizDepth: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
             return true;
         } 
         bool VKRenderPassCull::createCullTexture()
@@ -441,7 +445,9 @@ namespace LostPeterVulkan
     }
     void VKRenderPassCull::updateHizDepthBuffer()
     {
-        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(HizDepthConstants), &this->hizDepthCB, this->poBufferMemory_HizDepthCB);
+        this->poBuffer_HizDepthCB->UpdateBuffer(0, 
+												sizeof(HizDepthConstants), 
+												(uint8*)&this->hizDepthCB);
     }
     void VKRenderPassCull::getHizDepthRTSizeFromScreen(int screenWidth, int& w, int& mip)
     {

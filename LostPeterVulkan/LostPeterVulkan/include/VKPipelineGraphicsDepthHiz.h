@@ -67,7 +67,7 @@ namespace LostPeterVulkan
     protected:
         virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
                                           StringVector* poDescriptorSetLayoutNames,
-                                          VkBuffer vkBuffer_HizDepthCB,
+                                          VKBufferUniform* pBuffer_HizDepthCB,
                                           const VkImageView& vkImageView,
                                           const VkSampler& vkSampler);
     };  

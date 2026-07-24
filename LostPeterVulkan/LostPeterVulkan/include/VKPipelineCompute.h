@@ -33,8 +33,7 @@ namespace LostPeterVulkan
         VKTexture* pTextureSource;
         VKTexture* pTextureTarget;
         TextureCopyConstants* pTextureCopy;
-        VkBuffer poBuffer_TextureCopy;  
-        VkDeviceMemory poBufferMemory_TextureCopy;
+        VKBufferUniform* poBuffer_TextureCopy;  
         int frameRand;
 
     public:

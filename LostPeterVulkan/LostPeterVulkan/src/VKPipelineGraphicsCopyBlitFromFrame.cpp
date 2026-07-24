@@ -84,7 +84,7 @@ namespace LostPeterVulkan
             return false;
         }
 
-        //1> VkBuffer
+        //1> Buffer
         if (this->pBuffer_CopyBlit == nullptr)
         {
             if (!createBufferCopyBlitObject())

@@ -70,8 +70,7 @@ namespace LostPeterVulkan
         ////////////////////////// Buffer ///////////////////////////////////
         //CullConstants
         CullConstants cullCB;
-        VkBuffer poBuffer_CullCB;  
-        VkDeviceMemory poBufferMemory_CullCB;
+        VKBufferUniform* poBuffer_CullCB;  
 
         //Camera Param
         FMatrix4 mat4VPLast;

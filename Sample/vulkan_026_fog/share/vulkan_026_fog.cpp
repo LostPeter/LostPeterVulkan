@@ -2058,7 +2058,7 @@ void Vulkan_026_Fog::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCo
             pPipelineCompute->CreateTextureCopy();
 
             VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
+            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy->GetVkBuffer();
             bufferInfo_TextureCopy.offset = 0;
             bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
             pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2148,9 +2148,10 @@ void Vulkan_026_Fog::updateCompute_BeforeRender_Custom(VkCommandBuffer& commandB
                 pPipelineCompute->pTextureCopy->texClearColor.y = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.z = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.w = 1;
-
-                VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
-                updateVKBuffer(0, sizeof(TextureCopyConstants), pPipelineCompute->pTextureCopy, memory);
+				
+				pPipelineCompute->poBuffer_TextureCopy->UpdateBuffer(0, 
+																	 sizeof(TextureCopyConstants), 
+																	 (uint8*)pPipelineCompute->pTextureCopy);
 
                 bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
