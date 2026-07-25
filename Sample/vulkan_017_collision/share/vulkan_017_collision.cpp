@@ -3643,7 +3643,7 @@ void Vulkan_017_Collision::createCustomBeforePipeline()
     createPipelineLayouts();
 
     //3> Shader
-    createShaderModules();
+    createShaders();
 }   
 void Vulkan_017_Collision::createGraphicsPipeline_Custom()
 {
@@ -3670,7 +3670,7 @@ void Vulkan_017_Collision::createGraphicsPipeline_Custom()
                                                   nameShaderTese,
                                                   nameShaderGeom,
                                                   nameShaderFrag,
-                                                  m_mapVkShaderModules,
+                                                  m_mapShaders,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
             String msg = "*********************** Vulkan_017_Collision::createGraphicsPipeline_Custom: Can not find shader used !";
@@ -3773,7 +3773,7 @@ void Vulkan_017_Collision::createComputePipeline_Custom()
         //[1] Shaders
         String nameShaderComp = g_ObjectRend_NameShaderModules[6 * i + 5];
         if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
-                                                  m_mapVkShaderModules,
+                                                  m_mapShaders,
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
@@ -4033,18 +4033,18 @@ StringVector* Vulkan_017_Collision::findDescriptorSetLayoutNames(const String& n
 }
 
 
-void Vulkan_017_Collision::destroyShaderModules()
+void Vulkan_017_Collision::destroyShaders()
 {   
-    size_t count = this->m_aVkShaderModules.size();
+    size_t count = this->m_aShaders.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        destroyVkShaderModule(vkShaderModule);
+        VKShader* pShader = this->m_aShaders[i];
+		delete pShader;
     }
-    this->m_aVkShaderModules.clear();
-    this->m_mapVkShaderModules.clear();
+    this->m_aShaders.clear();
+    this->m_mapShaders.clear();
 }
-void Vulkan_017_Collision::createShaderModules()
+void Vulkan_017_Collision::createShaders()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -4052,17 +4052,17 @@ void Vulkan_017_Collision::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
-        this->m_aVkShaderModules.push_back(shaderModule);
-        this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_017_Collision::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        VKShader* pShader = createShader(shaderName, shaderPath, shaderType);
+        this->m_aShaders.push_back(pShader);
+        this->m_mapShaders[shaderName] = pShader;
+        F_LogInfo("Vulkan_017_Collision::createShaders: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_017_Collision::findShaderModule(const String& nameShaderModule)
+VKShader* Vulkan_017_Collision::findShader(const String& nameShader)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
-    if (itFind == this->m_mapVkShaderModules.end())
+    VKShaderPtrMap::iterator itFind = this->m_mapShaders.find(nameShader);
+    if (itFind == this->m_mapShaders.end())
     {
         return nullptr;
     }
@@ -4428,7 +4428,7 @@ void Vulkan_017_Collision::updateCompute_BeforeRender_Custom(VkCommandBuffer& co
                 pPipelineCompute->pTextureCopy->texClearColor.y = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.z = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.w = 1;
-				
+
 				pPipelineCompute->poBuffer_TextureCopy->UpdateBuffer(0, 
 																	 sizeof(TextureCopyConstants), 
 																	 (uint8*)pPipelineCompute->pTextureCopy);
@@ -5380,7 +5380,7 @@ void Vulkan_017_Collision::cleanupSwapChain_Custom()
 
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
-    destroyShaderModules();
+    destroyShaders();
 }
 
 void Vulkan_017_Collision::recreateSwapChain_Custom()

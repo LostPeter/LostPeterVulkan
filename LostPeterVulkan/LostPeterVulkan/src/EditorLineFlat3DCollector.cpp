@@ -918,7 +918,7 @@ namespace LostPeterVulkan
                                                                             "",
                                                                             "",
                                                                             s_strNameShader_LineFlat3D_Frag,
-                                                                            this->mapShaderModules,
+                                                                            this->mapShaders,
                                                                             aShaderStageCreateInfos_Uniform))
             {
                 String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Can not find shader used !";
@@ -995,7 +995,7 @@ namespace LostPeterVulkan
                                                                             "",
                                                                             "",
                                                                             s_strNameShader_LineFlat3D_Ext_Frag,
-                                                                            this->mapShaderModules,
+                                                                            this->mapShaders,
                                                                             aShaderStageCreateInfos_Storage))
             {
                 String msg = "*********************** EditorLineFlat3DCollector::initPipelineGraphics: Can not find shader used !";

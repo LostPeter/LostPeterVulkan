@@ -357,7 +357,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
 void Vulkan_010_Lighting::createCustomBeforePipeline()
 {
     //1> Shader
-    createShaderModules();
+    createShaders();
 }  
 void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
 {
@@ -375,13 +375,13 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
 
         String pathVertShaderBase = g_pathModelShaderModules[i] + c_strVert;
         String pathFragShaderBase = g_pathModelShaderModules[i] + c_strFrag;
-        VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
-        VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
+        VKShader* vertShaderBase = findShader(pathVertShaderBase);
+        VKShader* fragShaderBase = findShader(pathFragShaderBase);
 
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
-                                                                              vertShaderBase, "main",
-                                                                              fragShaderBase, "main",
+                                                                              vertShaderBase->GetVkShaderModule(), "main",
+                                                                              fragShaderBase->GetVkShaderModule(), "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                               this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -414,8 +414,8 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
         pModelObject->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
-                                                                    vertShaderBase, "main",
-                                                                    fragShaderBase, "main",
+                                                                    vertShaderBase->GetVkShaderModule(), "main",
+                                                                    fragShaderBase->GetVkShaderModule(), "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -434,18 +434,18 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
     }
 }
 
-void Vulkan_010_Lighting::destroyShaderModules()
+void Vulkan_010_Lighting::destroyShaders()
 {   
-    size_t count = this->m_aVkShaderModules.size();
+    size_t count = this->m_aShaders.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        destroyVkShaderModule(vkShaderModule);
+        VKShader* pShader = this->m_aShaders[i];
+		delete pShader;
     }
-    this->m_aVkShaderModules.clear();
-    this->m_mapVkShaderModules.clear();
+    this->m_aShaders.clear();
+    this->m_mapShaders.clear();
 }
-void Vulkan_010_Lighting::createShaderModules()
+void Vulkan_010_Lighting::createShaders()
 {
     String nameVertexShader;
     String nameFragmentShader;
@@ -458,23 +458,23 @@ void Vulkan_010_Lighting::createShaderModules()
 
         //vert
         FUtilString::SplitFileName(pathVert, nameVertexShader, namePathBase);
-        VkShaderModule vertShaderModule = createVkShaderModule(nameVertexShader, "VertexShader: ", pathVert);
-        this->m_aVkShaderModules.push_back(vertShaderModule);
-        this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        F_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathVert.c_str());
+        VKShader* pShaderVert = createShader(nameVertexShader, pathVert, F_Shader_Vertex);
+        this->m_aShaders.push_back(pShaderVert);
+        this->m_mapShaders[pathVert] = pShaderVert;
+        F_LogInfo("Vulkan_010_Lighting::createShaders: create shader [%s] success !", pathVert.c_str());
 
         //frag
         FUtilString::SplitFileName(pathFrag, nameFragmentShader, namePathBase);
-        VkShaderModule fragShaderModule = createVkShaderModule(nameFragmentShader, "FragmentShader: ", pathFrag);
-        this->m_aVkShaderModules.push_back(fragShaderModule);
-        this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        F_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        VKShader* pShaderFrag = createShader(nameFragmentShader, pathFrag, F_Shader_Fragment);
+        this->m_aShaders.push_back(pShaderFrag);
+        this->m_mapShaders[pathFrag] = pShaderFrag;
+        F_LogInfo("Vulkan_010_Lighting::createShaders: create shader [%s] success !", pathFrag.c_str());
     }
 }
-VkShaderModule Vulkan_010_Lighting::findShaderModule(const String& pathShaderModule)
+VKShader* Vulkan_010_Lighting::findShader(const String& nameShader)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
-    if (itFind == this->m_mapVkShaderModules.end())
+    VKShaderPtrMap::iterator itFind = this->m_mapShaders.find(nameShader);
+    if (itFind == this->m_mapShaders.end())
     {
         return nullptr;
     }
@@ -857,7 +857,7 @@ void Vulkan_010_Lighting::cleanupSwapChain_Custom()
         pModelObject->CleanupSwapChain();
     }
 
-    destroyShaderModules();
+    destroyShaders();
 }
 
 void Vulkan_010_Lighting::recreateSwapChain_Custom()

@@ -919,7 +919,7 @@ void Vulkan_018_SubPass::createCustomBeforePipeline()
     createPipelineLayouts();
 
     //3> Shader
-    createShaderModules();
+    createShaders();
 
     //4> Graphics_CopyBlit
     UpdateDescriptorSets_Graphics_CopyBlitToFrame(this->m_pSubPassRenderPass->aImageInfos[0]);
@@ -949,7 +949,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                   nameShaderTese,
                                                   nameShaderGeom,
                                                   nameShaderFrag,
-                                                  m_mapVkShaderModules,
+                                                  m_mapShaders,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
             String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find shader used !";
@@ -972,7 +972,7 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                                                       nameShaderTese,
                                                       nameShaderGeom,
                                                       nameShaderFrag,
-                                                      m_mapVkShaderModules,
+                                                      m_mapShaders,
                                                       aShaderStageCreateInfos_GraphicsNextSubpass))
             {
                 String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: NextSubpass Can not find shader used !";
@@ -1337,18 +1337,18 @@ StringVector* Vulkan_018_SubPass::findDescriptorSetLayoutNames(const String& nam
 }
 
 
-void Vulkan_018_SubPass::destroyShaderModules()
+void Vulkan_018_SubPass::destroyShaders()
 {   
-    size_t count = this->m_aVkShaderModules.size();
+    size_t count = this->m_aShaders.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        destroyVkShaderModule(vkShaderModule);
+        VKShader* pShader = this->m_aShaders[i];
+		delete pShader;
     }
-    this->m_aVkShaderModules.clear();
-    this->m_mapVkShaderModules.clear();
+    this->m_aShaders.clear();
+    this->m_mapShaders.clear();
 }
-void Vulkan_018_SubPass::createShaderModules()
+void Vulkan_018_SubPass::createShaders()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -1356,17 +1356,17 @@ void Vulkan_018_SubPass::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
-        this->m_aVkShaderModules.push_back(shaderModule);
-        this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_018_SubPass::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        VKShader* pShader = createShader(shaderName, shaderPath, shaderType);
+        this->m_aShaders.push_back(pShader);
+        this->m_mapShaders[shaderName] = pShader;
+        F_LogInfo("Vulkan_018_SubPass::createShaders: create shader, name: [%s], type: [%s], path: [%s] success !", 
                   shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_018_SubPass::findShaderModule(const String& nameShaderModule)
+VKShader* Vulkan_018_SubPass::findShader(const String& nameShader)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
-    if (itFind == this->m_mapVkShaderModules.end())
+    VKShaderPtrMap::iterator itFind = this->m_mapShaders.find(nameShader);
+    if (itFind == this->m_mapShaders.end())
     {
         return nullptr;
     }
@@ -2220,7 +2220,7 @@ void Vulkan_018_SubPass::cleanupSwapChain_Custom()
 
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
-    destroyShaderModules();
+    destroyShaders();
 }
 
 void Vulkan_018_SubPass::recreateSwapChain_Custom()

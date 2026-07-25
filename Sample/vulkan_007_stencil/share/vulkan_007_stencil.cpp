@@ -291,37 +291,23 @@ void Vulkan_007_Stencil::createCustomCB()
 
 void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 {
-    String nameVertexShader;
-    String nameFragmentShader;
     String namePathBase;
 
     //1> Shader
-    VkShaderModule vertShaderModule_Stencil;
-    if (!this->cfg_shaderVertex_Path.empty())
-    {
-        FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader, namePathBase);
-        vertShaderModule_Stencil = createVkShaderModule(nameVertexShader, "VertexShader: ", this->cfg_shaderVertex_Path);
-    }
-    VkShaderModule fragShaderModule_Stencil;
-    if (!this->cfg_shaderFragment_Path.empty())
-    {
-        FUtilString::SplitFileName(this->cfg_shaderFragment_Path, nameFragmentShader, namePathBase);
-        fragShaderModule_Stencil = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->cfg_shaderFragment_Path);
-    }
+	String nameVertexShader_Stencil;
+    FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader_Stencil, namePathBase);
+	VKShader* pShaderVertex_Stencil = createShader(nameVertexShader_Stencil, this->cfg_shaderVertex_Path, F_Shader_Vertex);
+	String nameFragmentShader_Stencil;
+    FUtilString::SplitFileName(this->cfg_shaderFragment_Path, nameFragmentShader_Stencil, namePathBase);
+	VKShader* pShaderFragment_Stencil = createShader(nameFragmentShader_Stencil, this->cfg_shaderFragment_Path, F_Shader_Fragment);
 
-    VkShaderModule vertShaderModule_Outline;
-    if (!this->pathShaderVertex_Outline.empty())
-    {
-        FUtilString::SplitFileName(this->pathShaderVertex_Outline, nameVertexShader, namePathBase);
-        vertShaderModule_Outline = createVkShaderModule(nameVertexShader, "VertexShader: ", this->pathShaderVertex_Outline);
-    }
-    VkShaderModule fragShaderModule_Outline;
-    if (!this->pathShaderFragment_Outline.empty())
-    {
-        FUtilString::SplitFileName(this->pathShaderFragment_Outline, nameFragmentShader, namePathBase);
-        fragShaderModule_Outline = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->pathShaderFragment_Outline);
-    }
-
+	String nameVertexShader_Outline;
+    FUtilString::SplitFileName(this->pathShaderVertex_Outline, nameVertexShader_Outline, namePathBase);
+	VKShader* pShaderVertex_Outline = createShader(nameVertexShader_Outline, this->pathShaderVertex_Outline, F_Shader_Vertex);
+	String nameFragmentShader_Outline;
+    FUtilString::SplitFileName(this->pathShaderFragment_Outline, nameFragmentShader_Outline, namePathBase);
+	VKShader* pShaderFragment_Outline = createShader(nameFragmentShader_Outline, this->pathShaderFragment_Outline, F_Shader_Fragment);
+	
     //2> Viewport
     VkViewportVector aViewports;
     aViewports.push_back(this->poViewport);
@@ -339,8 +325,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
-                                                                              vertShaderModule_Stencil, "main",
-                                                                              fragShaderModule_Stencil, "main",
+                                                                              pShaderVertex_Stencil->GetVkShaderModule(), "main",
+                                                                              pShaderFragment_Stencil->GetVkShaderModule(), "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                               this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -368,8 +354,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
         back.reference = 1;
         VkStencilOpState front = back;
         pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
-                                                                            vertShaderModule_Stencil, "main",
-                                                                            fragShaderModule_Stencil, "main",
+                                                                            pShaderVertex_Stencil->GetVkShaderModule(), "main",
+                                                                            pShaderFragment_Stencil->GetVkShaderModule(), "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                             this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -393,8 +379,8 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
         pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("PipelineGraphics-Outline-" + pModelObject->nameModel,
-                                                                            vertShaderModule_Outline, "main",
-                                                                            fragShaderModule_Outline, "main",
+                                                                            pShaderVertex_Outline->GetVkShaderModule(), "main",
+                                                                            pShaderFragment_Outline->GetVkShaderModule(), "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
                                                                             this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -413,10 +399,10 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
     }
 
     //5> Destroy Shader
-    destroyVkShaderModule(vertShaderModule_Stencil);
-    destroyVkShaderModule(fragShaderModule_Stencil);
-    destroyVkShaderModule(vertShaderModule_Outline);
-    destroyVkShaderModule(fragShaderModule_Outline);
+	F_DELETE(pShaderVertex_Stencil)
+	F_DELETE(pShaderFragment_Stencil)
+	F_DELETE(pShaderVertex_Outline)
+	F_DELETE(pShaderFragment_Outline)
 }
 void Vulkan_007_Stencil::createPipelineLayout_Outline()
 {

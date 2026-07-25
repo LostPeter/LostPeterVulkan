@@ -15,6 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VKBufferVertexIndex.h"
+#include "../include/VKShader.h"
 
 namespace LostPeterVulkan
 {
@@ -70,7 +71,7 @@ namespace LostPeterVulkan
     {   
         if (this->aShaderModuleInfos.size() <= 0)
             return;
-        Base::GetWindowPtr()->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
+        Base::GetWindowPtr()->CreateShaders(this->aShaderModuleInfos, this->aShaders, this->mapShaders);
     }
     void EditorBase::initDescriptorSetLayout()
     {
@@ -115,14 +116,14 @@ namespace LostPeterVulkan
     }
     void EditorBase::destroyShaders()
     {
-        size_t count = this->aShaderModules.size();
+        size_t count = this->aShaders.size();
         for (size_t i = 0; i < count; i++)
         {
-            VkShaderModule& vkShaderModule= this->aShaderModules[i];
-            Base::GetWindowPtr()->destroyVkShaderModule(vkShaderModule);
+            VKShader* pShader = this->aShaders[i];
+			delete pShader;
         }
-        this->aShaderModules.clear();
-        this->mapShaderModules.clear();
+        this->aShaders.clear();
+        this->mapShaders.clear();
     }
     void EditorBase::destroyPipelineGraphics()
     {

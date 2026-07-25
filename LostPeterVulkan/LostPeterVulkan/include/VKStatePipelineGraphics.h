@@ -55,14 +55,11 @@ namespace LostPeterVulkan
 
 		VkRenderPass poRenderPass;
 
-		VkShaderModule vertShaderModule;
-		String vertMain;
-		VkShaderModule tescShaderModule;
-		String tescMain;
-		VkShaderModule teseShaderModule; 
-		String teseMain;
-		VkShaderModule fragShaderModule;
-		String fragMain;
+		VKShader* poShaderVertex;
+		VKShader* poShaderTESC;
+		VKShader* poShaderTESE;
+		VKShader* poShaderGeom;
+		VKShader* poShaderFrag;
 
 		VkPipelineLayout poPipelineLayout;
         VkPipeline poPipelineGraphics;
@@ -71,10 +68,11 @@ namespace LostPeterVulkan
 	public:
 		void Destroy();
 		bool Init(DescriptorSetLayout* pDescriptorSetLayout,
-				  VkShaderModule vertShaderModule, const String& vertMain,
-				  VkShaderModule tescShaderModule, const String& tescMain,
-				  VkShaderModule teseShaderModule, const String& teseMain,
-				  VkShaderModule fragShaderModule, const String& fragMain,
+				  VKShader* pShaderVertex,
+				  VKShader* pShaderTESC,
+				  VKShader* pShaderTESE,
+				  VKShader* pShaderGeom,
+				  VKShader* pShaderFrag,
 				  FMeshVertexType typeVertex,
 				  VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
 				  VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,

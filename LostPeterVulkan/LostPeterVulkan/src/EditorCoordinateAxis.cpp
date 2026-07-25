@@ -1542,7 +1542,7 @@ namespace LostPeterVulkan
                                                                             "",
                                                                             "",
                                                                             s_strNameShader_CoordinateAxis_Frag,
-                                                                            this->mapShaderModules,
+                                                                            this->mapShaders,
                                                                             aShaderStageCreateInfos_Graphics))
             {
                 String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
@@ -1612,7 +1612,7 @@ namespace LostPeterVulkan
                                                                             "",
                                                                             "",
                                                                             s_strNameShader_CoordinateAxisLine_Frag,
-                                                                            this->mapShaderModules,
+                                                                            this->mapShaders,
                                                                             aShaderStageCreateInfos_Graphics_Wire))
             {
                 String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";

@@ -122,7 +122,7 @@ namespace LostPeterVulkan
                                                                             "",
                                                                             "",
                                                                             s_strNameShader_Grid_Frag,
-                                                                            this->mapShaderModules,
+                                                                            this->mapShaders,
                                                                             aShaderStageCreateInfos_Graphics))
             {
                 String msg = "*********************** EditorGrid::initPipelineGraphics: Can not find shader used !";

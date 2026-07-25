@@ -350,7 +350,7 @@ void Vulkan_008_Blend::createCustomCB()
 void Vulkan_008_Blend::createCustomBeforePipeline()
 {
     //1> Shader
-    createShaderModules();
+    createShaders();
 } 
 void Vulkan_008_Blend::createGraphicsPipeline_Custom()
 {
@@ -371,18 +371,18 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
 
         String pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
         String pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
-        VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
-        VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
+        VKShader* vertShaderBase = findShader(pathVertShaderBase);
+        VKShader* fragShaderBase = findShader(pathFragShaderBase);
 
         String pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
         String pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
-        VkShaderModule vertShaderOutline = findShaderModule(pathVertShaderOutline);
-        VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
+        VKShader* vertShaderOutline = findShader(pathVertShaderOutline);
+        VKShader* fragShaderOutline = findShader(pathFragShaderOutline);
 
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
-                                                                              vertShaderBase, "main",
-                                                                              fragShaderBase, "main",
+                                                                              vertShaderBase->GetVkShaderModule(), "main",
+                                                                              fragShaderBase->GetVkShaderModule(), "main",
                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                               this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -425,8 +425,8 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
         pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
-                                                                            vertShaderBase, "main",
-                                                                            fragShaderBase, "main",
+                                                                            vertShaderBase->GetVkShaderModule(), "main",
+                                                                            fragShaderBase->GetVkShaderModule(), "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                             this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -450,8 +450,8 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
         pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("PipelineGraphics-Outline-" + pModelObject->nameModel,
-                                                                            vertShaderOutline, "main",
-                                                                            fragShaderOutline, "main",
+                                                                            vertShaderOutline->GetVkShaderModule(), "main",
+                                                                            fragShaderOutline->GetVkShaderModule(), "main",
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                             this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors, this->cfg_aDynamicStates,
@@ -482,18 +482,18 @@ void Vulkan_008_Blend::createPipelineLayout_Outline()
     }
 }
 
-void Vulkan_008_Blend::destroyShaderModules()
+void Vulkan_008_Blend::destroyShaders()
 {   
-    size_t count = this->m_aVkShaderModules.size();
+    size_t count = this->m_aShaders.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        destroyVkShaderModule(vkShaderModule);
+        VKShader* pShader = this->m_aShaders[i];
+		delete pShader;
     }
-    this->m_aVkShaderModules.clear();
-    this->m_mapVkShaderModules.clear();
+    this->m_aShaders.clear();
+    this->m_mapShaders.clear();
 }
-void Vulkan_008_Blend::createShaderModules()
+void Vulkan_008_Blend::createShaders()
 {
     String nameVertexShader;
     String nameFragmentShader;
@@ -506,23 +506,23 @@ void Vulkan_008_Blend::createShaderModules()
 
         //vert
         FUtilString::SplitFileName(pathVert, nameVertexShader, namePathBase);
-        VkShaderModule vertShaderModule = createVkShaderModule(nameVertexShader, "VertexShader: ", pathVert);
-        this->m_aVkShaderModules.push_back(vertShaderModule);
-        this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        F_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathVert.c_str());
+		VKShader* pShaderVert = createShader(nameVertexShader, pathVert, F_Shader_Vertex);
+        this->m_aShaders.push_back(pShaderVert);
+        this->m_mapShaders[pathVert] = pShaderVert;
+        F_LogInfo("Vulkan_008_Blend::createShaders: create shader [%s] success !", pathVert.c_str());
 
         //frag
         FUtilString::SplitFileName(pathFrag, nameFragmentShader, namePathBase);
-        VkShaderModule fragShaderModule = createVkShaderModule(nameFragmentShader, "FragmentShader: ", pathFrag);
-        this->m_aVkShaderModules.push_back(fragShaderModule);
-        this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        F_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        VKShader* pShaderFrag = createShader(nameFragmentShader, pathFrag, F_Shader_Fragment);
+        this->m_aShaders.push_back(pShaderFrag);
+        this->m_mapShaders[pathFrag] = pShaderFrag;
+        F_LogInfo("Vulkan_008_Blend::createShaders: create shader [%s] success !", pathFrag.c_str());
     }
 }
-VkShaderModule Vulkan_008_Blend::findShaderModule(const String& pathShaderModule)
+VKShader* Vulkan_008_Blend::findShader(const String& nameShader)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
-    if (itFind == this->m_mapVkShaderModules.end())
+    VKShaderPtrMap::iterator itFind = this->m_mapShaders.find(nameShader);
+    if (itFind == this->m_mapShaders.end())
     {
         return nullptr;
     }
@@ -935,7 +935,7 @@ void Vulkan_008_Blend::cleanupCustom()
 
 void Vulkan_008_Blend::cleanupSwapChain_Custom()
 {
-    destroyShaderModules();
+    destroyShaders();
 
     destroyVkPipelineLayout(this->poPipelineLayout_Outline);
     this->poPipelineLayout_Outline = VK_NULL_HANDLE;

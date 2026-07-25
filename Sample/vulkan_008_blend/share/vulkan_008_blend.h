@@ -251,8 +251,8 @@ public:
     
     VkPipelineLayout poPipelineLayout_Outline;
     
-    VkShaderModuleVector m_aVkShaderModules;
-    VkShaderModuleMap m_mapVkShaderModules;
+	VKShaderPtrVector m_aShaders;
+	VKShaderPtrMap m_mapShaders;
 
 protected:
     //Create Pipeline
@@ -293,9 +293,9 @@ protected:
         virtual void recreateSwapChain_Custom();
 
 private:
-    void destroyShaderModules();
-    void createShaderModules();
-    VkShaderModule findShaderModule(const String& pathShaderModule);
+    void destroyShaders();
+    void createShaders();
+    VKShader* findShader(const String& nameShader);
 
     void createPipelineLayout_Outline();
     void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);

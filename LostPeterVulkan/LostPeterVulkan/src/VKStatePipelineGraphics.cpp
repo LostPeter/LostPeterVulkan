@@ -25,6 +25,18 @@ namespace LostPeterVulkan
 		, poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
 
 
+		, poRenderPass(VK_NULL_HANDLE)
+
+		, poShaderVertex(nullptr)
+		, poShaderTESC(nullptr)
+		, poShaderTESE(nullptr)
+		, poShaderGeom(nullptr)
+		, poShaderFrag(nullptr)
+
+		, poPipelineLayout(VK_NULL_HANDLE)
+		, poPipelineGraphics(VK_NULL_HANDLE)
+		, poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
+
 	{
 
 	}
@@ -39,10 +51,11 @@ namespace LostPeterVulkan
 	}
 
 	bool VKStatePipelineGraphics::Init(DescriptorSetLayout* pDescriptorSetLayout,
-									   VkShaderModule vertShaderModule, const String& vertMain,
-									   VkShaderModule tescShaderModule, const String& tescMain,
-									   VkShaderModule teseShaderModule, const String& teseMain,
-									   VkShaderModule fragShaderModule, const String& fragMain,
+									   VKShader* pShaderVertex,
+									   VKShader* pShaderTESC,
+									   VKShader* pShaderTESE,
+									   VKShader* pShaderGeom,
+									   VKShader* pShaderFrag,
 									   FMeshVertexType typeVertex,
 									   VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
 									   VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
@@ -53,7 +66,7 @@ namespace LostPeterVulkan
 									   VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
 									   VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
 	{
-
+		
 
 		return true;
 	}

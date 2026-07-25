@@ -203,33 +203,21 @@ namespace LostPeterVulkan
         virtual Mesh* CreateMesh(const MeshInfo* pMI);
         virtual void CreateMeshes(const MeshInfoPtrVector& aMIs, MeshPtrVector& aMeshes, MeshPtrMap& mapMeshes);
 
-        //ShaderModule
-        virtual VkShaderModule CreateShaderModule(const ShaderModuleInfo& si);
-        virtual void CreateShaderModules(const ShaderModuleInfoVector& aSIs, VkShaderModuleVector& aShaderModules, VkShaderModuleMap& mapShaderModules);
+        //Shader
+        virtual VKShader* CreateShader(const ShaderModuleInfo& si);
+        virtual void CreateShaders(const ShaderModuleInfoVector& aSIs, VKShaderPtrVector& aShaders, VKShaderPtrMap& mapShaders);
 
         //PipelineShaderStageCreateInfos
-        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+		virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
                                                           const String& nameShaderTesc,
                                                           const String& nameShaderTese,
                                                           const String& nameShaderGeom,
                                                           const String& nameShaderFrag,
                                                           const String& nameShaderComp,
-                                                          VkShaderModuleMap& mapVkShaderModules,
+                                                          VKShaderPtrMap& mapShaders,
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                           VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
-        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                          const String& nameShaderTesc,
-                                                          const String& nameShaderTese,
-                                                          const String& nameShaderGeom,
-                                                          const String& nameShaderFrag,
-                                                          VkShaderModuleMap& mapVkShaderModules,
-                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
-        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
-                                                          VkShaderModuleMap& mapVkShaderModules,
-                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                          VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
-
 		virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
                                                           const String& nameShaderTesc,
                                                           const String& nameShaderTese,
@@ -237,6 +225,10 @@ namespace LostPeterVulkan
                                                           const String& nameShaderFrag,
                                                           VKShaderPtrMap& mapShaders,
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
+		virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
+                                                          VKShaderPtrMap& mapShaders,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                          VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
         //VkSpecializationInfo
         VkSpecializationMapEntry CreateSpecializationMapEntry(uint32_t constantID, uint32_t offset, size_t size)

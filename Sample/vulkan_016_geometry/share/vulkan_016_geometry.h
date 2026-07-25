@@ -497,8 +497,8 @@ public:
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     std::map<String, StringVector> m_mapName2Layouts;
     
-    VkShaderModuleVector m_aVkShaderModules;
-    VkShaderModuleMap m_mapVkShaderModules;
+    VKShaderPtrVector m_aShaders;
+	VKShaderPtrMap m_mapShaders;
 
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
@@ -581,10 +581,10 @@ private:
     VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
     StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
 
-////ShaderModule
-    void destroyShaderModules();
-    void createShaderModules();
-    VkShaderModule findShaderModule(const String& nameShaderModule);
+////Shader
+    void destroyShaders();
+    void createShaders();
+    VKShader* findShader(const String& nameShader);
 
 ////PipelineLayout
     void destroyPipelineLayouts();

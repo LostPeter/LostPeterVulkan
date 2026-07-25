@@ -450,7 +450,7 @@ namespace LostPeterVulkan
                                                                                 "",
                                                                                 "",
                                                                                 s_strNameShader_CameraAxis_Frag,
-                                                                                this->mapShaderModules,
+                                                                                this->mapShaders,
                                                                                 aShaderStageCreateInfos_Graphics))
                 {
                     String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
@@ -513,7 +513,7 @@ namespace LostPeterVulkan
                                                                                 "",
                                                                                 "",
                                                                                 s_strNameShader_QuadBlit_Frag,
-                                                                                this->mapShaderModules,
+                                                                                this->mapShaders,
                                                                                 aShaderStageCreateInfos_Graphics))
                 {
                     String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Can not find shader used !";

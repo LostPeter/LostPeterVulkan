@@ -1723,59 +1723,59 @@ namespace LostPeterVulkan
         }
     }
 
-    VkShaderModule VulkanWindow::CreateShaderModule(const ShaderModuleInfo& si)
+    VKShader* VulkanWindow::CreateShader(const ShaderModuleInfo& si)
     { 
-        VkShaderModule shaderModule = createVkShaderModule(si.nameShader, si.nameShaderType, si.pathShader);
-        if (shaderModule == VK_NULL_HANDLE)
+		VKShader* pShader = createShader(si.nameShader, si.pathShader, si.nameShaderType);
+        if (pShader == nullptr)
         {
-            String msg = "*********************** VulkanWindow::CreateShaderModule: create shader: name: [" + si.nameShader + "], type: [" + si.nameShaderType + "], path: [" + si.pathShader + "] failed !";
+            String msg = "*********************** VulkanWindow::CreateShader: create shader: name: [" + si.nameShader + "], type: [" + si.nameShaderType + "], path: [" + si.pathShader + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
         
-        F_LogInfo("VulkanWindow::CreateShaderModule: create shader: name: [%s], type: [%s], path: [%s] success !", 
+        F_LogInfo("VulkanWindow::CreateShader: create shader: name: [%s], type: [%s], path: [%s] success !", 
                   si.nameShader.c_str(), si.nameShaderType.c_str(), si.pathShader.c_str());
-        return shaderModule;
+        return pShader;
     }
-    void VulkanWindow::CreateShaderModules(const ShaderModuleInfoVector& aSIs, VkShaderModuleVector& aShaderModules, VkShaderModuleMap& mapShaderModules)
+    void VulkanWindow::CreateShaders(const ShaderModuleInfoVector& aSIs, VKShaderPtrVector& aShaders, VKShaderPtrMap& mapShaders)
     {
         size_t count = aSIs.size();
         for (size_t i = 0; i < count; i++)
         {
             const ShaderModuleInfo& si = aSIs[i];
-            VkShaderModule shaderModule = CreateShaderModule(si);
-            if (shaderModule != nullptr)
+            VKShader* pShader = CreateShader(si);
+            if (pShader != nullptr)
             {
-                aShaderModules.push_back(shaderModule);
-                mapShaderModules[si.nameShader] = shaderModule;
+                aShaders.push_back(pShader);
+                mapShaders[si.nameShader] = pShader;
             }
         }
     }
-
-    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+	
+	bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
                                                             const String& nameShaderTesc,
                                                             const String& nameShaderTese,
                                                             const String& nameShaderGeom,
                                                             const String& nameShaderFrag,
                                                             const String& nameShaderComp,
-                                                            VkShaderModuleMap& mapVkShaderModules,
+                                                            VKShaderPtrMap& mapShaders,
                                                             VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
                                                             VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                             VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
-    {
-        if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+	{
+		if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
                                                   nameShaderTesc,
                                                   nameShaderTese,
                                                   nameShaderGeom,
                                                   nameShaderFrag,
-                                                  mapVkShaderModules,
+                                                  mapShaders,
                                                   aStageCreateInfos_Graphics))
         {
             return false;
         }
 
         if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
-                                                  mapVkShaderModules,
+                                                  mapShaders,
                                                   aStageCreateInfos_Compute,
                                                   mapStageCreateInfos_Compute))
         {
@@ -1783,134 +1783,7 @@ namespace LostPeterVulkan
         }
 
         return true;
-    }
-    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                            const String& nameShaderTesc,
-                                                            const String& nameShaderTese,
-                                                            const String& nameShaderGeom,
-                                                            const String& nameShaderFrag,
-                                                            VkShaderModuleMap& mapVkShaderModules,
-                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
-    {
-        //vert
-        {
-            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderVert);
-            if (itFind == mapVkShaderModules.end())
-            {
-                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
-                return false;
-            }
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageInfo.module = itFind->second;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-        }
-        //tesc
-        if (!nameShaderTesc.empty())
-        {
-            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTesc);
-            if (itFind == mapVkShaderModules.end())
-            {
-                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
-                return false;
-            }
-
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-            shaderStageInfo.module = itFind->second;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-        }
-        //tese
-        if (!nameShaderTese.empty())
-        {
-            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTese);
-            if (itFind == mapVkShaderModules.end())
-            {
-                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
-                return false;
-            }
-
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-            shaderStageInfo.module = itFind->second;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-        }
-        //geom
-        if (!nameShaderGeom.empty())
-        {
-            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderGeom);
-            if (itFind == mapVkShaderModules.end())
-            {
-                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
-                return false;
-            }
-
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-            shaderStageInfo.module = itFind->second;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-        }
-        //frag
-        if (!nameShaderFrag.empty())
-        {
-            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderFrag);
-            if (itFind == mapVkShaderModules.end())
-            {
-                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
-                return false;
-            }
-
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageInfo.module = itFind->second;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-        }
-
-        return true;
-    }
-    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
-                                                            VkShaderModuleMap& mapVkShaderModules,
-                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                            VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
-    {
-        //comp
-        if (!nameShaderComp.empty())
-        {
-            StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
-            int count_comp = (int)aShaderComps.size();
-            for (int i = 0; i < count_comp; i++)
-            {
-                String nameSC = aShaderComps[i];
-                VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameSC);
-                if (itFind == mapVkShaderModules.end())
-                {
-                    F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
-                    return false;
-                }
-
-                VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-                shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-                shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-                shaderStageInfo.module = itFind->second;
-                shaderStageInfo.pName = "main";
-                aStageCreateInfos_Compute.push_back(shaderStageInfo);
-                mapStageCreateInfos_Compute[nameSC] = shaderStageInfo;
-            }
-        }
-
-        return true;
-    }
-
+	}
 	bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
                                                             const String& nameShaderTesc,
                                                             const String& nameShaderTese,
@@ -2001,6 +1874,38 @@ namespace LostPeterVulkan
             shaderStageInfo.module = itFind->second->GetVkShaderModule();
             shaderStageInfo.pName = "main";
             aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+
+        return true;
+	}
+	bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
+                                                            VKShaderPtrMap& mapShaders,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                            VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+	{
+		//comp
+        if (!nameShaderComp.empty())
+        {
+            StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
+            int count_comp = (int)aShaderComps.size();
+            for (int i = 0; i < count_comp; i++)
+            {
+                String nameSC = aShaderComps[i];
+                VKShaderPtrMap::iterator itFind = mapShaders.find(nameSC);
+                if (itFind == mapShaders.end())
+                {
+                    F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                    return false;
+                }
+
+                VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+                shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+                shaderStageInfo.module = itFind->second->GetVkShaderModule();
+                shaderStageInfo.pName = "main";
+                aStageCreateInfos_Compute.push_back(shaderStageInfo);
+                mapStageCreateInfos_Compute[nameSC] = shaderStageInfo;
+            }
         }
 
         return true;

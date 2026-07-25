@@ -30,8 +30,8 @@ namespace LostPeterVulkan
 
         //Shaders
         ShaderModuleInfoVector aShaderModuleInfos;
-        VkShaderModuleVector aShaderModules;
-        VkShaderModuleMap mapShaderModules;
+		VKShaderPtrVector aShaders;
+		VKShaderPtrMap mapShaders;
 
         //DescriptorSetLayouts
         String nameDescriptorSetLayout; 
