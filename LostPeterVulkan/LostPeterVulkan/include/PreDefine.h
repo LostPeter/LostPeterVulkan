@@ -45,6 +45,8 @@ namespace LostPeterVulkan
     #define SHADER_NAME_Fragment                    "frag"
     #define SHADER_NAME_Compute                     "comp"
 
+	#define SHADER_NAME_Main						"main"
+
 
     #define C_THRESH_POINT_ON_PLANE			0.10f
     #define C_THRESH_POINT_ON_SIDE			0.20f
@@ -541,6 +543,21 @@ namespace LostPeterVulkan
     typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
 
 
+	typedef std::map<String, uint32> DescriptorSetName2IndexMap;
+    struct vulkanExport DescriptorSetLayout
+    {
+        String nameDescriptorSetLayout;
+        StringVector aLayouts;
+        DescriptorSetName2IndexMap mapName2Index;
+
+        void Init(const String& nameLayout);
+
+        uint32 FindIndex(const String& nameDescriptor);
+    };
+    typedef std::vector<DescriptorSetLayout> DescriptorSetLayoutVector;
+    typedef std::vector<DescriptorSetLayout*> DescriptorSetLayoutPtrVector;
+    typedef std::map<String, DescriptorSetLayout*> DescriptorSetLayoutPtrMap;
+
 
     class App;
     class VulkanBase;
@@ -569,6 +586,9 @@ namespace LostPeterVulkan
     class VKRenderPassCull;
     class VKRenderPassShadowMap;
     class VKRenderPassTerrain;
+	class VKShader;
+	class VKStatePipelineCompute;
+	class VKStatePipelineGraphics;
 	class VKTexture;
 
 
@@ -595,6 +615,15 @@ namespace LostPeterVulkan
 
     typedef std::vector<VKPipelineGraphics*> VKPipelineGraphicsPtrVector;
     typedef std::map<String, VKPipelineGraphics*> VKPipelineGraphicsPtrMap;
+
+	typedef std::vector<VKShader*> VKShaderPtrVector;
+    typedef std::map<String, VKShader*> VKShaderPtrMap;
+    typedef std::map<int32, VKShader*> VKShaderPtrIDMap;
+
+	typedef std::vector<VKStatePipelineCompute*> VKStatePipelineComputePtrVector;
+    typedef std::map<String, VKStatePipelineCompute*> VKStatePipelineComputePtrMap;
+	typedef std::vector<VKStatePipelineGraphics*> VKStatePipelineGraphicsPtrVector;
+    typedef std::map<String, VKStatePipelineGraphics*> VKStatePipelineGraphicsPtrMap;
 
 	typedef std::vector<VKTexture*> VKTexturePtrVector;
     typedef std::map<String, VKTexture*> VKTexturePtrMap;

@@ -44,6 +44,9 @@
 #include "VKRenderPassCull.h"
 #include "VKRenderPassShadowMap.h"
 #include "VKRenderPassTerrain.h"
+#include "VKShader.h"
+#include "VKStatePipelineCompute.h"
+#include "VKStatePipelineGraphics.h"
 #include "VKTexture.h"
 
 #include "Base.h"

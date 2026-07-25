@@ -31,6 +31,10 @@ namespace LostPeterVulkan
     {
         //Mesh
         createMeshes_Internal();
+		//Shader
+        createShaders_Internal();
+		//DescriptorSetLayout
+
         //Texture
         createTextures_Internal();
     }
@@ -42,6 +46,10 @@ namespace LostPeterVulkan
 
         //Texture
         destroyTextures_Internal();
+		//DescriptorSetLayout
+
+		//Shader
+        destroyShaders_Internal();
         //Mesh
         destroyMeshes_Internal();
     }
@@ -52,8 +60,6 @@ namespace LostPeterVulkan
         createDescriptorSetLayouts_Internal();
         //PipelineLayout
         createPipelineLayouts_Internal();
-        //ShaderModule
-        createShaderModules_Internal();
 
         //Uniform ConstantBuffer
         createUniformCB_Internal();
@@ -71,8 +77,6 @@ namespace LostPeterVulkan
         //PipelineGraphics
         destroyPipelineGraphics_Internal();
 
-        //ShaderModule
-        destroyShaderModules_Internal();
         //PipelineLayout
         destroyPipelineLayouts_Internal();
         //DescriptorSetLayout
@@ -650,18 +654,18 @@ namespace LostPeterVulkan
         "comp_standard_compute_cull_frustum_depth_hiz_clip",      "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz_clip.comp.spv", //standard_compute_cull_frustum_depth_hiz_clip comp
         "comp_standard_compute_hiz_depth_generate",               "comp",              "Assets/Shader/standard_compute_hiz_depth_generate.comp.spv", //standard_compute_hiz_depth_generate comp
     };
-    void VulkanWindow::destroyShaderModules_Internal()
+    void VulkanWindow::destroyShaders_Internal()
     {
-        size_t count = this->m_aVkShaderModules_Internal.size();
+        size_t count = this->m_aShaders_Internal.size();
         for (size_t i = 0; i < count; i++)
         {
-            VkShaderModule& vkShaderModule= this->m_aVkShaderModules_Internal[i];
-            destroyVkShaderModule(vkShaderModule);
+			VKShader* pShader = this->m_aShaders_Internal[i];
+            delete pShader;
         }
-        this->m_aVkShaderModules_Internal.clear();
-        this->m_mapVkShaderModules_Internal.clear();
+        this->m_aShaders_Internal.clear();
+        this->m_mapShaders_Internal.clear();
     }
-    void VulkanWindow::createShaderModules_Internal()
+    void VulkanWindow::createShaders_Internal()
     {
         for (int i = 0; i < g_ShaderCount_Internal; i++)
         {
@@ -669,22 +673,29 @@ namespace LostPeterVulkan
             String shaderType = g_ShaderModulePaths_Internal[3 * i + 1];
             String shaderPath = g_ShaderModulePaths_Internal[3 * i + 2];
 
-            VkShaderModule shaderModule = createVkShaderModule(shaderName, shaderType, shaderPath);
-            this->m_aVkShaderModules_Internal.push_back(shaderModule);
-            this->m_mapVkShaderModules_Internal[shaderName] = shaderModule;
-            F_LogInfo("VulkanWindow::createShaderModules_Internal: create shader, name: [%s], type: [%s], path: [%s] success !", 
+			VKShader* pShader = createShader(shaderName, shaderPath, shaderType);
+            this->m_aShaders_Internal.push_back(pShader);
+            this->m_mapShaders_Internal[shaderName] = pShader;
+            F_LogInfo("VulkanWindow::createShaders_Internal: create shader, name: [%s], type: [%s], path: [%s] success !", 
                       shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
         }
     }
-    VkShaderModule VulkanWindow::FindShaderModule_Internal(const String& nameShaderModule)
+    VKShader* VulkanWindow::FindShader_Internal(const String& nameShader)
     {
-        VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules_Internal.find(nameShaderModule);
-        if (itFind == this->m_mapVkShaderModules_Internal.end())
+        VKShaderPtrMap::iterator itFind = this->m_mapShaders_Internal.find(nameShader);
+        if (itFind == this->m_mapShaders_Internal.end())
         {
             return nullptr;
         }
         return itFind->second;
     }
+	VkShaderModule VulkanWindow::FindShaderModule_Internal(const String& nameShader)
+	{
+		VKShader* pShader = FindShader_Internal(nameShader);
+		if (pShader == nullptr)
+			return VK_NULL_HANDLE;
+		return pShader->GetVkShaderModule();
+	}
 
     //PipelineLayout
     void VulkanWindow::destroyPipelineLayouts_Internal()
@@ -1080,7 +1091,7 @@ namespace LostPeterVulkan
                                                           "",
                                                           "",
                                                           nameShaderFrag,
-                                                          this->m_mapVkShaderModules_Internal,
+                                                          this->m_mapShaders_Internal,
                                                           aShaderStageCreateInfos_CopyBlitFromFrameColor))
                 {
                     String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color: Can not find shader used !";
@@ -1127,7 +1138,7 @@ namespace LostPeterVulkan
                                                           "",
                                                           "",
                                                           nameShaderFrag,
-                                                          this->m_mapVkShaderModules_Internal,
+                                                          this->m_mapShaders_Internal,
                                                           aShaderStageCreateInfos_CopyBlitFromFrameDepth))
                 {
                     String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth: Can not find shader used !";
@@ -1175,7 +1186,7 @@ namespace LostPeterVulkan
                                                       "",
                                                       "",
                                                       nameShaderFrag,
-                                                      this->m_mapVkShaderModules_Internal,
+                                                      this->m_mapShaders_Internal,
                                                       aShaderStageCreateInfos_CopyBlitToFrame))
             {
                 String msg = "*********************** VulkanWindow::createPipelineGraphics_CopyBlitToFrame: Can not find shader used !";
@@ -1281,7 +1292,7 @@ namespace LostPeterVulkan
                                                           "",
                                                           "",
                                                           "",
-                                                          this->m_mapVkShaderModules_Internal,
+                                                          this->m_mapShaders_Internal,
                                                           aShaderStageCreateInfos_DepthShadowMap))
                 {
                     String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMap] Can not find shader used !";
@@ -1320,7 +1331,7 @@ namespace LostPeterVulkan
                                                           "",
                                                           "",
                                                           "",
-                                                          this->m_mapVkShaderModules_Internal,
+                                                          this->m_mapShaders_Internal,
                                                           aShaderStageCreateInfos_DepthShadowMap))
                 {
                     String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMapCull] Can not find shader used !";
@@ -1478,7 +1489,7 @@ namespace LostPeterVulkan
                                                           "",
                                                           "",
                                                           nameShaderFrag,
-                                                          this->m_mapVkShaderModules_Internal,
+                                                          this->m_mapShaders_Internal,
                                                           aShaderStageCreateInfos_DepthHiz))
                 {
                     String msg = "*********************** VulkanWindow::createPipelineGraphics_DepthHiz: [PipelineGraphics-DepthHiz] Can not find shader used !";
@@ -1580,7 +1591,7 @@ namespace LostPeterVulkan
                                                       "",
                                                       "",
                                                       nameShaderFrag,
-                                                      this->m_mapVkShaderModules_Internal,
+                                                      this->m_mapShaders_Internal,
                                                       aShaderStageCreateInfos_Terrain))
             {
                 String msg = "*********************** VulkanWindow::createPipelineGraphics_Terrain: Can not find shader used !";
@@ -1899,6 +1910,101 @@ namespace LostPeterVulkan
 
         return true;
     }
+
+	bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                            const String& nameShaderTesc,
+                                                            const String& nameShaderTese,
+                                                            const String& nameShaderGeom,
+                                                            const String& nameShaderFrag,
+                                                            VKShaderPtrMap& mapShaders,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
+	{
+		//vert
+        {
+            VKShaderPtrMap::iterator itFind = mapShaders.find(nameShaderVert);
+            if (itFind == mapShaders.end())
+            {
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+                return false;
+            }
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            shaderStageInfo.module = itFind->second->GetVkShaderModule();
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //tesc
+        if (!nameShaderTesc.empty())
+        {
+            VKShaderPtrMap::iterator itFind = mapShaders.find(nameShaderTesc);
+            if (itFind == mapShaders.end())
+            {
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+            shaderStageInfo.module = itFind->second->GetVkShaderModule();
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //tese
+        if (!nameShaderTese.empty())
+        {
+            VKShaderPtrMap::iterator itFind = mapShaders.find(nameShaderTese);
+            if (itFind == mapShaders.end())
+            {
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+            shaderStageInfo.module = itFind->second->GetVkShaderModule();
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //geom
+        if (!nameShaderGeom.empty())
+        {
+            VKShaderPtrMap::iterator itFind = mapShaders.find(nameShaderGeom);
+            if (itFind == mapShaders.end())
+            {
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+            shaderStageInfo.module = itFind->second->GetVkShaderModule();
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //frag
+        if (!nameShaderFrag.empty())
+        {
+            VKShaderPtrMap::iterator itFind = mapShaders.find(nameShaderFrag);
+            if (itFind == mapShaders.end())
+            {
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageInfo.module = itFind->second->GetVkShaderModule();
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+
+        return true;
+	}
     
     VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout)
     {
@@ -7504,6 +7610,24 @@ namespace LostPeterVulkan
         
         F_LogInfo("<2-1-3-4> VulkanWindow::createCustomCB finish !");
     }
+
+	VKShader* VulkanWindow::createShader(const String& nameShader, const String& pathFile, const String& nameShaderType)
+	{
+		FShaderType typeShader = F_ParseShaderType(nameShaderType);
+		return createShader(nameShader, pathFile, typeShader);
+	}
+    VKShader* VulkanWindow::createShader(const String& nameShader, const String& pathFile, FShaderType typeShader)
+	{
+		VKShader* pShader = new VKShader(nameShader);
+		if (!pShader->Init(typeShader,
+						   pathFile, 
+						   SHADER_NAME_Main))
+		{
+			F_LogError("*********************** VulkanWindow::createShader failed, name: [%s], path: [%s] !", nameShader.c_str(), pathFile.c_str());
+			return nullptr;
+		}
+		return pShader;
+	}
 
     VkShaderModule VulkanWindow::createVkShaderModule(const String& nameShader, FShaderType typeShader, const String& pathFile)
     {

@@ -800,7 +800,26 @@ namespace LostPeterVulkan
     }
 
 
-  
+	void DescriptorSetLayout::Init(const String& nameLayout)
+    {
+        this->nameDescriptorSetLayout = nameLayout;
+        this->aLayouts = FUtilString::Split(nameLayout, "-");
+        int count_ds = (int)this->aLayouts.size();
+        for (int i= 0; i < count_ds; i++)
+        {
+            this->mapName2Index[this->aLayouts[i]] = i;
+        }
+    }
+    uint32 DescriptorSetLayout::FindIndex(const String& nameDescriptor)
+    {
+        DescriptorSetName2IndexMap::iterator itFind = this->mapName2Index.find(nameDescriptor);
+        if (itFind == this->mapName2Index.end())
+        {
+            F_Assert(itFind != this->mapName2Index.end() && "DescriptorSetLayout::FindIndex")
+        }
+        return itFind->second;
+    }
+	
 
 
 }; //LostPeterVulkan

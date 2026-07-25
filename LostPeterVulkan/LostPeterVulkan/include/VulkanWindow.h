@@ -59,9 +59,9 @@ namespace LostPeterVulkan
         VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayouts_Internal;
         std::map<String, StringVector> m_mapName2Layouts_Internal;
 
-        //ShaderModule
-        VkShaderModuleVector m_aVkShaderModules_Internal;
-        VkShaderModuleMap m_mapVkShaderModules_Internal;
+        //Shader
+		VKShaderPtrVector m_aShaders_Internal;
+		VKShaderPtrMap m_mapShaders_Internal;
 
         //PipelineLayout
         VkPipelineLayoutVector m_aVkPipelineLayouts_Internal;
@@ -78,8 +78,9 @@ namespace LostPeterVulkan
         virtual VkDescriptorSetLayout FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
         virtual StringVector* FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout);
 
-        //ShaderModule
-        virtual VkShaderModule FindShaderModule_Internal(const String& nameShaderModule);
+        //Shader
+        virtual VKShader* FindShader_Internal(const String& nameShader);
+		virtual VkShaderModule FindShaderModule_Internal(const String& nameShader);
 
         //PipelineLayout
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
@@ -159,9 +160,9 @@ namespace LostPeterVulkan
         virtual void destroyDescriptorSetLayouts_Internal();
         virtual void createDescriptorSetLayouts_Internal();
 
-        //ShaderModule
-        virtual void destroyShaderModules_Internal();
-        virtual void createShaderModules_Internal();
+        //Shader
+        virtual void destroyShaders_Internal();
+        virtual void createShaders_Internal();
 
         //PipelineLayout
         virtual void destroyPipelineLayouts_Internal();
@@ -228,6 +229,14 @@ namespace LostPeterVulkan
                                                           VkShaderModuleMap& mapVkShaderModules,
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                           VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
+
+		virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                          const String& nameShaderTesc,
+                                                          const String& nameShaderTese,
+                                                          const String& nameShaderGeom,
+                                                          const String& nameShaderFrag,
+                                                          VKShaderPtrMap& mapShaders,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
 
         //VkSpecializationInfo
         VkSpecializationMapEntry CreateSpecializationMapEntry(uint32_t constantID, uint32_t offset, size_t size)
@@ -1255,6 +1264,9 @@ namespace LostPeterVulkan
                     virtual void createInstanceCB();
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
+
+				virtual VKShader* createShader(const String& nameShader, const String& pathFile, const String& nameShaderType);
+                virtual VKShader* createShader(const String& nameShader, const String& pathFile, FShaderType typeShader);
 
                 virtual VkShaderModule createVkShaderModule(const String& nameShader, FShaderType typeShader, const String& pathFile);
                 virtual VkShaderModule createVkShaderModule(const String& nameShader, const String& strTypeShader, const String& pathFile);
