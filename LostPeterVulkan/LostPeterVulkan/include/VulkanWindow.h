@@ -80,7 +80,6 @@ namespace LostPeterVulkan
 
         //Shader
         virtual VKShader* FindShader_Internal(const String& nameShader);
-		virtual VkShaderModule FindShaderModule_Internal(const String& nameShader);
 
         //PipelineLayout
         virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);

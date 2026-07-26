@@ -689,13 +689,6 @@ namespace LostPeterVulkan
         }
         return itFind->second;
     }
-	VkShaderModule VulkanWindow::FindShaderModule_Internal(const String& nameShader)
-	{
-		VKShader* pShader = FindShader_Internal(nameShader);
-		if (pShader == nullptr)
-			return VK_NULL_HANDLE;
-		return pShader->GetVkShaderModule();
-	}
 
     //PipelineLayout
     void VulkanWindow::destroyPipelineLayouts_Internal()
@@ -826,19 +819,19 @@ namespace LostPeterVulkan
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_clear_args");
+                VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_clear_args");
 
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         vkShaderModule != nullptr &&
+                         pShader != nullptr &&
                          "VulkanWindow::createPipelineCompute_Cull")
 
                 if (!this->m_pPipelineCompute_Cull->InitCullClearArgs(descriptorSetLayout,
                                                                       pDescriptorSetLayoutNames,
                                                                       vkDescriptorSetLayout,
                                                                       vkPipelineLayout,
-                                                                      vkShaderModule))
+                                                                      pShader->GetVkShaderModule()))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullClearArgs failed !");
                     return;
@@ -852,19 +845,19 @@ namespace LostPeterVulkan
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum");
+				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum");
 
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         vkShaderModule != nullptr &&
+                         pShader != nullptr &&
                          "VulkanWindow::createPipelineCompute_Cull")
 
                 if (!this->m_pPipelineCompute_Cull->InitCullFrustum(descriptorSetLayout,
                                                                     pDescriptorSetLayoutNames,
                                                                     vkDescriptorSetLayout,
                                                                     vkPipelineLayout,
-                                                                    vkShaderModule))
+                                                                    pShader->GetVkShaderModule()))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustum failed !");
                     return;
@@ -878,19 +871,19 @@ namespace LostPeterVulkan
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum_depth_hiz");
+				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum_depth_hiz");
 
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         vkShaderModule != nullptr &&
+                         pShader != nullptr &&
                          "VulkanWindow::createPipelineCompute_Cull")
 
                 if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHiz(descriptorSetLayout,
                                                                             pDescriptorSetLayoutNames,
                                                                             vkDescriptorSetLayout,
                                                                             vkPipelineLayout,
-                                                                            vkShaderModule))
+                                                                            pShader->GetVkShaderModule()))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHiz failed !");
                     return;
@@ -904,19 +897,19 @@ namespace LostPeterVulkan
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_cull_frustum_depth_hiz_clip");
+				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum_depth_hiz_clip");
 
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         vkShaderModule != nullptr &&
+                         pShader != nullptr &&
                          "VulkanWindow::createPipelineCompute_Cull")
 
                 if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip(descriptorSetLayout,
                                                                                 pDescriptorSetLayoutNames,
                                                                                 vkDescriptorSetLayout,
                                                                                 vkPipelineLayout,
-                                                                                vkShaderModule))
+                                                                                pShader->GetVkShaderModule()))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip failed !");
                     return;
@@ -930,19 +923,19 @@ namespace LostPeterVulkan
                 StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
                 VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-                VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_hiz_depth_generate");
+				VKShader* pShader = FindShader_Internal("comp_standard_compute_hiz_depth_generate");
 
                 F_Assert(pDescriptorSetLayoutNames != nullptr &&
                          vkDescriptorSetLayout != nullptr &&
                          vkPipelineLayout != nullptr &&
-                         vkShaderModule != nullptr &&
+                         pShader != nullptr &&
                          "VulkanWindow::createPipelineCompute_Cull")
 
                 if (!this->m_pPipelineCompute_Cull->InitHizDepthGenerate(descriptorSetLayout,
                                                                          pDescriptorSetLayoutNames,
                                                                          vkDescriptorSetLayout,
                                                                          vkPipelineLayout,
-                                                                         vkShaderModule))
+                                                                         pShader->GetVkShaderModule()))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitHizDepthGenerate failed !");
                     return;
@@ -980,19 +973,19 @@ namespace LostPeterVulkan
             StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
             VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
             VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-            VkShaderModule vkShaderModule = FindShaderModule_Internal("comp_standard_compute_texgen_normalmap");
+			VKShader* pShader = FindShader_Internal("comp_standard_compute_texgen_normalmap");
 
             F_Assert(pDescriptorSetLayoutNames != nullptr &&
                      vkDescriptorSetLayout != nullptr &&
                      vkPipelineLayout != nullptr &&
-                     vkShaderModule != nullptr &&
+                     pShader != nullptr &&
                      "VulkanWindow::createPipelineCompute_Terrain")
 
             if (!this->m_pPipelineCompute_Terrain->Init(descriptorSetLayout,
                                                         pDescriptorSetLayoutNames,
                                                         vkDescriptorSetLayout,
                                                         vkPipelineLayout,
-                                                        vkShaderModule))
+                                                        pShader->GetVkShaderModule()))
             {
                 F_LogError("*********************** VulkanWindow::createPipelineCompute_Terrain: m_pPipelineCompute_Terrain->Init failed !");
                 return;
@@ -1751,7 +1744,7 @@ namespace LostPeterVulkan
             }
         }
     }
-	
+
 	bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
                                                             const String& nameShaderTesc,
                                                             const String& nameShaderTese,
