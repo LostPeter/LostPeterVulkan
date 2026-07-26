@@ -25,9 +25,22 @@ namespace LostPeterVulkan
 	public:
 		DescriptorSetLayout* poDescriptorSetLayout;
 
-		FMeshVertexType poTypeVertex;
+		VKShader* poShaderVertex;
+		VKShader* poShaderTESC;
+		VKShader* poShaderTESE;
+		VKShader* poShaderGeom;
+		VKShader* poShaderFrag;
 
+		FMeshVertexType poTypeVertex;
+		bool poTessellationIsUsed;
+		VkPipelineTessellationStateCreateFlags poTessellationFlags;
+		uint32_t poTessellationPatchControlPoints;
+
+		VkRenderPass poRenderPass;
+		VkViewportVector poViewports;
+		VkRect2DVector poScissors;
 		VkDynamicStateVector poDynamicStates;
+
         VkPrimitiveTopology poPrimitiveTopology;
         VkFrontFace poFrontFace;
         VkPolygonMode poPolygonMode;
@@ -37,13 +50,16 @@ namespace LostPeterVulkan
         float poDepthBiasClamp;
         float poDepthBiasSlopeFactor;
         float poLineWidth;
+
 		VkBool32 poDepthEnabled;
         VkBool32 poDepthTest;
         VkBool32 poDepthWrite; 
         VkCompareOp poDepthCompareOp; 
+
         VkBool32 poStencilEnabled;
         VkStencilOpState poStencilOpFront; 
         VkStencilOpState poStencilOpBack; 
+
         VkBool32 poBlendEnabled;
         VkBlendFactor poBlendColorFactorSrc; 
         VkBlendFactor poBlendColorFactorDst; 
@@ -51,15 +67,11 @@ namespace LostPeterVulkan
         VkBlendFactor poBlendAlphaFactorSrc;
         VkBlendFactor poBlendAlphaFactorDst; 
         VkBlendOp poBlendAlphaOp;
+
         VkColorComponentFlags poColorWriteMask;
 
-		VkRenderPass poRenderPass;
+		uint32_t poSubpass;
 
-		VKShader* poShaderVertex;
-		VKShader* poShaderTESC;
-		VKShader* poShaderTESE;
-		VKShader* poShaderGeom;
-		VKShader* poShaderFrag;
 
 		VkPipelineLayout poPipelineLayout;
         VkPipeline poPipelineGraphics;
@@ -74,20 +86,22 @@ namespace LostPeterVulkan
 				  VKShader* pShaderGeom,
 				  VKShader* pShaderFrag,
 				  FMeshVertexType typeVertex,
-				  VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
-				  VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+				  bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+				  VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
 				  VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
-				  VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
-				  VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
-				  VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+				  VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+				  VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+				  VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
 				  VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
 				  VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
 
-		
+		virtual void CleanupSwapChain();
+		virtual void RecreateSwapChain(); 
 
 	public:
-		
-
+		F_FORCEINLINE const VkPipelineLayout& GetVkPipelineLayout() const { return this->poPipelineLayout; }	
+		F_FORCEINLINE const VkPipeline& GetVkPipeline() const { return this->poPipelineGraphics; }	
+		F_FORCEINLINE const VkPipeline& GetVkPipeline_WireFrame() const { return this->poPipelineGraphics_WireFrame; }	
 
 	public:
 		void BindState(VkCommandBuffer& commandBuffer);

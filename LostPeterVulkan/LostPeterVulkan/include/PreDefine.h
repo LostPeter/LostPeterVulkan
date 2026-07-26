@@ -648,7 +648,10 @@ namespace LostPeterVulkan
     class EditorLineFlat3DCollector;
     class Mesh;
     class MeshSub;
-    
+	class TerrainChunkedLod;
+	class TerrainHeightMap;
+	class TerrainSetting;
+
 
     typedef std::vector<CullLodData*> CullLodDataPtrVector;
     typedef std::map<String, CullLodData*> CullLodDataPtrMap;
@@ -666,6 +669,9 @@ namespace LostPeterVulkan
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
+	
+	typedef std::vector<TerrainHeightMap*> TerrainHeightMapPtrVector;
+    typedef std::map<String, TerrainHeightMap*> TerrainHeightMapPtrMap;
 
 
 }; //LostPeterVulkan

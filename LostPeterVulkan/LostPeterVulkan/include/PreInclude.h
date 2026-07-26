@@ -69,6 +69,11 @@
 #include "Mesh.h"
 #include "MeshSub.h"
 
+#include "TerrainChunkedLod.h"
+#include "TerrainHeightMap.h"
+#include "TerrainSetting.h"
+
+
 namespace LostPeterVulkan
 {	
 
