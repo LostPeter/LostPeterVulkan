@@ -23,13 +23,14 @@ namespace LostPeterVulkan
         virtual ~VKStatePipelineGraphics();
 
 	public:
-		DescriptorSetLayout* poDescriptorSetLayout;
+		DescriptorSetLayout* pDescriptorSetLayout;
 
 		VKShader* poShaderVertex;
 		VKShader* poShaderTESC;
 		VKShader* poShaderTESE;
 		VKShader* poShaderGeom;
 		VKShader* poShaderFrag;
+		VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
 
 		FMeshVertexType poTypeVertex;
 		bool poTessellationIsUsed;
@@ -70,16 +71,21 @@ namespace LostPeterVulkan
 
         VkColorComponentFlags poColorWriteMask;
 
+		VkPipelineColorBlendAttachmentStateVector poColorBlendAttachmentState;
+
 		uint32_t poSubpass;
 
-
+		VkDescriptorSetLayout poDescriptorSetLayout;
+		VkDescriptorSetVector poDescriptorSets;
 		VkPipelineLayout poPipelineLayout;
+
         VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
+		VkPipeline poPipelineGraphics_WireFrame2;
 
 	public:
 		void Destroy();
-		bool Init(DescriptorSetLayout* pDescriptorSetLayout,
+		bool Init(DescriptorSetLayout* pDSL,
 				  VKShader* pShaderVertex,
 				  VKShader* pShaderTESC,
 				  VKShader* pShaderTESE,
@@ -94,6 +100,26 @@ namespace LostPeterVulkan
 				  VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
 				  VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
 				  VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+		bool Init(DescriptorSetLayout* pDSL,
+				  VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+				  FMeshVertexType typeVertex,
+				  bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+				  VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+				  VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+				  VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+				  VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+				  VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+				  VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+				  VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+		bool Init(DescriptorSetLayout* pDSL,
+				  VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+				  FMeshVertexType typeVertex,
+				  bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+				  VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+				  VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+				  VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+				  VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+				  const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass = 0);
 
 		virtual void CleanupSwapChain();
 		virtual void RecreateSwapChain(); 
@@ -104,13 +130,21 @@ namespace LostPeterVulkan
 		F_FORCEINLINE const VkPipeline& GetVkPipeline_WireFrame() const { return this->poPipelineGraphics_WireFrame; }	
 
 	public:
-		void BindState(VkCommandBuffer& commandBuffer);
+		void BindState(VkCommandBuffer& commandBuffer, bool isWireFrame);
+		void BindState(VkCommandBuffer& commandBuffer, const VkDescriptorSetVector& vkDescriptorSetVector, bool isWireFrame);
+		void BindState(VkCommandBuffer& commandBuffer, const VkDescriptorSet* pDescriptorSet, bool isWireFrame);
 		void UnBindState(VkCommandBuffer& commandBuffer);
 		void BindShader(VkCommandBuffer& commandBuffer);
 		void BindBufferUniforms(VkCommandBuffer& commandBuffer);
 		void BindTextures(VkCommandBuffer& commandBuffer);
 
+	public:
+		void BindPipeline(VkCommandBuffer& commandBuffer, bool isWireFrame);
+		void BindPipeline(VkCommandBuffer& commandBuffer, VkPipeline vkPipeline);
 
+		void BindDescriptorSet(VkCommandBuffer& commandBuffer);
+		void BindDescriptorSet(VkCommandBuffer& commandBuffer, const VkDescriptorSet* pDescriptorSet);
+		void BindDescriptorSet(VkCommandBuffer& commandBuffer, VkPipelineLayout& vkPipelineLayout, const VkDescriptorSet* pDescriptorSet);
 	};
 
 }; //LostPeterVulkan

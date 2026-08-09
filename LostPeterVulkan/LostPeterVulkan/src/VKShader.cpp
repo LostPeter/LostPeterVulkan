@@ -19,7 +19,7 @@ namespace LostPeterVulkan
 
 		, typeShader(F_Shader_Vertex)
 		, pathFile("")
-		, nameMain("")
+		, nameMain("main")
 
 		, vkShaderModule(VK_NULL_HANDLE)
 

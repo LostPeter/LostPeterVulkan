@@ -546,13 +546,39 @@ namespace LostPeterVulkan
 	typedef std::map<String, uint32> DescriptorSetName2IndexMap;
     struct vulkanExport DescriptorSetLayout
     {
+		DescriptorSetLayout();
+		 ~DescriptorSetLayout();
+
         String nameDescriptorSetLayout;
         StringVector aLayouts;
         DescriptorSetName2IndexMap mapName2Index;
 
-        void Init(const String& nameLayout);
+		VkDescriptorSetLayout poDescriptorSetLayout;
+		VkPipelineLayout poPipelineLayout;
+		VkDescriptorSetVector poDescriptorSets;
+		VkDescriptorSet poDescriptorSet;
+
+        void Init(const String& nameLayout, 
+				  bool isCreateLayout = false, 
+				  bool isCreateDescriptorSets = false, 
+				  bool isCreateDescriptorSet = false);
 
         uint32 FindIndex(const String& nameDescriptor);
+
+		bool HasLayout();
+		void CreateLayout(bool isRecreate);
+		void DestroyLayout();
+
+		bool HasDescriptorSets();
+		void CreateDescriptorSets(bool isRecreate);
+		void DestroyDescriptorSets();
+
+		bool HasDescriptorSet();
+		void CreateDescriptorSet(bool isRecreate);
+		void DestroyDescriptorSet();
+
+		void CreateLayoutAndDescriptorSets(bool isRecreate);
+		void CreateLayoutAndDescriptorSet(bool isRecreate);
     };
     typedef std::vector<DescriptorSetLayout> DescriptorSetLayoutVector;
     typedef std::vector<DescriptorSetLayout*> DescriptorSetLayoutPtrVector;
@@ -573,10 +599,8 @@ namespace LostPeterVulkan
 	class VKBufferVertexIndex;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
-    class VKPipelineCompute;
     class VKPipelineComputeCull;
     class VKPipelineComputeTerrain;
-    class VKPipelineGraphics;
     class VKPipelineGraphicsCopyBlitFromFrame;
     class VKPipelineGraphicsCopyBlitToFrame;
     class VKPipelineGraphicsDepthHiz;
@@ -609,12 +633,6 @@ namespace LostPeterVulkan
 
     typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
     typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;
-    
-    typedef std::vector<VKPipelineCompute*> VKPipelineComputePtrVector;
-    typedef std::map<String, VKPipelineCompute*> PipelineComputePtrMap;
-
-    typedef std::vector<VKPipelineGraphics*> VKPipelineGraphicsPtrVector;
-    typedef std::map<String, VKPipelineGraphics*> VKPipelineGraphicsPtrMap;
 
 	typedef std::vector<VKShader*> VKShaderPtrVector;
     typedef std::map<String, VKShader*> VKShaderPtrMap;
@@ -669,7 +687,7 @@ namespace LostPeterVulkan
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
-	
+
 	typedef std::vector<TerrainHeightMap*> TerrainHeightMapPtrVector;
     typedef std::map<String, TerrainHeightMap*> TerrainHeightMapPtrMap;
 

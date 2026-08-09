@@ -57,37 +57,52 @@ public:
         VKBufferUniformPtrVector poBuffers_tessellationCB;
         bool isUsedTessellation;
 
+		std::vector<TextureCopyConstants> textureCopyCBs;
+		VKBufferUniform* poBuffer_TextureCopy;
+		bool isUsedCompute;
+		int frameRand;
+
+		//hasNextSubpass
+		bool hasNextSubpass;
+
         //Pipeline Graphics
-        VKPipelineGraphics* pPipelineGraphics;
+        VKStatePipelineGraphics* poStatePipelineGraphics;
+        String nameDescriptorSetLayout;
+		VKStatePipelineGraphics* poStatePipelineGraphics2;
+        String nameDescriptorSetLayout2;
 
         //Pipeline Computes
-        VKPipelineComputePtrVector aPipelineComputes;
+        VKStatePipelineComputePtrVector aStatePipelineComputes;
         
         //State
-        VkDynamicStateVector cfg_aDynamicStates;
-        VkPrimitiveTopology cfg_vkPrimitiveTopology;
-        VkFrontFace cfg_vkFrontFace;
-        VkPolygonMode cfg_vkPolygonMode;
-        VkCullModeFlagBits cfg_vkCullModeFlagBits;
-        VkBool32 cfg_isDepthBiasEnable;
-        float cfg_DepthBiasConstantFactor;
-        float cfg_DepthBiasClamp;
-        float cfg_DepthBiasSlopeFactor;
-        float cfg_LineWidth;
-        VkBool32 cfg_isDepthTest;
-        VkBool32 cfg_isDepthWrite; 
-        VkCompareOp cfg_DepthCompareOp; 
-        VkBool32 cfg_isStencilTest;
-        VkStencilOpState cfg_StencilOpFront; 
-        VkStencilOpState cfg_StencilOpBack; 
-        VkBool32 cfg_isBlend;
-        VkBlendFactor cfg_BlendColorFactorSrc; 
-        VkBlendFactor cfg_BlendColorFactorDst; 
-        VkBlendOp cfg_BlendColorOp;
-        VkBlendFactor cfg_BlendAlphaFactorSrc;
-        VkBlendFactor cfg_BlendAlphaFactorDst; 
-        VkBlendOp cfg_BlendAlphaOp;
-        VkColorComponentFlags cfg_ColorWriteMask;
+        VkDynamicStateVector poDynamicStates;
+        VkPrimitiveTopology poPrimitiveTopology;
+        VkFrontFace poFrontFace;
+        VkPolygonMode poPolygonMode;
+        VkCullModeFlagBits poCullModeFlagBits;
+        VkBool32 poDepthBiasEnabled;
+        float poDepthBiasConstantFactor;
+        float poDepthBiasClamp;
+        float poDepthBiasSlopeFactor;
+        float poLineWidth;
+
+		VkBool32 poDepthEnabled;
+        VkBool32 poDepthIsTest;
+        VkBool32 poDepthIsWrite; 
+        VkCompareOp poDepthCompareOp; 
+
+        VkBool32 poStencilEnabled;
+        VkStencilOpState poStencilOpFront; 
+        VkStencilOpState poStencilOpBack; 
+
+        VkBool32 poBlendEnabled;
+        VkBlendFactor poBlendColorFactorSrc; 
+        VkBlendFactor poBlendColorFactorDst; 
+        VkBlendOp poBlendColorOp;
+        VkBlendFactor poBlendAlphaFactorSrc;
+        VkBlendFactor poBlendAlphaFactorDst; 
+        VkBlendOp poBlendAlphaOp;
+        VkColorComponentFlags poColorWriteMask;
 
 
         ModelObjectRend(const String& _nameObjectRend,
@@ -105,38 +120,47 @@ public:
             //Uniform
             , countInstance(1)
             , isUsedTessellation(false)
+			, poBuffer_TextureCopy(nullptr)
+			, isUsedCompute(false)
+			, frameRand(0)
+
+			//hasNextSubpass
+			, hasNextSubpass(false)
 
             //Pipeline Graphics
+			, poStatePipelineGraphics(nullptr)
+			, nameDescriptorSetLayout("")
+			, poStatePipelineGraphics2(nullptr)
+			, nameDescriptorSetLayout2("")
 
             //Pipeline Computes
 
             //State
-            , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-            , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
-            , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
-            , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
-            , cfg_isDepthBiasEnable(VK_FALSE)
-            , cfg_DepthBiasConstantFactor(0.0f)
-            , cfg_DepthBiasClamp(0.0f)
-            , cfg_DepthBiasSlopeFactor(0.0f)
-            , cfg_LineWidth(1.0f)
-            , cfg_isDepthTest(VK_TRUE)
-            , cfg_isDepthWrite(VK_TRUE)
-            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL)  
-            , cfg_isStencilTest(VK_FALSE)
-            , cfg_isBlend(VK_FALSE)
-            , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendColorOp(VK_BLEND_OP_ADD)
-            , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
-            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+            , poPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+            , poFrontFace(VK_FRONT_FACE_CLOCKWISE)
+            , poPolygonMode(VK_POLYGON_MODE_FILL)
+            , poCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+            , poDepthBiasEnabled(VK_FALSE)
+            , poDepthBiasConstantFactor(0.0f)
+            , poDepthBiasClamp(0.0f)
+            , poDepthBiasSlopeFactor(0.0f)
+            , poLineWidth(1.0f)
+			, poDepthEnabled(VK_TRUE)
+            , poDepthIsTest(VK_TRUE)
+            , poDepthIsWrite(VK_TRUE)
+            , poDepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL)  
+            , poStencilEnabled(VK_FALSE)
+            , poBlendEnabled(VK_FALSE)
+            , poBlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
+            , poBlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
+            , poBlendColorOp(VK_BLEND_OP_ADD)
+            , poBlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
+            , poBlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
+            , poBlendAlphaOp(VK_BLEND_OP_ADD)
+            , poColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
-            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
-            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
-
-            this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-Model");
+            this->poDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+            this->poDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
 
 			this->objectCBs.resize(MAX_OBJECT_COUNT);
 			this->instanceMatWorld.resize(MAX_OBJECT_COUNT);
@@ -153,14 +177,15 @@ public:
 
             //Clean
             CleanupSwapChain();
-            F_DELETE(pPipelineGraphics)
-            size_t count = this->aPipelineComputes.size();
+            
+			//Pipeline Computes
+            size_t count = this->aStatePipelineComputes.size();
             for (size_t i = 0; i < count; i++)
             {
-                VKPipelineCompute* p = this->aPipelineComputes[i];
+                VKStatePipelineCompute* p = this->aStatePipelineComputes[i];
                 F_DELETE(p)
             }
-            this->aPipelineComputes.clear();
+			this->aStatePipelineComputes.clear();
         }
 
         void CleanupSwapChain()
@@ -187,20 +212,23 @@ public:
             }
 			this->poBuffers_tessellationCB.clear();
 
+			F_DELETE(this->poBuffer_TextureCopy)
+
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();
             this->aShaderStageCreateInfos_Computes.clear();
             this->mapShaderStageCreateInfos_Computes.clear();
 
             //Pipeline Graphics
-            this->pPipelineGraphics->CleanupSwapChain();
+            F_DELETE(this->poStatePipelineGraphics)
+			F_DELETE(this->poStatePipelineGraphics2)
 
             //Pipeline Computes
-            count = this->aPipelineComputes.size();
+            count = this->aStatePipelineComputes.size();
             for (size_t i = 0; i < count; i++)
             {
-                VKPipelineCompute* p = this->aPipelineComputes[i];
-                p->CleanupSwapChain();
+                VKStatePipelineCompute* p = this->aStatePipelineComputes[i];
+                p->Destroy();
             }
         }
 
@@ -237,15 +265,15 @@ public:
             return &(itFind->second);
         }
 
-    //Pipeline Computes
-        void AddPipelineCompute(VKPipelineCompute* pPipelineCompute)
+    ////Pipeline Computes
+        void AddStatePipelineCompute(VKStatePipelineCompute* pStatePipelineCompute)
         {
-            this->aPipelineComputes.push_back(pPipelineCompute);
+            this->aStatePipelineComputes.push_back(pStatePipelineCompute);
         }
-        VKPipelineCompute* GetPipelineCompute(int index)
+        VKStatePipelineCompute* GetStatePipelineCompute(int index)
         {
-            F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute")
-            return this->aPipelineComputes[index];
+            F_Assert(index >= 0 && index < (int)this->aStatePipelineComputes.size() && "ModelObjectRend::GetStatePipelineCompute")
+            return this->aStatePipelineComputes[index];
         }
 
     };
@@ -420,15 +448,11 @@ public:
 
     SubPassRenderPass* m_pSubPassRenderPass;
 
-    VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
-    VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
-    std::map<String, StringVector> m_mapName2Layouts;
+    DescriptorSetLayoutPtrVector m_aDescriptorSetLayouts;
+    DescriptorSetLayoutPtrMap m_mapDescriptorSetLayouts;
     
     VKShaderPtrVector m_aShaders;
 	VKShaderPtrMap m_mapShaders;
-
-    VkPipelineLayoutVector m_aVkPipelineLayouts;
-    VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
 protected:
     //Create Pipeline
@@ -454,8 +478,7 @@ protected:
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();
-            void createDescriptorSets_Graphics(StringVector* pDescriptorSetLayoutNames,
-                                               VkDescriptorSetVector& listDescriptorSets, 
+            void createDescriptorSets_Graphics(VKStatePipelineGraphics* pStatePipelineGraphics, 
                                                ModelObjectRend* pRend); 
     //Render/Update
         virtual void updateCBs_Custom();
@@ -465,12 +488,9 @@ protected:
                 void drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
                 void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
                 void drawModelObjectRendPipeline(VkCommandBuffer& commandBuffer, 
-                                                ModelObjectRend* pRend,
-                                                MeshSub* pMeshSub,  
-                                                VkPipelineLayout pipelineLayout,
-                                                VkDescriptorSetVector& descriptorSets,
-                                                VkPipeline pipeline, 
-                                                VkPipeline pipeline_WireFrame);
+                                                 ModelObjectRend* pRend,
+                                                 MeshSub* pMeshSub,  
+                                                 VKStatePipelineGraphics* pStatePipelineGraphics);
 
             virtual void drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer);
 
@@ -503,18 +523,12 @@ private:
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
-    VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
-    StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
+    DescriptorSetLayout* findDescriptorSetLayout(const String& nameDescriptorSetLayout);
 
 ////Shader
     void destroyShaders();
     void createShaders();
     VKShader* findShader(const String& nameShader);
-
-////PipelineLayout
-    void destroyPipelineLayouts();
-    void createPipelineLayouts();
-    VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
 };
 
 

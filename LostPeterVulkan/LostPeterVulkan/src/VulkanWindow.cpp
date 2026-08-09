@@ -2116,7 +2116,6 @@ namespace LostPeterVulkan
         , poDepthImageView_Depth(VK_NULL_HANDLE)
         , poDepthImageView_Stencil(VK_NULL_HANDLE)
         , poRenderPass(VK_NULL_HANDLE)
-        , poDescriptorSetLayout(VK_NULL_HANDLE)
         , poCommandPoolGraphics(VK_NULL_HANDLE) 
         , poCommandPoolCompute(VK_NULL_HANDLE)
         , poCommandBufferComputeBefore(VK_NULL_HANDLE)
@@ -2132,11 +2131,44 @@ namespace LostPeterVulkan
         , pBufferVertexIndex(nullptr)
         , poMatWorld(FMath::Identity4x4())
 
-        , poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
-        , poPipelineLayout(VK_NULL_HANDLE)
+		, poTessellationIsUsed(false)
+		, poTessellationFlags(0)
+		, poTessellationPatchControlPoints(3)
+		, poPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+        , poFrontFace(VK_FRONT_FACE_CLOCKWISE)
+        , poPolygonMode(VK_POLYGON_MODE_FILL)
+        , poCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+        , poDepthBiasEnabled(VK_FALSE)
+        , poDepthBiasConstantFactor(0.0f)
+        , poDepthBiasClamp(0.0f)
+        , poDepthBiasSlopeFactor(0.0f)
+        , poLineWidth(1.0f)
+
+		, poDepthEnabled(VK_TRUE)
+        , poDepthIsTest(VK_TRUE)
+        , poDepthIsWrite(VK_TRUE)
+        , poDepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
+
+        , poStencilEnabled(VK_FALSE)
+
+        , poBlendEnabled(VK_FALSE)
+        , poBlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
+        , poBlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
+        , poBlendColorOp(VK_BLEND_OP_ADD)
+        , poBlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
+        , poBlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
+        , poBlendAlphaOp(VK_BLEND_OP_ADD)
+
+        , poColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+
         , poPipelineCache(VK_NULL_HANDLE)
-        , poPipelineGraphics(VK_NULL_HANDLE)
-        , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
+		, poStatePipelineGraphics(nullptr)
+		, poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
+		, poShaderVertex(nullptr)
+		, poShaderFragment(nullptr)
+
+		, poDescriptorSetLayoutName("")
+        , poDescriptorSetLayout(nullptr)
 
         , poTextureImage(VK_NULL_HANDLE)
         , poTextureImageMemory(VK_NULL_HANDLE)
@@ -2179,28 +2211,7 @@ namespace LostPeterVulkan
         , cfg_isUseComputeShaderBeforeRender(false)
         , cfg_isUseComputeShaderAfterRender(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
-        , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-        , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
-        , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
-        , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
-        , cfg_isDepthBiasEnable(VK_FALSE)
-        , cfg_DepthBiasConstantFactor(0.0f)
-        , cfg_DepthBiasClamp(0.0f)
-        , cfg_DepthBiasSlopeFactor(0.0f)
-        , cfg_LineWidth(1.0f)
-        , cfg_isDepthTest(VK_TRUE)
-        , cfg_isDepthWrite(VK_TRUE)
-        , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
-        , cfg_isStencilTest(VK_FALSE)
-        , cfg_isBlend(VK_FALSE)
-        , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
-        , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
-        , cfg_BlendColorOp(VK_BLEND_OP_ADD)
-        , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
-        , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
-        , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
-        , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
-
+        
         , cfg_cameraPos(0.0f, 0.0f, -5.0f)
         , cfg_cameraLookTarget(0.0f, 0.0f, 0.0f)
         , cfg_cameraUp(0.0f, 1.0f, 0.0f)
@@ -2265,24 +2276,24 @@ namespace LostPeterVulkan
         , pEditorLineFlat2DCollector(nullptr)
         , pEditorLineFlat3DCollector(nullptr)
     {
-        cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
-        cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+        poDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+        poDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
 
-        cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpFront.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
-        cfg_StencilOpFront.compareMask = 0;
-        cfg_StencilOpFront.writeMask = 0;
-        cfg_StencilOpFront.reference = 0;
+        poStencilOpFront.failOp = VK_STENCIL_OP_KEEP;
+        poStencilOpFront.passOp = VK_STENCIL_OP_KEEP;
+        poStencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
+        poStencilOpFront.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+        poStencilOpFront.compareMask = 0;
+        poStencilOpFront.writeMask = 0;
+        poStencilOpFront.reference = 0;
 
-        cfg_StencilOpBack.failOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpBack.passOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpBack.depthFailOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpBack.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
-        cfg_StencilOpBack.compareMask = 0;
-        cfg_StencilOpBack.writeMask = 0;
-        cfg_StencilOpBack.reference = 0;
+        poStencilOpBack.failOp = VK_STENCIL_OP_KEEP;
+        poStencilOpBack.passOp = VK_STENCIL_OP_KEEP;
+        poStencilOpBack.depthFailOp = VK_STENCIL_OP_KEEP;
+        poStencilOpBack.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+        poStencilOpBack.compareMask = 0;
+        poStencilOpBack.writeMask = 0;
+        poStencilOpBack.reference = 0;
 
         Base::ms_pWindow = this;
     }
@@ -4006,29 +4017,23 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::createDescriptorSetLayout_Default()
     {   
-        if (this->cfg_shaderVertex_Path.empty() ||
+		if (this->cfg_shaderVertex_Path.empty() ||
             this->cfg_shaderFragment_Path.empty())
         {
             return;
         }
 
-        StringVector aNameDescriptorSets;
-        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass));
-        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object));
-        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material));
-        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance));
-        if (!this->cfg_texture_Path.empty())
+		if (!this->cfg_texture_Path.empty())
         {
-            aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS));
+			this->poDescriptorSetLayoutName = "Pass-Object-Material-Instance-TextureFS";
         }
+		else
+		{
+			this->poDescriptorSetLayoutName = "Pass-Object-Material-Instance";
+		}
 
-        this->poDescriptorSetLayout = CreateDescriptorSetLayout("DescriptorSetLayout_Default", &aNameDescriptorSets);
-        if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
+        this->poDescriptorSetLayout = new DescriptorSetLayout();
+        this->poDescriptorSetLayout->Init(this->poDescriptorSetLayoutName);
     }
     void VulkanWindow::createDescriptorSetLayout_Custom()
     {
@@ -7673,32 +7678,22 @@ namespace LostPeterVulkan
         {
             if (this->cfg_shaderVertex_Path.empty() ||
                 this->cfg_shaderFragment_Path.empty() ||
-                this->poDescriptorSetLayout == VK_NULL_HANDLE)
+                this->poDescriptorSetLayout == nullptr)
             {
                 return;
             }
 
             //1> Shader
-            String nameVertexShader;
-            String namePathBase;
-            FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader, namePathBase);
-            VkShaderModule vertShaderModule = createVkShaderModule(nameVertexShader, "VertexShader: ", this->cfg_shaderVertex_Path);
-            if (vertShaderModule == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** VulkanWindow::createGraphicsPipeline_Default: Failed to create shader module: " + this->cfg_shaderVertex_Path;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-            
-            String nameFragmentShader;
+			String namePathBase;
+			String nameVertexShader;
+			FUtilString::SplitFileName(this->cfg_shaderVertex_Path, nameVertexShader, namePathBase);
+			this->poShaderVertex = createShader(nameVertexShader, this->cfg_shaderVertex_Path, F_Shader_Vertex);
+			F_Assert(this->poShaderVertex != nullptr && "VulkanWindow::createGraphicsPipeline_Default")
+
+			String nameFragmentShader;
             FUtilString::SplitFileName(this->cfg_shaderFragment_Path, nameFragmentShader, namePathBase);
-            VkShaderModule fragShaderModule = createVkShaderModule(nameFragmentShader, "FragmentShader: ", this->cfg_shaderFragment_Path);
-            if (fragShaderModule == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** VulkanWindow::createGraphicsPipeline_Default: Failed to create shader module: " + this->cfg_shaderFragment_Path;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
+			this->poShaderFragment = createShader(nameFragmentShader, this->cfg_shaderFragment_Path, F_Shader_Fragment);
+			F_Assert(this->poShaderFragment != nullptr && "VulkanWindow::createGraphicsPipeline_Default")
 
             //2> Viewport
             VkViewportVector aViewports;
@@ -7706,62 +7701,256 @@ namespace LostPeterVulkan
             VkRect2DVector aScissors;
             aScissors.push_back(this->poScissor);
 
-            //3> PipelineLayout
-            VkDescriptorSetLayoutVector aDescriptorSetLayout;
-            aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-            this->poPipelineLayout = createVkPipelineLayout("PipelineLayout-Default", aDescriptorSetLayout);
-            if (this->poPipelineLayout == VK_NULL_HANDLE)
+			//3> poStatePipelineGraphics
+			String nameStatePipelineGraphics = "StatePipelineGraphics-Default";
+			this->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+																	    this->poDescriptorSetLayout,
+																	    this->poShaderVertex,
+																	    nullptr,
+																	    nullptr,
+																	    nullptr,
+																	    this->poShaderFragment,
+																	    this->poTypeVertex,
+																	    this->poTessellationIsUsed, this->poTessellationFlags, this->poTessellationPatchControlPoints,
+																	    this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																	    this->poPrimitiveTopology, this->poFrontFace, this->poPolygonMode, this->poCullModeFlagBits, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																	    this->poDepthEnabled, this->poDepthIsTest, this->poDepthIsWrite,this->poDepthCompareOp,
+																		this->poStencilEnabled, this->poStencilOpFront, this->poStencilOpBack, 
+																	    this->poBlendEnabled, this->poBlendColorFactorSrc, this->poBlendColorFactorDst, this->poBlendColorOp,
+																	    this->poBlendAlphaFactorSrc, this->poBlendAlphaFactorDst, this->poBlendAlphaOp,
+																	    this->poColorWriteMask);
+			if (this->poStatePipelineGraphics == nullptr)
             {
-                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkPipelineLayout failed !");
+                F_LogError("*********************** VulkanWindow::createGraphicsPipeline_Default: createStatePipelineGraphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
                 return;
             }
-
-            //4> poPipelineGraphics
-            this->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-Default",
-                                                                vertShaderModule, "main",
-                                                                fragShaderModule, "main",
-                                                                Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
-                                                                this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
-                                                                this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
-                                                                this->cfg_BlendAlphaFactorSrc, this->cfg_BlendAlphaFactorDst, this->cfg_BlendAlphaOp,
-                                                                this->cfg_ColorWriteMask);
-            if (this->poPipelineGraphics == VK_NULL_HANDLE)
-            {
-                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline failed !");
-                return;
-            }
-
-            //5> poPipelineGraphics_WireFrame
-            this->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-Default",
-                                                                          vertShaderModule, "main",
-                                                                          fragShaderModule, "main",
-                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                          this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                          this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                          this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
-                                                                          this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
-                                                                          this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
-                                                                          this->cfg_BlendAlphaFactorSrc, this->cfg_BlendAlphaFactorDst, this->cfg_BlendAlphaOp,
-                                                                          this->cfg_ColorWriteMask);
-            if (this->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
-            {
-                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline wire frame failed !");
-                return;
-            }
-
-            //6> Destroy Shader
-            destroyVkShaderModule(fragShaderModule);
-            destroyVkShaderModule(vertShaderModule);
         }
         void VulkanWindow::createGraphicsPipeline_Custom()
         {
             
         }
+
+			VKStatePipelineGraphics* VulkanWindow::createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																			   DescriptorSetLayout* pDescriptorSetLayout,
+																			   VKShader* pShaderVertex,
+																			   VKShader* pShaderTESC,
+																			   VKShader* pShaderTESE,
+																			   VKShader* pShaderGeom,
+																			   VKShader* pShaderFrag,
+																			   FMeshVertexType typeVertex,
+																			   bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																			   VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																			   VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																			   VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																			   VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																			   VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																			   VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																			   VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
+			{
+				VKStatePipelineGraphics* pStatePipelineGraphics = new VKStatePipelineGraphics(nameStatePipelineGraphics);
+				if (!pStatePipelineGraphics->Init(pDescriptorSetLayout,
+												  pShaderVertex,
+												  pShaderTESC,
+												  pShaderTESE,
+												  pShaderGeom,
+												  pShaderFrag,
+												  typeVertex,
+												  tessellationIsUsed, tessellationFlags, tessellationPatchControlPoints,
+												  renderPass, aViewports, aScissors, aDynamicStates,
+												  primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+												  bDepthEnabled, bDepthTest, bDepthWrite, depthCompareOp,
+												  bStencilEnabled, stencilOpFront, stencilOpBack,
+												  bBlendEnabled, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+												  blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+												  colorWriteMask, subpass))
+				{
+					F_DELETE(pStatePipelineGraphics)
+					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
+                    return VK_NULL_HANDLE;
+				}
+				return pStatePipelineGraphics;
+			}
+			VKStatePipelineGraphics* VulkanWindow::createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																			   DescriptorSetLayout* pDescriptorSetLayout,
+																			   VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+																			   FMeshVertexType typeVertex,
+																			   bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																			   VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																			   VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																			   VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																			   VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																			   VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																			   VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																			   VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
+			{
+				VKStatePipelineGraphics* pStatePipelineGraphics = new VKStatePipelineGraphics(nameStatePipelineGraphics);
+				if (!pStatePipelineGraphics->Init(pDescriptorSetLayout,
+												  aShaderStageCreateInfos,
+												  typeVertex,
+												  tessellationIsUsed, tessellationFlags, tessellationPatchControlPoints,
+												  renderPass, aViewports, aScissors, aDynamicStates,
+												  primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+												  bDepthEnabled, bDepthTest, bDepthWrite, depthCompareOp,
+												  bStencilEnabled, stencilOpFront, stencilOpBack,
+												  bBlendEnabled, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+												  blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+												  colorWriteMask, subpass))
+				{
+					F_DELETE(pStatePipelineGraphics)
+					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
+                    return VK_NULL_HANDLE;
+				}
+				return pStatePipelineGraphics;
+			}
+			VKStatePipelineGraphics* VulkanWindow::createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																			   DescriptorSetLayout* pDescriptorSetLayout,
+																			   VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+																			   FMeshVertexType typeVertex,
+																			   bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																			   VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																			   VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																			   VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																			   VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																			   const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass /*= 0*/)
+			{
+				VKStatePipelineGraphics* pStatePipelineGraphics = new VKStatePipelineGraphics(nameStatePipelineGraphics);
+				if (!pStatePipelineGraphics->Init(pDescriptorSetLayout,
+												  aShaderStageCreateInfos,
+												  typeVertex,
+												  tessellationIsUsed, tessellationFlags, tessellationPatchControlPoints,
+												  renderPass, aViewports, aScissors, aDynamicStates,
+												  primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+												  bDepthEnabled, bDepthTest, bDepthWrite, depthCompareOp,
+												  bStencilEnabled, stencilOpFront, stencilOpBack,
+												  aColorBlendAttachmentState, subpass))
+				{
+					F_DELETE(pStatePipelineGraphics)
+					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
+                    return VK_NULL_HANDLE;
+				}
+				return pStatePipelineGraphics;
+			}
+
+			VkPipeline VulkanWindow::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+															  VKShader* pShaderVertex,
+															  VKShader* pShaderTESC,
+															  VKShader* pShaderTESE,
+															  VKShader* pShaderGeom,
+															  VKShader* pShaderFrag,
+															  FMeshVertexType typeVertex,
+															  bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+															  VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+															  VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth, 
+															  VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+															  VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+															  VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+															  VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+															  VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
+			{
+				VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+                //1> Pipeline Shader Stage
+                //vert
+				if (pShaderVertex != nullptr) 
+				{
+					VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+					vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+					vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+					vertShaderStageInfo.module = pShaderVertex->GetVkShaderModule();
+					vertShaderStageInfo.pName = pShaderVertex->GetNameMain().c_str();
+					aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+				}
+                
+                //tesc
+				if (pShaderTESC != nullptr) 
+				{
+					VkPipelineShaderStageCreateInfo tescShaderStageInfo = {};
+					tescShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+					tescShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+					tescShaderStageInfo.module = pShaderTESC->GetVkShaderModule();
+					tescShaderStageInfo.pName = pShaderTESC->GetNameMain().c_str();
+					aShaderStageCreateInfos.push_back(tescShaderStageInfo);
+				}
+
+                //tese
+				if (pShaderTESE != nullptr) 
+				{
+					VkPipelineShaderStageCreateInfo teseShaderStageInfo = {};
+					teseShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+					teseShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+					teseShaderStageInfo.module = pShaderTESE->GetVkShaderModule();
+					teseShaderStageInfo.pName = pShaderTESE->GetNameMain().c_str();
+					aShaderStageCreateInfos.push_back(teseShaderStageInfo);
+				}
+                
+				//geom
+				if (pShaderGeom != nullptr) 
+				{
+					VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+					fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+					fragShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+					fragShaderStageInfo.module = pShaderGeom->GetVkShaderModule();
+					fragShaderStageInfo.pName = pShaderGeom->GetNameMain().c_str();
+					aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+				}
+
+                //frag
+				if (pShaderFrag != nullptr) 
+				{
+					VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+					fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+					fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+					fragShaderStageInfo.module = pShaderFrag->GetVkShaderModule();
+					fragShaderStageInfo.pName = pShaderFrag->GetNameMain().c_str();
+					aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+				}
+                
+                return createVkGraphicsPipeline(nameGraphicsPipeline,
+                                                aShaderStageCreateInfos,
+                                                true, tessellationFlags, tessellationPatchControlPoints,
+												Util_GetVkVertexInputBindingDescriptionVectorPtr(typeVertex), 
+                                                Util_GetVkVertexInputAttributeDescriptionVectorPtr(typeVertex),
+                                                renderPass, pipelineLayout, aViewports, aScissors, aDynamicStates,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+                                                bDepthTest, bDepthWrite, depthCompareOp,
+                                                bStencilTest, stencilOpFront, stencilOpBack,
+                                                bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                                blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                                colorWriteMask, subpass);
+			}
+			VkPipeline VulkanWindow::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+															  const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+															  FMeshVertexType typeVertex,
+															  bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+															  VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+															  VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth, 
+															  VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+															  VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+															  VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+															  VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+															  VkColorComponentFlags colorWriteMask, uint32_t subpass /*= 0*/)
+			{
+				VkVertexInputBindingDescriptionVector* pBindingDescriptions = nullptr;
+				VkVertexInputAttributeDescriptionVector* pAttributeDescriptions = nullptr;
+				if (typeVertex != F_MeshVertex_Count)
+				{
+					pBindingDescriptions = Util_GetVkVertexInputBindingDescriptionVectorPtr(typeVertex);
+					pAttributeDescriptions = Util_GetVkVertexInputAttributeDescriptionVectorPtr(typeVertex);
+				}
+
+				return createVkGraphicsPipeline(nameGraphicsPipeline,
+                                                aShaderStageCreateInfos,
+                                                true, tessellationFlags, tessellationPatchControlPoints,
+												pBindingDescriptions,
+                                                pAttributeDescriptions,
+                                                renderPass, pipelineLayout, aViewports, aScissors, aDynamicStates,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+                                                bDepthTest, bDepthWrite, depthCompareOp,
+                                                bStencilTest, stencilOpFront, stencilOpBack,
+                                                bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                                blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                                colorWriteMask, subpass);
+			}
+
             VkPipeline VulkanWindow::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
                                                               VkShaderModule vertShaderModule, const String& vertMain,
                                                               VkShaderModule fragShaderModule, const String& fragMain,
@@ -8169,6 +8358,21 @@ namespace LostPeterVulkan
         {
 
         }
+
+			VkPipeline VulkanWindow::createVkComputePipeline(const String& nameComputePipeline,
+															 VKShader* pShaderCompute,
+															 VkPipelineLayout pipelineLayout, 
+															 VkPipelineCreateFlags flags /*= 0*/,
+															 VkSpecializationInfo* pSpecializationInfo /*= nullptr*/)
+			{
+				return createVkComputePipeline(nameComputePipeline,
+											   pShaderCompute->GetVkShaderModule(),
+											   pShaderCompute->GetNameMain(),
+											   pipelineLayout,
+											   flags,
+											   pSpecializationInfo);
+			}
+
             VkPipeline VulkanWindow::createVkComputePipeline(const String& nameComputePipeline,
                                                              VkShaderModule compShaderModule,
                                                              const String& compMain,
@@ -8231,11 +8435,12 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::createDescriptorSets_Default()
         {
-            if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
-                return;
-
-            createVkDescriptorSets("DescriptorSets-Default", this->poDescriptorSetLayout, this->poDescriptorSets);
-            updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
+            if (this->poDescriptorSetLayout == nullptr)
+            {
+				return;
+			}
+			
+			updateDescriptorSets(this->poStatePipelineGraphics, this->poTextureImageView, this->poTextureSampler);
         }
         void VulkanWindow::createDescriptorSets_Terrain()
         {
@@ -8320,6 +8525,82 @@ namespace LostPeterVulkan
                     updateVkDescriptorSets(descriptorWrites);
                 }
             }
+			void VulkanWindow::updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics, VkImageView vkTextureView, VkSampler vkSampler)
+			{
+				size_t count_ds = pStatePipelineGraphics->poDescriptorSets.size();
+                for (size_t i = 0; i < count_ds; i++)
+                {
+                    VkWriteDescriptorSetVector descriptorWrites;
+                    //(0) PassConstants
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Pass = {};
+                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[i]->GetVkBuffer();
+                        bufferInfo_Pass.offset = 0;
+                        bufferInfo_Pass.range = sizeof(PassConstants);
+                        pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                    pStatePipelineGraphics->poDescriptorSets[i],
+                                                    0,
+                                                    0,
+                                                    1,
+                                                    bufferInfo_Pass);
+                    }
+                    //(1) ObjectConstants
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Object = {};
+                        bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i]->GetVkBuffer();
+                        bufferInfo_Object.offset = 0;
+                        bufferInfo_Object.range = sizeof(ObjectConstants) * this->objectCBs.size();
+                        pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                    pStatePipelineGraphics->poDescriptorSets[i],
+                                                    1,
+                                                    0,
+                                                    1,
+                                                    bufferInfo_Object);
+                    }
+                    //(2) MaterialConstants
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Material = {};
+                        bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i]->GetVkBuffer();
+                        bufferInfo_Material.offset = 0;
+                        bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
+                        pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                    pStatePipelineGraphics->poDescriptorSets[i],
+                                                    2,
+                                                    0,
+                                                    1,
+                                                    bufferInfo_Material);
+                    }
+                    //(3) InstanceConstants
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Instance = {};
+                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i]->GetVkBuffer();
+                        bufferInfo_Instance.offset = 0;
+                        bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
+                        pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                    pStatePipelineGraphics->poDescriptorSets[i],
+                                                    3,
+                                                    0,
+                                                    1,
+                                                    bufferInfo_Instance);
+                    }
+                    //(4) Image
+                    if (vkTextureView != VK_NULL_HANDLE)
+                    {
+                        VkDescriptorImageInfo imageInfo = {};
+                        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                        imageInfo.imageView = vkTextureView;
+                        imageInfo.sampler = vkSampler;
+                        pushVkDescriptorSet_Image(descriptorWrites,
+                                                  pStatePipelineGraphics->poDescriptorSets[i],
+                                                  4,
+                                                  0,
+                                                  1,
+                                                  VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                                  imageInfo);
+                    }
+                    updateVkDescriptorSets(descriptorWrites);
+                }
+			}
 
             void VulkanWindow::destroyVkDescriptorSet(VkDescriptorSet& vkDescriptorSet)
             {
@@ -10195,7 +10476,7 @@ namespace LostPeterVulkan
                         return;
                     }
 
-                    VKMultiRenderPass* pRenderPass = this->pEditorCameraAxis->pPipelineGraphics->pRenderPass;
+                    VKMultiRenderPass* pRenderPass = this->pEditorCameraAxis->pRenderPass;
                     if (pRenderPass == nullptr)
                         return;
 
@@ -10290,17 +10571,15 @@ namespace LostPeterVulkan
                         void VulkanWindow::drawMeshDefault(VkCommandBuffer& commandBuffer)
                         {
                             if (this->pBufferVertexIndex == nullptr && 
-								this->pBufferVertex == nullptr)
+								this->pBufferVertex == nullptr &&
+							    this->poStatePipelineGraphics == nullptr)
                                 return;
 
-                            VkPipeline vkPipeline = this->poPipelineGraphics;
-                            if (this->cfg_isWireFrame)
-                                vkPipeline = this->poPipelineGraphics_WireFrame;
-                            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
-                            if (this->poDescriptorSets.size() > 0)
-                            {
-                                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-                            }
+							//State/Shader/BufferUniform/Texture
+							this->poStatePipelineGraphics->BindState(commandBuffer, this->cfg_isWireFrame);
+							this->poStatePipelineGraphics->BindShader(commandBuffer);
+							this->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+							this->poStatePipelineGraphics->BindTextures(commandBuffer);
 
 							if (this->pBufferVertex != nullptr)
 							{
@@ -10316,6 +10595,7 @@ namespace LostPeterVulkan
 							{
 								F_Assert(false && "VulkanWindow::drawMeshDefault")
 							}
+							this->poStatePipelineGraphics->UnBindState(commandBuffer);
                         }
                         void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
                         {
@@ -10810,7 +11090,9 @@ namespace LostPeterVulkan
     }
         void VulkanWindow::cleanupDefault()
         {
-            destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
+			this->poDescriptorSetLayoutName = "";
+            F_DELETE(this->poDescriptorSetLayout)
+
             cleanupTexture();
             cleanupVertexIndexBuffer();
         }
@@ -10971,14 +11253,7 @@ namespace LostPeterVulkan
                 this->poBuffers_InstanceCB.clear();
 
                 //2> Pipelines
-                destroyVkPipeline(this->poPipelineGraphics);
-                this->poPipelineGraphics = VK_NULL_HANDLE;
-                destroyVkPipeline(this->poPipelineGraphics_WireFrame);
-                this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
-
-                //3> PipelineLayout
-                destroyVkPipelineLayout(this->poPipelineLayout);
-                this->poPipelineLayout = VK_NULL_HANDLE;
+				F_DELETE(this->poStatePipelineGraphics)
             }
             void VulkanWindow::cleanupSwapChain_Editor()
             {

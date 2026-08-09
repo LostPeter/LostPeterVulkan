@@ -12,6 +12,9 @@
 #include "../include/PreDefine.h"
 #include "../include/VulkanDefine.h"
 
+#include "../include/Base.h"
+#include "../include/VulkanWindow.h"
+
 namespace LostPeterVulkan
 {   
 ////////////////////////////// Typedef /////////////////////////////
@@ -800,7 +803,26 @@ namespace LostPeterVulkan
     }
 
 
-	void DescriptorSetLayout::Init(const String& nameLayout)
+	DescriptorSetLayout::DescriptorSetLayout()
+		: nameDescriptorSetLayout("")
+
+		, poDescriptorSetLayout(VK_NULL_HANDLE)
+		, poPipelineLayout(VK_NULL_HANDLE)
+		, poDescriptorSet(VK_NULL_HANDLE)
+
+	{
+
+	}
+	DescriptorSetLayout::~DescriptorSetLayout()
+	{
+		DestroyLayout();
+		DestroyDescriptorSets();
+	}
+
+	void DescriptorSetLayout::Init(const String& nameLayout, 
+								   bool isCreateLayout /*= false*/, 
+								   bool isCreateDescriptorSets /*= false*/,
+								   bool isCreateDescriptorSet /*= false*/)
     {
         this->nameDescriptorSetLayout = nameLayout;
         this->aLayouts = FUtilString::Split(nameLayout, "-");
@@ -809,7 +831,21 @@ namespace LostPeterVulkan
         {
             this->mapName2Index[this->aLayouts[i]] = i;
         }
+
+		if (isCreateLayout)
+		{
+			CreateLayout(true);
+		}
+		if (isCreateDescriptorSets)
+		{
+			CreateDescriptorSets(true);
+		}
+		if (isCreateDescriptorSet)
+		{
+			CreateDescriptorSet(true);
+		}
     }
+
     uint32 DescriptorSetLayout::FindIndex(const String& nameDescriptor)
     {
         DescriptorSetName2IndexMap::iterator itFind = this->mapName2Index.find(nameDescriptor);
@@ -820,6 +856,120 @@ namespace LostPeterVulkan
         return itFind->second;
     }
 	
+	bool DescriptorSetLayout::HasLayout()
+	{
+		return this->poDescriptorSetLayout != VK_NULL_HANDLE;
+	}
+	void DescriptorSetLayout::CreateLayout(bool isRecreate)
+	{
+		if (isRecreate)
+		{
+			DestroyLayout();
+		}
 
+		if (!HasLayout())
+		{
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
+			//1> DescriptorSetLayout
+			String nameDSL = "DescriptorSetLayout-" + this->nameDescriptorSetLayout;
+			this->poDescriptorSetLayout = pWindow->CreateDescriptorSetLayout(nameDSL, &this->aLayouts);
+			if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
+			{
+				String msg = "*********************** DescriptorSetLayout::CreateLayout: Failed to create descriptor set layout, name: " + nameDSL;
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+
+			//2> PipelineLayout
+			VkDescriptorSetLayoutVector aDescriptorSetLayout;
+			aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
+			String namePipelineLayout = "PipelineLayout-" + this->nameDescriptorSetLayout;
+			this->poPipelineLayout = pWindow->createVkPipelineLayout(namePipelineLayout, aDescriptorSetLayout);
+			if (this->poPipelineLayout == VK_NULL_HANDLE)
+			{
+				String msg = "*********************** DescriptorSetLayout::CreateLayout: Failed to create pipeline layout, name: " + namePipelineLayout;
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+		}
+	}
+	void DescriptorSetLayout::DestroyLayout()
+	{
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
+		if (this->poDescriptorSetLayout != VK_NULL_HANDLE)
+		{
+			pWindow->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
+		}
+		this->poDescriptorSetLayout = VK_NULL_HANDLE;
+		if (this->poPipelineLayout != VK_NULL_HANDLE)
+		{
+			pWindow->destroyVkPipelineLayout(this->poPipelineLayout);
+		}
+		this->poPipelineLayout = VK_NULL_HANDLE;
+	}
+
+	bool DescriptorSetLayout::HasDescriptorSets()
+	{
+		return this->poDescriptorSets.size() > 0;
+	}
+	void DescriptorSetLayout::CreateDescriptorSets(bool isRecreate)
+	{	
+		if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
+			return;
+		if (isRecreate)
+		{
+			DestroyDescriptorSets();
+		}
+
+		String nameDescriptorSets = "DescriptorSets-" + this->nameDescriptorSetLayout;
+		Base::GetWindowPtr()->createVkDescriptorSets(nameDescriptorSets, this->poDescriptorSetLayout, this->poDescriptorSets);
+	}	
+	void DescriptorSetLayout::DestroyDescriptorSets()
+	{
+		if (this->poDescriptorSets.size() > 0)
+		{
+			Base::GetWindowPtr()->destroyVkDescriptorSets(this->poDescriptorSets);
+		}
+		this->poDescriptorSets.clear();
+	}
+
+	bool DescriptorSetLayout::HasDescriptorSet()
+	{
+		return this->poDescriptorSet != VK_NULL_HANDLE;
+	}
+	void DescriptorSetLayout::CreateDescriptorSet(bool isRecreate)
+	{
+		if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
+			return;
+		if (isRecreate)
+		{
+			DestroyDescriptorSet();
+		}
+
+		String nameDescriptorSet = "DescriptorSet-" + this->nameDescriptorSetLayout;
+		Base::GetWindowPtr()->createVkDescriptorSet(nameDescriptorSet, this->poDescriptorSetLayout, this->poDescriptorSet);
+	}
+	void DescriptorSetLayout::DestroyDescriptorSet()
+	{
+		if (this->poDescriptorSet != VK_NULL_HANDLE)
+		{
+			Base::GetWindowPtr()->destroyVkDescriptorSet(this->poDescriptorSet);
+		}
+		this->poDescriptorSet = VK_NULL_HANDLE;
+	}
+
+	void DescriptorSetLayout::CreateLayoutAndDescriptorSets(bool isRecreate)
+	{
+		CreateLayout(isRecreate);
+		CreateDescriptorSets(isRecreate);
+	}
+
+	void DescriptorSetLayout::CreateLayoutAndDescriptorSet(bool isRecreate)
+	{
+		CreateLayout(isRecreate);
+		CreateDescriptorSet(isRecreate);
+	}
 
 }; //LostPeterVulkan

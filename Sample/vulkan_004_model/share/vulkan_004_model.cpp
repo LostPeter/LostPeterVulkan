@@ -146,7 +146,7 @@ void Vulkan_004_Model::changeModel(int index)
     //2> Texture
     cleanupTexture();
     loadTexture();
-    updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
+    updateDescriptorSets(this->poStatePipelineGraphics, this->poTextureImageView, this->poTextureSampler);
 }
 
 void Vulkan_004_Model::loadModel_Default()

@@ -970,12 +970,12 @@ void Vulkan_011_Texturing::loadModel_Custom()
             pModelObject->isUsedTessellation = true;
             if (g_ObjectIsTopologyPatchLists[i])
             {
-                pModelObject->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+                pModelObject->poPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
             }
         }
 
         //Pipeline Graphics - DescriptorSetLayout
-        pModelObject->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[2 * i + 0];
+        pModelObject->nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[2 * i + 0];
 
         //Pipeline Computes - DescriptorSetLayout
         String nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[2 * i + 1];
@@ -986,9 +986,10 @@ void Vulkan_011_Texturing::loadModel_Custom()
             for (size_t j = 0; j < count_dsl; j++)
             {
                 const String& nameDescriptorSetLayout = aDescriptorSetLayout[j];
-                VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
-                pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
-                pModelObject->AddPipelineCompute(pPipelineCompute);
+				String nameStatePipelineCompute = "PipelineCompute-" + nameDescriptorSetLayout;
+                VKStatePipelineCompute* pStatePipelineCompute = new VKStatePipelineCompute(nameStatePipelineCompute);
+                pStatePipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
+                pModelObject->AddStatePipelineCompute(pStatePipelineCompute);
             }
         }
 
@@ -1184,7 +1185,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_011_Texturing::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_011_Texturing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1207,7 +1208,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_011_Texturing::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_011_Texturing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1232,11 +1233,32 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
 																		  false);
 					if (!pBufferUniform)
 					{
-						String msg = "*********************** Vulkan_011_Texturing::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						String msg = "*********************** Vulkan_011_Texturing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 						F_LogError(msg.c_str());
 						throw std::runtime_error(msg);
 					}
 					pModelObject->poBuffers_tessellationCB.push_back(pBufferUniform);
+                }
+            }
+
+			//TextureCopyConstants
+            if (pModelObject->isUsedCompute)
+            {
+                pModelObject->textureCopyCBs.clear();
+                TextureCopyConstants textureCopyCB;
+                pModelObject->textureCopyCBs.push_back(textureCopyCB);
+
+                F_DELETE(pModelObject->poBuffer_TextureCopy)
+                String nameBuffer = "TextureCopyConstants-" + pModelObject->nameObject;
+                pModelObject->poBuffer_TextureCopy = createBufferUniform(nameBuffer,
+																		 sizeof(TextureCopyConstants) * pModelObject->textureCopyCBs.size(),
+																		 (uint8*)pModelObject->textureCopyCBs.data(),
+																		 false);
+                if (!pModelObject->poBuffer_TextureCopy)
+                {
+                    String msg = "*********************** Vulkan_011_Texturing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+                    F_LogError("%s", msg.c_str());
+                    throw std::runtime_error(msg);
                 }
             }
         }
@@ -1247,11 +1269,7 @@ void Vulkan_011_Texturing::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
-
-    //2> PipelineLayout
-    createPipelineLayouts();
-
-    //3> Shader
+    //2> Shader
     createShaders();
 }  
 void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
@@ -1289,55 +1307,20 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
 
         //[2] Pipeline Graphics
         {
-            pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pModelObject->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pModelObject->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pModelObject->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pModelObject->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pModelObject->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pModelObject->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            //pPipelineGraphics->poPipeline_WireFrame
-            pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameObject,
-                                                                                             pModelObject->aShaderStageCreateInfos_Graphics,
-                                                                                             pModelObject->isUsedTessellation, 0, 3,
-                                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                                                             this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                             pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                                             pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                                             pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                                             pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                                             pModelObject->cfg_ColorWriteMask);
-            if (pModelObject->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("Vulkan_011_Texturing::createGraphicsPipeline_Custom: Object: [%s] Create pipeline wireframe success !", pModelObject->nameObject.c_str());
-
-            //pPipelineGraphics->poPipeline
-            VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
-            VkBool32 isDepthWriteEnable = pModelObject->cfg_isDepthWrite;
-            VkBool32 isBlend = pModelObject->cfg_isBlend;
-            VkBlendFactor blendColorFactorSrc = pModelObject->cfg_BlendColorFactorSrc; 
-            VkBlendFactor blendColorFactorDst = pModelObject->cfg_BlendColorFactorDst; 
+            //poStatePipelineGraphics
+            VkBool32 isDepthTestEnable = pModelObject->poDepthIsTest;
+            VkBool32 isDepthWriteEnable = pModelObject->poDepthIsWrite;
+            VkBool32 isBlend = pModelObject->poBlendEnabled;
+            VkBlendFactor blendColorFactorSrc = pModelObject->poBlendColorFactorSrc; 
+            VkBlendFactor blendColorFactorDst = pModelObject->poBlendColorFactorDst; 
             if (pModelObject->isTransparent)
             {
                 isDepthTestEnable = VK_FALSE;
@@ -1347,21 +1330,22 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameObject,
-                                                                                   pModelObject->aShaderStageCreateInfos_Graphics,
-                                                                                   pModelObject->isUsedTessellation, 0, 3,
-                                                                                   Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
-                                                                                   Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                                                   this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                   pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                   isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
-                                                                                   pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                                   isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                                   pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                                   pModelObject->cfg_ColorWriteMask);
-            if (pModelObject->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+			String nameStatePipelineGraphics = "PipelineGraphics-" + pModelObject->nameObject;
+            pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+																				pDescriptorSetLayout,
+																				pModelObject->aShaderStageCreateInfos_Graphics,
+																				pModelObject->pMesh->poTypeVertex,
+																				pModelObject->isUsedTessellation, 0, 3,
+																				this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																				pModelObject->poPrimitiveTopology, pModelObject->poFrontFace, pModelObject->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																				VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pModelObject->poDepthCompareOp,
+																				pModelObject->poStencilEnabled, pModelObject->poStencilOpFront, pModelObject->poStencilOpBack, 
+																				isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->poBlendColorOp,
+																				pModelObject->poBlendAlphaFactorSrc, pModelObject->poBlendAlphaFactorDst, pModelObject->poBlendAlphaOp,
+																				pModelObject->poColorWriteMask);
+            if (pModelObject->poStatePipelineGraphics == nullptr)
             {
-                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline !";
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline graphics, name: " + nameStatePipelineGraphics;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1375,7 +1359,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        size_t count_pipeline = pModelObject->aPipelineComputes.size();
+        size_t count_pipeline = pModelObject->aStatePipelineComputes.size();
         if (count_pipeline <= 0)
             continue;
 
@@ -1400,35 +1384,22 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            VKPipelineCompute* p = pModelObject->aPipelineComputes[j];
+            VKStatePipelineCompute* pStatePipelineCompute = pModelObject->aStatePipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pModelObject->aShaderStageCreateInfos_Computes[j];
 
-            p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pStatePipelineCompute->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
-            if (p->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
-            if (p->poPipeline == VK_NULL_HANDLE)
+            if (!pStatePipelineCompute->Init(pDescriptorSetLayout,
+											 shaderStageCreateInfo,
+											 0))
             {
-                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1571,14 +1542,14 @@ VKTexture* Vulkan_011_Texturing::findTexture(const String& nameTexture)
 
 void Vulkan_011_Texturing::destroyDescriptorSetLayouts()
 {
-    size_t count = this->m_aVkDescriptorSetLayouts.size();
+    size_t count = this->m_aDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
+		DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+        delete pDSL;
     }
-    this->m_aVkDescriptorSetLayouts.clear();
-    this->m_mapVkDescriptorSetLayout.clear();
-    this->m_mapName2Layouts.clear();
+    this->m_aDescriptorSetLayouts.clear();
+    this->m_mapDescriptorSetLayouts.clear();
 }
 void Vulkan_011_Texturing::createDescriptorSetLayouts()
 {
@@ -1586,37 +1557,23 @@ void Vulkan_011_Texturing::createDescriptorSetLayouts()
     {
         String nameLayout(g_nameDescriptorSetLayouts[i]);
         StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-        VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_011_Texturing::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-        this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
-        this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
-        this->m_mapName2Layouts[nameLayout] = aLayouts;
+		DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+		pDSL->Init(nameLayout, true, false);
+		
+        this->m_aDescriptorSetLayouts.push_back(pDSL);
+        this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
 
         F_LogInfo("Vulkan_011_Texturing::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_011_Texturing::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+DescriptorSetLayout* Vulkan_011_Texturing::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
-    VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapVkDescriptorSetLayout.end())
+    DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapDescriptorSetLayouts.end())
     {
         return nullptr;
     }
     return itFind->second;
-}
-StringVector* Vulkan_011_Texturing::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
-{
-    std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapName2Layouts.end())
-    {
-        return nullptr;
-    }
-    return &(itFind->second);
 }
 
 
@@ -1654,52 +1611,6 @@ VKShader* Vulkan_011_Texturing::findShader(const String& nameShader)
         return nullptr;
     }
     return itFind->second;
-}   
-
-
-void Vulkan_011_Texturing::destroyPipelineLayouts()
-{
-    size_t count = this->m_aVkPipelineLayouts.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
-    }
-    this->m_aVkPipelineLayouts.clear();
-    this->m_mapVkPipelineLayouts.clear();
-}
-void Vulkan_011_Texturing::createPipelineLayouts()
-{
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
-    {
-        String nameDescriptorSetLayout(g_nameDescriptorSetLayouts[i]);
-        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_011_Texturing::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
-            return;
-        }
-
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(m_aVkDescriptorSetLayouts[i]);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
-        if (vkPipelineLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_011_Texturing::createPipelineLayouts: createVkPipelineLayout failed !");
-            return;
-        }
-
-        this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
-    }
-}
-VkPipelineLayout Vulkan_011_Texturing::findPipelineLayout(const String& namePipelineLayout)
-{
-    VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
-    if (itFind == this->m_mapVkPipelineLayouts.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
 }
 
 
@@ -1713,9 +1624,6 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            StringVector* pDescriptorSetLayoutNames = pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames;
-            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
-            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pPipelineGraphics->poDescriptorSets);
             for (size_t j = 0; j < count_sci; j++)
             {   
                 VkWriteDescriptorSetVector descriptorWrites;
@@ -1724,10 +1632,10 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                 int nIndexTextureTESE = 0;
                 int nIndexTextureFS = 0;
 
-                size_t count_names = pDescriptorSetLayoutNames->size();
+                size_t count_names = pModelObject->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
                 for (size_t p = 0; p < count_names; p++)
                 {
-                    String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+                    String& nameDescriptorSet = pModelObject->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts[p];
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -1735,7 +1643,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                    pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                    pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                     p,
                                                     0,
                                                     1,
@@ -1748,7 +1656,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         bufferInfo_Object.offset = 0;
                         bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                    pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                    pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                     p,
                                                     0,
                                                     1,
@@ -1761,7 +1669,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         bufferInfo_Material.offset = 0;
                         bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                    pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                    pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                     p,
                                                     0,
                                                     1,
@@ -1774,7 +1682,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         bufferInfo_Instance.offset = 0;
                         bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                         pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                    pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                    pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                     p,
                                                     0,
                                                     1,
@@ -1787,7 +1695,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         bufferInfo_Tessellation.offset = 0;
                         bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                         pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                    pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                    pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                     p,
                                                     0,
                                                     1,
@@ -1798,7 +1706,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                         nIndexTextureVS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
-                                                  pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                  pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                   p,
                                                   0,
                                                   1,
@@ -1810,7 +1718,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                         nIndexTextureTESC ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
-                                                  pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                  pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                   p,
                                                   0,
                                                   1,
@@ -1822,7 +1730,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                         nIndexTextureTESE ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
-                                                  pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                  pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                   p,
                                                   0,
                                                   1,
@@ -1834,7 +1742,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                         nIndexTextureFS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
-                                                  pModelObject->pPipelineGraphics->poDescriptorSets[j],
+                                                  pModelObject->poStatePipelineGraphics->poDescriptorSets[j],
                                                   p,
                                                   0,
                                                   1,
@@ -1853,32 +1761,25 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
         }
 
         //Pipeline Computes
-        size_t count_comp = pModelObject->aPipelineComputes.size();
+        size_t count_comp = pModelObject->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {       
-            VKPipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
-
-            StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
-            String nameDS = "DescriptorSet-" + FUtilString::SavePointI(FPointI(i,j)) + "-" + pModelObject->nameObject;
-            createVkDescriptorSet(nameDS, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
+            VKStatePipelineCompute* pStatePipelineCompute = pModelObject->aStatePipelineComputes[j];
 
             VkWriteDescriptorSetVector descriptorWrites;
             int nIndexTextureCS = 0;
-            size_t count_names = pDescriptorSetLayoutNames->size();
+            size_t count_names = pStatePipelineCompute->pDescriptorSetLayout->aLayouts.size();
             for (size_t p = 0; p < count_names; p++)
             {
-                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+                String& nameDescriptorSet = pStatePipelineCompute->pDescriptorSetLayout->aLayouts[p];
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
                 {
-                    pPipelineCompute->CreateTextureCopy();
-
                     VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-                    bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy->GetVkBuffer();
+                    bufferInfo_TextureCopy.buffer = pModelObject->poBuffer_TextureCopy->GetVkBuffer();
                     bufferInfo_TextureCopy.offset = 0;
                     bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                pPipelineCompute->poDescriptorSet,
+                                                pStatePipelineCompute->poDescriptorSet,
                                                 p,
                                                 0,
                                                 1,
@@ -1889,7 +1790,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pushVkDescriptorSet_Image(descriptorWrites,
-                                              pPipelineCompute->poDescriptorSet,
+                                              pStatePipelineCompute->poDescriptorSet,
                                               p,
                                               0,
                                               1,
@@ -1901,7 +1802,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     VKTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pushVkDescriptorSet_Image(descriptorWrites,
-                                              pPipelineCompute->poDescriptorSet,
+                                              pStatePipelineCompute->poDescriptorSet,
                                               p,
                                               0,
                                               1,
@@ -2465,25 +2366,16 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
-        ModelMesh* pMesh = pModelObject->pMesh;
 
-        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
-        {
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipeline_WireFrame);
-            if (pModelObject->pPipelineGraphics->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipelineLayout, 0, 1, &pModelObject->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-        }
-        else
-        {
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipeline);
-            if (pModelObject->pPipelineGraphics->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->pPipelineGraphics->poPipelineLayout, 0, 1, &pModelObject->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-        }
+		//State/Shader/BufferUniform/Texture
+		pModelObject->poStatePipelineGraphics->BindState(commandBuffer, pModelObject->isWireFrame || this->cfg_isWireFrame);
+		pModelObject->poStatePipelineGraphics->BindShader(commandBuffer);
+		pModelObject->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+		pModelObject->poStatePipelineGraphics->BindTextures(commandBuffer);
+
         drawModelObject(commandBuffer, pModelObject);
+
+		pModelObject->poStatePipelineGraphics->UnBindState(commandBuffer);
     }
 }
 void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
@@ -2518,6 +2410,9 @@ void Vulkan_011_Texturing::cleanupCustom()
 
 void Vulkan_011_Texturing::cleanupSwapChain_Custom()
 {
+	destroyDescriptorSetLayouts();
+    destroyShaders();
+
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -2525,10 +2420,6 @@ void Vulkan_011_Texturing::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    destroyDescriptorSetLayouts();
-    destroyPipelineLayouts();
-    destroyShaders();
 }
 
 void Vulkan_011_Texturing::recreateSwapChain_Custom()
@@ -2538,6 +2429,6 @@ void Vulkan_011_Texturing::recreateSwapChain_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->recreateSwapChain();
+        pModelObject->RecreateSwapChain();
     }
 }

@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/VKPipelineGraphics.h"
+#include "../include/VKStatePipelineGraphics.h"
 #include "../include/VKBufferVertexIndex.h"
 #include "../include/VKShader.h"
 
@@ -23,14 +23,11 @@ namespace LostPeterVulkan
         : Base(nameEditor)
 
         //DescriptorSetLayouts
-        , nameDescriptorSetLayout("")
-        , poDescriptorSetLayout(VK_NULL_HANDLE)
+        , pDescriptorSetLayout(nullptr)
+		, nameDescriptorSetLayout("")
 
-        //PipelineLayout
-        , poPipelineLayout(VK_NULL_HANDLE)
-
-        //VKPipelineGraphics
-        , pPipelineGraphics(nullptr)
+		//Pipeline Graphics
+		, poStatePipelineGraphics(nullptr)
     {
 
     }
@@ -75,25 +72,12 @@ namespace LostPeterVulkan
     }
     void EditorBase::initDescriptorSetLayout()
     {
-        this->poDescriptorSetLayout = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, &this->aNameDescriptorSetLayouts);
-        if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** EditorBase::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
+        this->pDescriptorSetLayout = new DescriptorSetLayout();
+		this->pDescriptorSetLayout->Init(this->nameDescriptorSetLayout, true, false, false);
     }
     void EditorBase::initPipelineLayout()
     {
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-        this->poPipelineLayout = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-" + this->name, aDescriptorSetLayout);
-        if (this->poPipelineLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** EditorBase::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
+		
     }
     void EditorBase::destroyMeshes()
     {
@@ -127,23 +111,15 @@ namespace LostPeterVulkan
     }
     void EditorBase::destroyPipelineGraphics()
     {
-        F_DELETE(this->pPipelineGraphics)
+        F_DELETE(this->poStatePipelineGraphics)
     }
     void EditorBase::destroyPipelineLayout()
     {
-        if (this->poPipelineLayout != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout);
-        }
-        this->poPipelineLayout = VK_NULL_HANDLE;
+		
     }
     void EditorBase::destroyDescriptorSetLayout()
     {
-        if (this->poDescriptorSetLayout != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
-        }
-        this->poDescriptorSetLayout = VK_NULL_HANDLE;
+		F_DELETE(this->pDescriptorSetLayout)
     }   
 
     void EditorBase::Draw(VkCommandBuffer& commandBuffer)
@@ -159,12 +135,16 @@ namespace LostPeterVulkan
             {
                 MeshSub* pMeshSub = pMesh->aMeshSubs[j];
 				pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-                if (pWindow->cfg_isWireFrame)
-                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                else
-                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+
+				//State/Shader/BufferUniform/Texture
+				poStatePipelineGraphics->BindState(commandBuffer, pWindow->cfg_isWireFrame);
+				poStatePipelineGraphics->BindShader(commandBuffer);
+				poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+				poStatePipelineGraphics->BindTextures(commandBuffer);
+
                 pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+
+				poStatePipelineGraphics->UnBindState(commandBuffer);
             }
         }
     }   

@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/VKPipelineGraphics.h"
+#include "../include/VKStatePipelineGraphics.h"
 #include "../include/VKMultiRenderPass.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKBufferVertexIndex.h"
@@ -60,10 +60,10 @@ namespace LostPeterVulkan
         , isNeedUpdate(true)
 
         //Quad Blit
+		, pRenderPass(nullptr)
+		, pDescriptorSetLayout_CopyBlit(nullptr)
         , nameDescriptorSetLayout_CopyBlit("")
-        , poDescriptorSetLayout_CopyBlit(VK_NULL_HANDLE)
-        , poPipelineLayout_CopyBlit(VK_NULL_HANDLE)
-        , pPipelineGraphics_CopyBlit(nullptr)
+		, poStatePipelineGraphics_CopyBlit(nullptr)
         , poBufferUniform_CopyBlitObjectCB(nullptr)
     {
 
@@ -129,13 +129,17 @@ namespace LostPeterVulkan
             {
                 MeshSub* pMeshSub = pMesh->aMeshSubs[j];
 				pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-                if (pWindow->cfg_isWireFrame)
-                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                else
-                    pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+
+				//State/Shader/BufferUniform/Texture
+				poStatePipelineGraphics->BindState(commandBuffer, pWindow->cfg_isWireFrame);
+				poStatePipelineGraphics->BindShader(commandBuffer);
+				poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+				poStatePipelineGraphics->BindTextures(commandBuffer);
+
                 pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
                 instanceStart += pMeshSub->instanceCount;
+
+				poStatePipelineGraphics->UnBindState(commandBuffer);
             }
         }
     }   
@@ -146,12 +150,16 @@ namespace LostPeterVulkan
         Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex];
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-        if (pWindow->cfg_isWireFrame)
-            pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
-        else
-            pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
-        pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[pWindow->poSwapChainImageIndex], 0, nullptr);
+
+		//State/Shader/BufferUniform/Texture
+		poStatePipelineGraphics_CopyBlit->BindState(commandBuffer, pWindow->cfg_isWireFrame);
+		poStatePipelineGraphics_CopyBlit->BindShader(commandBuffer);
+		poStatePipelineGraphics_CopyBlit->BindBufferUniforms(commandBuffer);
+		poStatePipelineGraphics_CopyBlit->BindTextures(commandBuffer);
+
         pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+
+		poStatePipelineGraphics_CopyBlit->UnBindState(commandBuffer);
     }
     void EditorCameraAxis::initConfigs()
     {
@@ -233,12 +241,10 @@ namespace LostPeterVulkan
             //CameraAxis
             {
                 this->nameDescriptorSetLayout = "Pass-ObjectCameraAxis";
-                this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
             }
             //Quad Blit
             {
                 this->nameDescriptorSetLayout_CopyBlit = "ObjectCopyBlit-TextureFrameColor";
-                this->aNameDescriptorSetLayouts_CopyBlit = FUtilString::Split(this->nameDescriptorSetLayout_CopyBlit, "-");
             }
         }
         //5> Camera/Viewport
@@ -368,64 +374,17 @@ namespace LostPeterVulkan
         EditorBase::initDescriptorSetLayout();
         //Quad Blit
         {   
-            this->poDescriptorSetLayout_CopyBlit = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_CopyBlit, &this->aNameDescriptorSetLayouts_CopyBlit);
-            if (this->poDescriptorSetLayout_CopyBlit == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** EditorCameraAxis::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_CopyBlit;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-        }   
-    }
-    void EditorCameraAxis::initPipelineLayout()
-    {
-        EditorBase::initPipelineLayout();
-        //Quad Blit
-        {   
-            VkDescriptorSetLayoutVector aDescriptorSetLayout;
-            aDescriptorSetLayout.push_back(this->poDescriptorSetLayout_CopyBlit);
-            this->poPipelineLayout_CopyBlit = Base::GetWindowPtr()->createVkPipelineLayout("PipelineLayout-" + this->name, aDescriptorSetLayout);
-            if (this->poPipelineLayout_CopyBlit == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** EditorCameraAxis::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_CopyBlit;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
+            this->pDescriptorSetLayout_CopyBlit = new DescriptorSetLayout();
+			this->pDescriptorSetLayout_CopyBlit->Init(this->nameDescriptorSetLayout_CopyBlit, true, false, false);
         }   
     }
     void EditorCameraAxis::initPipelineGraphics()
     {
-        //VKPipelineGraphics
-        {
-            //CameraAxis
-            {
-                this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-EditorCameraAxis");
-                this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
-                this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
-                //1> DescriptorSetLayout / PipelineLayout
-                this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
-                this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
-                //2> DescriptorSets
-                Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-EditorCameraAxis", this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
-                //3> VKMultiRenderPass
-                this->pPipelineGraphics->pRenderPass = new VKMultiRenderPass("rp_editor_camera_axis", false, false);
-                this->pPipelineGraphics->pRenderPass->Init((uint32_t)s_fBlitAreaWidth, (uint32_t)s_fBlitAreaHeight);
-            }
-            //Quad Blit
-            {
-                this->pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineGraphics-QuadBlit");
-                this->pPipelineGraphics_CopyBlit->nameDescriptorSetLayout = this->nameDescriptorSetLayout_CopyBlit;
-                this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts_CopyBlit;
-                //1> DescriptorSetLayout / PipelineLayout
-                this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout = this->poDescriptorSetLayout_CopyBlit;
-                this->pPipelineGraphics_CopyBlit->poPipelineLayout = this->poPipelineLayout_CopyBlit;
-                //2> DescriptorSets
-                Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-QuadBlit", this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
-            }
-            updateDescriptorSets_Graphics();
-        }
-        
-        //Pipeline
+		//1> MultiRenderPass
+		this->pRenderPass = new VKMultiRenderPass("rp_editor_camera_axis", false, false);
+        this->pRenderPass->Init((uint32_t)s_fBlitAreaWidth, (uint32_t)s_fBlitAreaHeight);
+		
+        //2> Pipeline
         {
             VkDynamicStateVector aDynamicStates =
             {
@@ -458,47 +417,27 @@ namespace LostPeterVulkan
                     throw std::runtime_error(msg.c_str());
                 }
 
-                //pPipelineGraphics->poPipeline
-                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
-                                                                                                     aShaderStageCreateInfos_Graphics,
-                                                                                                     false, 0, 3,
-                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                     this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                     VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                     VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                     VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-                if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+                //poStatePipelineGraphics
+				String namePipelineGraphics = "PipelineGraphics-" + GetName();
+                this->poStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics(namePipelineGraphics,
+																								  this->pDescriptorSetLayout,
+                                                                                                  aShaderStageCreateInfos_Graphics,
+																								  F_MeshVertex_Pos3Color4Tex2,
+                                                                                                  false, 0, 3,
+																								  this->pRenderPass->poRenderPass, aViewports, aScissors, aDynamicStates,
+																								  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+																								  VK_TRUE, VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+																								  VK_FALSE, stencilOpFront, stencilOpBack, 
+																								  VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+																								  VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+																								  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                if (this->poStatePipelineGraphics == nullptr)
                 {
                     String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis] Create pipeline graphics success !");
-
-                //pPipelineGraphics->poPipeline_WireFrame
-                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
-                                                                                                               aShaderStageCreateInfos_Graphics,
-                                                                                                               false, 0, 3,
-                                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                               this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                               VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                               VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                               VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-                if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis] !";
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis] Create pipeline graphics wire frame success !");
             }
             //Quad Blit
             {
@@ -521,20 +460,21 @@ namespace LostPeterVulkan
                     throw std::runtime_error(msg.c_str());
                 }
 
-                //pPipelineGraphics_CopyBlit->poPipeline
-                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-CopyBlit-" + this->name,
-                                                                                                              aShaderStageCreateInfos_Graphics,
-                                                                                                              false, 0, 3,
-                                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                              Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                              VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                              VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                              VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                              VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                              VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-                if (this->pPipelineGraphics_CopyBlit->poPipeline == VK_NULL_HANDLE)
+                //poStatePipelineGraphics_CopyBlit
+				String namePipelineGraphics_CopyBlit = "PipelineGraphics-CopyBlit-" + GetName();
+                this->poStatePipelineGraphics_CopyBlit = Base::GetWindowPtr()->createStatePipelineGraphics(namePipelineGraphics_CopyBlit,
+																										   this->pDescriptorSetLayout_CopyBlit,
+                                                                                                           aShaderStageCreateInfos_Graphics,
+																										   F_MeshVertex_Pos3Color4Tex2,
+																										   false, 0, 3,
+																										   Base::GetWindowPtr()->poRenderPass, aViewports, aScissors, aDynamicStates,
+																										   VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+																										   VK_TRUE, VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+																										   VK_FALSE, stencilOpFront, stencilOpBack, 
+																										   VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+																										   VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+																										   VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                if (this->poStatePipelineGraphics_CopyBlit == nullptr)
                 {
                     String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis_CopyBlit] !";
                     F_LogError(msg.c_str());
@@ -542,44 +482,25 @@ namespace LostPeterVulkan
                 }
                 F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis_CopyBlit] Create pipeline graphics success !");
 
-                //pPipelineGraphics_CopyBlit->poPipeline_WireFrame
-                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-CopyBlit-Wire-" + this->name,
-                                                                                                                        aShaderStageCreateInfos_Graphics,
-                                                                                                                        false, 0, 3,
-                                                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                                        Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                                        VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                                        VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                                        VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                                        VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                                        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-                if (this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis_CopyBlit] !";
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                F_LogInfo("EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis_CopyBlit] Create pipeline graphics wire frame success !");
             }
         }
+
+		//3> DescriptorSets
+		updateDescriptorSets_Graphics();
     }
     void EditorCameraAxis::updateDescriptorSets_Graphics()
     {
         //CameraAxis
         {
-            StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
-            F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorCameraAxis::updateDescriptorSets_Graphics")
-            uint32_t count_ds = (uint32_t)this->pPipelineGraphics->poDescriptorSets.size();
+            uint32_t count_ds = (uint32_t)this->poStatePipelineGraphics->poDescriptorSets.size();
             for (uint32_t i = 0; i < count_ds; i++)
             {
                 VkWriteDescriptorSetVector descriptorWrites;
 
-                uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+                uint32_t count_names = (uint32_t)this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
                 for (uint32_t j = 0; j < count_names; j++)
                 {
-                    String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                    String& nameDescriptorSet = this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts[j];
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -587,7 +508,7 @@ namespace LostPeterVulkan
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                          this->pPipelineGraphics->poDescriptorSets[i],
+                                                                          this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                           j,
                                                                           0,
                                                                           1,
@@ -600,7 +521,7 @@ namespace LostPeterVulkan
                         bufferInfo_ObjectCameraAxis.offset = 0;
                         bufferInfo_ObjectCameraAxis.range = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                          this->pPipelineGraphics->poDescriptorSets[i],
+                                                                          this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                           j,
                                                                           0,
                                                                           1,
@@ -618,17 +539,15 @@ namespace LostPeterVulkan
         }
         //Quad Blit
         {
-            StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames;
-            F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorCameraAxis::updateDescriptorSets_Graphics")
-            uint32_t count_ds = (uint32_t)this->pPipelineGraphics_CopyBlit->poDescriptorSets.size();
+            uint32_t count_ds = (uint32_t)this->poStatePipelineGraphics_CopyBlit->poDescriptorSets.size();
             for (uint32_t i = 0; i < count_ds; i++)
             {
                 VkWriteDescriptorSetVector descriptorWrites;
 
-                uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+                uint32_t count_names = (uint32_t)this->poStatePipelineGraphics_CopyBlit->pDescriptorSetLayout->aLayouts.size();
                 for (uint32_t j = 0; j < count_names; j++)
                 {
-                    String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                    String& nameDescriptorSet = this->poStatePipelineGraphics_CopyBlit->pDescriptorSetLayout->aLayouts[j];
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
                     {
                         VkDescriptorBufferInfo bufferInfo_ObjectCopyBlit = {};
@@ -636,7 +555,7 @@ namespace LostPeterVulkan
                         bufferInfo_ObjectCopyBlit.offset = 0;
                         bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
                         Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                          this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                                                          this->poStatePipelineGraphics_CopyBlit->poDescriptorSets[i],
                                                                           j,
                                                                           0,
                                                                           1,
@@ -645,12 +564,12 @@ namespace LostPeterVulkan
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
                     {
                         Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                        this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                                                        this->poStatePipelineGraphics_CopyBlit->poDescriptorSets[i],
                                                                         j,
                                                                         0,
                                                                         1,
                                                                         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                        this->pPipelineGraphics->pRenderPass->imageInfo);
+                                                                        this->pRenderPass->imageInfo);
                     }
                     else
                     {
@@ -681,27 +600,13 @@ namespace LostPeterVulkan
     }
     void EditorCameraAxis::destroyPipelineGraphics()
     {
-        if (this->pPipelineGraphics)
-        {
-            F_DELETE(this->pPipelineGraphics->pRenderPass)
-        }
+		F_DELETE(this->pRenderPass)
+
         EditorBase::destroyPipelineGraphics();
 
         //Quad Blit
         {   
-            F_DELETE(this->pPipelineGraphics_CopyBlit)
-        }   
-    }
-    void EditorCameraAxis::destroyPipelineLayout()
-    {
-        EditorBase::destroyPipelineLayout();
-        //Quad Blit
-        {   
-            if (this->poPipelineLayout_CopyBlit != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout_CopyBlit);
-            }
-            this->poPipelineLayout_CopyBlit = VK_NULL_HANDLE;
+            F_DELETE(this->poStatePipelineGraphics_CopyBlit)
         }   
     }
     void EditorCameraAxis::destroyDescriptorSetLayout()
@@ -709,11 +614,7 @@ namespace LostPeterVulkan
         EditorBase::destroyDescriptorSetLayout();
         //Quad Blit
         {   
-            if (this->poDescriptorSetLayout_CopyBlit != VK_NULL_HANDLE)
-            {
-                Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout_CopyBlit);
-            }
-            this->poDescriptorSetLayout_CopyBlit = VK_NULL_HANDLE;
+			F_DELETE(this->pDescriptorSetLayout_CopyBlit)
         } 
     }
     void EditorCameraAxis::CleanupSwapChain()

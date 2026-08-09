@@ -36,10 +36,8 @@ namespace LostPeterVulkan
 				  const String& nameMain);
 
 	public:
-		F_FORCEINLINE const VkShaderModule& GetVkShaderModule() const { return this->vkShaderModule; }	
-
-	public:
-
+		F_FORCEINLINE const String& GetNameMain() const { return this->nameMain; }
+		F_FORCEINLINE const VkShaderModule& GetVkShaderModule() const { return this->vkShaderModule; }
 		
 	};
 

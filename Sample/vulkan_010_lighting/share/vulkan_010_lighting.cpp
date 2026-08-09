@@ -99,6 +99,7 @@ static bool g_isRotateModels[] =
 
 Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
     : VulkanWindow(width, height, name)
+	, typeVertex(F_MeshVertex_Pos3Color4Normal3Tex2)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -106,11 +107,6 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
-
-    this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
-    this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/Common/texture2d.jpg";
 
     this->cfg_cameraPos = FVector3(0.0f, 15.0f, -20.0f);
     this->mainLight.common.x = 0; //Directional Type
@@ -222,7 +218,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
         pModelObject->poIndexBuffer_Data != nullptr)
     {
         pModelObject->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + pModelObject->nameModel,
-																						 this->poTypeVertex,
+																						 this->typeVertex,
 																						 pModelObject->poVertexBuffer_Size, 
 																						 (uint8*)pModelObject->poVertexBuffer_Data, 
 																						 false,
@@ -239,7 +235,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
 	else
 	{
 		pModelObject->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + pModelObject->nameModel,
-																			   this->poTypeVertex,
+																			   this->typeVertex,
 																			   pModelObject->poVertexBuffer_Size, 
 																			   (uint8*)pModelObject->poVertexBuffer_Data, 
 																			   false,
@@ -372,38 +368,19 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
+		pModelObject->pDescriptorSetLayout->CreateLayoutAndDescriptorSets(true);
 
         String pathVertShaderBase = g_pathModelShaderModules[i] + c_strVert;
         String pathFragShaderBase = g_pathModelShaderModules[i] + c_strFrag;
-        VKShader* vertShaderBase = findShader(pathVertShaderBase);
-        VKShader* fragShaderBase = findShader(pathFragShaderBase);
+        VKShader* pShaderVertex = findShader(pathVertShaderBase);
+        VKShader* pShaderFragment = findShader(pathFragShaderBase);
 
-        //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
-                                                                              vertShaderBase->GetVkShaderModule(), "main",
-                                                                              fragShaderBase->GetVkShaderModule(), "main",
-                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
-                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                              this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                              pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                              pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                              pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                              pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                              pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                              pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-
-        //poPipelineGraphics
-        VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
-        VkBool32 isDepthWriteEnable = pModelObject->cfg_isDepthWrite;
-        VkBool32 isBlend = pModelObject->cfg_isBlend;
-        VkBlendFactor blendColorFactorSrc = pModelObject->cfg_BlendColorFactorSrc; 
-        VkBlendFactor blendColorFactorDst = pModelObject->cfg_BlendColorFactorDst; 
+        //poStatePipelineGraphics
+        VkBool32 isDepthTestEnable = pModelObject->poDepthIsTest;
+        VkBool32 isDepthWriteEnable = pModelObject->poDepthIsWrite;
+        VkBool32 isBlend = pModelObject->poBlendEnabled;
+        VkBlendFactor blendColorFactorSrc = pModelObject->poBlendColorFactorSrc; 
+        VkBlendFactor blendColorFactorDst = pModelObject->poBlendColorFactorDst; 
         if (pModelObject->isTransparent)
         {
             isDepthTestEnable = VK_FALSE;
@@ -413,21 +390,26 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
-                                                                    vertShaderBase->GetVkShaderModule(), "main",
-                                                                    fragShaderBase->GetVkShaderModule(), "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                    this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                    isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
-                                                                    pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                    isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                    pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                    pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
+		String nameStatePipelineGraphics = "PipelineGraphics-" + pModelObject->nameModel;
+        pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+																			pModelObject->pDescriptorSetLayout,
+																			pShaderVertex,
+																			nullptr,
+																			nullptr,
+																			nullptr,
+																			pShaderFragment,
+																			this->typeVertex,
+																			false, 0, 3,
+																			this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																			pModelObject->poPrimitiveTopology, pModelObject->poFrontFace, pModelObject->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																			VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pModelObject->poDepthCompareOp,
+																			pModelObject->poStencilEnabled, pModelObject->poStencilOpFront, pModelObject->poStencilOpBack, 
+																			isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->poBlendColorOp,
+																			pModelObject->poBlendAlphaFactorSrc, pModelObject->poBlendAlphaFactorDst, pModelObject->poBlendAlphaOp,
+																			pModelObject->poColorWriteMask);
+        if (pModelObject->poStatePipelineGraphics == nullptr)
         {
-            String msg = "*********************** Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline !";
+            String msg = "*********************** Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline, name: " + nameStatePipelineGraphics;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -489,7 +471,6 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets("DescriptorSets-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
         for (size_t j = 0; j < count_sci; j++)
         {   
             VkWriteDescriptorSetVector descriptorWrites;
@@ -500,7 +481,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pModelObject->poDescriptorSets[j],
+                                            pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                             0,
                                             0,
                                             1,
@@ -513,7 +494,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pModelObject->poDescriptorSets[j],
+                                            pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                             1,
                                             0,
                                             1,
@@ -526,7 +507,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pModelObject->poDescriptorSets[j],
+                                            pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                             2,
                                             0,
                                             1,
@@ -539,7 +520,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pModelObject->poDescriptorSets[j],
+                                            pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                             3,
                                             0,
                                             1,
@@ -552,7 +533,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
                 imageInfo.imageView = pModelObject->poTextureImageView;
                 imageInfo.sampler = pModelObject->poTextureSampler;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pModelObject->poDescriptorSets[j],
+                                          pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                           4,
                                           0,
                                           1,
@@ -801,23 +782,15 @@ void Vulkan_010_Lighting::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         if (!pModelObject->isShow)
             continue;
 
-        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
-        {
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
-            if (pModelObject->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-        }
-        else
-        {
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics);
-            if (pModelObject->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-        }
+		//State/Shader/BufferUniform/Texture
+		pModelObject->poStatePipelineGraphics->BindState(commandBuffer, pModelObject->isWireFrame || this->cfg_isWireFrame);
+		pModelObject->poStatePipelineGraphics->BindShader(commandBuffer);
+		pModelObject->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+		pModelObject->poStatePipelineGraphics->BindTextures(commandBuffer);
+
 		drawModelObject(commandBuffer, pModelObject);
+
+		pModelObject->poStatePipelineGraphics->UnBindState(commandBuffer);
     }
 }
 void Vulkan_010_Lighting::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
@@ -849,6 +822,8 @@ void Vulkan_010_Lighting::cleanupCustom()
 
 void Vulkan_010_Lighting::cleanupSwapChain_Custom()
 {
+	destroyShaders();
+
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -856,8 +831,6 @@ void Vulkan_010_Lighting::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    destroyShaders();
 }
 
 void Vulkan_010_Lighting::recreateSwapChain_Custom()
@@ -867,6 +840,6 @@ void Vulkan_010_Lighting::recreateSwapChain_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->recreateSwapChain();
+        pModelObject->RecreateSwapChain();
     }
 }

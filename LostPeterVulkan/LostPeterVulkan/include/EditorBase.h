@@ -34,15 +34,12 @@ namespace LostPeterVulkan
 		VKShaderPtrMap mapShaders;
 
         //DescriptorSetLayouts
-        String nameDescriptorSetLayout; 
-        StringVector aNameDescriptorSetLayouts;
-        VkDescriptorSetLayout poDescriptorSetLayout;
+		DescriptorSetLayout* pDescriptorSetLayout;
+		String nameDescriptorSetLayout;
 
-        //PipelineLayout
-        VkPipelineLayout poPipelineLayout;
-
-        //VKPipelineGraphics
-        VKPipelineGraphics* pPipelineGraphics;
+		//Pipeline Graphics
+		VKStatePipelineGraphics* poStatePipelineGraphics;
+        
 
     public:
         virtual void Destroy() = 0;

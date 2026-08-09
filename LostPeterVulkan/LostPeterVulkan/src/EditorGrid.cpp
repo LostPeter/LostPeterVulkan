@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/VKPipelineGraphics.h"
+#include "../include/VKStatePipelineGraphics.h"
 #include "../include/VKBufferUniform.h"
 
 namespace LostPeterVulkan
@@ -90,7 +90,6 @@ namespace LostPeterVulkan
         //4> DescriptorSetLayout
         {
             this->nameDescriptorSetLayout = "Pass-ObjectGrid";
-            this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
         }
     }
     void EditorGrid::initBufferUniforms()
@@ -103,102 +102,70 @@ namespace LostPeterVulkan
     }
     void EditorGrid::initPipelineGraphics()
     {
-        String namePipelineGraphics = "PipelineGraphics-" + GetName();
-        this->pPipelineGraphics = new VKPipelineGraphics(namePipelineGraphics);
-        this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
-        this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
-        //1> DescriptorSetLayout 
-        this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
-        //2> DescriptorSets
-        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + GetName(), this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
-        updateDescriptorSets_Graphics();
-        //3> PipelineLayout
-        this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
-        //4> Pipeline
-        {
-            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_Grid_Vert,
-                                                                            "",
-                                                                            "",
-                                                                            "",
-                                                                            s_strNameShader_Grid_Frag,
-                                                                            this->mapShaders,
-                                                                            aShaderStageCreateInfos_Graphics))
-            {
-                String msg = "*********************** EditorGrid::initPipelineGraphics: Can not find shader used !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
+		//1> Pipeline
+		VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
+		if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_Grid_Vert,
+																		"",
+																		"",
+																		"",
+																		s_strNameShader_Grid_Frag,
+																		this->mapShaders,
+																		aShaderStageCreateInfos_Graphics))
+		{
+			String msg = "*********************** EditorGrid::initPipelineGraphics: Can not find shader used !";
+			F_LogError(msg.c_str());
+			throw std::runtime_error(msg.c_str());
+		}
 
-            VkViewportVector aViewports;
-            aViewports.push_back(Base::GetWindowPtr()->poViewport);
-            VkRect2DVector aScissors;
-            aScissors.push_back(Base::GetWindowPtr()->poScissor);
-            VkDynamicStateVector aDynamicStates =
-            {
-                VK_DYNAMIC_STATE_VIEWPORT,
-                VK_DYNAMIC_STATE_SCISSOR
-            };
+		VkViewportVector aViewports;
+		aViewports.push_back(Base::GetWindowPtr()->poViewport);
+		VkRect2DVector aScissors;
+		aScissors.push_back(Base::GetWindowPtr()->poScissor);
+		VkDynamicStateVector aDynamicStates =
+		{
+			VK_DYNAMIC_STATE_VIEWPORT,
+			VK_DYNAMIC_STATE_SCISSOR
+		};
 
-            VkStencilOpState stencilOpFront; 
-            VkStencilOpState stencilOpBack; 
+		VkStencilOpState stencilOpFront; 
+		VkStencilOpState stencilOpBack; 
 
-            //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
-                                                                                                 aShaderStageCreateInfos_Graphics,
-                                                                                                 false, 0, 3,
-                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                 VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                 VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** EditorGrid::initPipelineGraphics: Failed to create pipeline graphics for [EditorGrid] !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics success !");
-
-            //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
-                                                                                                           aShaderStageCreateInfos_Graphics,
-                                                                                                           false, 0, 3,
-                                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                           VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** EditorGrid::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorGrid] !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics wire frame success !");
-        }
+		//poStatePipelineGraphics
+		String namePipelineGraphics = "PipelineGraphics-" + GetName();
+		this->poStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics(namePipelineGraphics,
+																						  this->pDescriptorSetLayout,
+																						  aShaderStageCreateInfos_Graphics,
+																						  F_MeshVertex_Pos3Color4Tex2,
+																						  false, 0, 3,
+																						  Base::GetWindowPtr()->poRenderPass, aViewports, aScissors, aDynamicStates,
+																						  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+																						  VK_FALSE, VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL,
+																						  VK_FALSE, stencilOpFront, stencilOpBack, 
+																						  VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+																						  VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+																						  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+		if (this->poStatePipelineGraphics == nullptr)
+		{
+			String msg = "*********************** EditorGrid::initPipelineGraphics: Failed to create pipeline graphics for [EditorGrid] !";
+			F_LogError(msg.c_str());
+			throw std::runtime_error(msg.c_str());
+		}
+		F_LogInfo("EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics success !");
+		
+		//2> DescriptorSets
+		updateDescriptorSets_Graphics();
     }
     void EditorGrid::updateDescriptorSets_Graphics()
     {
-        StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
-        F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorGrid::updateDescriptorSets_Graphics")
-        uint32_t count_ds = (uint32_t)this->pPipelineGraphics->poDescriptorSets.size();
+        uint32_t count_ds = (uint32_t)this->poStatePipelineGraphics->poDescriptorSets.size();
         for (uint32_t i = 0; i < count_ds; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
 
-            uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+            uint32_t count_names = (uint32_t)this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
             for (uint32_t j = 0; j < count_names; j++)
             {
-                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                String& nameDescriptorSet = this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts[j];
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -206,7 +173,7 @@ namespace LostPeterVulkan
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                       j,
                                                                       0,
                                                                       1,
@@ -219,7 +186,7 @@ namespace LostPeterVulkan
                     bufferInfo_ObjectGrid.offset = 0;
                     bufferInfo_ObjectGrid.range = sizeof(GridObjectConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                       j,
                                                                       0,
                                                                       1,

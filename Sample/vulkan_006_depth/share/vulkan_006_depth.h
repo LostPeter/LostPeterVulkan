@@ -59,37 +59,44 @@ public:
             , poTextureSampler(VK_NULL_HANDLE)
 
             //Pipeline
-            , poPipelineGraphics(VK_NULL_HANDLE)
-            , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthTest(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthWrite(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthTestWrite(VK_NULL_HANDLE)
+			, poStatePipelineGraphics(nullptr)
+			, poStatePipelineGraphics_NoDepthTest(nullptr)
+			, poStatePipelineGraphics_NoDepthWrite(nullptr)
+			, poStatePipelineGraphics_NoDepthTestWrite(nullptr)
+
+			//DescriptorSets
+			, nameDescriptorSetLayout("Pass-Object-Material-Instance-TextureFS")
+			, pDescriptorSetLayout(nullptr)
 
             //State
-            , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-            , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
-            , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
-            , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
-            , cfg_isDepthBiasEnable(VK_FALSE)
-            , cfg_DepthBiasConstantFactor(0.0f)
-            , cfg_DepthBiasClamp(0.0f)
-            , cfg_DepthBiasSlopeFactor(0.0f)
-            , cfg_LineWidth(1.0f)
-            , cfg_isDepthTest(VK_TRUE)
-            , cfg_isDepthWrite(VK_TRUE)
-            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
-            , cfg_isStencilTest(VK_FALSE)
-            , cfg_isBlend(VK_FALSE)
-            , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendColorOp(VK_BLEND_OP_ADD)
-            , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
-            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+            , poPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+            , poFrontFace(VK_FRONT_FACE_CLOCKWISE)
+            , poPolygonMode(VK_POLYGON_MODE_FILL)
+            , poCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+            , poDepthBiasEnabled(VK_FALSE)
+            , poDepthBiasConstantFactor(0.0f)
+            , poDepthBiasClamp(0.0f)
+            , poDepthBiasSlopeFactor(0.0f)
+            , poLineWidth(1.0f)
+			, poDepthEnabled(VK_TRUE)
+            , poDepthIsTest(VK_TRUE)
+            , poDepthIsWrite(VK_TRUE)
+            , poDepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
+            , poStencilEnabled(VK_FALSE)
+            , poBlendEnabled(VK_FALSE)
+            , poBlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
+            , poBlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
+            , poBlendColorOp(VK_BLEND_OP_ADD)
+            , poBlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
+            , poBlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
+            , poBlendAlphaOp(VK_BLEND_OP_ADD)
+            , poColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
-            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
-            cfg_aDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+            this->poDynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+            this->poDynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+
+			this->pDescriptorSetLayout = new DescriptorSetLayout();
+			this->pDescriptorSetLayout->Init(this->nameDescriptorSetLayout);
         }
         ~ModelObject()
         {
@@ -115,16 +122,12 @@ public:
             this->poTextureSampler = VK_NULL_HANDLE;
 
             //Pipeline
-            this->pWindow->destroyVkPipeline(this->poPipelineGraphics);
-            this->poPipelineGraphics = VK_NULL_HANDLE;
-            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_WireFrame);
-            this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
-            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_NoDepthTest);
-            this->poPipelineGraphics_NoDepthTest = VK_NULL_HANDLE;
-            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_NoDepthWrite);
-            this->poPipelineGraphics_NoDepthWrite = VK_NULL_HANDLE;
-            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_NoDepthTestWrite);
-            this->poPipelineGraphics_NoDepthTestWrite = VK_NULL_HANDLE;
+			F_DELETE(this->poStatePipelineGraphics)
+			F_DELETE(this->poStatePipelineGraphics_NoDepthTest)
+			F_DELETE(this->poStatePipelineGraphics_NoDepthWrite)
+			F_DELETE(this->poStatePipelineGraphics_NoDepthTestWrite)
+
+			F_DELETE(this->pDescriptorSetLayout)
         }
 
         //Common
@@ -166,40 +169,44 @@ public:
         VkSampler poTextureSampler;
 
         //Pipeline
-        VkPipeline poPipelineGraphics;
-        VkPipeline poPipelineGraphics_WireFrame;
-        VkPipeline poPipelineGraphics_NoDepthTest;
-        VkPipeline poPipelineGraphics_NoDepthWrite;
-        VkPipeline poPipelineGraphics_NoDepthTestWrite;
+		VKStatePipelineGraphics* poStatePipelineGraphics;
+		VKStatePipelineGraphics* poStatePipelineGraphics_NoDepthTest;
+		VKStatePipelineGraphics* poStatePipelineGraphics_NoDepthWrite;
+		VKStatePipelineGraphics* poStatePipelineGraphics_NoDepthTestWrite;
 
-        //DescriptorSets
-        VkDescriptorSetVector poDescriptorSets;
+		//DescriptorSets
+		String nameDescriptorSetLayout;
+		DescriptorSetLayout* pDescriptorSetLayout;
 
         //State
-        VkDynamicStateVector cfg_aDynamicStates;
-        VkPrimitiveTopology cfg_vkPrimitiveTopology;
-        VkFrontFace cfg_vkFrontFace;
-        VkPolygonMode cfg_vkPolygonMode;
-        VkCullModeFlagBits cfg_vkCullModeFlagBits;
-        VkBool32 cfg_isDepthBiasEnable;
-        float cfg_DepthBiasConstantFactor;
-        float cfg_DepthBiasClamp;
-        float cfg_DepthBiasSlopeFactor;
-        float cfg_LineWidth;
-        VkBool32 cfg_isDepthTest;
-        VkBool32 cfg_isDepthWrite; 
-        VkCompareOp cfg_DepthCompareOp; 
-        VkBool32 cfg_isStencilTest;
-        VkStencilOpState cfg_StencilOpFront; 
-        VkStencilOpState cfg_StencilOpBack; 
-        VkBool32 cfg_isBlend;
-        VkBlendFactor cfg_BlendColorFactorSrc; 
-        VkBlendFactor cfg_BlendColorFactorDst; 
-        VkBlendOp cfg_BlendColorOp;
-        VkBlendFactor cfg_BlendAlphaFactorSrc;
-        VkBlendFactor cfg_BlendAlphaFactorDst; 
-        VkBlendOp cfg_BlendAlphaOp;
-        VkColorComponentFlags cfg_ColorWriteMask;
+        VkDynamicStateVector poDynamicStates;
+        VkPrimitiveTopology poPrimitiveTopology;
+        VkFrontFace poFrontFace;
+        VkPolygonMode poPolygonMode;
+        VkCullModeFlagBits poCullModeFlagBits;
+        VkBool32 poDepthBiasEnabled;
+        float poDepthBiasConstantFactor;
+        float poDepthBiasClamp;
+        float poDepthBiasSlopeFactor;
+        float poLineWidth;
+
+		VkBool32 poDepthEnabled;
+        VkBool32 poDepthIsTest;
+        VkBool32 poDepthIsWrite; 
+        VkCompareOp poDepthCompareOp; 
+
+        VkBool32 poStencilEnabled;
+        VkStencilOpState poStencilOpFront; 
+        VkStencilOpState poStencilOpBack; 
+
+        VkBool32 poBlendEnabled;
+        VkBlendFactor poBlendColorFactorSrc; 
+        VkBlendFactor poBlendColorFactorDst; 
+        VkBlendOp poBlendColorOp;
+        VkBlendFactor poBlendAlphaFactorSrc;
+        VkBlendFactor poBlendAlphaFactorDst; 
+        VkBlendOp poBlendAlphaOp;
+        VkColorComponentFlags poColorWriteMask;
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
@@ -207,6 +214,12 @@ public:
 public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
+
+	FMeshVertexType typeVertex;
+	String shaderVertex_Path;
+	String shaderFragment_Path;
+	VKShader* pShaderVertex;
+	VKShader* pShaderFragment;
 
 protected:
     //Create Pipeline

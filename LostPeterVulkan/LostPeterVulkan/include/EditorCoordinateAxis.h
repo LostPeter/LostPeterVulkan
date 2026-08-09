@@ -163,14 +163,6 @@ namespace LostPeterVulkan
             virtual void UpdateCBs_Scale();
 
         virtual void Draw(VkCommandBuffer& commandBuffer);
-            virtual void Draw_Move(VkCommandBuffer& commandBuffer);
-            virtual void Draw_Rotate(VkCommandBuffer& commandBuffer);
-            virtual void Draw_Scale(VkCommandBuffer& commandBuffer);
-
-            virtual void DrawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
-            virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
-            virtual void DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
-
 
         virtual void CheckStateMove(double x, double y);
         virtual void CheckStateRotate(double x, double y);
@@ -197,6 +189,15 @@ namespace LostPeterVulkan
 
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();
+
+	private:
+		virtual void draw_Move(VkCommandBuffer& commandBuffer);
+		virtual void draw_Rotate(VkCommandBuffer& commandBuffer);
+		virtual void draw_Scale(VkCommandBuffer& commandBuffer);
+
+		virtual void drawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
+		virtual void drawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
+		virtual void drawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
     };
 
 }; //LostPeterVulkan

@@ -312,7 +312,6 @@ namespace LostPeterVulkan
         VkImageViewVector poColorImageViewLists;
 
         VkRenderPass poRenderPass;
-        VkDescriptorSetLayout poDescriptorSetLayout;
         
         VkCommandPool poCommandPoolGraphics;
         std::vector<VkCommandBuffer> poCommandBuffersGraphics;
@@ -331,11 +330,47 @@ namespace LostPeterVulkan
         VKBufferVertexIndex* pBufferVertexIndex;
         FMatrix4 poMatWorld;
 
-        FMeshVertexType poTypeVertex;
-        VkPipelineLayout poPipelineLayout;
-        VkPipelineCache poPipelineCache;
-        VkPipeline poPipelineGraphics;
-        VkPipeline poPipelineGraphics_WireFrame;
+		bool poTessellationIsUsed;
+		VkPipelineTessellationStateCreateFlags poTessellationFlags; 
+		uint32_t poTessellationPatchControlPoints;
+		VkDynamicStateVector poDynamicStates;
+        VkPrimitiveTopology poPrimitiveTopology;
+        VkFrontFace poFrontFace;
+        VkPolygonMode poPolygonMode;
+        VkCullModeFlagBits poCullModeFlagBits;
+        VkBool32 poDepthBiasEnabled;
+        float poDepthBiasConstantFactor;
+        float poDepthBiasClamp;
+        float poDepthBiasSlopeFactor;
+        float poLineWidth;
+
+		VkBool32 poDepthEnabled;
+        VkBool32 poDepthIsTest;
+        VkBool32 poDepthIsWrite; 
+        VkCompareOp poDepthCompareOp; 
+
+        VkBool32 poStencilEnabled;
+        VkStencilOpState poStencilOpFront; 
+        VkStencilOpState poStencilOpBack; 
+
+        VkBool32 poBlendEnabled;
+        VkBlendFactor poBlendColorFactorSrc; 
+        VkBlendFactor poBlendColorFactorDst; 
+        VkBlendOp poBlendColorOp;
+        VkBlendFactor poBlendAlphaFactorSrc;
+        VkBlendFactor poBlendAlphaFactorDst; 
+        VkBlendOp poBlendAlphaOp;
+
+        VkColorComponentFlags poColorWriteMask;
+
+		VkPipelineCache poPipelineCache;
+		VKStatePipelineGraphics* poStatePipelineGraphics;
+		FMeshVertexType poTypeVertex;
+		VKShader* poShaderVertex;
+		VKShader* poShaderFragment;
+
+		String poDescriptorSetLayoutName;
+        DescriptorSetLayout* poDescriptorSetLayout;
 
         uint32_t poMipMapCount;
         VkImage poTextureImage;
@@ -344,7 +379,6 @@ namespace LostPeterVulkan
         VkSampler poTextureSampler;
 
         VkDescriptorPool poDescriptorPool;
-        VkDescriptorSetVector poDescriptorSets;
 
         //Synchronization Objects
         VkSemaphoreVector poPresentCompleteSemaphores;
@@ -397,31 +431,8 @@ namespace LostPeterVulkan
         bool cfg_isUseComputeShaderBeforeRender;
         bool cfg_isUseComputeShaderAfterRender;
         bool cfg_isCreateRenderComputeSycSemaphore;
-        VkDynamicStateVector cfg_aDynamicStates;
-        VkPrimitiveTopology cfg_vkPrimitiveTopology;
-        VkFrontFace cfg_vkFrontFace;
-        VkPolygonMode cfg_vkPolygonMode;
-        VkCullModeFlagBits cfg_vkCullModeFlagBits;
-        VkBool32 cfg_isDepthBiasEnable;
-        float cfg_DepthBiasConstantFactor;
-        float cfg_DepthBiasClamp;
-        float cfg_DepthBiasSlopeFactor;
-        float cfg_LineWidth;
-        VkBool32 cfg_isDepthTest;
-        VkBool32 cfg_isDepthWrite; 
-        VkCompareOp cfg_DepthCompareOp; 
-        VkBool32 cfg_isStencilTest;
-        VkStencilOpState cfg_StencilOpFront; 
-        VkStencilOpState cfg_StencilOpBack; 
-        VkBool32 cfg_isBlend;
-        VkBlendFactor cfg_BlendColorFactorSrc; 
-        VkBlendFactor cfg_BlendColorFactorDst; 
-        VkBlendOp cfg_BlendColorOp;
-        VkBlendFactor cfg_BlendAlphaFactorSrc;
-        VkBlendFactor cfg_BlendAlphaFactorDst; 
-        VkBlendOp cfg_BlendAlphaOp;
-        VkColorComponentFlags cfg_ColorWriteMask;
 
+		
         FVector3 cfg_cameraPos;
         FVector3 cfg_cameraLookTarget;
         FVector3 cfg_cameraUp;
@@ -1278,6 +1289,73 @@ namespace LostPeterVulkan
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
                     virtual void createGraphicsPipeline_Custom();
+
+						virtual VKStatePipelineGraphics* createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																					 DescriptorSetLayout* pDescriptorSetLayout,
+																					 VKShader* pShaderVertex,
+																					 VKShader* pShaderTESC,
+																					 VKShader* pShaderTESE,
+																					 VKShader* pShaderGeom,
+																					 VKShader* pShaderFrag,
+																					 FMeshVertexType typeVertex,
+																					 bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																					 VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																					 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																					 VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																					 VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																					 VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																					 VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																					 VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+						virtual VKStatePipelineGraphics* createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																					 DescriptorSetLayout* pDescriptorSetLayout,
+																					 VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+																					 FMeshVertexType typeVertex,
+																					 bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																					 VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																					 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																					 VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																					 VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																					 VkBool32 bBlendEnabled, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																					 VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																					 VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+						virtual VKStatePipelineGraphics* createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																					 DescriptorSetLayout* pDescriptorSetLayout,
+																					 VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+																					 FMeshVertexType typeVertex,
+																					 bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																					 VkRenderPass renderPass, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																					 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth,
+																					 VkBool32 bDepthEnabled, VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																					 VkBool32 bStencilEnabled, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																					const VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState, uint32_t subpass = 0);
+
+						virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+																	VKShader* pShaderVertex,
+																	VKShader* pShaderTESC,
+																	VKShader* pShaderTESE,
+																	VKShader* pShaderGeom,
+																	VKShader* pShaderFrag,
+																	FMeshVertexType typeVertex,
+																	bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																	VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																	VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth, 
+																	VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																	VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																	VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																	VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																	VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+						virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
+																	const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+																	FMeshVertexType typeVertex,
+																	bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+																	VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors, const VkDynamicStateVector& aDynamicStates,
+																	VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, VkBool32 depthBiasEnable, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor, float lineWidth, 
+																	VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+																	VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+																	VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+																	VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+																	VkColorComponentFlags colorWriteMask, uint32_t subpass = 0);
+
                         virtual VkPipeline createVkGraphicsPipeline(const String& nameGraphicsPipeline,
                                                                     VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule fragShaderModule, const String& fragMain,
@@ -1331,6 +1409,13 @@ namespace LostPeterVulkan
                 virtual void createComputePipeline();
                     virtual void createComputePipeline_Default();
                     virtual void createComputePipeline_Custom();
+						
+						virtual VkPipeline createVkComputePipeline(const String& nameComputePipeline,
+                                                                   VKShader* pShaderCompute,
+                                                                   VkPipelineLayout pipelineLayout, 
+                                                                   VkPipelineCreateFlags flags = 0,
+                                                                   VkSpecializationInfo* pSpecializationInfo = nullptr);
+
                         virtual VkPipeline createVkComputePipeline(const String& nameComputePipeline,
                                                                    VkShaderModule compShaderModule,
                                                                    const String& compMain,
@@ -1348,6 +1433,7 @@ namespace LostPeterVulkan
                     virtual void createDescriptorSets_Terrain();
                     virtual void createDescriptorSets_Custom();
                         virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
+						virtual void updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics, VkImageView vkTextureView, VkSampler vkSampler); 
 
                         virtual void destroyVkDescriptorSet(VkDescriptorSet& vkDescriptorSet);
                         virtual void destroyVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets);

@@ -23,8 +23,41 @@ namespace LostPeterVulkan
         virtual ~VKStatePipelineCompute();
 
 	public:
+		DescriptorSetLayout* pDescriptorSetLayout;
+		String nameDescriptorSetLayout;
 		
-		
+		VKShader* poShaderCompute;
+		VkPipelineShaderStageCreateInfo poShaderStageCreateInfo;
+
+		VkPipelineCreateFlags poFlags;
+		VkSpecializationInfo* poSpecializationInfo;
+
+		VkDescriptorSetLayout poDescriptorSetLayout;
+		VkDescriptorSet poDescriptorSet;
+		VkPipelineLayout poPipelineLayout;
+
+		VkPipeline poPipelineCompute;
+
+	public:
+		void Destroy();
+		bool Init(DescriptorSetLayout* pDSL,
+				  VKShader* pShaderCompute,
+				  VkPipelineCreateFlags flags = 0,
+                  VkSpecializationInfo* pSpecializationInfo = nullptr);
+		bool Init(DescriptorSetLayout* pDSL,
+				  const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+				  VkPipelineCreateFlags flags = 0);
+
+	public:
+		F_FORCEINLINE const VkPipelineLayout& GetVkPipelineLayout() const { return this->poPipelineLayout; }	
+		F_FORCEINLINE const VkPipeline& GetVkPipeline() const { return this->poPipelineCompute; }	
+
+	public:
+		void BindState(VkCommandBuffer& commandBuffer);
+		void UnBindState(VkCommandBuffer& commandBuffer);
+		void BindShader(VkCommandBuffer& commandBuffer);
+		void BindBufferUniforms(VkCommandBuffer& commandBuffer);
+		void BindTextures(VkCommandBuffer& commandBuffer);
 
 	};
 

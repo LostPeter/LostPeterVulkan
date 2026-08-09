@@ -95,7 +95,7 @@ static FVector4 g_OutlineColor[g_CountLen] =
 
 Vulkan_008_Blend::Vulkan_008_Blend(int width, int height, String name)
     : VulkanWindow(width, height, name)
-    , poPipelineLayout_Outline(VK_NULL_HANDLE)
+	, typeVertex(F_MeshVertex_Pos3Color4Normal3Tex2)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -103,11 +103,6 @@ Vulkan_008_Blend::Vulkan_008_Blend(int width, int height, String name)
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
-
-    this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
-    this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/Common/texture2d.jpg";
 
     this->cfg_cameraPos = FVector3(0.0f, 3.0f, -4.0f);
 }
@@ -215,7 +210,7 @@ bool Vulkan_008_Blend::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
         pModelObject->poIndexBuffer_Data != nullptr)
     {
         pModelObject->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex("VertexIndex-" + pModelObject->nameModel,
-																						 this->poTypeVertex,
+																						 this->typeVertex,
 																						 pModelObject->poVertexBuffer_Size, 
 																						 (uint8*)pModelObject->poVertexBuffer_Data, 
 																						 false,
@@ -232,7 +227,7 @@ bool Vulkan_008_Blend::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
 	else
 	{
 		pModelObject->pBufferVertex = Base::GetWindowPtr()->createBufferVertex("Vertex-" + pModelObject->nameModel,
-																			   this->poTypeVertex,
+																			   this->typeVertex,
 																			   pModelObject->poVertexBuffer_Size, 
 																			   (uint8*)pModelObject->poVertexBuffer_Data, 
 																			   false,
@@ -360,46 +355,25 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
     VkRect2DVector aScissors;
     aScissors.push_back(this->poScissor);
 
-    //2> PipelineLayout
-    createPipelineLayout_Outline();
-
-    //4> Pipeline
+    //2> Pipeline
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
+		pModelObject->pDescriptorSetLayout_Stencil->CreateLayoutAndDescriptorSets(true);
+		pModelObject->pDescriptorSetLayout_Outline->CreateLayoutAndDescriptorSets(true);
 
         String pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
         String pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
-        VKShader* vertShaderBase = findShader(pathVertShaderBase);
-        VKShader* fragShaderBase = findShader(pathFragShaderBase);
+        VKShader* pShaderVertex_Stencil = findShader(pathVertShaderBase);
+        VKShader* pShaderFragment_Stencil = findShader(pathFragShaderBase);
 
         String pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
         String pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
-        VKShader* vertShaderOutline = findShader(pathVertShaderOutline);
-        VKShader* fragShaderOutline = findShader(pathFragShaderOutline);
+        VKShader* pShaderVertex_Outline = findShader(pathVertShaderOutline);
+        VKShader* pShaderFragment_Outline = findShader(pathFragShaderOutline);
 
-        //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pModelObject->nameModel,
-                                                                              vertShaderBase->GetVkShaderModule(), "main",
-                                                                              fragShaderBase->GetVkShaderModule(), "main",
-                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
-                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                              this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                              pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                              pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                              pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                              pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                              pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                              pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_008_Blend::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-
-        //poPipelineGraphics_Stencil
+        //poStatePipelineGraphics_Stencil
         VkStencilOpState back = {};
         back.compareOp = VK_COMPARE_OP_ALWAYS;
         back.failOp = VK_STENCIL_OP_REPLACE;
@@ -410,11 +384,11 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
         back.reference = 1;
         VkStencilOpState front = back;
 
-        VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
-        VkBool32 isDepthWriteEnable = pModelObject->cfg_isDepthWrite;
-        VkBool32 isBlend = pModelObject->cfg_isBlend;
-        VkBlendFactor blendColorFactorSrc = pModelObject->cfg_BlendColorFactorSrc; 
-        VkBlendFactor blendColorFactorDst = pModelObject->cfg_BlendColorFactorDst; 
+        VkBool32 isDepthTestEnable = pModelObject->poDepthIsTest;
+        VkBool32 isDepthWriteEnable = pModelObject->poDepthIsWrite;
+        VkBool32 isBlend = pModelObject->poBlendEnabled;
+        VkBlendFactor blendColorFactorSrc = pModelObject->poBlendColorFactorSrc; 
+        VkBlendFactor blendColorFactorDst = pModelObject->poBlendColorFactorDst; 
         if (pModelObject->isTransparent)
         {
             isDepthTestEnable = VK_FALSE;
@@ -424,61 +398,59 @@ void Vulkan_008_Blend::createGraphicsPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline("PipelineGraphics-" + pModelObject->nameModel,
-                                                                            vertShaderBase->GetVkShaderModule(), "main",
-                                                                            fragShaderBase->GetVkShaderModule(), "main",
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                            this->poRenderPass, this->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                            isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
-                                                                            VK_TRUE, front, back, 
-                                                                            isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                            pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
+		String nameStatePipelineGraphics_Stencil = "PipelineGraphics-Stencil-" + pModelObject->nameModel;
+        pModelObject->poStatePipelineGraphics_Stencil = createStatePipelineGraphics(nameStatePipelineGraphics_Stencil,
+																					pModelObject->pDescriptorSetLayout_Stencil,
+																					pShaderVertex_Stencil,
+																					nullptr,
+																					nullptr,
+																					nullptr,
+																					pShaderFragment_Stencil,
+																					this->typeVertex,
+																					false, 0, 3,
+																					this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																					pModelObject->poPrimitiveTopology, pModelObject->poFrontFace, pModelObject->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																					VK_FALSE, isDepthTestEnable, isDepthWriteEnable, pModelObject->poDepthCompareOp,
+																					VK_TRUE, front, back, 
+																					isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->poBlendColorOp,
+																					pModelObject->poBlendAlphaFactorSrc, pModelObject->poBlendAlphaFactorDst, pModelObject->poBlendAlphaOp,
+																					pModelObject->poColorWriteMask);
+        if (pModelObject->poStatePipelineGraphics_Stencil == nullptr)
         {
-            String msg = "*********************** Vulkan_008_Blend::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "*********************** Vulkan_008_Blend::createGraphicsPipeline_Custom: Failed to create pipeline stencil, name: " + nameStatePipelineGraphics_Stencil;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
-        //poPipelineGraphics_Outline
+        //poStatePipelineGraphics_Outline
         back.compareOp = VK_COMPARE_OP_NOT_EQUAL;
         back.failOp = VK_STENCIL_OP_KEEP;
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline("PipelineGraphics-Outline-" + pModelObject->nameModel,
-                                                                            vertShaderOutline->GetVkShaderModule(), "main",
-                                                                            fragShaderOutline->GetVkShaderModule(), "main",
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                            this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                            VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                            VK_TRUE, front, back,
-                                                                            pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                            pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
+		String nameStatePipelineGraphics_Outline = "PipelineGraphics-Outline-" + pModelObject->nameModel;
+        pModelObject->poStatePipelineGraphics_Outline = createStatePipelineGraphics(nameStatePipelineGraphics_Outline,
+                                                                           	 		pModelObject->pDescriptorSetLayout_Outline,
+																					pShaderVertex_Outline,
+																					nullptr,
+																					nullptr,
+																					nullptr,
+																					pShaderFragment_Outline,
+																					this->typeVertex,
+																					false, 0, 3,
+																					this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																					pModelObject->poPrimitiveTopology, pModelObject->poFrontFace, pModelObject->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																					VK_TRUE, VK_FALSE, pModelObject->poDepthIsWrite, pModelObject->poDepthCompareOp,
+																					VK_TRUE, front, back,
+																					pModelObject->poBlendEnabled, pModelObject->poBlendColorFactorSrc, pModelObject->poBlendColorFactorDst, pModelObject->poBlendColorOp,
+																					pModelObject->poBlendAlphaFactorSrc, pModelObject->poBlendAlphaFactorDst, pModelObject->poBlendAlphaOp,
+																					pModelObject->poColorWriteMask);
+        if (pModelObject->poStatePipelineGraphics_Outline == nullptr)
         {
-            String msg = "*********************** Vulkan_008_Blend::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
+            String msg = "*********************** Vulkan_008_Blend::createGraphicsPipeline_Custom: Failed to create pipeline outline, name: " + nameStatePipelineGraphics_Outline;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
-    }
-}
-void Vulkan_008_Blend::createPipelineLayout_Outline()
-{
-    VkDescriptorSetLayoutVector aDescriptorSetLayout;
-    aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-    this->poPipelineLayout_Outline = createVkPipelineLayout("PipelineLayout-Outline", aDescriptorSetLayout);
-    if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
-    {
-        String msg = "*********************** Vulkan_008_Blend::createPipelineLayout_Outline: createVkPipelineLayout failed !";
-        F_LogError(msg.c_str());
-        throw std::runtime_error(msg.c_str());
     }
 }
 
@@ -537,8 +509,6 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets("DescriptorSets-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
-        createVkDescriptorSets("DescriptorSets-Outline-" + pModelObject->nameModel, this->poDescriptorSetLayout, pModelObject->poDescriptorSets_Outline);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil
@@ -551,7 +521,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                pModelObject->poDescriptorSets[j],
+                                                pModelObject->pDescriptorSetLayout_Stencil->poDescriptorSets[j],
                                                 0,
                                                 0,
                                                 1,
@@ -564,7 +534,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Object.offset = 0;
                     bufferInfo_Object.range = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                pModelObject->poDescriptorSets[j],
+                                                pModelObject->pDescriptorSetLayout_Stencil->poDescriptorSets[j],
                                                 1,
                                                 0,
                                                 1,
@@ -577,7 +547,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Material.offset = 0;
                     bufferInfo_Material.range = sizeof(MaterialConstants) * (pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
                     pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                pModelObject->poDescriptorSets[j],
+                                                pModelObject->pDescriptorSetLayout_Stencil->poDescriptorSets[j],
                                                 2,
                                                 0,
                                                 1,
@@ -590,7 +560,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Instance.offset = 0;
                     bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                pModelObject->poDescriptorSets[j],
+                                                pModelObject->pDescriptorSetLayout_Stencil->poDescriptorSets[j],
                                                 3,
                                                 0,
                                                 1,
@@ -603,7 +573,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     imageInfo.imageView = pModelObject->poTextureImageView;
                     imageInfo.sampler = pModelObject->poTextureSampler;
                     pushVkDescriptorSet_Image(descriptorWrites,
-                                              pModelObject->poDescriptorSets[j],
+                                              pModelObject->pDescriptorSetLayout_Stencil->poDescriptorSets[j],
                                               4,
                                               0,
                                               1,
@@ -623,7 +593,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Pass_Outline.offset = 0;
                     bufferInfo_Pass_Outline.range = sizeof(PassConstants);
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
-                                                pModelObject->poDescriptorSets_Outline[j],
+                                                pModelObject->pDescriptorSetLayout_Outline->poDescriptorSets[j],
                                                 0,
                                                 0,
                                                 1,
@@ -636,7 +606,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Object_Outline.offset = 0;
                     bufferInfo_Object_Outline.range = sizeof(ObjectConstants_Outline) * pModelObject->objectCBs_Outline.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
-                                                pModelObject->poDescriptorSets_Outline[j],
+                                                pModelObject->pDescriptorSetLayout_Outline->poDescriptorSets[j],
                                                 1,
                                                 0,
                                                 1,
@@ -649,7 +619,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Material_Outline.offset = 0;
                     bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * this->materialCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
-                                                pModelObject->poDescriptorSets_Outline[j],
+                                                pModelObject->pDescriptorSetLayout_Outline->poDescriptorSets[j],
                                                 2,
                                                 0,
                                                 1,
@@ -662,7 +632,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     bufferInfo_Instance_Outline.offset = 0;
                     bufferInfo_Instance_Outline.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                     pushVkDescriptorSet_Uniform(descriptorWrites_Outline,
-                                                pModelObject->poDescriptorSets_Outline[j],
+                                                pModelObject->pDescriptorSetLayout_Outline->poDescriptorSets[j],
                                                 3,
                                                 0,
                                                 1,
@@ -675,7 +645,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                     imageInfo_Outline.imageView = pModelObject->poTextureImageView;
                     imageInfo_Outline.sampler = pModelObject->poTextureSampler;
                     pushVkDescriptorSet_Image(descriptorWrites_Outline,
-                                              pModelObject->poDescriptorSets_Outline[j],
+                                              pModelObject->pDescriptorSetLayout_Outline->poDescriptorSets[j],
                                               4,
                                               0,
                                               1,
@@ -870,37 +840,30 @@ void Vulkan_008_Blend::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
         if (!pModelObject->isShow)
             continue;
 
-        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
-        {
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
-            if (pModelObject->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-            drawModelObject(commandBuffer, pModelObject);
-        }
-        else
-        {
-            //1> Stencil Pass
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_Stencil);
-            if (pModelObject->poDescriptorSets.size() > 0)
-            {
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-            drawModelObject(commandBuffer, pModelObject);
+		//1> Stencil Pass
+		//State/Shader/BufferUniform/Texture
+		pModelObject->poStatePipelineGraphics_Stencil->BindState(commandBuffer, pModelObject->isWireFrame || this->cfg_isWireFrame);
+		pModelObject->poStatePipelineGraphics_Stencil->BindShader(commandBuffer);
+		pModelObject->poStatePipelineGraphics_Stencil->BindBufferUniforms(commandBuffer);
+		pModelObject->poStatePipelineGraphics_Stencil->BindTextures(commandBuffer);
 
-            //2> Outline Pass
-            if (pModelObject->isOutline)
-            {
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_Outline);
-                if (pModelObject->poDescriptorSets_Outline.size() > 0)
-                {
-                    bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Outline, 0, 1, &pModelObject->poDescriptorSets_Outline[this->poSwapChainImageIndex], 0, nullptr);
-                }
-                drawModelObject(commandBuffer, pModelObject);
-            }
-        }
-        
+		drawModelObject(commandBuffer, pModelObject);
+
+		pModelObject->poStatePipelineGraphics_Stencil->UnBindState(commandBuffer);
+
+		//2> Outline Pass
+		if (pModelObject->isOutline)
+		{
+			//State/Shader/BufferUniform/Texture
+			pModelObject->poStatePipelineGraphics_Outline->BindState(commandBuffer, pModelObject->isWireFrame || this->cfg_isWireFrame);
+			pModelObject->poStatePipelineGraphics_Outline->BindShader(commandBuffer);
+			pModelObject->poStatePipelineGraphics_Outline->BindBufferUniforms(commandBuffer);
+			pModelObject->poStatePipelineGraphics_Outline->BindTextures(commandBuffer);
+
+			drawModelObject(commandBuffer, pModelObject);
+
+			pModelObject->poStatePipelineGraphics_Outline->UnBindState(commandBuffer);
+		}
     }
 }
 void Vulkan_008_Blend::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
@@ -918,10 +881,7 @@ void Vulkan_008_Blend::drawModelObject(VkCommandBuffer& commandBuffer, ModelObje
 }
 
 void Vulkan_008_Blend::cleanupCustom()
-{
-    destroyVkPipelineLayout(this->poPipelineLayout_Outline);
-    this->poPipelineLayout_Outline = VK_NULL_HANDLE;
-    
+{ 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -936,9 +896,6 @@ void Vulkan_008_Blend::cleanupCustom()
 void Vulkan_008_Blend::cleanupSwapChain_Custom()
 {
     destroyShaders();
-
-    destroyVkPipelineLayout(this->poPipelineLayout_Outline);
-    this->poPipelineLayout_Outline = VK_NULL_HANDLE;
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -956,6 +913,6 @@ void Vulkan_008_Blend::recreateSwapChain_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->recreateSwapChain();
+        pModelObject->RecreateSwapChain();
     }
 }

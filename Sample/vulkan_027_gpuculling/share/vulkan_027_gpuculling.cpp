@@ -1736,20 +1736,22 @@ void Vulkan_027_GPUCulling::loadModel_Custom()
                 }
 
                 //Pipeline Graphics - DescriptorSetLayout
-                pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
+                pRend->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
 
                 //Pipeline Computes - DescriptorSetLayout
                 String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
                 if (!nameDescriptorSetLayout.empty())
                 {
+					pRend->isUsedCompute = true;
                     StringVector aDescriptorSetLayout = FUtilString::Split(nameDescriptorSetLayout, ";");
                     size_t count_dsl = aDescriptorSetLayout.size();
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
-                        pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
-                        pRend->AddPipelineCompute(pPipelineCompute);
+                        String nameStatePipelineCompute = "PipelineCompute-" + nameDescriptorSetLayout;
+						VKStatePipelineCompute* pStatePipelineCompute = new VKStatePipelineCompute(nameStatePipelineCompute);
+						pStatePipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
+						pRend->AddStatePipelineCompute(pStatePipelineCompute);
                     }
                 }
 
@@ -1923,7 +1925,7 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_027_GPUCulling::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1946,7 +1948,7 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_027_GPUCulling::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1971,11 +1973,32 @@ void Vulkan_027_GPUCulling::rebuildInstanceCBs(bool isCreateVkBuffer)
 																		  false);
 					if (!pBufferUniform)
 					{
-						String msg = "*********************** Vulkan_027_GPUCulling::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						String msg = "*********************** Vulkan_027_GPUCulling::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 						F_LogError(msg.c_str());
 						throw std::runtime_error(msg);
 					}
 					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
+                }
+            }
+
+			//TextureCopyConstants
+            if (pRend->isUsedCompute)
+            {
+                pRend->textureCopyCBs.clear();
+                TextureCopyConstants textureCopyCB;
+                pRend->textureCopyCBs.push_back(textureCopyCB);
+
+                F_DELETE(pRend->poBuffer_TextureCopy)
+                String nameBuffer = "TextureCopyConstants-" + pRend->pModelObject->nameObject;
+                pRend->poBuffer_TextureCopy = createBufferUniform(nameBuffer,
+																  sizeof(TextureCopyConstants) * pRend->textureCopyCBs.size(),
+																  (uint8*)pRend->textureCopyCBs.data(),
+																  false);
+                if (!pRend->poBuffer_TextureCopy)
+                {
+                    String msg = "*********************** Vulkan_027_GPUCulling::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+                    F_LogError("%s", msg.c_str());
+                    throw std::runtime_error(msg);
                 }
             }
         }
@@ -2011,11 +2034,7 @@ void Vulkan_027_GPUCulling::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
-
-    //2> PipelineLayout
-    createPipelineLayouts();
-
-    //3> Shader
+	//2> Shader
     createShaders();
 }   
 void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
@@ -2053,55 +2072,20 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
 
         //[2] Pipeline Graphics
         {
-            pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pRend->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-
-            //pPipelineGraphics->poPipeline_WireFrame
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
-                                                                                      pRend->aShaderStageCreateInfos_Graphics,
-                                                                                      pRend->isUsedTessellation, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                      pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
-                                                                                      pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                      pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                                      pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                                      pRend->cfg_ColorWriteMask);
-            if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
-
-            //pPipelineGraphics->poPipeline
-            VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
-            VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
-            VkBool32 isBlend = pRend->cfg_isBlend;
-            VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
-            VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+			
+            //poStatePipelineGraphics
+            VkBool32 isDepthTestEnable = pRend->poDepthIsTest;
+            VkBool32 isDepthWriteEnable = pRend->poDepthIsWrite;
+            VkBool32 isBlend = pRend->poBlendEnabled;
+            VkBlendFactor blendColorFactorSrc = pRend->poBlendColorFactorSrc; 
+            VkBlendFactor blendColorFactorDst = pRend->poBlendColorFactorDst; 
             if (pRend->isTransparent)
             {
                 isDepthTestEnable = VK_FALSE;
@@ -2118,19 +2102,20 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
                 VkSpecializationInfo specializationInfo = CreateSpecializationInfo(1, &specializationMapEntry, sizeof(uint32_t), &enablePCF);  
                 pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
-                                                                            pRend->aShaderStageCreateInfos_Graphics,
-                                                                            pRend->isUsedTessellation, 0, 3,
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                            isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                            isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                            pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                            pRend->cfg_ColorWriteMask);
-            if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+			String nameStatePipelineGraphics = "PipelineGraphics-" + pRend->nameObjectRend;
+            pRend->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+                                                                      	 pDescriptorSetLayout,
+																		 pRend->aShaderStageCreateInfos_Graphics,
+																		 pRend->pMeshSub->poTypeVertex,
+																		 pRend->isUsedTessellation, 0, 3,
+																		 this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																		 pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																		 VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+																		 pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+																		 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->poBlendColorOp,
+																		 pRend->poBlendAlphaFactorSrc, pRend->poBlendAlphaFactorDst, pRend->poBlendAlphaOp,
+																		 pRend->poColorWriteMask);
+            if (pRend->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
@@ -2138,24 +2123,25 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
             }
             F_LogInfo("Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
 
-            //pPipelineGraphics->poPipeline2
+            //poStatePipelineGraphics2
             if (pRend->isReceiveShadow)
             {
                 enablePCF = 1;
 
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("PipelineGraphics-2-" + pRend->nameObjectRend,
-                                                                                 pRend->aShaderStageCreateInfos_Graphics,
-                                                                                 pRend->isUsedTessellation, 0, 3,
-                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                 this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                 pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                 isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                                 pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                                 pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                                 pRend->cfg_ColorWriteMask);
-                if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
+				String nameStatePipelineGraphics2 = "PipelineGraphics-2-" + pRend->nameObjectRend;
+                pRend->poStatePipelineGraphics2 = createStatePipelineGraphics(nameStatePipelineGraphics2,
+                                                                              pDescriptorSetLayout,
+																		      pRend->aShaderStageCreateInfos_Graphics,
+																			  pRend->pMeshSub->poTypeVertex,
+																		      pRend->isUsedTessellation, 0, 3,
+																			  this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																			  pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																			  VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+																			  pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+																			  isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->poBlendColorOp,
+																			  pRend->poBlendAlphaFactorSrc, pRend->poBlendAlphaFactorDst, pRend->poBlendAlphaOp,
+																			  pRend->poColorWriteMask);
+                if (pRend->poStatePipelineGraphics2 == nullptr)
                 {
                     String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Failed to create pipeline graphics pcf: " + pRend->nameObjectRend;
                     F_LogError(msg.c_str());
@@ -2164,7 +2150,7 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
                 F_LogInfo("Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics pcf success !", pRend->nameObjectRend.c_str());
             }
 
-            //pPipelineGraphics->poPipeline_Cull
+            //poStatePipelineGraphics_Cull
             if (pRend->isCanCullingInit)
             {
                 CullInfo* pCullInfo = findCullInfo(nameShaderVert);
@@ -2183,56 +2169,21 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
                         throw std::runtime_error(msg.c_str());
                     }
 
-                    pRend->pPipelineGraphics->nameDescriptorSetLayout_Cull = pCullInfo->nameDescriptorSetLayoutCull;
-                    pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull = findDescriptorSetLayoutNames(pCullInfo->nameDescriptorSetLayoutCull);
-                    if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull == nullptr)
-                    {
-                        String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: [Cull] Can not find DescriptorSetLayoutNames by name: " + pCullInfo->nameDescriptorSetLayoutCull;
-                        F_LogError(msg.c_str());
-                        throw std::runtime_error(msg.c_str());
-                    }
-                    pRend->pPipelineGraphics->poDescriptorSetLayout_Cull = findDescriptorSetLayout(pCullInfo->nameDescriptorSetLayoutCull);
-                    if (pRend->pPipelineGraphics->poDescriptorSetLayout_Cull == VK_NULL_HANDLE)
-                    {
-                        String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: [Cull] Can not find DescriptorSetLayout by name: " + pCullInfo->nameDescriptorSetLayoutCull;
-                        F_LogError(msg.c_str());
-                        throw std::runtime_error(msg.c_str());
-                    }
-                    pRend->pPipelineGraphics->poPipelineLayout_Cull = findPipelineLayout(pCullInfo->nameDescriptorSetLayoutCull);
-                    if (pRend->pPipelineGraphics->poPipelineLayout_Cull == VK_NULL_HANDLE)
-                    {
-                        String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: [Cull] Can not find PipelineLayout by name: " + pCullInfo->nameDescriptorSetLayoutCull;
-                        F_LogError(msg.c_str());
-                        throw std::runtime_error(msg.c_str());
-                    }
+                    pRend->nameDescriptorSetLayout_Cull = pCullInfo->nameDescriptorSetLayoutCull;
+					DescriptorSetLayout* pDescriptorSetLayout_Cull = findDescriptorSetLayout(pRend->nameDescriptorSetLayout_Cull);
+					if (pDescriptorSetLayout_Cull == nullptr)
+					{
+						String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->nameDescriptorSetLayout_Cull;
+						F_LogError(msg.c_str());
+						throw std::runtime_error(msg.c_str());
+					}
 
-                    //pPipelineGraphics->poPipeline_WireFrame_Cull
-                    pRend->pPipelineGraphics->poPipeline_WireFrame_Cull = createVkGraphicsPipeline("PipelineGraphics-Cull-Wire-" + pRend->nameObjectRend,
-                                                                                                   pRend->aShaderStageCreateInfos_GraphicsCull,
-                                                                                                   pRend->isUsedTessellation, 0, 3,
-                                                                                                   Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                                   Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                                   this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout_Cull, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                                   pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                                   pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
-                                                                                                   pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                                   pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                                                   pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                                                   pRend->cfg_ColorWriteMask);
-                    if (pRend->pPipelineGraphics->poPipeline_WireFrame_Cull == VK_NULL_HANDLE)
-                    {
-                        String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: [Cull] Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
-                        F_LogError(msg.c_str());
-                        throw std::runtime_error(msg.c_str());
-                    }
-                    F_LogInfo("Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: Object: [Cull] [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
-
-                    //pPipelineGraphics->poPipeline_Cull
-                    VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
-                    VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
-                    VkBool32 isBlend = pRend->cfg_isBlend;
-                    VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
-                    VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+                    //poStatePipelineGraphics_Cull
+                    VkBool32 isDepthTestEnable = pRend->poDepthIsTest;
+                    VkBool32 isDepthWriteEnable = pRend->poDepthIsWrite;
+                    VkBool32 isBlend = pRend->poBlendEnabled;
+                    VkBlendFactor blendColorFactorSrc = pRend->poBlendColorFactorSrc; 
+                    VkBlendFactor blendColorFactorDst = pRend->poBlendColorFactorDst; 
                     if (pRend->isTransparent)
                     {
                         isDepthTestEnable = VK_FALSE;
@@ -2242,19 +2193,20 @@ void Vulkan_027_GPUCulling::createGraphicsPipeline_Custom()
                         blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                         blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                     }
-                    pRend->pPipelineGraphics->poPipeline_Cull = createVkGraphicsPipeline("PipelineGraphics-Cull-" + pRend->nameObjectRend,
-                                                                                         pRend->aShaderStageCreateInfos_GraphicsCull,
-                                                                                         pRend->isUsedTessellation, 0, 3,
-                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                         this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout_Cull, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                         pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                         isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                                         pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                         isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                                         pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                                         pRend->cfg_ColorWriteMask);
-                    if (pRend->pPipelineGraphics->poPipeline_Cull == VK_NULL_HANDLE)
+					String nameStatePipelineGraphics_Cull = "PipelineGraphics-Cull-" + pRend->nameObjectRend;
+                    pRend->poStatePipelineGraphics_Cull = createStatePipelineGraphics(nameStatePipelineGraphics_Cull,
+																					  pDescriptorSetLayout_Cull,
+                                                                                      pRend->aShaderStageCreateInfos_GraphicsCull,
+                                                                                      pRend->pMeshSub->poTypeVertex,
+																		      		  pRend->isUsedTessellation, 0, 3,
+                                                                                      this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+                                                                                      pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+                                                                                      VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+                                                                                      pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+                                                                                      isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->poBlendColorOp,
+                                                                                      pRend->poBlendAlphaFactorSrc, pRend->poBlendAlphaFactorDst, pRend->poBlendAlphaOp,
+                                                                                      pRend->poColorWriteMask);
+                    if (pRend->poStatePipelineGraphics_Cull == nullptr)
                     {
                         String msg = "*********************** Vulkan_027_GPUCulling::createGraphicsPipeline_Custom: [Cull] Failed to create pipeline graphics: " + pRend->nameObjectRend;
                         F_LogError(msg.c_str());
@@ -2272,7 +2224,7 @@ void Vulkan_027_GPUCulling::createComputePipeline_Custom()
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
-        size_t count_pipeline = pRend->aPipelineComputes.size();
+        size_t count_pipeline = pRend->aStatePipelineComputes.size();
         if (count_pipeline <= 0)
             continue;
 
@@ -2297,35 +2249,22 @@ void Vulkan_027_GPUCulling::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            VKPipelineCompute* p = pRend->aPipelineComputes[j];
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
 
-            p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pStatePipelineCompute->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
-            if (p->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
-            if (p->poPipeline == VK_NULL_HANDLE)
+            if (!pStatePipelineCompute->Init(pDescriptorSetLayout,
+											 shaderStageCreateInfo,
+											 0))
             {
-                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_027_GPUCulling::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2506,14 +2445,14 @@ Vulkan_027_GPUCulling::CullInfo* Vulkan_027_GPUCulling::findCullInfo(const Strin
 
 void Vulkan_027_GPUCulling::destroyDescriptorSetLayouts()
 {
-    size_t count = this->m_aVkDescriptorSetLayouts.size();
+    size_t count = this->m_aDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
+        DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+        delete pDSL;
     }
-    this->m_aVkDescriptorSetLayouts.clear();
-    this->m_mapVkDescriptorSetLayout.clear();
-    this->m_mapName2Layouts.clear();
+    this->m_aDescriptorSetLayouts.clear();
+    this->m_mapDescriptorSetLayouts.clear();
 }
 void Vulkan_027_GPUCulling::createDescriptorSetLayouts()
 {
@@ -2521,39 +2460,24 @@ void Vulkan_027_GPUCulling::createDescriptorSetLayouts()
     {
         String nameLayout(g_DescriptorSetLayoutNames[i]);
         StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-        VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_027_GPUCulling::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-        this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
-        this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
-        this->m_mapName2Layouts[nameLayout] = aLayouts;
+        DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+		pDSL->Init(nameLayout, true, false, false);
+		
+        this->m_aDescriptorSetLayouts.push_back(pDSL);
+        this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
 
         F_LogInfo("Vulkan_027_GPUCulling::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_027_GPUCulling::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+DescriptorSetLayout* Vulkan_027_GPUCulling::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
-    VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapVkDescriptorSetLayout.end())
+    DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapDescriptorSetLayouts.end())
     {
         return nullptr;
     }
     return itFind->second;
 }
-StringVector* Vulkan_027_GPUCulling::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
-{
-    std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapName2Layouts.end())
-    {
-        return nullptr;
-    }
-    return &(itFind->second);
-}
-
 
 void Vulkan_027_GPUCulling::destroyShaders()
 {   
@@ -2592,53 +2516,6 @@ VKShader* Vulkan_027_GPUCulling::findShader(const String& nameShader)
 }   
 
 
-void Vulkan_027_GPUCulling::destroyPipelineLayouts()
-{
-    size_t count = this->m_aVkPipelineLayouts.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
-    }
-    this->m_aVkPipelineLayouts.clear();
-    this->m_mapVkPipelineLayouts.clear();
-}
-void Vulkan_027_GPUCulling::createPipelineLayouts()
-{
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
-    {
-        String nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
-        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_027_GPUCulling::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
-            return;
-        }
-
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
-        if (vkPipelineLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_027_GPUCulling::createPipelineLayouts: createVkPipelineLayout failed !");
-            return;
-        }
-
-        this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
-    }
-}
-VkPipelineLayout Vulkan_027_GPUCulling::findPipelineLayout(const String& namePipelineLayout)
-{
-    VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
-    if (itFind == this->m_mapVkPipelineLayouts.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
-
-
 void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
 {
     //1> Object Rend
@@ -2649,23 +2526,21 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
             updateDescriptorSets_Graphics(pRend,
-                                          pRend->pPipelineGraphics->poDescriptorSets, 
-                                          pRend->pPipelineGraphics->poDescriptorSetLayoutNames,
+                                          pRend->poStatePipelineGraphics,
+										  pRend->poStatePipelineGraphics->poDescriptorSets,
                                           pRend->poBuffers_ObjectCB,
                                           pRend->poBuffers_materialCB,
                                           nullptr,
                                           nullptr,
                                           nullptr);
 
-            if (pRend->pPipelineGraphics->poPipeline_Cull != nullptr &&
+            if (pRend->poStatePipelineGraphics_Cull != nullptr &&
                 pRend->pCullRenderData != nullptr)
             {
-                createVkDescriptorSets("DescriptorSets-Cull-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout_Cull, pRend->pPipelineGraphics->poDescriptorSets_Cull);
                 updateDescriptorSets_Graphics(pRend,
-                                              pRend->pPipelineGraphics->poDescriptorSets_Cull, 
-                                              pRend->pPipelineGraphics->poDescriptorSetLayoutNames_Cull, 
+                                              pRend->poStatePipelineGraphics_Cull, 
+											  pRend->poStatePipelineGraphics_Cull->poDescriptorSets, 
                                               pRend->poBuffers_ObjectCB,
                                               pRend->poBuffers_materialCB,
                                               pRend->pCullRenderData->pBuffer_CullInstance,
@@ -2674,9 +2549,8 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
 
                 if (m_pPipelineGraphics_DepthShadowMap != nullptr)
                 {
-                    m_pPipelineGraphics_DepthShadowMap->CreateDescriptorSet_ShadowMapDepthCull("DescriptorSets-Cull-ShadowMap-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSets_ShadowMapCull);
-                    pRend->pCullRenderData->pDescriptorSets_ShadowMapDepthCull = &pRend->pPipelineGraphics->poDescriptorSets_ShadowMapCull;
-                    m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(&pRend->pPipelineGraphics->poDescriptorSets_ShadowMapCull,
+                    pRend->pCullRenderData->pDescriptorSets_ShadowMapDepthCull = &pRend->poStatePipelineGraphics_Cull->poDescriptorSets;
+                    m_pPipelineGraphics_DepthShadowMap->UpdateDescriptorSet_ShadowMapDepthCull(&pRend->poStatePipelineGraphics_Cull->poDescriptorSets,
                                                                                                pRend->pCullRenderData->pBuffer_CullInstance, 
                                                                                                pRend->pCullRenderData->pBuffer_CullObjectInstances,
                                                                                                pRend->pCullRenderData->pCullUnit->GetResultCB());
@@ -2685,12 +2559,11 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
         }   
         
         //Pipeline Computes
-        size_t count_comp_rend = pRend->aPipelineComputes.size();
+        size_t count_comp_rend = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp_rend; j++)
         {       
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
-            updateDescriptorSets_Compute(pRend, pPipelineCompute);
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            updateDescriptorSets_Compute(pRend, pStatePipelineCompute);
         }
     }
 
@@ -2701,10 +2574,10 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createVkDescriptorSets("DescriptorSets-Indirect-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-Indirect-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->poStatePipelineGraphics->pDescriptorSetLayout->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
             updateDescriptorSets_Graphics(pModelObject->pRendIndirect->pRend,
+										  pModelObject->pRendIndirect->pRend->poStatePipelineGraphics,
                                           pModelObject->pRendIndirect->poDescriptorSets,    
-                                          pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayoutNames, 
                                           pModelObject->pRendIndirect->poBuffers_ObjectCB,
                                           pModelObject->pRendIndirect->poBuffers_materialCB,
                                           nullptr,
@@ -2714,25 +2587,24 @@ void Vulkan_027_GPUCulling::createDescriptorSets_Custom()
     }
 }
 void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend,
-                                                          VkDescriptorSetVector& poDescriptorSets, 
-                                                          StringVector* poDescriptorSetLayoutNames,
+                                                          VKStatePipelineGraphics* pStatePipelineGraphics,
+														  VkDescriptorSetVector& poDescriptorSets, 
                                                           const VKBufferUniformPtrVector& poBuffersObjectCB,
                                                           const VKBufferUniformPtrVector& poBuffersMaterialCB,
                                                           VKBufferUniform* pCB_CullInstance,
                                                           VKBufferCompute* pCB_CullObjectInstances,
                                                           VKBufferCompute* pCB_Result)
 {
-    F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_027_GPUCulling::updateDescriptorSets_Graphics")
-    uint32_t count_ds = (uint32_t)poDescriptorSets.size();
+	size_t count_ds = poDescriptorSets.size();
     for (uint32_t j = 0; j < count_ds; j++)
     {   
         VkWriteDescriptorSetVector descriptorWrites;
         int nIndexTextureFS = 0;
 
-        uint32_t count_names = (uint32_t)poDescriptorSetLayoutNames->size();
+        uint32_t count_names = pStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
         for (uint32_t p = 0; p < count_names; p++)
         {
-            String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
+            String& nameDescriptorSet = pStatePipelineGraphics->pDescriptorSetLayout->aLayouts[p];
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -2866,27 +2738,22 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
     }
 }
 void Vulkan_027_GPUCulling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
-                                                         VKPipelineCompute* pPipelineCompute)
+                                                         VKStatePipelineCompute* pStatePipelineCompute)
 {
-    StringVector* poDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pRend && poDescriptorSetLayoutNames != nullptr && "Vulkan_027_GPUCulling::updateDescriptorSets_Compute")
-
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
-    uint32_t count_names = (uint32_t)poDescriptorSetLayoutNames->size();
+    size_t count_names = pStatePipelineCompute->pDescriptorSetLayout->aLayouts.size();
     for (uint32_t p = 0; p < count_names; p++)
     {
-        String& nameDescriptorSet = (*poDescriptorSetLayoutNames)[p];
+        String& nameDescriptorSet = pStatePipelineCompute->pDescriptorSetLayout->aLayouts[p];
         if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
         {
-            pPipelineCompute->CreateTextureCopy();
-
             VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy->GetVkBuffer();
+            bufferInfo_TextureCopy.buffer = pRend->poBuffer_TextureCopy->GetVkBuffer();
             bufferInfo_TextureCopy.offset = 0;
             bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
             pushVkDescriptorSet_Uniform(descriptorWrites,
-                                        pPipelineCompute->poDescriptorSet,
+                                        pStatePipelineCompute->poDescriptorSet,
                                         p,
                                         0,
                                         1,
@@ -2896,9 +2763,8 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
         {
             VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
-            pPipelineCompute->pTextureSource = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
+                                      pStatePipelineCompute->poDescriptorSet,
                                       p,
                                       0,
                                       1,
@@ -2909,9 +2775,8 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Compute(ModelObjectRend* pRend,
         {
             VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
-            pPipelineCompute->pTextureTarget = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
+                                      pStatePipelineCompute->poDescriptorSet,
                                       p,
                                       0,
                                       1,
@@ -2934,56 +2799,60 @@ void Vulkan_027_GPUCulling::updateCompute_BeforeRender_Custom(VkCommandBuffer& c
     for (size_t i = 0; i < count_object_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
+		if (!pRend->isUsedCompute)
+        	continue;
 
-        size_t count_comp = pRend->aPipelineComputes.size();
+        size_t count_comp = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            
+			bool isRand = false;
+            if (++pRend->frameRand > 15)
             {
-                bool isRand = false;
-                if (++pPipelineCompute->frameRand > 30)
-                {
-                    isRand = true;
-                    pPipelineCompute->frameRand = 0;
-                }
-
-                pPipelineCompute->pTextureCopy->texInfo.x = (float)pPipelineCompute->pTextureSource->width;
-                pPipelineCompute->pTextureCopy->texInfo.y = (float)pPipelineCompute->pTextureSource->height;
-                pPipelineCompute->pTextureCopy->texInfo.z = 0;
-                pPipelineCompute->pTextureCopy->texInfo.w = 0;
-                if (isRand)
-                {
-                    pPipelineCompute->pTextureCopy->texOffset.x = (float)(FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width);
-                    pPipelineCompute->pTextureCopy->texOffset.y = (float)(FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height);
-                    pPipelineCompute->pTextureCopy->texOffset.z = 0;
-                    pPipelineCompute->pTextureCopy->texOffset.w = 0;
-
-                    int seed = FMath::Rand(0, 10000);
-                    int start = seed % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.x = (float)start;
-                    pPipelineCompute->pTextureCopy->texIndexArray.y = (float)(++start % 4);
-                    pPipelineCompute->pTextureCopy->texIndexArray.z = (float)(++start % 4);
-                    pPipelineCompute->pTextureCopy->texIndexArray.w = (float)(++start % 4);
-                }
-                pPipelineCompute->pTextureCopy->texClearColor.x = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.y = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.z = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.w = 1;
-
-				pPipelineCompute->poBuffer_TextureCopy->UpdateBuffer(0, 
-																	 sizeof(TextureCopyConstants), 
-																	 (uint8*)pPipelineCompute->pTextureCopy);
-
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
-                
-                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
-                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
-                dispatch(commandBuffer, groupX, groupY, 1);
+                isRand = true;
+                pRend->frameRand = 0;
             }
+            VKTexture* pTextureSrc = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 0);
+            VKTexture* pTextureTarget = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 1);
+            TextureCopyConstants& textureCopyCB = pRend->textureCopyCBs[0];
+            textureCopyCB.texInfo.x = (float)pTextureSrc->width;
+            textureCopyCB.texInfo.y = (float)pTextureSrc->height;
+            textureCopyCB.texInfo.z = 0;
+            textureCopyCB.texInfo.w = 0;
+            if (isRand)
+            {
+                textureCopyCB.texOffset.x = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->width;
+                textureCopyCB.texOffset.y = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->height;
+                textureCopyCB.texOffset.z = 0;
+                textureCopyCB.texOffset.w = 0;
+
+                int seed = FMath::Rand(0, 10000);
+                int start = seed % 4;
+                textureCopyCB.texIndexArray.x = (float)start;
+                textureCopyCB.texIndexArray.y = (float)(++start % 4);
+                textureCopyCB.texIndexArray.z = (float)(++start % 4);
+                textureCopyCB.texIndexArray.w = (float)(++start % 4);
+            }
+            textureCopyCB.texClearColor.x = 0;
+            textureCopyCB.texClearColor.y = 0;
+            textureCopyCB.texClearColor.z = 0;
+            textureCopyCB.texClearColor.w = 1;
+
+			pRend->poBuffer_TextureCopy->UpdateBuffer(0,
+													  sizeof(TextureCopyConstants) * pRend->textureCopyCBs.size(),
+													  (uint8*)pRend->textureCopyCBs.data());
+
+            pStatePipelineCompute->BindState(commandBuffer);
+            pStatePipelineCompute->BindShader(commandBuffer);
+            pStatePipelineCompute->BindBufferUniforms(commandBuffer);
+            pStatePipelineCompute->BindTextures(commandBuffer);
+            
+            uint32_t groupX = (uint32_t)(pTextureTarget->width / 8);
+            uint32_t groupY = (uint32_t)(pTextureTarget->height / 8);
+            dispatch(commandBuffer, groupX, groupY, 1);
+
+            pStatePipelineCompute->UnBindState(commandBuffer);
         }
     }
 }
@@ -3099,20 +2968,22 @@ void Vulkan_027_GPUCulling::updateRenderPass_SyncComputeGraphics(VkCommandBuffer
     for (size_t i = 0; i < count_object_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
+		if (!pRend->isUsedCompute)
+        	continue;
 
-        size_t count_comp = pRend->aPipelineComputes.size();
+        size_t count_comp = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            
+			VKTexture* pTextureTarget = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 1);
+            if (pTextureTarget != nullptr)
             {
                 VkImageMemoryBarrier imageMemoryBarrier = {};
                 imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
                 imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
                 imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-                imageMemoryBarrier.image = pPipelineCompute->pTextureTarget->poTextureImage;
+                imageMemoryBarrier.image = pTextureTarget->poTextureImage;
                 imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
                 imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
                 imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -4042,21 +3913,16 @@ void Vulkan_027_GPUCulling::drawModelObjectRendCull(VkCommandBuffer& commandBuff
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
 	}
 
-    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame_Cull);
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_Cull);
-    }
-    if (pRend->pPipelineGraphics->poDescriptorSets_Cull.size() > 0)
-    {
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout_Cull, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets_Cull[this->poSwapChainImageIndex], 0, nullptr);
-    }
+	//State/Shader/BufferUniform/Texture
+	pRend->poStatePipelineGraphics_Cull->BindState(commandBuffer, pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame);
+	pRend->poStatePipelineGraphics_Cull->BindShader(commandBuffer);
+	pRend->poStatePipelineGraphics_Cull->BindBufferUniforms(commandBuffer);
+	pRend->poStatePipelineGraphics_Cull->BindTextures(commandBuffer);
 
     VKBufferIndirectCommand* pBufferIndirectCommand = pRend->pCullRenderData->pCullUnit->GetRenderArgsCB();
     drawIndexedIndirect(commandBuffer, pBufferIndirectCommand->GetVkBuffer(), pRend->pCullRenderData->nRenderIndex * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+
+	pRend->poStatePipelineGraphics_Cull->UnBindState(commandBuffer);
 }
 
 void Vulkan_027_GPUCulling::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
@@ -4094,22 +3960,11 @@ void Vulkan_027_GPUCulling::drawModelObjectRendIndirect(VkCommandBuffer& command
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
 
-    if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
+	//State/Shader/BufferUniform/Texture
+	pRend->poStatePipelineGraphics->BindState(commandBuffer, pRendIndirect->poDescriptorSets, pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame);
+	pRend->poStatePipelineGraphics->BindShader(commandBuffer);
+	pRend->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+	pRend->poStatePipelineGraphics->BindTextures(commandBuffer);
 
 	if (pRendIndirect->pBufferVertex != nullptr)
 	{
@@ -4132,6 +3987,8 @@ void Vulkan_027_GPUCulling::drawModelObjectRendIndirect(VkCommandBuffer& command
             drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB->GetVkBuffer(), i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
+
+	pRend->poStatePipelineGraphics->UnBindState(commandBuffer);
 }
 
 void Vulkan_027_GPUCulling::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
@@ -4157,25 +4014,18 @@ void Vulkan_027_GPUCulling::drawModelObjectRend(VkCommandBuffer& commandBuffer, 
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
 
-    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-    else
-    {
-        if (pRend->isReceiveShadow && pRend->isShadowPCF && pRend->pPipelineGraphics->poPipeline2 != VK_NULL_HANDLE)
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline2);
-        else
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
+	VKStatePipelineGraphics* pStatePipelineGraphics = pRend->poStatePipelineGraphics;
+	if (pRend->isReceiveShadow && pRend->isShadowPCF && pRend->poStatePipelineGraphics2 != nullptr &&
+		!(pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame))
+	{
+		pStatePipelineGraphics = pRend->poStatePipelineGraphics2;
+	}
+
+	//State/Shader/BufferUniform/Texture
+	pStatePipelineGraphics->BindState(commandBuffer, pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame);
+	pStatePipelineGraphics->BindShader(commandBuffer);
+	pStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+	pStatePipelineGraphics->BindTextures(commandBuffer);
 
 	if (pMeshSub->pBufferVertex != nullptr)
 	{
@@ -4187,6 +4037,8 @@ void Vulkan_027_GPUCulling::drawModelObjectRend(VkCommandBuffer& commandBuffer, 
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
 		drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
 	}
+
+	pStatePipelineGraphics->UnBindState(commandBuffer);
 }
 
 void Vulkan_027_GPUCulling::cleanupCustom()
@@ -4210,6 +4062,9 @@ void Vulkan_027_GPUCulling::cleanupCustom()
 
 void Vulkan_027_GPUCulling::cleanupSwapChain_Custom()
 {
+	destroyDescriptorSetLayouts();
+    destroyShaders();
+
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -4217,10 +4072,6 @@ void Vulkan_027_GPUCulling::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    destroyDescriptorSetLayouts();
-    destroyPipelineLayouts();
-    destroyShaders();
 }
 
 void Vulkan_027_GPUCulling::recreateSwapChain_Custom()

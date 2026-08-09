@@ -64,16 +64,15 @@ namespace LostPeterVulkan
 
     //Quad Blit
     public:
+		//MultiRenderPass
+		VKMultiRenderPass* pRenderPass;
+
         //DescriptorSetLayouts
+		DescriptorSetLayout* pDescriptorSetLayout_CopyBlit; 
         String nameDescriptorSetLayout_CopyBlit; 
-        StringVector aNameDescriptorSetLayouts_CopyBlit;
-        VkDescriptorSetLayout poDescriptorSetLayout_CopyBlit;
 
-        //PipelineLayout
-        VkPipelineLayout poPipelineLayout_CopyBlit;
-
-        //VKPipelineGraphics
-        VKPipelineGraphics* pPipelineGraphics_CopyBlit;
+        //Pipeline Graphics
+		VKStatePipelineGraphics* poStatePipelineGraphics_CopyBlit;
 
         //Uniform Buffer
         CopyBlitObjectConstants copyBlitObjectCB;
@@ -104,13 +103,11 @@ namespace LostPeterVulkan
             virtual void initViewport();
         virtual void initBufferUniforms();
         virtual void initDescriptorSetLayout();
-        virtual void initPipelineLayout();
         virtual void initPipelineGraphics();
         virtual void updateDescriptorSets_Graphics();
 
         virtual void destroyBufferUniforms();
         virtual void destroyPipelineGraphics();
-        virtual void destroyPipelineLayout();
         virtual void destroyDescriptorSetLayout();
     };
 

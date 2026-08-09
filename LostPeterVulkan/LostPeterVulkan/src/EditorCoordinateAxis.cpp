@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/VKPipelineGraphics.h"
+#include "../include/VKStatePipelineGraphics.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKBufferVertexIndex.h"
 
@@ -990,31 +990,31 @@ namespace LostPeterVulkan
 
     void EditorCoordinateAxis::Draw(VkCommandBuffer& commandBuffer)
     {
-        Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
-        
+		this->poStatePipelineGraphics->BindDescriptorSet(commandBuffer);
+
         switch ((int)this->typeState)
         {
         case CoordinateState_Select:
         case CoordinateState_Move:
             {
-                Draw_Move(commandBuffer);
+                draw_Move(commandBuffer);
                 break;
             }
         case CoordinateState_Rotate:
             {
-                Draw_Rotate(commandBuffer);
+                draw_Rotate(commandBuffer);
                 break;
             }
 
         case CoordinateState_Scale:
             {
-                Draw_Scale(commandBuffer);
+                draw_Scale(commandBuffer);
                 break;
             }
         }
         
     }
-        void EditorCoordinateAxis::Draw_Move(VkCommandBuffer& commandBuffer)
+        void EditorCoordinateAxis::draw_Move(VkCommandBuffer& commandBuffer)
         {
             int instanceStart = 0;
             int instanceGap = 3;
@@ -1025,65 +1025,56 @@ namespace LostPeterVulkan
                 Mesh* pMesh_QuadLine = this->aMeshes[s_nMeshQuadLineIndex];
                 MeshSub* pMeshSub_QuadLine = pMesh_QuadLine->aMeshSubs[0];
                 //Quad - QuadLine  - 0
-                DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 0);
-                DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 0 + instanceGap);
+                drawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 0);
+                drawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 0 + instanceGap);
                 //Quad - QuadLine  - 1
-                DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 1);
-                DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 1 + instanceGap);
+                drawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 1);
+                drawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 1 + instanceGap);
                 //Quad - QuadLine  - 2
-                DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 2);
-                DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 2 + instanceGap);
+                drawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 2);
+                drawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 2 + instanceGap);
             }
 
             //Cylinder - Cone
             instanceStart = 6;
             {
-                if (Base::GetWindowPtr()->cfg_isWireFrame)
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                else
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+				this->poStatePipelineGraphics->BindPipeline(commandBuffer, Base::GetWindowPtr()->cfg_isWireFrame);
 
                 Mesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
                 MeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
                 Mesh* pMesh_Cone = this->aMeshes[s_nMeshConeIndex];
                 MeshSub* pMeshSub_Cone = pMesh_Cone->aMeshSubs[0];
                 //Cylinder - Cone - 0
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
-                DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 0 + instanceGap);
+                drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
+                drawShape(commandBuffer, pMeshSub_Cone, instanceStart + 0 + instanceGap);
                 //Cylinder - Cone - 1
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 1);
-                DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 1 + instanceGap);
+                drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 1);
+                drawShape(commandBuffer, pMeshSub_Cone, instanceStart + 1 + instanceGap);
                 //Cylinder - Cone - 2
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 2);
-                DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 2 + instanceGap);
+                drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 2);
+                drawShape(commandBuffer, pMeshSub_Cone, instanceStart + 2 + instanceGap);
             }
         }
-        void EditorCoordinateAxis::Draw_Rotate(VkCommandBuffer& commandBuffer)
+        void EditorCoordinateAxis::draw_Rotate(VkCommandBuffer& commandBuffer)
         {
             int instanceStart = 12;
             //Torus
             {
-                if (Base::GetWindowPtr()->cfg_isWireFrame)
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                else
-                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+				this->poStatePipelineGraphics->BindPipeline(commandBuffer, Base::GetWindowPtr()->cfg_isWireFrame);
 
                 Mesh* pMesh_Torus = this->aMeshes[s_nMeshTorusIndex];
                 MeshSub* pMeshSub_Torus = pMesh_Torus->aMeshSubs[0];
                 //Torus - 0
-                DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 0);
+                drawShape(commandBuffer, pMeshSub_Torus, instanceStart + 0);
                 //Torus - 1
-                DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 1);
+                drawShape(commandBuffer, pMeshSub_Torus, instanceStart + 1);
                 //Torus - 2
-                DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 2);
+                drawShape(commandBuffer, pMeshSub_Torus, instanceStart + 2);
             }
         }
-        void EditorCoordinateAxis::Draw_Scale(VkCommandBuffer& commandBuffer)
+        void EditorCoordinateAxis::draw_Scale(VkCommandBuffer& commandBuffer)
         {
-            if (Base::GetWindowPtr()->cfg_isWireFrame)
-                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-            else
-                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+			this->poStatePipelineGraphics->BindPipeline(commandBuffer, Base::GetWindowPtr()->cfg_isWireFrame);
 
             //Cylinder - Cone
             //AABB
@@ -1094,36 +1085,35 @@ namespace LostPeterVulkan
             int instanceStart_Cone = 6;
             int instanceStart_AABB = 15;
             //Cylinder - 0
-            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 0);
+            drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 0);
             //AABB - 0
-            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 0);
+            drawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 0);
             //Cylinder - 1
-            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 1);
+            drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 1);
             //AABB - 1
-            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 1);
+            drawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 1);
             //Cylinder - 2
-            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 2);
+            drawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 2);
             //AABB - 2
-            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 2);
+            drawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 2);
             //AABB - 3
-            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 3);
+            drawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 3);
         }
-        void EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
+        void EditorCoordinateAxis::drawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
-            if (Base::GetWindowPtr()->cfg_isWireFrame)
-                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-            else
-                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+			this->poStatePipelineGraphics->BindPipeline(commandBuffer, Base::GetWindowPtr()->cfg_isWireFrame);
+
 			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
-        void EditorCoordinateAxis::DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
+        void EditorCoordinateAxis::drawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
-            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
+			this->poStatePipelineGraphics->BindPipeline(commandBuffer, this->poStatePipelineGraphics->poPipelineGraphics_WireFrame2);
+
 			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
-        void EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
+        void EditorCoordinateAxis::drawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
 			pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);   
             Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
@@ -1466,7 +1456,6 @@ namespace LostPeterVulkan
             //CoordinateAxis
             {
                 this->nameDescriptorSetLayout = "Pass-ObjectCoordinateAxis";
-                this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
             }
         }
     }
@@ -1523,18 +1512,7 @@ namespace LostPeterVulkan
     }
     void EditorCoordinateAxis::initPipelineGraphics()
     {
-        //0> Pipeline Graphics/Pipeline GraphicsQuadLine
-        this->pPipelineGraphics = new VKPipelineGraphics("PipelineGraphics-EditorCoordinateAxis");
-        this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
-        this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
-        //1> DescriptorSetLayout 
-        this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
-        //2> DescriptorSets
-        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-EditorCoordinateAxis", this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
-        updateDescriptorSets_Graphics();
-        //3> PipelineLayout
-        this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
-        //4> Pipeline
+        //1> Pipeline
         {
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
             if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxis_Vert,
@@ -1563,20 +1541,21 @@ namespace LostPeterVulkan
             VkStencilOpState stencilOpFront; 
             VkStencilOpState stencilOpBack; 
 
-            //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
-                                                                                                 aShaderStageCreateInfos_Graphics,
-                                                                                                 false, 0, 3,
-                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                 VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                 VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+            //poStatePipelineGraphics
+			String namePipelineGraphics = "PipelineGraphics-" + GetName();
+            this->poStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics(namePipelineGraphics,
+																						      this->pDescriptorSetLayout,
+                                                                                              aShaderStageCreateInfos_Graphics,
+																						      F_MeshVertex_Pos3Color4Tex2,
+																						      false, 0, 3,
+																						      Base::GetWindowPtr()->poRenderPass, aViewports, aScissors, aDynamicStates,
+																						      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+																						      VK_TRUE, VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+																						      VK_FALSE, stencilOpFront, stencilOpBack, 
+																						      VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+																						      VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+																						      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCoordinateAxis] !";
                 F_LogError(msg.c_str());
@@ -1584,28 +1563,7 @@ namespace LostPeterVulkan
             }
             F_LogInfo("EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics success !");
 
-            //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
-                                                                                                           aShaderStageCreateInfos_Graphics,
-                                                                                                           false, 0, 3,
-                                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                           VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCoordinateAxis] !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame success !");
-
-            //pPipelineGraphics->poPipeline_WireFrame2
+            //poStatePipelineGraphics->poPipeline_WireFrame2
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics_Wire;
             if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxisLine_Vert,
                                                                             "",
@@ -1619,19 +1577,19 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire2-" + this->name,
-                                                                                                            aShaderStageCreateInfos_Graphics_Wire,
-                                                                                                            false, 0, 3,
-                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
-                                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
-                                                                                                            Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                                            VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                                                            VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                            VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                            VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
-            if (this->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
+            this->poStatePipelineGraphics->poPipelineGraphics_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire2-" + this->name,
+																														  aShaderStageCreateInfos_Graphics_Wire,
+																														  false, 0, 3,
+																														  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+																														  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+																														  Base::GetWindowPtr()->poRenderPass, this->pDescriptorSetLayout->poPipelineLayout, aViewports, aScissors, aDynamicStates,
+																														  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f,
+																														  VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+																														  VK_FALSE, stencilOpFront, stencilOpBack, 
+																														  VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+																														  VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+																														  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->poStatePipelineGraphics->poPipelineGraphics_WireFrame2 == VK_NULL_HANDLE)
             {
                 String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame 2 for [EditorCoordinateAxis] !";
                 F_LogError(msg.c_str());
@@ -1639,20 +1597,21 @@ namespace LostPeterVulkan
             }
             F_LogInfo("EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame 2 success !");
         }
+
+		//2> DescriptorSets
+		updateDescriptorSets_Graphics();
     }
     void EditorCoordinateAxis::updateDescriptorSets_Graphics()
     {
-        StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
-        F_Assert(pDescriptorSetLayoutNames != nullptr && "EditorCoordinateAxis::updateDescriptorSets_Graphics")
-        uint32_t count_ds = (uint32_t)this->pPipelineGraphics->poDescriptorSets.size();
+        uint32_t count_ds = (uint32_t)this->poStatePipelineGraphics->poDescriptorSets.size();
         for (uint32_t i = 0; i < count_ds; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
 
-            uint32_t count_names = (uint32_t)pDescriptorSetLayoutNames->size();
+            uint32_t count_names = (uint32_t)this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
             for (uint32_t j = 0; j < count_names; j++)
             {
-                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                String& nameDescriptorSet = this->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts[j];
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -1660,7 +1619,7 @@ namespace LostPeterVulkan
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                       j,
                                                                       0,
                                                                       1,
@@ -1673,7 +1632,7 @@ namespace LostPeterVulkan
                     bufferInfo_ObjectCameraAxis.offset = 0;
                     bufferInfo_ObjectCameraAxis.range = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
                     Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                       j,
                                                                       0,
                                                                       1,

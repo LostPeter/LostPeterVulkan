@@ -150,7 +150,7 @@ void Vulkan_005_Camera::changeModel(int index)
     //2> Texture
     cleanupTexture();
     loadTexture();
-    updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
+    updateDescriptorSets(this->poStatePipelineGraphics, this->poTextureImageView, this->poTextureSampler);
 }
 
 void Vulkan_005_Camera::createCamera()

@@ -20,7 +20,7 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, String name)
     this->imgui_IsEnable = true;
 
     this->cfg_isNegativeViewport = false;
-    this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    this->poFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
     this->poTypeVertex = F_MeshVertex_Pos2Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4_tex2.vert.spv";

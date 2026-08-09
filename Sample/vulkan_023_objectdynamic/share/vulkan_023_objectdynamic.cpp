@@ -1168,25 +1168,27 @@ void Vulkan_023_ObjectDynamic::loadModel_Custom()
                     pRend->isUsedTessellation = true;
                     if (g_ObjectRend_IsTopologyPatchLists[nIndexObjectRend])
                     {
-                        pRend->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+                        pRend->poPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
                     }
                 }
 
                 //Pipeline Graphics - DescriptorSetLayout
-                pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
+                pRend->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
 
                 //Pipeline Computes - DescriptorSetLayout
                 String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
                 if (!nameDescriptorSetLayout.empty())
                 {
+					pRend->isUsedCompute = true;
                     StringVector aDescriptorSetLayout = FUtilString::Split(nameDescriptorSetLayout, ";");
                     size_t count_dsl = aDescriptorSetLayout.size();
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
-                        pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
-                        pRend->AddPipelineCompute(pPipelineCompute);
+                        String nameStatePipelineCompute = "PipelineCompute-" + nameDescriptorSetLayout;
+						VKStatePipelineCompute* pStatePipelineCompute = new VKStatePipelineCompute(nameStatePipelineCompute);
+						pStatePipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
+						pRend->AddStatePipelineCompute(pStatePipelineCompute);
                     }
                 }
 
@@ -1322,7 +1324,7 @@ void Vulkan_023_ObjectDynamic::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_023_ObjectDynamic::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_023_ObjectDynamic::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1345,7 +1347,7 @@ void Vulkan_023_ObjectDynamic::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_023_ObjectDynamic::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_023_ObjectDynamic::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -1370,11 +1372,32 @@ void Vulkan_023_ObjectDynamic::rebuildInstanceCBs(bool isCreateVkBuffer)
 																		  false);
 					if (!pBufferUniform)
 					{
-						String msg = "*********************** Vulkan_023_ObjectDynamic::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						String msg = "*********************** Vulkan_023_ObjectDynamic::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 						F_LogError(msg.c_str());
 						throw std::runtime_error(msg);
 					}
 					pRend->poBuffers_tessellationCB.push_back(pBufferUniform);
+                }
+            }
+
+			//TextureCopyConstants
+            if (pRend->isUsedCompute)
+            {
+                pRend->textureCopyCBs.clear();
+                TextureCopyConstants textureCopyCB;
+                pRend->textureCopyCBs.push_back(textureCopyCB);
+
+                F_DELETE(pRend->poBuffer_TextureCopy)
+                String nameBuffer = "TextureCopyConstants-" + pRend->pModelObject->nameObject;
+                pRend->poBuffer_TextureCopy = createBufferUniform(nameBuffer,
+																  sizeof(TextureCopyConstants) * pRend->textureCopyCBs.size(),
+																  (uint8*)pRend->textureCopyCBs.data(),
+																  false);
+                if (!pRend->poBuffer_TextureCopy)
+                {
+                    String msg = "*********************** Vulkan_023_ObjectDynamic::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+                    F_LogError("%s", msg.c_str());
+                    throw std::runtime_error(msg);
                 }
             }
         }
@@ -1404,11 +1427,7 @@ void Vulkan_023_ObjectDynamic::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
-
-    //2> PipelineLayout
-    createPipelineLayouts();
-
-    //3> Shader
+	//2> Shader
     createShaders();
 }   
 void Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom()
@@ -1446,55 +1465,20 @@ void Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom()
 
         //[2] Pipeline Graphics
         {
-            pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pRend->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            //pPipelineGraphics->poPipeline_WireFrame
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
-                                                                                      pRend->aShaderStageCreateInfos_Graphics,
-                                                                                      pRend->isUsedTessellation, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                      pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
-                                                                                      pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                      pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                                      pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                                      pRend->cfg_ColorWriteMask);
-            if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
-
-            //pPipelineGraphics->poPipeline
-            VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
-            VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
-            VkBool32 isBlend = pRend->cfg_isBlend;
-            VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
-            VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+            //poStatePipelineGraphics
+            VkBool32 isDepthTestEnable = pRend->poDepthIsTest;
+            VkBool32 isDepthWriteEnable = pRend->poDepthIsWrite;
+            VkBool32 isBlend = pRend->poBlendEnabled;
+            VkBlendFactor blendColorFactorSrc = pRend->poBlendColorFactorSrc; 
+            VkBlendFactor blendColorFactorDst = pRend->poBlendColorFactorDst; 
             if (pRend->isTransparent)
             {
                 isDepthTestEnable = VK_FALSE;
@@ -1504,19 +1488,20 @@ void Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
-                                                                            pRend->aShaderStageCreateInfos_Graphics,
-                                                                            pRend->isUsedTessellation, 0, 3,
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                            isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                            isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
-                                                                            pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
-                                                                            pRend->cfg_ColorWriteMask);
-            if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+			String nameStatePipelineGraphics = "PipelineGraphics-" + pRend->nameObjectRend;
+            pRend->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+                                                                         pDescriptorSetLayout,
+                                                                         pRend->aShaderStageCreateInfos_Graphics,
+																		 pRend->pMeshSub->poTypeVertex,
+                                                                         pRend->isUsedTessellation, 0, 3,
+																		 this->poRenderPass, aViewports, aScissors, this->poDynamicStates,
+																		 pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																		 VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+																		 pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+																		 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->poBlendColorOp,
+																		 pRend->poBlendAlphaFactorSrc, pRend->poBlendAlphaFactorDst, pRend->poBlendAlphaOp,
+																		 pRend->poColorWriteMask);
+            if (pRend->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** Vulkan_023_ObjectDynamic::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
@@ -1532,7 +1517,7 @@ void Vulkan_023_ObjectDynamic::createComputePipeline_Custom()
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
-        size_t count_pipeline = pRend->aPipelineComputes.size();
+        size_t count_pipeline = pRend->aStatePipelineComputes.size();
         if (count_pipeline <= 0)
             continue;
 
@@ -1557,35 +1542,22 @@ void Vulkan_023_ObjectDynamic::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            VKPipelineCompute* p = pRend->aPipelineComputes[j];
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
 
-            p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayoutNames == nullptr)
+			DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pStatePipelineCompute->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
-            if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
-            if (p->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            p->poPipeline = createVkComputePipeline("PipelineCompute-" + p->nameDescriptorSetLayout, shaderStageCreateInfo, p->poPipelineLayout, 0);
-            if (p->poPipeline == VK_NULL_HANDLE)
+            if (!pStatePipelineCompute->Init(pDescriptorSetLayout,
+											 shaderStageCreateInfo,
+											 0))
             {
-                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_023_ObjectDynamic::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + pStatePipelineCompute->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1730,14 +1702,14 @@ VKTexture* Vulkan_023_ObjectDynamic::findTexture(const String& nameTexture)
 
 void Vulkan_023_ObjectDynamic::destroyDescriptorSetLayouts()
 {
-    size_t count = this->m_aVkDescriptorSetLayouts.size();
+	size_t count = this->m_aDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
+        DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+        delete pDSL;
     }
-    this->m_aVkDescriptorSetLayouts.clear();
-    this->m_mapVkDescriptorSetLayout.clear();
-    this->m_mapName2Layouts.clear();
+    this->m_aDescriptorSetLayouts.clear();
+    this->m_mapDescriptorSetLayouts.clear();
 }
 void Vulkan_023_ObjectDynamic::createDescriptorSetLayouts()
 {
@@ -1745,37 +1717,23 @@ void Vulkan_023_ObjectDynamic::createDescriptorSetLayouts()
     {
         String nameLayout(g_DescriptorSetLayoutNames[i]);
         StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-        VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_023_ObjectDynamic::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-        this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
-        this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
-        this->m_mapName2Layouts[nameLayout] = aLayouts;
+        DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+		pDSL->Init(nameLayout, true, false, false);
+		
+        this->m_aDescriptorSetLayouts.push_back(pDSL);
+        this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
 
         F_LogInfo("Vulkan_023_ObjectDynamic::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_023_ObjectDynamic::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+DescriptorSetLayout* Vulkan_023_ObjectDynamic::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
-    VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapVkDescriptorSetLayout.end())
+    DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapDescriptorSetLayouts.end())
     {
         return nullptr;
     }
     return itFind->second;
-}
-StringVector* Vulkan_023_ObjectDynamic::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
-{
-    std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapName2Layouts.end())
-    {
-        return nullptr;
-    }
-    return &(itFind->second);
 }
 
 
@@ -1816,53 +1774,6 @@ VKShader* Vulkan_023_ObjectDynamic::findShader(const String& nameShader)
 }
 
 
-void Vulkan_023_ObjectDynamic::destroyPipelineLayouts()
-{
-    size_t count = this->m_aVkPipelineLayouts.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
-    }
-    this->m_aVkPipelineLayouts.clear();
-    this->m_mapVkPipelineLayouts.clear();
-}
-void Vulkan_023_ObjectDynamic::createPipelineLayouts()
-{
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
-    {
-        String nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
-        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_023_ObjectDynamic::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
-            return;
-        }
-
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDescriptorSetLayout, aDescriptorSetLayout);
-        if (vkPipelineLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_023_ObjectDynamic::createPipelineLayouts: createVkPipelineLayout failed !");
-            return;
-        }
-
-        this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
-    }
-}
-VkPipelineLayout Vulkan_023_ObjectDynamic::findPipelineLayout(const String& namePipelineLayout)
-{
-    VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
-    if (itFind == this->m_mapVkPipelineLayouts.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
-
-
 void Vulkan_023_ObjectDynamic::createDescriptorSets_Custom()
 {
     //1> Object Rend
@@ -1873,16 +1784,15 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
-            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
+            createDescriptorSets_Graphics(pRend->poStatePipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
         //Pipeline Computes
-        size_t count_comp_rend = pRend->aPipelineComputes.size();
+        size_t count_comp_rend = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp_rend; j++)
         {       
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            createDescriptorSets_Compute(pPipelineCompute, pRend);
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            createDescriptorSets_Compute(pStatePipelineCompute, pRend);
         }
     }
 
@@ -1893,7 +1803,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
+            createVkDescriptorSets("DescriptorSets-" + pModelObject->nameObject, pModelObject->pRendIndirect->pRend->poStatePipelineGraphics->pDescriptorSetLayout->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
             createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
         }
     }
@@ -1902,8 +1812,6 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                                                              ModelObjectRend* pRend, 
                                                              ModelObjectRendIndirect* pRendIndirect)
 {
-    StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -1913,10 +1821,10 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
         int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
 
-        size_t count_names = pDescriptorSetLayoutNames->size();
+        size_t count_names = pRend->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
         for (size_t p = 0; p < count_names; p++)
         {
-            String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+            String& nameDescriptorSet = pRend->poStatePipelineGraphics->pDescriptorSetLayout->aLayouts[p];
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -1924,7 +1832,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1937,7 +1845,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1950,7 +1858,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1963,7 +1871,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1976,7 +1884,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1987,7 +1895,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1999,7 +1907,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -2011,7 +1919,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -2023,7 +1931,7 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -2040,29 +1948,23 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Graphics(VkDescriptorSetVect
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_023_ObjectDynamic::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
-                                                  ModelObjectRend* pRend)
+void Vulkan_023_ObjectDynamic::createDescriptorSets_Compute(VKStatePipelineCompute* pStatePipelineCompute, 
+                                                  			ModelObjectRend* pRend)
 {
-    StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_023_ObjectDynamic::createDescriptorSets_Compute")
-    createVkDescriptorSet("DescriptorSet-" + pRend->nameObjectRend, pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
-
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
-    size_t count_names = pDescriptorSetLayoutNames->size();
+    size_t count_names = pStatePipelineCompute->pDescriptorSetLayout->aLayouts.size();
     for (size_t p = 0; p < count_names; p++)
     {
-        String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+        String& nameDescriptorSet = pStatePipelineCompute->pDescriptorSetLayout->aLayouts[p];
         if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
         {
-            pPipelineCompute->CreateTextureCopy();
-
             VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy->GetVkBuffer();
+            bufferInfo_TextureCopy.buffer = pRend->poBuffer_TextureCopy->GetVkBuffer();
             bufferInfo_TextureCopy.offset = 0;
             bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
             pushVkDescriptorSet_Uniform(descriptorWrites,
-                                        pPipelineCompute->poDescriptorSet,
+                                        pStatePipelineCompute->poDescriptorSet,
                                         p,
                                         0,
                                         1,
@@ -2072,9 +1974,8 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Compute(VKPipelineCompute* p
         {
             VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
-            pPipelineCompute->pTextureSource = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
+                                      pStatePipelineCompute->poDescriptorSet,
                                       p,
                                       0,
                                       1,
@@ -2085,9 +1986,8 @@ void Vulkan_023_ObjectDynamic::createDescriptorSets_Compute(VKPipelineCompute* p
         {
             VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
-            pPipelineCompute->pTextureTarget = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
-                                      pPipelineCompute->poDescriptorSet,
+                                      pStatePipelineCompute->poDescriptorSet,
                                       p,
                                       0,
                                       1,
@@ -2110,56 +2010,60 @@ void Vulkan_023_ObjectDynamic::updateCompute_BeforeRender_Custom(VkCommandBuffer
     for (size_t i = 0; i < count_object_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
+		if (!pRend->isUsedCompute)
+        	continue;
 
-        size_t count_comp = pRend->aPipelineComputes.size();
+        size_t count_comp = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            
+			bool isRand = false;
+            if (++pRend->frameRand > 15)
             {
-                bool isRand = false;
-                if (++pPipelineCompute->frameRand > 30)
-                {
-                    isRand = true;
-                    pPipelineCompute->frameRand = 0;
-                }
-
-                pPipelineCompute->pTextureCopy->texInfo.x = pPipelineCompute->pTextureSource->width;
-                pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
-                pPipelineCompute->pTextureCopy->texInfo.z = 0;
-                pPipelineCompute->pTextureCopy->texInfo.w = 0;
-                if (isRand)
-                {
-                    pPipelineCompute->pTextureCopy->texOffset.x = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                    pPipelineCompute->pTextureCopy->texOffset.y = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
-                    pPipelineCompute->pTextureCopy->texOffset.z = 0;
-                    pPipelineCompute->pTextureCopy->texOffset.w = 0;
-
-                    int seed = FMath::Rand(0, 10000);
-                    int start = seed % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.x = start;
-                    pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
-                    pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
-                }
-                pPipelineCompute->pTextureCopy->texClearColor.x = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.y = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.z = 0;
-                pPipelineCompute->pTextureCopy->texClearColor.w = 1;
-
-				pPipelineCompute->poBuffer_TextureCopy->UpdateBuffer(0, 
-																	 sizeof(TextureCopyConstants), 
-																	 (uint8*)pPipelineCompute->pTextureCopy);
-
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
-                
-                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
-                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
-                dispatch(commandBuffer, groupX, groupY, 1);
+                isRand = true;
+                pRend->frameRand = 0;
             }
+            VKTexture* pTextureSrc = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 0);
+            VKTexture* pTextureTarget = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 1);
+            TextureCopyConstants& textureCopyCB = pRend->textureCopyCBs[0];
+            textureCopyCB.texInfo.x = (float)pTextureSrc->width;
+            textureCopyCB.texInfo.y = (float)pTextureSrc->height;
+            textureCopyCB.texInfo.z = 0;
+            textureCopyCB.texInfo.w = 0;
+            if (isRand)
+            {
+                textureCopyCB.texOffset.x = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->width;
+                textureCopyCB.texOffset.y = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->height;
+                textureCopyCB.texOffset.z = 0;
+                textureCopyCB.texOffset.w = 0;
+
+                int seed = FMath::Rand(0, 10000);
+                int start = seed % 4;
+                textureCopyCB.texIndexArray.x = (float)start;
+                textureCopyCB.texIndexArray.y = (float)(++start % 4);
+                textureCopyCB.texIndexArray.z = (float)(++start % 4);
+                textureCopyCB.texIndexArray.w = (float)(++start % 4);
+            }
+            textureCopyCB.texClearColor.x = 0;
+            textureCopyCB.texClearColor.y = 0;
+            textureCopyCB.texClearColor.z = 0;
+            textureCopyCB.texClearColor.w = 1;
+
+			pRend->poBuffer_TextureCopy->UpdateBuffer(0,
+													  sizeof(TextureCopyConstants) * pRend->textureCopyCBs.size(),
+													  (uint8*)pRend->textureCopyCBs.data());
+
+            pStatePipelineCompute->BindState(commandBuffer);
+            pStatePipelineCompute->BindShader(commandBuffer);
+            pStatePipelineCompute->BindBufferUniforms(commandBuffer);
+            pStatePipelineCompute->BindTextures(commandBuffer);
+            
+            uint32_t groupX = (uint32_t)(pTextureTarget->width / 8);
+            uint32_t groupY = (uint32_t)(pTextureTarget->height / 8);
+            dispatch(commandBuffer, groupX, groupY, 1);
+
+            pStatePipelineCompute->UnBindState(commandBuffer);
         }
     }
 }
@@ -2275,20 +2179,22 @@ void Vulkan_023_ObjectDynamic::updateRenderPass_SyncComputeGraphics(VkCommandBuf
     for (size_t i = 0; i < count_object_rend; i++)
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
+		if (!pRend->isUsedCompute)
+        	continue;
 
-        size_t count_comp = pRend->aPipelineComputes.size();
+        size_t count_comp = pRend->aStatePipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-            if (pPipelineCompute->pTextureSource != nullptr &&
-                pPipelineCompute->pTextureTarget != nullptr &&
-                pPipelineCompute->pTextureCopy != nullptr)
+            VKStatePipelineCompute* pStatePipelineCompute = pRend->aStatePipelineComputes[j];
+            
+			VKTexture* pTextureTarget = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 1);
+            if (pTextureTarget != nullptr)
             {
                 VkImageMemoryBarrier imageMemoryBarrier = {};
                 imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
                 imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
                 imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-                imageMemoryBarrier.image = pPipelineCompute->pTextureTarget->poTextureImage;
+                imageMemoryBarrier.image = pTextureTarget->poTextureImage;
                 imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
                 imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
                 imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -2867,22 +2773,11 @@ void Vulkan_023_ObjectDynamic::drawModelObjectRendIndirect(VkCommandBuffer& comm
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
 
-    if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRendIndirect->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
+	//State/Shader/BufferUniform/Texture
+	pRend->poStatePipelineGraphics->BindState(commandBuffer, pRendIndirect->poDescriptorSets, pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame);
+	pRend->poStatePipelineGraphics->BindShader(commandBuffer);
+	pRend->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+	pRend->poStatePipelineGraphics->BindTextures(commandBuffer);
 
 	if (pRendIndirect->pBufferVertex != nullptr)
 	{
@@ -2905,6 +2800,8 @@ void Vulkan_023_ObjectDynamic::drawModelObjectRendIndirect(VkCommandBuffer& comm
             drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB->GetVkBuffer(), i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
+
+	pRend->poStatePipelineGraphics->UnBindState(commandBuffer);
 }
 
 void Vulkan_023_ObjectDynamic::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
@@ -2924,22 +2821,11 @@ void Vulkan_023_ObjectDynamic::drawModelObjectRend(VkCommandBuffer& commandBuffe
     ModelObject* pModelObject = pRend->pModelObject;
     MeshSub* pMeshSub = pRend->pMeshSub;
 
-    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
-    else
-    {
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-        {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-        }
-    }
+    //State/Shader/BufferUniform/Texture
+	pRend->poStatePipelineGraphics->BindState(commandBuffer, pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame);
+	pRend->poStatePipelineGraphics->BindShader(commandBuffer);
+	pRend->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+	pRend->poStatePipelineGraphics->BindTextures(commandBuffer);
 
 	if (pMeshSub->pBufferVertex != nullptr)
 	{
@@ -2951,6 +2837,8 @@ void Vulkan_023_ObjectDynamic::drawModelObjectRend(VkCommandBuffer& commandBuffe
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
 		drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
 	}
+
+	pRend->poStatePipelineGraphics->UnBindState(commandBuffer);
 }
 
 void Vulkan_023_ObjectDynamic::cleanupCustom()
@@ -2973,6 +2861,9 @@ void Vulkan_023_ObjectDynamic::cleanupCustom()
 
 void Vulkan_023_ObjectDynamic::cleanupSwapChain_Custom()
 {
+	destroyDescriptorSetLayouts();
+    destroyShaders();
+
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -2980,10 +2871,6 @@ void Vulkan_023_ObjectDynamic::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    destroyDescriptorSetLayouts();
-    destroyPipelineLayouts();
-    destroyShaders();
 }
 
 void Vulkan_023_ObjectDynamic::recreateSwapChain_Custom()

@@ -726,15 +726,13 @@ void Vulkan_018_SubPass::loadModel_Custom()
                     pRend->isUsedTessellation = true;
                     if (g_ObjectRend_IsTopologyPatchLists[nIndexObjectRend])
                     {
-                        pRend->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+                        pRend->poPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
                     }
                 }
 
                 //Pipeline Graphics - DescriptorSetLayout
-                pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
-
-                //Pipeline2 Graphics - DescriptorSetLayout2
-                pRend->pPipelineGraphics->nameDescriptorSetLayout2 = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
+                pRend->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
+                pRend->nameDescriptorSetLayout2 = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
@@ -851,7 +849,7 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_018_SubPass::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -874,7 +872,7 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
 																	  false);
 				if (!pBufferUniform)
 				{
-					String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** Vulkan_018_SubPass::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError(msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -899,7 +897,7 @@ void Vulkan_018_SubPass::rebuildInstanceCBs(bool isCreateVkBuffer)
 																		  false);
 					if (!pBufferUniform)
 					{
-						String msg = "*********************** Vulkan_018_SubPass::createCustomCB: create buffer uniform: [" + nameBuffer + "] failed !";
+						String msg = "*********************** Vulkan_018_SubPass::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 						F_LogError(msg.c_str());
 						throw std::runtime_error(msg);
 					}
@@ -914,11 +912,7 @@ void Vulkan_018_SubPass::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
-
-    //2> PipelineLayout
-    createPipelineLayouts();
-
-    //3> Shader
+    //2> Shader
     createShaders();
 
     //4> Graphics_CopyBlit
@@ -984,55 +978,20 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
 
         //[2] Pipeline Graphics
         {
-            //(1) poPipeline
-            pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
+            DescriptorSetLayout* pDescriptorSetLayout = findDescriptorSetLayout(pRend->nameDescriptorSetLayout);
+            if (pDescriptorSetLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
-            //pPipelineGraphics->poPipeline_WireFrame
-            VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState = g_ObjectRend_ColorBlendAttachmentStates[i];
-            pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline("PipelineGraphics-Wire-" + pRend->nameObjectRend,
-                                                                                      pRend->aShaderStageCreateInfos_Graphics,
-                                                                                      pRend->isUsedTessellation, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                      pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
-                                                                                      pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                      aColorBlendAttachmentState, 0);
-            if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            F_LogInfo("Vulkan_018_SubPass::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
-
-            //pPipelineGraphics->poPipeline
-            VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
-            VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
-            VkBool32 isBlend = pRend->cfg_isBlend;
-            VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
-            VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+            //poStatePipelineGraphics
+            VkBool32 isDepthTestEnable = pRend->poDepthIsTest;
+            VkBool32 isDepthWriteEnable = pRend->poDepthIsWrite;
+            VkBool32 isBlend = pRend->poBlendEnabled;
+            VkBlendFactor blendColorFactorSrc = pRend->poBlendColorFactorSrc; 
+            VkBlendFactor blendColorFactorDst = pRend->poBlendColorFactorDst; 
             if (pRend->isTransparent)
             {
                 isDepthTestEnable = VK_FALSE;
@@ -1042,17 +1001,19 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                 blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
-            pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline("PipelineGraphics-" + pRend->nameObjectRend,
-                                                                            pRend->aShaderStageCreateInfos_Graphics,
-                                                                            pRend->isUsedTessellation, 0, 3,
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                            isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                            pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                            aColorBlendAttachmentState, 0);
-            if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+			String nameStatePipelineGraphics = "PipelineGraphics-" + pRend->nameObjectRend;
+			VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentState = g_ObjectRend_ColorBlendAttachmentStates[i];
+            pRend->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+                                                                         pDescriptorSetLayout,
+																		 pRend->aShaderStageCreateInfos_Graphics,
+																		 pRend->pMeshSub->poTypeVertex,
+																		 pRend->isUsedTessellation, 0, 3,
+                                                                         this->m_pSubPassRenderPass->poRenderPass_SubPass, aViewports, aScissors, this->poDynamicStates,
+																		 pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																		 VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+																		 pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+																		 aColorBlendAttachmentState, 0);
+            if (pRend->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 F_LogError(msg.c_str());
@@ -1064,58 +1025,22 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
             //NextSubpass
             if (hasGraphicsNextSubpass)
             {
-                pRend->pPipelineGraphics->hasNextSubpass = true;
+                pRend->hasNextSubpass = true;
 
-                //(2) poPipeline2
-                pRend->pPipelineGraphics->poDescriptorSetLayoutNames2 = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
-                if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames2 == nullptr)
-                {
-                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames2 by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                pRend->pPipelineGraphics->poDescriptorSetLayout2 = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
-                if (pRend->pPipelineGraphics->poDescriptorSetLayout2 == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                pRend->pPipelineGraphics->poPipelineLayout2 = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout2);
-                if (pRend->pPipelineGraphics->poPipelineLayout2 == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout2;
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
+				DescriptorSetLayout* pDescriptorSetLayout2 = findDescriptorSetLayout(pRend->nameDescriptorSetLayout2);
+				if (pDescriptorSetLayout2 == nullptr)
+				{
+					String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name2: " + pRend->nameDescriptorSetLayout2;
+					F_LogError(msg.c_str());
+					throw std::runtime_error(msg.c_str());
+				}
 
-                //pPipelineGraphics->poPipeline_WireFrame2
-                VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentStateNextSubpass = g_ObjectRend_ColorBlendAttachmentStatesNextSubpass[i];
-                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline("PipelineGraphics-Wire2-" + pRend->nameObjectRend,
-                                                                                           aShaderStageCreateInfos_GraphicsNextSubpass,
-                                                                                           pRend->isUsedTessellation, 0, 3,
-                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                           this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                           pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                           pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
-                                                                                           pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                           aColorBlendAttachmentStateNextSubpass, 1);
-                if (pRend->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline2 graphics wire frame: " + pRend->nameObjectRend;
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                F_LogInfo("Vulkan_018_SubPass::createGraphicsPipeline_Custom: Object: [%s] Create pipeline2 graphics wire frame success !", pRend->nameObjectRend.c_str());
-
-
-                //pPipelineGraphics->poPipeline2
-                VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
-                VkBool32 isDepthWriteEnable = pRend->cfg_isDepthWrite;
-                VkBool32 isBlend = pRend->cfg_isBlend;
-                VkBlendFactor blendColorFactorSrc = pRend->cfg_BlendColorFactorSrc; 
-                VkBlendFactor blendColorFactorDst = pRend->cfg_BlendColorFactorDst; 
+                //poStatePipelineGraphics2
+                VkBool32 isDepthTestEnable = pRend->poDepthIsTest;
+                VkBool32 isDepthWriteEnable = pRend->poDepthIsWrite;
+                VkBool32 isBlend = pRend->poBlendEnabled;
+                VkBlendFactor blendColorFactorSrc = pRend->poBlendColorFactorSrc; 
+                VkBlendFactor blendColorFactorDst = pRend->poBlendColorFactorDst; 
                 if (pRend->isTransparent)
                 {
                     isDepthTestEnable = VK_FALSE;
@@ -1125,17 +1050,19 @@ void Vulkan_018_SubPass::createGraphicsPipeline_Custom()
                     blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
                     blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
                 }
-                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline("PipelineGraphics-2-" + pRend->nameObjectRend,
-                                                                                 aShaderStageCreateInfos_GraphicsNextSubpass,
-                                                                                 pRend->isUsedTessellation, 0, 3,
-                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                 this->m_pSubPassRenderPass->poRenderPass_SubPass, pRend->pPipelineGraphics->poPipelineLayout2, aViewports, aScissors, this->cfg_aDynamicStates,
-                                                                                 pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE, this->cfg_isDepthBiasEnable, this->cfg_DepthBiasConstantFactor, this->cfg_DepthBiasClamp, this->cfg_DepthBiasSlopeFactor, this->cfg_LineWidth,
-                                                                                 isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
-                                                                                 pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
-                                                                                 aColorBlendAttachmentStateNextSubpass, 1);
-                if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
+				String nameStatePipelineGraphics2 = "PipelineGraphics-2-" + pRend->nameObjectRend;
+				VkPipelineColorBlendAttachmentStateVector& aColorBlendAttachmentStateNextSubpass2 = g_ObjectRend_ColorBlendAttachmentStatesNextSubpass[i];
+                pRend->poStatePipelineGraphics2 = createStatePipelineGraphics(nameStatePipelineGraphics2,
+                                                                              pDescriptorSetLayout2,
+																			  aShaderStageCreateInfos_GraphicsNextSubpass,
+																			  pRend->pMeshSub->poTypeVertex,
+																			  pRend->isUsedTessellation, 0, 3,
+																			  this->m_pSubPassRenderPass->poRenderPass_SubPass, aViewports, aScissors, this->poDynamicStates,
+																			  pRend->poPrimitiveTopology, pRend->poFrontFace, pRend->poPolygonMode, VK_CULL_MODE_NONE, this->poDepthBiasEnabled, this->poDepthBiasConstantFactor, this->poDepthBiasClamp, this->poDepthBiasSlopeFactor, this->poLineWidth,
+																			  VK_TRUE, isDepthTestEnable, isDepthWriteEnable, pRend->poDepthCompareOp,
+																			  pRend->poStencilEnabled, pRend->poStencilOpFront, pRend->poStencilOpBack, 
+																			  aColorBlendAttachmentStateNextSubpass2, 1);
+                if (pRend->poStatePipelineGraphics2 == nullptr)
                 {
                     String msg = "*********************** Vulkan_018_SubPass::createGraphicsPipeline_Custom: Failed to create pipeline2 graphics: " + pRend->nameObjectRend;
                     F_LogError(msg.c_str());
@@ -1288,14 +1215,14 @@ VKTexture* Vulkan_018_SubPass::findTexture(const String& nameTexture)
 
 void Vulkan_018_SubPass::destroyDescriptorSetLayouts()
 {
-    size_t count = this->m_aVkDescriptorSetLayouts.size();
+    size_t count = this->m_aDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
+        DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+        delete pDSL;
     }
-    this->m_aVkDescriptorSetLayouts.clear();
-    this->m_mapVkDescriptorSetLayout.clear();
-    this->m_mapName2Layouts.clear();
+    this->m_aDescriptorSetLayouts.clear();
+    this->m_mapDescriptorSetLayouts.clear();
 }
 void Vulkan_018_SubPass::createDescriptorSetLayouts()
 {
@@ -1303,37 +1230,23 @@ void Vulkan_018_SubPass::createDescriptorSetLayouts()
     {
         String nameLayout(g_DescriptorSetLayoutNames[i]);
         StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-        VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            String msg = "*********************** Vulkan_018_SubPass::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-        this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
-        this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
-        this->m_mapName2Layouts[nameLayout] = aLayouts;
+        DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+		pDSL->Init(nameLayout, true, false, false);
+		
+        this->m_aDescriptorSetLayouts.push_back(pDSL);
+        this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
 
         F_LogInfo("Vulkan_018_SubPass::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_018_SubPass::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+DescriptorSetLayout* Vulkan_018_SubPass::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
-    VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapVkDescriptorSetLayout.end())
+    DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapDescriptorSetLayouts.end())
     {
         return nullptr;
     }
     return itFind->second;
-}
-StringVector* Vulkan_018_SubPass::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
-{
-    std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
-    if (itFind == this->m_mapName2Layouts.end())
-    {
-        return nullptr;
-    }
-    return &(itFind->second);
 }
 
 
@@ -1374,53 +1287,6 @@ VKShader* Vulkan_018_SubPass::findShader(const String& nameShader)
 }   
 
 
-void Vulkan_018_SubPass::destroyPipelineLayouts()
-{
-    size_t count = this->m_aVkPipelineLayouts.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
-    }
-    this->m_aVkPipelineLayouts.clear();
-    this->m_mapVkPipelineLayouts.clear();
-}
-void Vulkan_018_SubPass::createPipelineLayouts()
-{
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
-    {
-        String nameDSL(g_DescriptorSetLayoutNames[i]);
-        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDSL);
-        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_018_SubPass::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDSL.c_str());
-            return;
-        }
-
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDSL, aDescriptorSetLayout);
-        if (vkPipelineLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_018_SubPass::createPipelineLayouts: createVkPipelineLayout failed !");
-            return;
-        }
-
-        this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDSL] = vkPipelineLayout;
-    }
-}
-VkPipelineLayout Vulkan_018_SubPass::findPipelineLayout(const String& namePipelineLayout)
-{
-    VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
-    if (itFind == this->m_mapVkPipelineLayouts.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
-
-
 void Vulkan_018_SubPass::createDescriptorSets_Custom()
 {
     //1> Object Rend
@@ -1431,25 +1297,20 @@ void Vulkan_018_SubPass::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets("DescriptorSets-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
-            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames, pRend->pPipelineGraphics->poDescriptorSets, pRend);
+            createDescriptorSets_Graphics(pRend->poStatePipelineGraphics, pRend);
         }   
 
         //poPipeline2 Graphics
-        if (pRend->pPipelineGraphics->hasNextSubpass)
+        if (pRend->hasNextSubpass)
         {
-            createVkDescriptorSets("DescriptorSets-2-" + pRend->nameObjectRend, pRend->pPipelineGraphics->poDescriptorSetLayout2, pRend->pPipelineGraphics->poDescriptorSets2);
-            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSetLayoutNames2, pRend->pPipelineGraphics->poDescriptorSets2, pRend);
+            createDescriptorSets_Graphics(pRend->poStatePipelineGraphics2, pRend);
         }
     }
 }
-void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptorSetLayoutNames,
-                                                       VkDescriptorSetVector& listDescriptorSets, 
+void Vulkan_018_SubPass::createDescriptorSets_Graphics(VKStatePipelineGraphics* pStatePipelineGraphics, 
                                                        ModelObjectRend* pRend)
 {
-    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_018_SubPass::createDescriptorSets_Graphics")
-
-    size_t count_ds = listDescriptorSets.size();
+    size_t count_ds = pStatePipelineGraphics->poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
         VkWriteDescriptorSetVector descriptorWrites;
@@ -1459,10 +1320,10 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
         int nIndexTextureFS = 0;
         int nIndexInputAttach = 1;
 
-        size_t count_names = pDescriptorSetLayoutNames->size();
+        size_t count_names = pStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
         for (size_t p = 0; p < count_names; p++)
         {
-            String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+            String& nameDescriptorSet = pStatePipelineGraphics->pDescriptorSetLayout->aLayouts[p];
 
             if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
@@ -1471,7 +1332,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            listDescriptorSets[j],
+                                            pStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1484,7 +1345,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            listDescriptorSets[j],
+                                            pStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1497,7 +1358,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            listDescriptorSets[j],
+                                            pStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1510,7 +1371,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            listDescriptorSets[j],
+                                            pStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1523,7 +1384,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            listDescriptorSets[j],
+                                            pStatePipelineGraphics->poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1534,7 +1395,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          listDescriptorSets[j],
+                                          pStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1546,7 +1407,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          listDescriptorSets[j],
+                                          pStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1558,7 +1419,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          listDescriptorSets[j],
+                                          pStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1570,7 +1431,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          listDescriptorSets[j],
+                                          pStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1582,7 +1443,7 @@ void Vulkan_018_SubPass::createDescriptorSets_Graphics(StringVector* pDescriptor
                      nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_InputAttachBlue))  //InputAttachBlue
             {
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          listDescriptorSets[j],
+                                          pStatePipelineGraphics->poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1715,50 +1576,28 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
             drawModelObjectRendPipeline(commandBuffer, 
                                         pRend, 
                                         pMeshSub, 
-                                        pRend->pPipelineGraphics->poPipelineLayout,
-                                        pRend->pPipelineGraphics->poDescriptorSets,
-                                        pRend->pPipelineGraphics->poPipeline, 
-                                        pRend->pPipelineGraphics->poPipeline_WireFrame);
-            if (pRend->pPipelineGraphics->hasNextSubpass)
+                                        pRend->poStatePipelineGraphics);
+            if (pRend->hasNextSubpass)
             {
                 vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
                 drawModelObjectRendPipeline(commandBuffer, 
                                             pRend, 
                                             pMeshSub, 
-                                            pRend->pPipelineGraphics->poPipelineLayout2,
-                                            pRend->pPipelineGraphics->poDescriptorSets2,
-                                            pRend->pPipelineGraphics->poPipeline2, 
-                                            pRend->pPipelineGraphics->poPipeline_WireFrame2);
+                                            pRend->poStatePipelineGraphics2);
             }
         }
         void Vulkan_018_SubPass::drawModelObjectRendPipeline(VkCommandBuffer& commandBuffer, 
                                                             ModelObjectRend* pRend, 
                                                             MeshSub* pMeshSub, 
-                                                            VkPipelineLayout pipelineLayout,
-                                                            VkDescriptorSetVector& descriptorSets,
-                                                            VkPipeline pipeline, 
-                                                            VkPipeline pipeline_WireFrame)
+                                                            VKStatePipelineGraphics* pStatePipelineGraphics)
         {
             ModelObject* pModelObject = pRend->pModelObject;
-            if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-            {
-                if (pipeline_WireFrame != VK_NULL_HANDLE)
-                    bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_WireFrame);
-                else
-                    bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-                if (descriptorSets.size() > 0)
-                {
-                    bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-                }
-            }
-            else
-            {
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-                if (descriptorSets.size() > 0)
-                {
-                    bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-                }
-            }
+
+			//State/Shader/BufferUniform/Texture
+			pStatePipelineGraphics->BindState(commandBuffer, pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame);
+			pStatePipelineGraphics->BindShader(commandBuffer);
+			pStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+			pStatePipelineGraphics->BindTextures(commandBuffer);
 
 			if (pMeshSub->pBufferVertex != nullptr)
 			{
@@ -1770,6 +1609,8 @@ void Vulkan_018_SubPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& c
 				pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
 				drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
 			}
+
+			pStatePipelineGraphics->UnBindState(commandBuffer);
         }
 
     void Vulkan_018_SubPass::drawMeshDefault_CustomBeforeImgui(VkCommandBuffer& commandBuffer)
@@ -2209,6 +2050,9 @@ void Vulkan_018_SubPass::cleanupCustom()
 
 void Vulkan_018_SubPass::cleanupSwapChain_Custom()
 {
+	destroyDescriptorSetLayouts();
+    destroyShaders();
+
     F_DELETE(m_pSubPassRenderPass)
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -2217,10 +2061,6 @@ void Vulkan_018_SubPass::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    destroyDescriptorSetLayouts();
-    destroyPipelineLayouts();
-    destroyShaders();
 }
 
 void Vulkan_018_SubPass::recreateSwapChain_Custom()
