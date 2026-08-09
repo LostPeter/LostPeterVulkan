@@ -26,54 +26,34 @@ namespace LostPeterVulkan
         VKRenderPassShadowMap* m_pVKRenderPassShadowMap;
 
         //PipelineGraphics-ShadowMapDepth
-        String nameDescriptorSetLayout_ShadowMapDepth;
-        StringVector* poDescriptorSetLayoutNames_ShadowMapDepth;
-        VkDescriptorSetLayout poDescriptorSetLayout_ShadowMapDepth;
-        VkPipelineLayout poPipelineLayout_ShadowMapDepth;
-        VkPipeline poPipeline_ShadowMapDepth;
-        VkDescriptorSetVector poDescriptorSets_ShadowMapDepth;
+		DescriptorSetLayout* pDescriptorSetLayout_ShadowMapDepth;
+		VKStatePipelineGraphics* poStatePipelineGraphics_ShadowMapDepth;
 
         //PipelineGraphics-ShadowMapDepthCull
-        String nameDescriptorSetLayout_ShadowMapDepthCull;
-        StringVector* poDescriptorSetLayoutNames_ShadowMapDepthCull;
-        VkDescriptorSetLayout poDescriptorSetLayout_ShadowMapDepthCull;
-        VkPipelineLayout poPipelineLayout_ShadowMapDepthCull;
-        VkPipeline poPipeline_ShadowMapDepthCull;
+		DescriptorSetLayout* pDescriptorSetLayout_ShadowMapDepthCull;
+		VKStatePipelineGraphics* poStatePipelineGraphics_ShadowMapDepthCull;
 
         //ObjectConstants
         std::vector<ObjectConstants> objectWorldCBs;
 		VKBufferUniform* poBuffer_ObjectWorldCB;
-        
-
+		
     public:
         void Destroy();
 
         virtual bool Init();
 
-        virtual bool InitShadowMapDepth(const String& descriptorSetLayout,
-                                        StringVector* pDescriptorSetLayoutNames,
-                                        const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                        const VkPipelineLayout& vkPipelineLayout,
-                                        const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
-        virtual bool InitShadowMapDepthCull(const String& descriptorSetLayout,
-                                            StringVector* pDescriptorSetLayoutNames,
-                                            const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                            const VkPipelineLayout& vkPipelineLayout,
-                                            const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+        virtual bool InitShadowMapDepth(DescriptorSetLayout* pDSL,
+                                        VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+        virtual bool InitShadowMapDepthCull(DescriptorSetLayout* pDSL,
+                                            VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     protected:
         virtual void destroyBufferObjectWorldCB();
 
         virtual bool createBufferObjectWorldCB();
-        bool createVkGraphicsPipeline(const String& nameGraphicsPipeline,
-                                      const String& descriptorSetLayout,
-                                      const String& nameDescriptorSets,
-                                      StringVector* pDescriptorSetLayoutNames,
-                                      const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                      const VkPipelineLayout& vkPipelineLayout,
-                                      const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
-                                      VkPipeline& vkPipeline,
-                                      VkDescriptorSetVector* pDescriptorSets);
+        VKStatePipelineGraphics* createGraphicsPipeline(const String& nameGraphicsPipeline,
+														DescriptorSetLayout* pDSL,
+														VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     public:
         virtual void CleanupSwapChain();
@@ -88,16 +68,15 @@ namespace LostPeterVulkan
         virtual void UpdateDescriptorSet_ShadowMapDepth();
 
         //Cull Instance
-        virtual void CreateDescriptorSet_ShadowMapDepthCull(const String& nameDescriptorSets, VkDescriptorSetVector& vkDescriptorSets);
-        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets,
+        virtual void UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pDescriptorSets,
                                                             VKBufferUniform* pCB_CullInstance,
                                                             VKBufferCompute* pCB_CullObjectInstances,
                                                             VKBufferCompute* pCB_Result);
 
 
     protected:
-        virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
-                                          StringVector* poDescriptorSetLayoutNames,
+        virtual void updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics,
+										  VkDescriptorSetVector& vkDescriptorSets,
                                           VKBufferUniform* pCB_ObjectWorld,
                                           VKBufferUniform* pCB_CullInstance,
                                           VKBufferCompute* pCB_CullObjectInstances,

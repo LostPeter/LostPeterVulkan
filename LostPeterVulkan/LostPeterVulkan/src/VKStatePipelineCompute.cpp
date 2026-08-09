@@ -63,6 +63,12 @@ namespace LostPeterVulkan
 			pWindow->destroyVkDescriptorSet(this->poDescriptorSet);
 		}
 		this->poPipelineCompute = VK_NULL_HANDLE;
+
+		if (this->poDescriptorSets.size() > 0)
+		{
+			Base::GetWindowPtr()->destroyVkDescriptorSets(this->poDescriptorSets);
+		}
+		this->poDescriptorSets.clear();
 		
 		if (this->poDescriptorSetLayout != VK_NULL_HANDLE)
 		{
@@ -73,6 +79,7 @@ namespace LostPeterVulkan
 
 	bool VKStatePipelineCompute::Init(DescriptorSetLayout* pDSL,
 				  					  VKShader* pShaderCompute,
+									  bool isDescriptorSets,
 									  VkPipelineCreateFlags flags /*= 0*/,
                   					  VkSpecializationInfo* pSpecializationInfo /*= nullptr*/)
 	{
@@ -118,12 +125,23 @@ namespace LostPeterVulkan
 		}
 
 		//3> DescriptorSet
-		if (!pDSL->HasDescriptorSet())
+		if (isDescriptorSets)
 		{
-			String nameDescriptorSet = "DescriptorSet-" + this->name;
-			pWindow->createVkDescriptorSet(nameDescriptorSet, vkDescriptorSetLayout, this->poDescriptorSet);
+			if (!pDSL->HasDescriptorSets())
+			{
+				String nameDescriptorSets = "DescriptorSets-" + this->name;
+				pWindow->createVkDescriptorSets(nameDescriptorSets, vkDescriptorSetLayout, this->poDescriptorSets);
+			}
 		}
-
+		else
+		{
+			if (!pDSL->HasDescriptorSet())
+			{
+				String nameDescriptorSet = "DescriptorSet-" + this->name;
+				pWindow->createVkDescriptorSet(nameDescriptorSet, vkDescriptorSetLayout, this->poDescriptorSet);
+			}
+		}
+		
 		//4> Pipeline
 		String namePipelineCompute = "PipelineCompute-" + this->name;
 		this->poPipelineCompute = pWindow->createVkComputePipeline(namePipelineCompute,
@@ -143,6 +161,7 @@ namespace LostPeterVulkan
 
 	bool VKStatePipelineCompute::Init(DescriptorSetLayout* pDSL,
 									  const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+									  bool isDescriptorSets,
 									  VkPipelineCreateFlags flags /*= 0*/)
 	{
 		this->pDescriptorSetLayout = pDSL;
@@ -186,10 +205,21 @@ namespace LostPeterVulkan
 		}
 
 		//3> DescriptorSets
-		if (!pDSL->HasDescriptorSet())
+		if (isDescriptorSets)
 		{
-			String nameDescriptorSet = "DescriptorSet-" + this->name;
-			pWindow->createVkDescriptorSet(nameDescriptorSet, vkDescriptorSetLayout, this->poDescriptorSet);
+			if (!pDSL->HasDescriptorSets())
+			{
+				String nameDescriptorSets = "DescriptorSets-" + this->name;
+				pWindow->createVkDescriptorSets(nameDescriptorSets, vkDescriptorSetLayout, this->poDescriptorSets);
+			}
+		}
+		else
+		{
+			if (!pDSL->HasDescriptorSet())
+			{
+				String nameDescriptorSet = "DescriptorSet-" + this->name;
+				pWindow->createVkDescriptorSet(nameDescriptorSet, vkDescriptorSetLayout, this->poDescriptorSet);
+			}
 		}
 
 		//4> Pipeline
@@ -224,6 +254,10 @@ namespace LostPeterVulkan
 		if (this->poDescriptorSet != VK_NULL_HANDLE)
 		{
 			pDescriptorSet = &this->poDescriptorSet;
+		}
+		else if (this->poDescriptorSets.size() > 0)
+		{
+			pDescriptorSet = &this->poDescriptorSets[pWindow->poSwapChainImageIndex];
 		}
 		else if (this->pDescriptorSetLayout->poDescriptorSet != VK_NULL_HANDLE)
 		{

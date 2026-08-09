@@ -58,8 +58,6 @@ namespace LostPeterVulkan
     {
         //DescriptorSetLayout
         createDescriptorSetLayouts_Internal();
-        //PipelineLayout
-        createPipelineLayouts_Internal();
 
         //Uniform ConstantBuffer
         createUniformCB_Internal();
@@ -77,8 +75,6 @@ namespace LostPeterVulkan
         //PipelineGraphics
         destroyPipelineGraphics_Internal();
 
-        //PipelineLayout
-        destroyPipelineLayouts_Internal();
         //DescriptorSetLayout
         destroyDescriptorSetLayouts_Internal();
 
@@ -566,14 +562,14 @@ namespace LostPeterVulkan
     };
     void VulkanWindow::destroyDescriptorSetLayouts_Internal()
     {
-        size_t count = this->m_aVkDescriptorSetLayouts_Internal.size();
-        for (size_t i = 0; i < count; i++)
-        {
-            destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts_Internal[i]);
-        }
-        this->m_aVkDescriptorSetLayouts_Internal.clear();
-        this->m_mapVkDescriptorSetLayouts_Internal.clear();
-        this->m_mapName2Layouts_Internal.clear();
+        size_t count = this->m_aDescriptorSetLayouts.size();
+		for (size_t i = 0; i < count; i++)
+		{
+			DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+			delete pDSL;
+		}
+		this->m_aDescriptorSetLayouts.clear();
+		this->m_mapDescriptorSetLayouts.clear();
     }   
     void VulkanWindow::createDescriptorSetLayouts_Internal()
     {
@@ -581,37 +577,23 @@ namespace LostPeterVulkan
         {
             String nameLayout(g_DescriptorSetLayoutNames_Internal[i]);
             StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-            VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
-            if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** VulkanWindow::createDescriptorSetLayouts_Internal: Failed to create descriptor set layout: " + nameLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-            this->m_aVkDescriptorSetLayouts_Internal.push_back(vkDescriptorSetLayout);
-            this->m_mapVkDescriptorSetLayouts_Internal[nameLayout] = vkDescriptorSetLayout;
-            this->m_mapName2Layouts_Internal[nameLayout] = aLayouts;
+			DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+			pDSL->Init(nameLayout, true, false);
+			
+			this->m_aDescriptorSetLayouts.push_back(pDSL);
+			this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
 
             F_LogInfo("VulkanWindow::createDescriptorSetLayouts_Internal: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
         }
     }
-    VkDescriptorSetLayout VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
+    DescriptorSetLayout* VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
     {
-        VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayouts_Internal.find(nameDescriptorSetLayout);
-        if (itFind == this->m_mapVkDescriptorSetLayouts_Internal.end())
+        DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+        if (itFind == this->m_mapDescriptorSetLayouts.end())
         {
             return nullptr;
         }
         return itFind->second;
-    }
-    StringVector* VulkanWindow::FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout)
-    {
-        std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts_Internal.find(nameDescriptorSetLayout);
-        if (itFind == this->m_mapName2Layouts_Internal.end())
-        {
-            return nullptr;
-        }
-        return &(itFind->second);
     }
 
     //ShaderModule
@@ -684,52 +666,6 @@ namespace LostPeterVulkan
     {
         VKShaderPtrMap::iterator itFind = this->m_mapShaders_Internal.find(nameShader);
         if (itFind == this->m_mapShaders_Internal.end())
-        {
-            return nullptr;
-        }
-        return itFind->second;
-    }
-
-    //PipelineLayout
-    void VulkanWindow::destroyPipelineLayouts_Internal()
-    {
-        size_t count = this->m_aVkPipelineLayouts_Internal.size();
-        for (size_t i = 0; i < count; i++)
-        {
-            destroyVkPipelineLayout(this->m_aVkPipelineLayouts_Internal[i]);
-        }
-        this->m_aVkPipelineLayouts_Internal.clear();
-        this->m_mapVkPipelineLayouts_Internal.clear();
-    }
-    void VulkanWindow::createPipelineLayouts_Internal()
-    {   
-        for (int i = 0; i < g_DescriptorSetLayoutCount_Internal; i++)
-        {
-            String nameDSL(g_DescriptorSetLayoutNames_Internal[i]);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(nameDSL);
-            if (vkDescriptorSetLayout == VK_NULL_HANDLE)
-            {
-                F_LogError("*********************** VulkanWindow::createPipelineLayouts_Internal: Can not find DescriptorSetLayout by name: [%s]", nameDSL.c_str());
-                return;
-            }
-
-            VkDescriptorSetLayoutVector aDescriptorSetLayout;
-            aDescriptorSetLayout.push_back(vkDescriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(nameDSL, aDescriptorSetLayout);
-            if (vkPipelineLayout == VK_NULL_HANDLE)
-            {
-                F_LogError("*********************** VulkanWindow::createPipelineLayouts_Internal: createVkPipelineLayout failed !");
-                return;
-            }
-
-            this->m_aVkPipelineLayouts_Internal.push_back(vkPipelineLayout);
-            this->m_mapVkPipelineLayouts_Internal[nameDSL] = vkPipelineLayout;
-        }
-    }
-    VkPipelineLayout VulkanWindow::FindPipelineLayout_Internal(const String& namePipelineLayout)
-    {
-        VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts_Internal.find(namePipelineLayout);
-        if (itFind == this->m_mapVkPipelineLayouts_Internal.end())
         {
             return nullptr;
         }
@@ -816,22 +752,12 @@ namespace LostPeterVulkan
             //PipelineCompute-CullClearArgs
             {
                 String descriptorSetLayout = "Cull-BufferRWArgsCB";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
                 VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_clear_args");
+                F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Cull")
 
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         pShader != nullptr &&
-                         "VulkanWindow::createPipelineCompute_Cull")
-
-                if (!this->m_pPipelineCompute_Cull->InitCullClearArgs(descriptorSetLayout,
-                                                                      pDescriptorSetLayoutNames,
-                                                                      vkDescriptorSetLayout,
-                                                                      vkPipelineLayout,
-                                                                      pShader->GetVkShaderModule()))
+                if (!this->m_pPipelineCompute_Cull->InitCullClearArgs(pDescriptorSetLayout,
+                                                                      pShader))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullClearArgs failed !");
                     return;
@@ -842,22 +768,12 @@ namespace LostPeterVulkan
             //PipelineCompute-CullFrustum
             {
                 String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
 				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum");
+                F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Cull")
 
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         pShader != nullptr &&
-                         "VulkanWindow::createPipelineCompute_Cull")
-
-                if (!this->m_pPipelineCompute_Cull->InitCullFrustum(descriptorSetLayout,
-                                                                    pDescriptorSetLayoutNames,
-                                                                    vkDescriptorSetLayout,
-                                                                    vkPipelineLayout,
-                                                                    pShader->GetVkShaderModule()))
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustum(pDescriptorSetLayout,
+                                                                    pShader))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustum failed !");
                     return;
@@ -868,22 +784,12 @@ namespace LostPeterVulkan
             //PipelineCompute-CullFrustumDepthHiz
             {
                 String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
 				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum_depth_hiz");
+                F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Cull")
 
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         pShader != nullptr &&
-                         "VulkanWindow::createPipelineCompute_Cull")
-
-                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHiz(descriptorSetLayout,
-                                                                            pDescriptorSetLayoutNames,
-                                                                            vkDescriptorSetLayout,
-                                                                            vkPipelineLayout,
-                                                                            pShader->GetVkShaderModule()))
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHiz(pDescriptorSetLayout,
+                                                                            pShader))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHiz failed !");
                     return;
@@ -894,22 +800,12 @@ namespace LostPeterVulkan
             //PipelineCompute-CullFrustumDepthHizClip
             {
                 String descriptorSetLayout = "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
 				VKShader* pShader = FindShader_Internal("comp_standard_compute_cull_frustum_depth_hiz_clip");
+                F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Cull")
 
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         pShader != nullptr &&
-                         "VulkanWindow::createPipelineCompute_Cull")
-
-                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip(descriptorSetLayout,
-                                                                                pDescriptorSetLayoutNames,
-                                                                                vkDescriptorSetLayout,
-                                                                                vkPipelineLayout,
-                                                                                pShader->GetVkShaderModule()))
+                if (!this->m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip(pDescriptorSetLayout,
+                                                                                pShader))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitCullFrustumDepthHizClip failed !");
                     return;
@@ -920,22 +816,12 @@ namespace LostPeterVulkan
             //PipelineCompute-HizDepthGenerate
             {
                 String descriptorSetLayout = "HizDepth-TextureCSRWSrc-TextureCSRWDst";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
 				VKShader* pShader = FindShader_Internal("comp_standard_compute_hiz_depth_generate");
+                F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Cull")
 
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         pShader != nullptr &&
-                         "VulkanWindow::createPipelineCompute_Cull")
-
-                if (!this->m_pPipelineCompute_Cull->InitHizDepthGenerate(descriptorSetLayout,
-                                                                         pDescriptorSetLayoutNames,
-                                                                         vkDescriptorSetLayout,
-                                                                         vkPipelineLayout,
-                                                                         pShader->GetVkShaderModule()))
+                if (!this->m_pPipelineCompute_Cull->InitHizDepthGenerate(pDescriptorSetLayout,
+                                                                         pShader))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineCompute_Cull: m_pPipelineCompute_Cull->InitHizDepthGenerate failed !");
                     return;
@@ -970,22 +856,12 @@ namespace LostPeterVulkan
 
             this->m_pPipelineCompute_Terrain = new VKPipelineComputeTerrain("PipelineCompute-Terrain", this->m_pVKRenderPassTerrain);
             String descriptorSetLayout = "TextureCopy-TextureCSR-TextureCSRW";
-            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
+			DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
 			VKShader* pShader = FindShader_Internal("comp_standard_compute_texgen_normalmap");
+            F_Assert(pDescriptorSetLayout != nullptr && pShader != nullptr && "VulkanWindow::createPipelineCompute_Terrain")
 
-            F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                     vkDescriptorSetLayout != nullptr &&
-                     vkPipelineLayout != nullptr &&
-                     pShader != nullptr &&
-                     "VulkanWindow::createPipelineCompute_Terrain")
-
-            if (!this->m_pPipelineCompute_Terrain->Init(descriptorSetLayout,
-                                                        pDescriptorSetLayoutNames,
-                                                        vkDescriptorSetLayout,
-                                                        vkPipelineLayout,
-                                                        pShader->GetVkShaderModule()))
+            if (!this->m_pPipelineCompute_Terrain->Init(pDescriptorSetLayout,
+                                                        pShader))
             {
                 F_LogError("*********************** VulkanWindow::createPipelineCompute_Terrain: m_pPipelineCompute_Terrain->Init failed !");
                 return;
@@ -1010,8 +886,7 @@ namespace LostPeterVulkan
             if (!this->m_pPipelineCompute_Terrain->isNormalUpdated ||
                 this->m_pPipelineCompute_Terrain->isNormalUpdated_Sustained)
             {
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->m_pPipelineCompute_Terrain->poPipeline);
-                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, this->m_pPipelineCompute_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineCompute_Terrain->poDescriptorSet, 0, 0);
+				this->m_pPipelineCompute_Terrain->poStatePipelineCompute->BindState(commandBuffer);
                 
                 uint32_t groupX = (uint32_t)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize / 8);
                 uint32_t groupY = (uint32_t)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize / 8);
@@ -1067,14 +942,8 @@ namespace LostPeterVulkan
             {
                 this->m_pPipelineGraphics_CopyBlitFromFrameColor = new VKPipelineGraphicsCopyBlitFromFrame("PipelineGraphics-CopyBlitFromFrameColor");
                 String descriptorSetLayout = "ObjectCopyBlit-TextureFrameColor";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color")
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitFromFrameColor;
                 String nameShaderVert = "vert_standard_copy_blit_from_frame";
@@ -1099,10 +968,7 @@ namespace LostPeterVulkan
                                                                             this->poSwapChainImageFormat,
                                                                             false,
                                                                             pMeshBlit,
-                                                                            descriptorSetLayout,
-                                                                            pDescriptorSetLayoutNames,
-                                                                            vkDescriptorSetLayout,
-                                                                            vkPipelineLayout,
+																			pDescriptorSetLayout,
                                                                             aShaderStageCreateInfos_CopyBlitFromFrameColor))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color: PipelineGraphics_CopyBlitFromFrameColor->Init failed !");
@@ -1114,14 +980,8 @@ namespace LostPeterVulkan
             {
                 this->m_pPipelineGraphics_CopyBlitFromFrameDepth = new VKPipelineGraphicsCopyBlitFromFrame("PipelineGraphics-CopyBlitFromFrameDepth");
                 String descriptorSetLayout = "ObjectCopyBlit-TextureFrameDepth";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth")
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitFromFrameDepth;
                 String nameShaderVert = "vert_standard_copy_blit_from_frame";
@@ -1146,10 +1006,7 @@ namespace LostPeterVulkan
                                                                             this->poDepthImageFormat,
                                                                             true,
                                                                             pMeshBlit,
-                                                                            descriptorSetLayout,
-                                                                            pDescriptorSetLayoutNames,
-                                                                            vkDescriptorSetLayout,
-                                                                            vkPipelineLayout,
+																			pDescriptorSetLayout,
                                                                             aShaderStageCreateInfos_CopyBlitFromFrameDepth))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitFromFrame: PipelineGraphics_CopyBlitFromFrameDepth->Init failed !");
@@ -1162,14 +1019,8 @@ namespace LostPeterVulkan
         {
             this->m_pPipelineGraphics_CopyBlitToFrame = new VKPipelineGraphicsCopyBlitToFrame("PipelineGraphics-CopyBlitToFrame");
             String descriptorSetLayout = "ObjectCopyBlit-TextureFrameColor";
-            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-            F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                     vkDescriptorSetLayout != nullptr &&
-                     vkPipelineLayout != nullptr &&
-                     "VulkanWindow::createPipelineGraphics_CopyBlitToFrame")
+			DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+            F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_CopyBlitToFrame")
 
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_CopyBlitToFrame;
             String nameShaderVert = "vert_standard_copy_blit_to_frame";
@@ -1190,10 +1041,7 @@ namespace LostPeterVulkan
             Mesh* pMeshBlit = FindMesh_Internal("quad");
             F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitToFrame");
             if (!this->m_pPipelineGraphics_CopyBlitToFrame->Init(pMeshBlit,
-                                                                 descriptorSetLayout,
-                                                                 pDescriptorSetLayoutNames,
-                                                                 vkDescriptorSetLayout,
-                                                                 vkPipelineLayout,
+                                                                 pDescriptorSetLayout,
                                                                  aShaderStageCreateInfos_CopyBlitToFrame))
             {
                 F_LogError("*********************** VulkanWindow::createPipelineGraphics_CopyBlitToFrame: PipelineGraphics_CopyBlitToFrame->Init failed !");
@@ -1214,13 +1062,17 @@ namespace LostPeterVulkan
         Mesh* pMesh = this->m_pPipelineGraphics_CopyBlitToFrame->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-        if (this->cfg_isWireFrame)
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlitToFrame->poPipeline_WireFrame);
-        else
-            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlitToFrame->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_CopyBlitToFrame->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_CopyBlitToFrame->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
+		//State/Shader/BufferUniform/Texture
+		this->m_pPipelineGraphics_CopyBlitToFrame->poStatePipelineGraphics->BindState(commandBuffer, this->cfg_isWireFrame);
+		this->m_pPipelineGraphics_CopyBlitToFrame->poStatePipelineGraphics->BindShader(commandBuffer);
+		this->m_pPipelineGraphics_CopyBlitToFrame->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+		this->m_pPipelineGraphics_CopyBlitToFrame->poStatePipelineGraphics->BindTextures(commandBuffer);
+
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
-    }
+		
+		this->m_pPipelineGraphics_CopyBlitToFrame->poStatePipelineGraphics->UnBindState(commandBuffer);
+	}
 
     void VulkanWindow::UpdateDescriptorSets_Graphics_CopyBlitFromFrame(VKPipelineGraphicsCopyBlitFromFrame* pCopyBlitFromFrame, const VkImageView& imageView)
     {
@@ -1251,9 +1103,16 @@ namespace LostPeterVulkan
         Mesh* pMesh = pCopyBlitFromFrame->pMeshBlit;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipeline);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pCopyBlitFromFrame->poPipelineLayout, 0, 1, &pCopyBlitFromFrame->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
+		//State/Shader/BufferUniform/Texture
+		pCopyBlitFromFrame->poStatePipelineGraphics->BindState(commandBuffer, false);
+		pCopyBlitFromFrame->poStatePipelineGraphics->BindShader(commandBuffer);
+		pCopyBlitFromFrame->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+		pCopyBlitFromFrame->poStatePipelineGraphics->BindTextures(commandBuffer);
+
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+
+		pCopyBlitFromFrame->poStatePipelineGraphics->UnBindState(commandBuffer);
     }
 
 
@@ -1269,14 +1128,8 @@ namespace LostPeterVulkan
             //PipelineGraphics-DepthShadowMap
             {
                 String descriptorSetLayout = "Pass-Object";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMap]")
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMap]")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
                 String nameShaderVert = "vert_standard_renderpass_shadowmap";
@@ -1293,10 +1146,7 @@ namespace LostPeterVulkan
                     throw std::runtime_error(msg.c_str());
                 }
 
-                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepth(descriptorSetLayout,
-                                                                                  pDescriptorSetLayoutNames,
-                                                                                  vkDescriptorSetLayout,
-                                                                                  vkPipelineLayout,
+                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepth(pDescriptorSetLayout,
                                                                                   aShaderStageCreateInfos_DepthShadowMap))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMap] PipelineGraphics_DepthShadowMap->Init failed !");
@@ -1308,14 +1158,8 @@ namespace LostPeterVulkan
             //PipelineGraphics-DepthShadowMapCull
             {
                 String descriptorSetLayout = "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMapCull]")
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_DepthShadowMap-[PipelineGraphics-DepthShadowMapCull]")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthShadowMap;
                 String nameShaderVert = "vert_standard_renderpass_shadowmap_cull";
@@ -1331,11 +1175,8 @@ namespace LostPeterVulkan
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
-
-                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepthCull(descriptorSetLayout,
-                                                                                      pDescriptorSetLayoutNames,
-                                                                                      vkDescriptorSetLayout,
-                                                                                      vkPipelineLayout,
+				
+                if (!this->m_pPipelineGraphics_DepthShadowMap->InitShadowMapDepthCull(pDescriptorSetLayout,
                                                                                       aShaderStageCreateInfos_DepthShadowMap))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthShadowMap: [PipelineGraphics-DepthShadowMapCull] PipelineGraphics_DepthShadowMap->Init failed !");
@@ -1370,8 +1211,11 @@ namespace LostPeterVulkan
             !this->cfg_isRenderPassShadowMap)
             return false;
 
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline_ShadowMapDepth);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepth, 0, 1, &this->m_pPipelineGraphics_DepthShadowMap->poDescriptorSets_ShadowMapDepth[this->poSwapChainImageIndex], 0, nullptr);
+		//State/Shader/BufferUniform/Texture
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepth->BindState(commandBuffer, false);
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepth->BindShader(commandBuffer);
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepth->BindBufferUniforms(commandBuffer);
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepth->BindTextures(commandBuffer);
 
         return true;
     }
@@ -1394,7 +1238,7 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::Draw_Graphics_DepthShadowMapEnd(VkCommandBuffer& commandBuffer)
     {
-
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepth->UnBindState(commandBuffer);
     }
 
     void VulkanWindow::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, VKBufferUniform* pCB_CullInstance, VKBufferCompute* pCB_CullObjectInstances, VKBufferCompute* pCB_Result)
@@ -1412,7 +1256,7 @@ namespace LostPeterVulkan
             !isCulling)
             return false;
 
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipeline_ShadowMapDepthCull);
+		this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepthCull->BindPipeline(commandBuffer, false);
 
         return true;
     }
@@ -1439,7 +1283,7 @@ namespace LostPeterVulkan
         }
         void VulkanWindow::Draw_Graphics_BindDescriptorSet_ShadowMapDepthCull(VkCommandBuffer& commandBuffer, VkDescriptorSetVector* pescriptorSets)
         {
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthShadowMap->poPipelineLayout_ShadowMapDepthCull, 0, 1, &(*pescriptorSets)[this->poSwapChainImageIndex], 0, nullptr);
+			this->m_pPipelineGraphics_DepthShadowMap->poStatePipelineGraphics_ShadowMapDepthCull->BindDescriptorSet(commandBuffer);
         }
     void VulkanWindow::Draw_Graphics_CullInstance_DepthShadowMapCullEnd(VkCommandBuffer& commandBuffer)
     {
@@ -1465,14 +1309,8 @@ namespace LostPeterVulkan
             //PipelineGraphics-DepthHiz
             {
                 String descriptorSetLayout = "HizDepth-TextureFS";
-                StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-                VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-                VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-                F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                         vkDescriptorSetLayout != nullptr &&
-                         vkPipelineLayout != nullptr &&
-                         "VulkanWindow::createPipelineGraphics_DepthHiz-[PipelineGraphics-DepthHiz]")
+				DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+                F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_DepthHiz-[PipelineGraphics-DepthHiz]")
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_DepthHiz;
                 String nameShaderVert = "vert_standard_copy_blit_hiz_depth_from_frame";
@@ -1490,10 +1328,7 @@ namespace LostPeterVulkan
                     throw std::runtime_error(msg.c_str());
                 }
 
-                if (!this->m_pPipelineGraphics_DepthHiz->InitHizDepth(descriptorSetLayout,
-                                                                      pDescriptorSetLayoutNames,
-                                                                      vkDescriptorSetLayout,
-                                                                      vkPipelineLayout,
+                if (!this->m_pPipelineGraphics_DepthHiz->InitHizDepth(pDescriptorSetLayout,
                                                                       aShaderStageCreateInfos_DepthHiz))
                 {
                     F_LogError("*********************** VulkanWindow::createPipelineGraphics_DepthHiz: [PipelineGraphics-DepthHiz] PipelineGraphics_DepthHiz->Init failed !");
@@ -1514,9 +1349,16 @@ namespace LostPeterVulkan
         Mesh* pMesh = this->m_pPipelineGraphics_DepthHiz->pMesh;
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
 		pMeshSub->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
-        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipeline_HizDepth);
-        bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_DepthHiz->poPipelineLayout_HizDepth, 0, 1, &this->m_pPipelineGraphics_DepthHiz->poDescriptorSets_HizDepth[this->poSwapChainImageIndex], 0, nullptr);
+
+		//State/Shader/BufferUniform/Texture
+		this->m_pPipelineGraphics_DepthHiz->poStatePipelineGraphics_HizDepth->BindState(commandBuffer, false);
+		this->m_pPipelineGraphics_DepthHiz->poStatePipelineGraphics_HizDepth->BindShader(commandBuffer);
+		this->m_pPipelineGraphics_DepthHiz->poStatePipelineGraphics_HizDepth->BindBufferUniforms(commandBuffer);
+		this->m_pPipelineGraphics_DepthHiz->poStatePipelineGraphics_HizDepth->BindTextures(commandBuffer);
+
         drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+
+		this->m_pPipelineGraphics_DepthHiz->poStatePipelineGraphics_HizDepth->UnBindState(commandBuffer);
     }
     void VulkanWindow::UpdateImageLayout_Graphics_DepthHizImageLayoutFromColorAttachmentToShaderReadOnly(VkCommandBuffer& commandBuffer)
     {
@@ -1567,14 +1409,8 @@ namespace LostPeterVulkan
 
             this->m_pPipelineGraphics_Terrain = new VKPipelineGraphicsTerrain("PipelineGraphics-Terrain", this->m_pVKRenderPassTerrain);
             String descriptorSetLayout = "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS";
-            StringVector* pDescriptorSetLayoutNames = FindDescriptorSetLayoutNames_Internal(descriptorSetLayout);
-            VkDescriptorSetLayout vkDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
-            VkPipelineLayout vkPipelineLayout = FindPipelineLayout_Internal(descriptorSetLayout);
-
-            F_Assert(pDescriptorSetLayoutNames != nullptr &&
-                     vkDescriptorSetLayout != nullptr &&
-                     vkPipelineLayout != nullptr &&
-                     "VulkanWindow::createPipelineGraphics_Terrain")
+			DescriptorSetLayout* pDescriptorSetLayout = FindDescriptorSetLayout_Internal(descriptorSetLayout);
+            F_Assert(pDescriptorSetLayout != nullptr && "VulkanWindow::createPipelineGraphics_Terrain")
 
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Terrain;
             String nameShaderVert = "vert_standard_terrain_lit";
@@ -1592,10 +1428,7 @@ namespace LostPeterVulkan
                 throw std::runtime_error(msg.c_str());
             }
 
-            if (!this->m_pPipelineGraphics_Terrain->Init(descriptorSetLayout,
-                                                         pDescriptorSetLayoutNames,
-                                                         vkDescriptorSetLayout,
-                                                         vkPipelineLayout,
+            if (!this->m_pPipelineGraphics_Terrain->Init(pDescriptorSetLayout,
                                                          aShaderStageCreateInfos_Terrain))
             {
                 F_LogError("*********************** VulkanWindow::createPipelineGraphics_Terrain: PipelineGraphics_Terrain->Init failed !");
@@ -1638,13 +1471,16 @@ namespace LostPeterVulkan
         void VulkanWindow::Draw_Graphics_Terrain_Whole(VkCommandBuffer& commandBuffer)
         {
 			this->m_pVKRenderPassTerrain->poBufferVertexIndex_MeshWhole->BindVertexIndexBuffer(commandBuffer);
-            if (this->cfg_isWireFrame)
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline_WireFrame);
-            else
-                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipeline);
-            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->m_pPipelineGraphics_Terrain->poPipelineLayout, 0, 1, &this->m_pPipelineGraphics_Terrain->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+
+			//State/Shader/BufferUniform/Texture
+			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->BindState(commandBuffer, this->cfg_isWireFrame);
+			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->BindShader(commandBuffer);
+			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->BindTextures(commandBuffer);
 
             drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
+
+			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->UnBindState(commandBuffer);
         }
         void VulkanWindow::Draw_Graphics_Terrain_Instance(VkCommandBuffer& commandBuffer)
         {
@@ -7766,7 +7602,7 @@ namespace LostPeterVulkan
 				{
 					F_DELETE(pStatePipelineGraphics)
 					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
-                    return VK_NULL_HANDLE;
+                    return nullptr;
 				}
 				return pStatePipelineGraphics;
 			}
@@ -7798,7 +7634,7 @@ namespace LostPeterVulkan
 				{
 					F_DELETE(pStatePipelineGraphics)
 					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
-                    return VK_NULL_HANDLE;
+                    return nullptr;
 				}
 				return pStatePipelineGraphics;
 			}
@@ -7826,7 +7662,7 @@ namespace LostPeterVulkan
 				{
 					F_DELETE(pStatePipelineGraphics)
 					F_LogError("*********************** VulkanWindow::createStatePipelineGraphics: create state pipeline graphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
-                    return VK_NULL_HANDLE;
+                    return nullptr;
 				}
 				return pStatePipelineGraphics;
 			}
@@ -8358,6 +8194,45 @@ namespace LostPeterVulkan
         {
 
         }
+
+			VKStatePipelineCompute* VulkanWindow::createStatePipelineCompute(const String& nameComputePipeline,
+																			 DescriptorSetLayout* pDescriptorSetLayout,
+																			 VKShader* pShaderCompute,
+																			 bool isDescriptorSets,
+																			 VkPipelineCreateFlags flags /*= 0*/,
+																			 VkSpecializationInfo* pSpecializationInfo /*= nullptr*/)
+			{
+				VKStatePipelineCompute* pStatePipelineCompute = new VKStatePipelineCompute(nameComputePipeline);
+				if (!pStatePipelineCompute->Init(pDescriptorSetLayout,
+												 pShaderCompute,
+												 isDescriptorSets,
+												 flags,
+												 pSpecializationInfo))
+				{
+					F_DELETE(pStatePipelineCompute)
+					F_LogError("*********************** VulkanWindow::createStatePipelineCompute: create state pipeline compute failed, name: [%s] !", nameComputePipeline.c_str());
+                    return nullptr;
+				}
+				return pStatePipelineCompute;
+			}
+			VKStatePipelineCompute* VulkanWindow::createStatePipelineCompute(const String& nameComputePipeline,
+																			 DescriptorSetLayout* pDescriptorSetLayout,
+																			 const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+																			 bool isDescriptorSets,
+																			 VkPipelineCreateFlags flags /*= 0*/)
+			{
+				VKStatePipelineCompute* pStatePipelineCompute = new VKStatePipelineCompute(nameComputePipeline);
+				if (!pStatePipelineCompute->Init(pDescriptorSetLayout,
+												 shaderStageCreateInfo,
+												 isDescriptorSets,
+												 flags))
+				{
+					F_DELETE(pStatePipelineCompute)
+					F_LogError("*********************** VulkanWindow::createStatePipelineCompute: create state pipeline compute failed, name: [%s] !", nameComputePipeline.c_str());
+                    return nullptr;
+				}
+				return pStatePipelineCompute;
+			}
 
 			VkPipeline VulkanWindow::createVkComputePipeline(const String& nameComputePipeline,
 															 VKShader* pShaderCompute,

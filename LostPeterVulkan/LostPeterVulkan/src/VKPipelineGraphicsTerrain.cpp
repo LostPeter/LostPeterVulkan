@@ -13,6 +13,7 @@
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
 #include "../include/VKBufferUniform.h"
+#include "../include/VKStatePipelineGraphics.h"
 
 namespace LostPeterVulkan
 {
@@ -20,12 +21,9 @@ namespace LostPeterVulkan
         : Base(namePipelineGraphics)
 
         , m_pVKRenderPassTerrain(pVKRenderPassTerrain)
-        , nameDescriptorSetLayout("")
-        , poDescriptorSetLayoutNames(nullptr)
-        , poDescriptorSetLayout(VK_NULL_HANDLE)
-        , poPipelineLayout(VK_NULL_HANDLE)
-        , poPipeline_WireFrame(VK_NULL_HANDLE)
-        , poPipeline(VK_NULL_HANDLE)
+
+        , pDescriptorSetLayout(nullptr)
+        , poStatePipelineGraphics(nullptr)
 
         , poBuffer_TerrainObjectCB(nullptr)
         , poBuffer_MaterialCB(nullptr)
@@ -61,16 +59,10 @@ namespace LostPeterVulkan
 			F_DELETE(this->poBuffer_TerrainCB)
         }
 
-    bool VKPipelineGraphicsTerrain::Init(const String& descriptorSetLayout,
-                                         StringVector* pDescriptorSetLayoutNames,
-                                         const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                         const VkPipelineLayout& vkPipelineLayout,
-                                         const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
+    bool VKPipelineGraphicsTerrain::Init(DescriptorSetLayout* pDSL,
+                                         VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
     {
-        this->nameDescriptorSetLayout = descriptorSetLayout;
-        this->poDescriptorSetLayoutNames = pDescriptorSetLayoutNames;
-        this->poDescriptorSetLayout = vkDescriptorSetLayout;
-        this->poPipelineLayout = vkPipelineLayout;
+        this->pDescriptorSetLayout = pDSL;
 
         //1> Buffer
         if (this->poBuffer_TerrainObjectCB == nullptr)
@@ -135,54 +127,28 @@ namespace LostPeterVulkan
             VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
             VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-            this->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-" + this->name,
-                                                                              aShaderStageCreateInfos,
-                                                                              false, 0, 0,
-                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                              Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                              vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
-                                                                              isDepthTest, isDepthWrite, vkDepthCompareOp,
-                                                                              isStencilTest, vkStencilOpFront, vkStencilOpBack, 
-                                                                              isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
-                                                                              vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
-                                                                              vkColorWriteMask);
-            if (this->poPipeline == VK_NULL_HANDLE)
+            this->poStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics("PipelineGraphics-" + this->name,
+																			 				  pDSL,
+																							  aShaderStageCreateInfos,
+																							  F_MeshVertex_Pos3Color4Normal3Tex2,
+																							  false, 0, 0,
+																							  Base::GetWindowPtr()->poRenderPass, aViewports, aScissors, aDynamicStates,
+																							  vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+																							  VK_TRUE, isDepthTest, isDepthWrite, vkDepthCompareOp,
+																							  isStencilTest, vkStencilOpFront, vkStencilOpBack, 
+																							  isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
+																							  vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
+																							  vkColorWriteMask);
+            if (this->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** VKPipelineGraphicsTerrain::Init: Failed to create pipeline graphics for [PipelineGraphics_Terrain] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             F_LogInfo("VKPipelineGraphicsTerrain::Init: [PipelineGraphics_Terrain] Create pipeline graphics success !");
-            
-            this->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline("PipelineGraphics-Wire-" + this->name,
-                                                                                        aShaderStageCreateInfos,
-                                                                                        false, 0, 0,
-                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                                        Base::GetWindowPtr()->poRenderPass, this->poPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                                        vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
-                                                                                        isDepthTest, isDepthWrite, vkDepthCompareOp,
-                                                                                        isStencilTest, vkStencilOpFront, vkStencilOpBack, 
-                                                                                        isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
-                                                                                        vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
-                                                                                        vkColorWriteMask);
-            if (this->poPipeline_WireFrame == VK_NULL_HANDLE)
-            {
-                String msg = "*********************** VKPipelineGraphicsTerrain::Init: Failed to create pipeline graphics wire frame for [PipelineGraphics_Terrain] !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-            F_LogInfo("VKPipelineGraphicsTerrain::Init: [PipelineGraphics_Terrain] Create pipeline graphics wire frame success !");
         }
 
         //3> DescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSets("DescriptorSets-" + this->name, this->poDescriptorSetLayout, this->poDescriptorSets);
-        if (this->poDescriptorSets.empty())
-        {
-            F_LogError("*********************** VKPipelineGraphicsTerrain::Init: createVkDescriptorSets failed !");
-            return false;
-        }    
         UpdateDescriptorSets();
 
         return true;
@@ -269,26 +235,12 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsTerrain::CleanupSwapChain()
     {
-        this->poDescriptorSetLayoutNames = nullptr;
-        this->poDescriptorSetLayout = VK_NULL_HANDLE;
-        this->poPipelineLayout = VK_NULL_HANDLE;
-        if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame);
-        }
-        this->poPipeline_WireFrame = VK_NULL_HANDLE;
-        if (this->poPipeline != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline);
-        }
-        this->poPipeline = VK_NULL_HANDLE;
-        this->poDescriptorSets.clear();
-
+		F_DELETE(this->poStatePipelineGraphics)
     }  
 
     void VKPipelineGraphicsTerrain::UpdateDescriptorSets()
     {
-        size_t count = this->poDescriptorSets.size();
+        size_t count = this->poStatePipelineGraphics->poDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
@@ -299,7 +251,7 @@ namespace LostPeterVulkan
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poDescriptorSets[i],
+                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                   0,
                                                                   0,
                                                                   1,
@@ -312,7 +264,7 @@ namespace LostPeterVulkan
                 bufferInfo_TerrainObject.offset = 0;
                 bufferInfo_TerrainObject.range = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poDescriptorSets[i],
+                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                   1,
                                                                   0,
                                                                   1,
@@ -325,7 +277,7 @@ namespace LostPeterVulkan
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poDescriptorSets[i],
+                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                   2,
                                                                   0,
                                                                   1,
@@ -338,7 +290,7 @@ namespace LostPeterVulkan
                 // bufferInfo_Instance.offset = 0;
                 // bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 // Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                //                                                   this->poDescriptorSets[i],
+                //                                                   this->poStatePipelineGraphics->poDescriptorSets[i],
                 //                                                   3,
                 //                                                   0,
                 //                                                   1,
@@ -351,7 +303,7 @@ namespace LostPeterVulkan
                 bufferInfo_Terrain.offset = 0;
                 bufferInfo_Terrain.range = sizeof(TerrainConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poDescriptorSets[i],
+                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                   4,
                                                                   0,
                                                                   1,
@@ -360,7 +312,7 @@ namespace LostPeterVulkan
             //<5> poTerrainHeightMapImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
+                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                 5,
                                                                 0,
                                                                 1,
@@ -370,7 +322,7 @@ namespace LostPeterVulkan
             //<6> poTerrainNormalMapImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
+                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                 6,
                                                                 0,
                                                                 1,
@@ -380,7 +332,7 @@ namespace LostPeterVulkan
             //<7> poTerrainDiffuseImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
+                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                 7,
                                                                 0,
                                                                 1,
@@ -390,7 +342,7 @@ namespace LostPeterVulkan
             //<8> poTerrainNormalImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
+                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                 8,
                                                                 0,
                                                                 1,
@@ -400,7 +352,7 @@ namespace LostPeterVulkan
             //<9> poTerrainControlImage
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSets[i],
+                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
                                                                 9,
                                                                 0,
                                                                 1,

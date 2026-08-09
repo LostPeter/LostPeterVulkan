@@ -55,17 +55,12 @@ namespace LostPeterVulkan
         VKTexturePtrMap m_mapTextures_Internal;
 
         //DescriptorSetLayouts
-        VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts_Internal;
-        VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayouts_Internal;
-        std::map<String, StringVector> m_mapName2Layouts_Internal;
+		DescriptorSetLayoutPtrVector m_aDescriptorSetLayouts;
+    	DescriptorSetLayoutPtrMap m_mapDescriptorSetLayouts;
 
         //Shader
 		VKShaderPtrVector m_aShaders_Internal;
 		VKShaderPtrMap m_mapShaders_Internal;
-
-        //PipelineLayout
-        VkPipelineLayoutVector m_aVkPipelineLayouts_Internal;
-        VkPipelineLayoutMap m_mapVkPipelineLayouts_Internal;
 
     public:
         //Mesh
@@ -75,14 +70,10 @@ namespace LostPeterVulkan
         virtual VKTexture* FindTexture_Internal(const String& nameTexture);
 
         //DescriptorSetLayouts
-        virtual VkDescriptorSetLayout FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
-        virtual StringVector* FindDescriptorSetLayoutNames_Internal(const String& nameDescriptorSetLayout);
+		virtual DescriptorSetLayout* FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
 
         //Shader
         virtual VKShader* FindShader_Internal(const String& nameShader);
-
-        //PipelineLayout
-        virtual VkPipelineLayout FindPipelineLayout_Internal(const String& namePipelineLayout);
 
         //PipelineCompute
         //PipelineCompute-Cull
@@ -162,10 +153,6 @@ namespace LostPeterVulkan
         //Shader
         virtual void destroyShaders_Internal();
         virtual void createShaders_Internal();
-
-        //PipelineLayout
-        virtual void destroyPipelineLayouts_Internal();
-        virtual void createPipelineLayouts_Internal();
 
         //Uniform ConstantBuffer
         virtual void destroyUniformCB_Internal();
@@ -1409,6 +1396,18 @@ namespace LostPeterVulkan
                 virtual void createComputePipeline();
                     virtual void createComputePipeline_Default();
                     virtual void createComputePipeline_Custom();
+
+						virtual VKStatePipelineCompute* createStatePipelineCompute(const String& nameComputePipeline,
+																				   DescriptorSetLayout* pDescriptorSetLayout,
+                                                                   				   VKShader* pShaderCompute,
+																				   bool isDescriptorSets,
+																				   VkPipelineCreateFlags flags = 0,
+                                                                   				   VkSpecializationInfo* pSpecializationInfo = nullptr);
+						virtual VKStatePipelineCompute* createStatePipelineCompute(const String& nameComputePipeline,
+																				   DescriptorSetLayout* pDescriptorSetLayout,
+                                                                   				   const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+																				   bool isDescriptorSets,
+																				   VkPipelineCreateFlags flags = 0);
 						
 						virtual VkPipeline createVkComputePipeline(const String& nameComputePipeline,
                                                                    VKShader* pShaderCompute,

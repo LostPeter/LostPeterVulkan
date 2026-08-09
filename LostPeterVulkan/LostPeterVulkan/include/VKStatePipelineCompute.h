@@ -33,6 +33,7 @@ namespace LostPeterVulkan
 		VkSpecializationInfo* poSpecializationInfo;
 
 		VkDescriptorSetLayout poDescriptorSetLayout;
+		VkDescriptorSetVector poDescriptorSets;
 		VkDescriptorSet poDescriptorSet;
 		VkPipelineLayout poPipelineLayout;
 
@@ -42,10 +43,12 @@ namespace LostPeterVulkan
 		void Destroy();
 		bool Init(DescriptorSetLayout* pDSL,
 				  VKShader* pShaderCompute,
+				  bool isDescriptorSets,
 				  VkPipelineCreateFlags flags = 0,
                   VkSpecializationInfo* pSpecializationInfo = nullptr);
 		bool Init(DescriptorSetLayout* pDSL,
 				  const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+				  bool isDescriptorSets,
 				  VkPipelineCreateFlags flags = 0);
 
 	public:

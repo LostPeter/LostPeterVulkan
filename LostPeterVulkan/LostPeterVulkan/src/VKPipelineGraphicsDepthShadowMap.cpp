@@ -14,6 +14,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKBufferCompute.h"
+#include "../include/VKStatePipelineGraphics.h"
 
 namespace LostPeterVulkan
 {
@@ -22,18 +23,12 @@ namespace LostPeterVulkan
         , m_pVKRenderPassShadowMap(pVKRenderPassShadowMap)
 
         //PipelineGraphics-ShadowMapDepth
-        , nameDescriptorSetLayout_ShadowMapDepth("")
-        , poDescriptorSetLayoutNames_ShadowMapDepth(nullptr)
-        , poDescriptorSetLayout_ShadowMapDepth(VK_NULL_HANDLE)
-        , poPipelineLayout_ShadowMapDepth(VK_NULL_HANDLE)
-        , poPipeline_ShadowMapDepth(VK_NULL_HANDLE)
+        , pDescriptorSetLayout_ShadowMapDepth(nullptr)
+        , poStatePipelineGraphics_ShadowMapDepth(nullptr)
 
         //PipelineGraphics-ShadowMapDepthCull
-        , nameDescriptorSetLayout_ShadowMapDepthCull("")
-        , poDescriptorSetLayoutNames_ShadowMapDepthCull(nullptr)
-        , poDescriptorSetLayout_ShadowMapDepthCull(VK_NULL_HANDLE)
-        , poPipelineLayout_ShadowMapDepthCull(VK_NULL_HANDLE)
-        , poPipeline_ShadowMapDepthCull(VK_NULL_HANDLE)
+        , pDescriptorSetLayout_ShadowMapDepthCull(nullptr)
+        , poStatePipelineGraphics_ShadowMapDepthCull(nullptr)
         
         //ObjectConstants
         , poBuffer_ObjectWorldCB(nullptr)
@@ -72,32 +67,21 @@ namespace LostPeterVulkan
         
         return true;
     }
-    bool VKPipelineGraphicsDepthShadowMap::InitShadowMapDepth(const String& descriptorSetLayout,
-                                                              StringVector* pDescriptorSetLayoutNames,
-                                                              const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                                              const VkPipelineLayout& vkPipelineLayout,
-                                                              const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
+    bool VKPipelineGraphicsDepthShadowMap::InitShadowMapDepth(DescriptorSetLayout* pDSL,
+                                                              VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
     {
-        this->nameDescriptorSetLayout_ShadowMapDepth = descriptorSetLayout;
-        this->poDescriptorSetLayoutNames_ShadowMapDepth = pDescriptorSetLayoutNames;
-        this->poDescriptorSetLayout_ShadowMapDepth = vkDescriptorSetLayout;
-        this->poPipelineLayout_ShadowMapDepth = vkPipelineLayout;
+		this->pDescriptorSetLayout_ShadowMapDepth = pDSL;
 
-        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepth-" + this->name,
-                                      descriptorSetLayout,
-                                      "DescriptorSets-" + this->name,
-                                      pDescriptorSetLayoutNames,
-                                      vkDescriptorSetLayout,
-                                      vkPipelineLayout,
-                                      aShaderStageCreateInfos,
-                                      this->poPipeline_ShadowMapDepth,
-                                      &this->poDescriptorSets_ShadowMapDepth))
+		this->poStatePipelineGraphics_ShadowMapDepth = createGraphicsPipeline("PipelineGraphics-ShadowMapDepth-" + this->name,
+																			  pDSL,
+																			  aShaderStageCreateInfos);
+        if (this->poStatePipelineGraphics_ShadowMapDepth == nullptr)
         {
-            F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::InitShadowMapDepth: createVkGraphicsPipeline failed !");
+            F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::InitShadowMapDepth: createGraphicsPipeline failed !");
             return false;
         }
-        updateDescriptorSets(this->poDescriptorSets_ShadowMapDepth, 
-                             pDescriptorSetLayoutNames,
+        updateDescriptorSets(this->poStatePipelineGraphics_ShadowMapDepth, 
+                             this->poStatePipelineGraphics_ShadowMapDepth->poDescriptorSets,
                              this->poBuffer_ObjectWorldCB,
                              nullptr,
                              nullptr,
@@ -105,28 +89,17 @@ namespace LostPeterVulkan
 
         return true;
     }
-    bool VKPipelineGraphicsDepthShadowMap::InitShadowMapDepthCull(const String& descriptorSetLayout,
-                                                                  StringVector* pDescriptorSetLayoutNames,
-                                                                  const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                                                  const VkPipelineLayout& vkPipelineLayout,
-                                                                  const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
+    bool VKPipelineGraphicsDepthShadowMap::InitShadowMapDepthCull(DescriptorSetLayout* pDSL,
+                                                                  VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
     {
-        this->nameDescriptorSetLayout_ShadowMapDepthCull = descriptorSetLayout;
-        this->poDescriptorSetLayoutNames_ShadowMapDepthCull = pDescriptorSetLayoutNames;
-        this->poDescriptorSetLayout_ShadowMapDepthCull = vkDescriptorSetLayout;
-        this->poPipelineLayout_ShadowMapDepthCull = vkPipelineLayout;
+		this->pDescriptorSetLayout_ShadowMapDepthCull = pDSL;
 
-        if (!createVkGraphicsPipeline("PipelineGraphics-ShadowMapDepth-Cull-" + this->name,
-                                      descriptorSetLayout,
-                                      "DescriptorSets-Cull-" + this->name,
-                                      pDescriptorSetLayoutNames,
-                                      vkDescriptorSetLayout,
-                                      vkPipelineLayout,
-                                      aShaderStageCreateInfos,
-                                      this->poPipeline_ShadowMapDepthCull,
-                                      nullptr))
+		this->poStatePipelineGraphics_ShadowMapDepthCull = createGraphicsPipeline("PipelineGraphics-ShadowMapDepth-Cull-" + this->name,
+																				  pDSL,
+																			      aShaderStageCreateInfos);
+        if (this->poStatePipelineGraphics_ShadowMapDepthCull == nullptr)
         {
-            F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::InitShadowMapDepthCull: createVkGraphicsPipeline failed !");
+            F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::InitShadowMapDepthCull: createGraphicsPipeline failed !");
             return false;
         }
 
@@ -148,89 +121,52 @@ namespace LostPeterVulkan
             F_LogInfo("VKPipelineGraphicsDepthShadowMap::createBufferObjectWorldCB: Create Uniform ObjectWorld constant buffer success !");
             return true;
         }
-        bool VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline(const String& nameGraphicsPipeline,
-                                                                        const String& descriptorSetLayout,
-                                                                        const String& nameDescriptorSets,
-                                                                        StringVector* pDescriptorSetLayoutNames,
-                                                                        const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                                                        const VkPipelineLayout& vkPipelineLayout,
-                                                                        const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
-                                                                        VkPipeline& vkPipeline,
-                                                                        VkDescriptorSetVector* pDescriptorSets)
+        VKStatePipelineGraphics* VKPipelineGraphicsDepthShadowMap::createGraphicsPipeline(const String& nameGraphicsPipeline,
+																						  DescriptorSetLayout* pDSL,
+																						  VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos)
         {
-            //1> VkPipeline
-            {
-                VkStencilOpState stencilOpFront; 
-                VkStencilOpState stencilOpBack;
+			VkStencilOpState stencilOpFront; 
+			VkStencilOpState stencilOpBack;
 
-                VkViewportVector aViewports;
-                aViewports.push_back(Base::GetWindowPtr()->poViewport);
-                VkRect2DVector aScissors;
-                aScissors.push_back(Base::GetWindowPtr()->poScissor);
-                VkDynamicStateVector aDynamicStates =
-                {
-                    VK_DYNAMIC_STATE_VIEWPORT,
-                    VK_DYNAMIC_STATE_SCISSOR,
-                    VK_DYNAMIC_STATE_DEPTH_BIAS
-                };
+			VkViewportVector aViewports;
+			aViewports.push_back(Base::GetWindowPtr()->poViewport);
+			VkRect2DVector aScissors;
+			aScissors.push_back(Base::GetWindowPtr()->poScissor);
+			VkDynamicStateVector aDynamicStates =
+			{
+				VK_DYNAMIC_STATE_VIEWPORT,
+				VK_DYNAMIC_STATE_SCISSOR,
+				VK_DYNAMIC_STATE_DEPTH_BIAS
+			};
 
-                VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
-
-                vkPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(nameGraphicsPipeline,
-                                                                            aShaderStageCreateInfos,
-                                                                            false, 0, 3,
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Normal3Tex2),
-                                                                            this->m_pVKRenderPassShadowMap->poRenderPass, vkPipelineLayout, aViewports, aScissors, aDynamicStates,
-                                                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_TRUE, 0.0f, 0.0f, 0.0f, 1.0f,
-                                                                            VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
-                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                            aColorBlendAttachmentState);
-                if (vkPipeline == VK_NULL_HANDLE)
-                {
-                    String msg = "*********************** VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline: Failed to create pipeline graphics for: " + nameGraphicsPipeline;
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-                F_LogInfo("VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline: [%s] Create pipeline graphics success !", nameGraphicsPipeline.c_str());
-            }
-
-            //2> VkDescriptorSets
-            if (pDescriptorSets != nullptr)
-            {
-                Base::GetWindowPtr()->createVkDescriptorSets(nameDescriptorSets, vkDescriptorSetLayout, *pDescriptorSets);
-                if (pDescriptorSets->empty())
-                {
-                    F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::createVkGraphicsPipeline: createVkDescriptorSets failed !");
-                    return false;
-                }
-            }
-            
-            return true;
+			VkPipelineColorBlendAttachmentStateVector aColorBlendAttachmentState;
+			VKStatePipelineGraphics* pStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics(nameGraphicsPipeline,
+																												pDSL,
+																												aShaderStageCreateInfos,
+																												F_MeshVertex_Pos3Color4Normal3Tex2,
+																												false, 0, 3,
+																												this->m_pVKRenderPassShadowMap->poRenderPass, aViewports, aScissors, aDynamicStates,
+																												VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_TRUE, 0.0f, 0.0f, 0.0f, 1.0f,
+																												VK_TRUE, VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL,
+																												VK_FALSE, stencilOpFront, stencilOpBack, 
+																												aColorBlendAttachmentState);
+			if (pStatePipelineGraphics == nullptr)
+			{
+				String msg = "*********************** VKPipelineGraphicsDepthShadowMap::createGraphicsPipeline: Failed to create pipeline graphics for: " + nameGraphicsPipeline;
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg.c_str());
+			}
+			F_LogInfo("VKPipelineGraphicsDepthShadowMap::createGraphicsPipeline: [%s] Create pipeline graphics success !", nameGraphicsPipeline.c_str());
+			
+            return pStatePipelineGraphics;
         }
 
     void VKPipelineGraphicsDepthShadowMap::CleanupSwapChain()
     {
-        //PipelineGraphics-ShadowMapDepth
-        this->poDescriptorSetLayoutNames_ShadowMapDepth = nullptr;
-        this->poDescriptorSetLayout_ShadowMapDepth = VK_NULL_HANDLE;
-        this->poPipelineLayout_ShadowMapDepth = VK_NULL_HANDLE;
-        if (this->poPipeline_ShadowMapDepth != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_ShadowMapDepth);
-        }
-        this->poPipeline_ShadowMapDepth = VK_NULL_HANDLE;
-        this->poDescriptorSets_ShadowMapDepth.clear();
-
-        //PipelineGraphics-ShadowMapDepthCull
-        this->poDescriptorSetLayoutNames_ShadowMapDepthCull = nullptr;
-        this->poDescriptorSetLayout_ShadowMapDepthCull = VK_NULL_HANDLE;
-        this->poPipelineLayout_ShadowMapDepthCull = VK_NULL_HANDLE;
-        if (this->poPipeline_ShadowMapDepthCull != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_ShadowMapDepthCull);
-        }
-        this->poPipeline_ShadowMapDepthCull = VK_NULL_HANDLE;
+        //poStatePipelineGraphics_ShadowMapDepth
+		F_DELETE(this->poStatePipelineGraphics_ShadowMapDepth)
+        //poStatePipelineGraphics_ShadowMapDepthCull
+		F_DELETE(this->poStatePipelineGraphics_ShadowMapDepthCull)
     }  
 
     void VKPipelineGraphicsDepthShadowMap::UpdateBuffer_ObjectWorld_Clear()
@@ -274,38 +210,29 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepth()
     {
-        updateDescriptorSets(this->poDescriptorSets_ShadowMapDepth, 
-                             this->poDescriptorSetLayoutNames_ShadowMapDepth,
+        updateDescriptorSets(this->poStatePipelineGraphics_ShadowMapDepthCull, 
+                             this->poStatePipelineGraphics_ShadowMapDepthCull->poDescriptorSets,
                              this->poBuffer_ObjectWorldCB,
                              nullptr,
                              nullptr,
                              nullptr);
     }
 
-    void VKPipelineGraphicsDepthShadowMap::CreateDescriptorSet_ShadowMapDepthCull(const String& nameDescriptorSets, VkDescriptorSetVector& vkDescriptorSets)
-    {
-        Base::GetWindowPtr()->createVkDescriptorSets(nameDescriptorSets, this->poDescriptorSetLayout_ShadowMapDepthCull, vkDescriptorSets);
-        if (vkDescriptorSets.empty())
-        {
-            F_LogError("*********************** VKPipelineGraphicsDepthShadowMap::CreateDescriptorSet_ShadowMapDepthCull: createVkDescriptorSets failed, name: [%s] !", nameDescriptorSets.c_str());
-            return;
-        }
-    }
-    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pescriptorSets, 
+    void VKPipelineGraphicsDepthShadowMap::UpdateDescriptorSet_ShadowMapDepthCull(VkDescriptorSetVector* pDescriptorSets, 
                                                                                   VKBufferUniform* pCB_CullInstance,
                                                                                   VKBufferCompute* pCB_CullObjectInstances,
                                                                                   VKBufferCompute* pCB_Result)
     {
-        updateDescriptorSets(*pescriptorSets,
-                             poDescriptorSetLayoutNames_ShadowMapDepthCull,
+        updateDescriptorSets(this->poStatePipelineGraphics_ShadowMapDepthCull,
+							 *pDescriptorSets,
                              nullptr,
                              pCB_CullInstance,
                              pCB_CullObjectInstances,
                              pCB_Result);
     }
 
-    void VKPipelineGraphicsDepthShadowMap::updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
-                                                                StringVector* poDescriptorSetLayoutNames,
+    void VKPipelineGraphicsDepthShadowMap::updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics,
+																VkDescriptorSetVector& vkDescriptorSets,
                                                                 VKBufferUniform* pCB_ObjectWorld,
                                                                 VKBufferUniform* pCB_CullInstance,
                                                                 VKBufferCompute* pCB_CullObjectInstances,
@@ -315,10 +242,10 @@ namespace LostPeterVulkan
         for (uint32_t i = 0; i < count_descriptorsets; i++)
         {
             VkWriteDescriptorSetVector descriptorWrites;
-            uint32_t count_name = (uint32_t)poDescriptorSetLayoutNames->size();
+            uint32_t count_name = (uint32_t)pStatePipelineGraphics->pDescriptorSetLayout->aLayouts.size();
             for (uint32_t j = 0; j < count_name; j++)
             {
-                String& nameDescriptorSet = poDescriptorSetLayoutNames->at(j);
+                String& nameDescriptorSet = pStatePipelineGraphics->pDescriptorSetLayout->aLayouts[j];
 
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {

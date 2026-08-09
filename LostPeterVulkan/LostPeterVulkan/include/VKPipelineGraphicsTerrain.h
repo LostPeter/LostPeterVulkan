@@ -25,13 +25,8 @@ namespace LostPeterVulkan
     public:
         VKRenderPassTerrain* m_pVKRenderPassTerrain;
 
-        String nameDescriptorSetLayout;
-        StringVector* poDescriptorSetLayoutNames;
-        VkDescriptorSetLayout poDescriptorSetLayout;
-        VkPipelineLayout poPipelineLayout;
-        VkPipeline poPipeline_WireFrame;
-        VkPipeline poPipeline;
-        VkDescriptorSetVector poDescriptorSets;
+		DescriptorSetLayout* pDescriptorSetLayout;
+		VKStatePipelineGraphics* poStatePipelineGraphics;
 
         std::vector<TerrainObjectConstants> terrainObjectCBs;
         VKBufferUniform* poBuffer_TerrainObjectCB;
@@ -44,11 +39,8 @@ namespace LostPeterVulkan
 
     public: 
         void Destroy();
-        virtual bool Init(const String& descriptorSetLayout,
-                          StringVector* pDescriptorSetLayoutNames,
-                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                          const VkPipelineLayout& vkPipelineLayout,
-                          const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+        virtual bool Init(DescriptorSetLayout* pDSL,
+                          VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     protected:
         void destroyBufferTerrainObject();

@@ -26,12 +26,8 @@ namespace LostPeterVulkan
         VKRenderPassCull* m_pVKRenderPassCull;
 
         //PipelineGraphics-HizDepth
-        String nameDescriptorSetLayout_HizDepth;
-        StringVector* poDescriptorSetLayoutNames_HizDepth;
-        VkDescriptorSetLayout poDescriptorSetLayout_HizDepth;
-        VkPipelineLayout poPipelineLayout_HizDepth;
-        VkPipeline poPipeline_HizDepth;
-        VkDescriptorSetVector poDescriptorSets_HizDepth;
+		DescriptorSetLayout* pDescriptorSetLayout_HizDepth;
+		VKStatePipelineGraphics* poStatePipelineGraphics_HizDepth;
         
         VkDescriptorImageInfo imageInfo;
 
@@ -42,22 +38,13 @@ namespace LostPeterVulkan
 
         virtual bool Init(Mesh* pMesh);
 
-        virtual bool InitHizDepth(const String& descriptorSetLayout,
-                                  StringVector* pDescriptorSetLayoutNames,
-                                  const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                  const VkPipelineLayout& vkPipelineLayout,
-                                  const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
+        virtual bool InitHizDepth(DescriptorSetLayout* pDSL,
+                                  VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     protected:
-        bool createVkGraphicsPipeline(const String& nameGraphicsPipeline,
-                                      const String& descriptorSetLayout,
-                                      const String& nameDescriptorSets,
-                                      StringVector* pDescriptorSetLayoutNames,
-                                      const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                      const VkPipelineLayout& vkPipelineLayout,
-                                      const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
-                                      VkPipeline& vkPipeline,
-                                      VkDescriptorSetVector* pDescriptorSets);
+        VKStatePipelineGraphics* createGraphicsPipeline(const String& nameGraphicsPipeline,
+														DescriptorSetLayout* pDSL,
+														VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos);
 
     public:
         virtual void CleanupSwapChain();
@@ -65,8 +52,8 @@ namespace LostPeterVulkan
         virtual void UpdateDescriptorSet_HizDepth();
 
     protected:
-        virtual void updateDescriptorSets(VkDescriptorSetVector& vkDescriptorSets,
-                                          StringVector* poDescriptorSetLayoutNames,
+        virtual void updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics,
+										  VkDescriptorSetVector& vkDescriptorSets,
                                           VKBufferUniform* pBuffer_HizDepthCB,
                                           const VkImageView& vkImageView,
                                           const VkSampler& vkSampler);

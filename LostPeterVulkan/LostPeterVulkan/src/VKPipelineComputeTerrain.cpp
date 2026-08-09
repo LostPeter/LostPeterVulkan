@@ -13,6 +13,7 @@
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
 #include "../include/VKBufferUniform.h"
+#include "../include/VKStatePipelineCompute.h"
 
 namespace LostPeterVulkan
 {
@@ -20,11 +21,9 @@ namespace LostPeterVulkan
         : Base(namePipelineCompute)
 
         , m_pVKRenderPassTerrain(pVKRenderPassTerrain)
-        , nameDescriptorSetLayout("")
-        , poDescriptorSetLayoutNames(nullptr)
-        , poDescriptorSetLayout(VK_NULL_HANDLE)
-        , poPipelineLayout(VK_NULL_HANDLE)
-        , poPipeline(VK_NULL_HANDLE)
+
+        , pDescriptorSetLayout(nullptr)
+        , poStatePipelineCompute(nullptr)
         
         , pTextureCopy(nullptr)
         , poBuffer_TextureCopy(nullptr)
@@ -51,16 +50,10 @@ namespace LostPeterVulkan
 			F_DELETE(this->poBuffer_TextureCopy)
         }
 
-    bool VKPipelineComputeTerrain::Init(const String& descriptorSetLayout,
-                                        StringVector* pDescriptorSetLayoutNames,
-                                        const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                        const VkPipelineLayout& vkPipelineLayout,
-                                        const VkShaderModule& vkShaderModule)
+    bool VKPipelineComputeTerrain::Init(DescriptorSetLayout* pDSL,
+                                        VKShader* pShader)
     {
-        this->nameDescriptorSetLayout = descriptorSetLayout;
-        this->poDescriptorSetLayoutNames = pDescriptorSetLayoutNames;
-        this->poDescriptorSetLayout = vkDescriptorSetLayout;
-        this->poPipelineLayout = vkPipelineLayout;
+        this->pDescriptorSetLayout = pDSL;
 
         //1> Buffer
         if (this->pTextureCopy == nullptr)
@@ -73,25 +66,18 @@ namespace LostPeterVulkan
         }
 
         //2> Pipeline
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-        shaderStageInfo.module = vkShaderModule;
-        shaderStageInfo.pName = "main";
-        this->poPipeline = Base::GetWindowPtr()->createVkComputePipeline("PipelineCompute-Terrain", shaderStageInfo, vkPipelineLayout);
-        if (this->poPipeline == VK_NULL_HANDLE)
+		this->poStatePipelineCompute = Base::GetWindowPtr()->createStatePipelineCompute("PipelineCompute-Terrain",
+																						pDSL,
+																						pShader,
+																						false);
+
+        if (this->poStatePipelineCompute == nullptr)
         {
-            F_LogError("*********************** VKPipelineComputeTerrain::Init: createVkComputePipeline failed !");
+            F_LogError("*********************** VKPipelineComputeTerrain::Init: createStatePipelineCompute failed !");
             return false;
         }
 
         //3> DescriptorSet
-        Base::GetWindowPtr()->createVkDescriptorSet(descriptorSetLayout, this->poDescriptorSetLayout, this->poDescriptorSet);
-        if (this->poDescriptorSet == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** VKPipelineComputeTerrain::Init: createVkDescriptorSet failed !");
-            return false;
-        }
         UpdateDescriptorSet();
         
         return true;
@@ -119,24 +105,16 @@ namespace LostPeterVulkan
 
     void VKPipelineComputeTerrain::CleanupSwapChain()
     {
-        this->poDescriptorSetLayoutNames = nullptr;
-        this->poDescriptorSetLayout = VK_NULL_HANDLE;
-        this->poPipelineLayout = VK_NULL_HANDLE;
-        if (this->poPipeline != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline);
-        }       
-        this->poPipeline = VK_NULL_HANDLE;
-        this->poDescriptorSet = VK_NULL_HANDLE;
+		F_DELETE(this->poStatePipelineCompute)
     }  
 
     void VKPipelineComputeTerrain::UpdateDescriptorSet()
     {
         VkWriteDescriptorSetVector descriptorWrites;
-        size_t count = this->poDescriptorSetLayoutNames->size();
+        size_t count = this->poStatePipelineCompute->pDescriptorSetLayout->aLayouts.size();
         for (size_t i = 0; i < count; i++)
         {
-            const String& nameDescriptor = this->poDescriptorSetLayoutNames->at(i);
+            const String& nameDescriptor = this->poStatePipelineCompute->pDescriptorSetLayout->aLayouts[i];
 
             if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
             {
@@ -145,7 +123,7 @@ namespace LostPeterVulkan
                 bufferInfo_TextureCopy.offset = 0;
                 bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
                 Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poDescriptorSet,
+                                                                  this->poStatePipelineCompute->poDescriptorSet,
                                                                   (uint32_t)i,
                                                                   0,
                                                                   1,
@@ -154,7 +132,7 @@ namespace LostPeterVulkan
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSet,
+                                                                this->poStatePipelineCompute->poDescriptorSet,
                                                                 (uint32_t)i,
                                                                 0,
                                                                 1,
@@ -164,7 +142,7 @@ namespace LostPeterVulkan
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
             {
                 Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poDescriptorSet,
+                                                                this->poStatePipelineCompute->poDescriptorSet,
                                                                 (uint32_t)i,
                                                                 0,
                                                                 1,

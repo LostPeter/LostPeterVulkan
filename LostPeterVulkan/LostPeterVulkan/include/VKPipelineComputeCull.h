@@ -28,44 +28,24 @@ namespace LostPeterVulkan
 
         ////////////////////////// PipelineCompute //////////////////////////
         //PipelineCompute-CullClearArgs
-        String nameDescriptorSetLayout_CullClearArgs;
-        StringVector* poDescriptorSetLayoutNames_CullClearArgs;
-        VkDescriptorSetLayout poDescriptorSetLayout_CullClearArgs;
-        VkPipelineLayout poPipelineLayout_CullClearArgs;
-        VkPipeline poPipeline_CullClearArgs;
-        VkDescriptorSet poDescriptorSet_CullClearArgs;
+		DescriptorSetLayout* pDescriptorSetLayout_CullClearArgs;
+		VKStatePipelineCompute* poStatePipelineCompute_CullClearArgs;
 
         //PipelineCompute-CullFrustum
-        String nameDescriptorSetLayout_CullFrustum;
-        StringVector* poDescriptorSetLayoutNames_CullFrustum;
-        VkDescriptorSetLayout poDescriptorSetLayout_CullFrustum;
-        VkPipelineLayout poPipelineLayout_CullFrustum;
-        VkPipeline poPipeline_CullFrustum;
-        VkDescriptorSet poDescriptorSet_CullFrustum;
+		DescriptorSetLayout* pDescriptorSetLayout_CullFrustum;
+		VKStatePipelineCompute* poStatePipelineCompute_CullFrustum;
 
         //PipelineCompute-CullFrustumDepthHiz
-        String nameDescriptorSetLayout_CullFrustumDepthHiz;
-        StringVector* poDescriptorSetLayoutNames_CullFrustumDepthHiz;
-        VkDescriptorSetLayout poDescriptorSetLayout_CullFrustumDepthHiz;
-        VkPipelineLayout poPipelineLayout_CullFrustumDepthHiz;
-        VkPipeline poPipeline_CullFrustumDepthHiz;
-        VkDescriptorSet poDescriptorSet_CullFrustumDepthHiz;
+		DescriptorSetLayout* pDescriptorSetLayout_CullFrustumDepthHiz;
+		VKStatePipelineCompute* poStatePipelineCompute_CullFrustumDepthHiz;
 
         //PipelineCompute-CullFrustumDepthHizClip
-        String nameDescriptorSetLayout_CullFrustumDepthHizClip;
-        StringVector* poDescriptorSetLayoutNames_CullFrustumDepthHizClip;
-        VkDescriptorSetLayout poDescriptorSetLayout_CullFrustumDepthHizClip;
-        VkPipelineLayout poPipelineLayout_CullFrustumDepthHizClip;
-        VkPipeline poPipeline_CullFrustumDepthHizClip;
-        VkDescriptorSet poDescriptorSet_CullFrustumDepthHizClip;
+		DescriptorSetLayout* pDescriptorSetLayout_CullFrustumDepthHizClip;
+		VKStatePipelineCompute* poStatePipelineCompute_CullFrustumDepthHizClip;
 
         //PipelineCompute-HizDepthGenerate
-        String nameDescriptorSetLayout_HizDepthGenerate;
-        StringVector* poDescriptorSetLayoutNames_HizDepthGenerate;
-        VkDescriptorSetLayout poDescriptorSetLayout_HizDepthGenerate;
-        VkPipelineLayout poPipelineLayout_HizDepthGenerate;
-        VkPipeline poPipeline_HizDepthGenerate;
-        VkDescriptorSetVector poDescriptorSet_HizDepthGenerates;
+		DescriptorSetLayout* pDescriptorSetLayout_HizDepthGenerate;
+		VKStatePipelineCompute* poStatePipelineCompute_HizDepthGenerate;
 
         ////////////////////////// Buffer ///////////////////////////////////
         //CullConstants
@@ -82,55 +62,23 @@ namespace LostPeterVulkan
         void Destroy();
         virtual bool Init();
 
-        virtual bool InitCullClearArgs(const String& descriptorSetLayout,
-                                       StringVector* pDescriptorSetLayoutNames,
-                                       const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                       const VkPipelineLayout& vkPipelineLayout,
-                                       const VkShaderModule& vkShaderModule);
-        virtual bool InitCullFrustum(const String& descriptorSetLayout,
-                                     StringVector* pDescriptorSetLayoutNames,
-                                     const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                     const VkPipelineLayout& vkPipelineLayout,
-                                     const VkShaderModule& vkShaderModule);
-        virtual bool InitCullFrustumDepthHiz(const String& descriptorSetLayout,
-                                             StringVector* pDescriptorSetLayoutNames,
-                                             const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                             const VkPipelineLayout& vkPipelineLayout,
-                                             const VkShaderModule& vkShaderModule);
-        virtual bool InitCullFrustumDepthHizClip(const String& descriptorSetLayout,
-                                                 StringVector* pDescriptorSetLayoutNames,
-                                                 const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                                 const VkPipelineLayout& vkPipelineLayout,
-                                                 const VkShaderModule& vkShaderModule);
+        virtual bool InitCullClearArgs(DescriptorSetLayout* pDSL,
+                          			   VKShader* pShader);
+        virtual bool InitCullFrustum(DescriptorSetLayout* pDSL,
+                          			 VKShader* pShader);
+        virtual bool InitCullFrustumDepthHiz(DescriptorSetLayout* pDSL,
+                          					 VKShader* pShader);
+        virtual bool InitCullFrustumDepthHizClip(DescriptorSetLayout* pDSL,
+                          						 VKShader* pShader);
 
-        virtual bool InitHizDepthGenerate(const String& descriptorSetLayout,
-                                          StringVector* pDescriptorSetLayoutNames,
-                                          const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                          const VkPipelineLayout& vkPipelineLayout,
-                                          const VkShaderModule& vkShaderModule);
+        virtual bool InitHizDepthGenerate(DescriptorSetLayout* pDSL,
+                          				  VKShader* pShader);
 
     protected:
         void destroyBufferCull();
         void destroyVkComputePipeline(VkPipeline& poPipeline);
         
         bool createBufferCull();
-        bool createVkComputePipeline(const String& nameComputePipeline,
-                                     const String& descriptorSetLayout,
-                                     StringVector* pDescriptorSetLayoutNames,
-                                     const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                     const VkPipelineLayout& vkPipelineLayout,
-                                     const VkShaderModule& vkShaderModule,
-                                     VkPipeline& vkPipeline,
-                                     VkDescriptorSet& vkDescriptorSet);
-        bool createVkComputePipeline(const String& nameComputePipeline,
-                                     const String& descriptorSetLayout,
-                                     StringVector* pDescriptorSetLayoutNames,
-                                     const VkDescriptorSetLayout& vkDescriptorSetLayout,
-                                     const VkPipelineLayout& vkPipelineLayout,
-                                     const VkShaderModule& vkShaderModule,
-                                     VkPipeline& vkPipeline,
-                                     int countDescriptorSets,
-                                     VkDescriptorSetVector& vkDescriptorSets);
 
     public:
         virtual void CleanupSwapChain();
@@ -161,7 +109,7 @@ namespace LostPeterVulkan
 
     protected:
         virtual void updateDescriptorSet(VkDescriptorSet& descriptorSet,
-                                         StringVector* poDescriptorSetLayoutNames,
+										 VKStatePipelineCompute* pStatePipelineCompute,
                                          VKBufferCompute* pCB_CullObjects,
                                          VKBufferIndirectCommand* pCB_RenderArgs,
                                          VKBufferCompute* pCB_LodArgs,
