@@ -972,4 +972,10 @@ namespace LostPeterVulkan
 		CreateDescriptorSet(isRecreate);
 	}
 
+	void DescriptorSetLayout::DestroyLayoutAndDescriptorSet()
+	{
+		DestroyDescriptorSets();
+		DestroyDescriptorSet();
+	}
+
 }; //LostPeterVulkan

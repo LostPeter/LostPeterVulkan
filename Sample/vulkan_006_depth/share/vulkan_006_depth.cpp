@@ -654,3 +654,24 @@ void Vulkan_006_Depth::cleanupCustom()
     this->m_aModelObjects.clear();
     this->m_mapModelObjects.clear();
 }
+
+void Vulkan_006_Depth::cleanupSwapChain_Custom()
+{
+	size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+
+        pModelObject->CleanupSwapChain();
+    }
+}
+void Vulkan_006_Depth::recreateSwapChain_Custom()
+{
+	size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+
+        pModelObject->RecreateSwapChain();
+    }
+}

@@ -136,6 +136,8 @@ public:
 
             //Pipeline
 			F_DELETE(this->poStatePipelineGraphics)
+
+			this->pDescriptorSetLayout->DestroyLayoutAndDescriptorSet();
         }
 
         void RecreateSwapChain()

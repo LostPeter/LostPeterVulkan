@@ -579,6 +579,8 @@ namespace LostPeterVulkan
 
 		void CreateLayoutAndDescriptorSets(bool isRecreate);
 		void CreateLayoutAndDescriptorSet(bool isRecreate);
+
+		void DestroyLayoutAndDescriptorSet();
     };
     typedef std::vector<DescriptorSetLayout> DescriptorSetLayoutVector;
     typedef std::vector<DescriptorSetLayout*> DescriptorSetLayoutPtrVector;

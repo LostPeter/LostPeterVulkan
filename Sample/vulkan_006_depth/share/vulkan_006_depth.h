@@ -104,15 +104,6 @@ public:
 			F_DELETE(this->pBufferVertex)
 			F_DELETE(this->pBufferVertexIndex)
 
-            //Uniform
-            size_t count = this->poBuffers_ObjectCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-				F_DELETE(this->poBuffers_ObjectCB[i])
-            }
-            this->poBuffers_ObjectCB.clear();
-			this->objectCBs.clear();
-
             //Texture
             this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
             this->pWindow->destroyVkImageSampler(this->poTextureSampler);
@@ -121,13 +112,34 @@ public:
             this->poTextureImageView = VK_NULL_HANDLE;
             this->poTextureSampler = VK_NULL_HANDLE;
 
-            //Pipeline
+			CleanupSwapChain();
+            
+			F_DELETE(this->pDescriptorSetLayout)
+        }
+
+		void CleanupSwapChain()
+		{
+			//Uniform
+            size_t count = this->poBuffers_ObjectCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+				F_DELETE(this->poBuffers_ObjectCB[i])
+            }
+            this->poBuffers_ObjectCB.clear();
+			this->objectCBs.clear();
+
+			//Pipeline
 			F_DELETE(this->poStatePipelineGraphics)
 			F_DELETE(this->poStatePipelineGraphics_NoDepthTest)
 			F_DELETE(this->poStatePipelineGraphics_NoDepthWrite)
 			F_DELETE(this->poStatePipelineGraphics_NoDepthTestWrite)
 
-			F_DELETE(this->pDescriptorSetLayout)
+			this->pDescriptorSetLayout->DestroyLayoutAndDescriptorSet();
+		}
+
+		void RecreateSwapChain()
+        {
+
         }
 
         //Common
@@ -254,6 +266,9 @@ protected:
 
     //cleanup
         virtual void cleanupCustom();
+
+		virtual void cleanupSwapChain_Custom();
+        virtual void recreateSwapChain_Custom();
 };
 
 
