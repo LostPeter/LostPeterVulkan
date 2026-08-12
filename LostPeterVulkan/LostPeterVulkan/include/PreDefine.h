@@ -30,7 +30,7 @@ namespace LostPeterVulkan
     #define MAX_OBJECT_TERRAIN_COUNT 8196
     #define MAX_OBJECT_LINEFLAT_2D_COUNT 2048
     #define MAX_OBJECT_LINEFLAT_3D_COUNT 512
-    #define MAX_MATERIAL_COUNT 96
+    #define MAX_MATERIAL_COUNT 75
     #define MAX_INSTANCE_COUNT 4096
     #define MAX_CULL_INSTANCE_COUNT 16384
     #define MAX_TERRAIN_SPLAT_COUNT 16
@@ -668,6 +668,8 @@ namespace LostPeterVulkan
     class EditorLineFlat3DCollector;
     class Mesh;
     class MeshSub;
+	class TerrainChunkedNode;
+	class TerrainChunked;
 	class TerrainChunkedLod;
 	class TerrainHeightMap;
 	class TerrainSetting;
@@ -690,6 +692,10 @@ namespace LostPeterVulkan
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
 
+	typedef std::vector<TerrainChunkedNode*> TerrainChunkedNodePtrVector;
+    typedef std::map<String, TerrainChunkedNode*> TerrainChunkedNodePtrMap;
+	typedef std::vector<TerrainChunked*> TerrainChunkedPtrVector;
+    typedef std::map<String, TerrainChunked*> TerrainChunkedPtrMap;
 	typedef std::vector<TerrainHeightMap*> TerrainHeightMapPtrVector;
     typedef std::map<String, TerrainHeightMap*> TerrainHeightMapPtrMap;
 

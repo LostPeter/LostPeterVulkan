@@ -23,8 +23,9 @@ namespace LostPeterVulkan
         virtual ~TerrainSetting();
 
 	public:
-		
-		
+		float fLodPixelError;
+		bool bHeadless;
+		uint32 nAutoCloseMs;
 
 	};
 

@@ -16,6 +16,11 @@ namespace LostPeterVulkan
 {
 	TerrainSetting::TerrainSetting(const String& nameSetting)
 		: Base(nameSetting)
+
+		, fLodPixelError(2.5f)
+		, bHeadless(false)
+		, nAutoCloseMs(0)
+		
 	{
 		
 	}
