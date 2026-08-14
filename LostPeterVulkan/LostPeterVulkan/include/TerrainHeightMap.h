@@ -46,15 +46,6 @@ namespace LostPeterVulkan
 		bool bIsInit;
 
 	public:
-		void Destroy();
-		bool InitFromRaw16(const String& path,
-						   int resolution, 
-						   float cellSize);
-
-		bool NewFromRaw16(int resolution, 
-						  float cellSize);
-
-	public:
 		F_FORCEINLINE int GetResolution() const { return this->nResolution; }
 		F_FORCEINLINE float GetCellSize() const { return this->fCellSize; }
 
@@ -70,6 +61,15 @@ namespace LostPeterVulkan
 		F_FORCEINLINE const HeightMapDataF& GetDataRawF() const { return this->dataRawF; }
 
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
+
+	public:
+		void Destroy();
+		bool InitFromRaw16(const String& path,
+						   int resolution, 
+						   float cellSize);
+
+		bool NewFromRaw16(int resolution, 
+						  float cellSize);
 
 	public:
 		float GetHeightRaw(int x, int z) const;

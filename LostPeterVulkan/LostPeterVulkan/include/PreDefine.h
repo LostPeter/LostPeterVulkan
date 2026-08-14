@@ -672,6 +672,7 @@ namespace LostPeterVulkan
 	class TerrainChunked;
 	class TerrainChunkedLod;
 	class TerrainHeightMap;
+	class TerrainManager;
 	class TerrainSetting;
 
 

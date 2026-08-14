@@ -37,6 +37,14 @@ namespace LostPeterVulkan
 	public:	
 		bool HasChildren() const;
 		void ClearChildren();
+
+	public:
+		void Init(int id,
+				  int level,
+				  int x,
+				  int z,
+				  int size);
+
 	};
 
 
@@ -53,15 +61,30 @@ namespace LostPeterVulkan
 		TerrainChunkedNode* pRootNode;
 		int nMaxDepth;
 		TerrainChunkedNodePtrVector aNodes;
-		
+
+	public:
+		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
+		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
+		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
+		F_FORCEINLINE TerrainChunkedNode* GetRootNode() const { return this->pRootNode; }
+		F_FORCEINLINE int GetMaxDepth() const { return this->nMaxDepth; }
+		const TerrainChunkedNodePtrVector& GetNodes() const { return this->aNodes; }
+
 	public:
 		void Destroy();
-		bool Init(TerrainHeightMap* pHeightMap);	
+		bool Init(TerrainHeightMap* pHeightMap,
+				  int leafQuads, 
+				  int patchQuads);
 
 
 	public:
 		
 
+	protected:
+		TerrainChunkedNode* createNode(int x, int z, int size, int level);
+
+		void computeBoundsAndError(TerrainChunkedNode* pNode);
+		float computeGeometricError(TerrainChunkedNode* pNode);
 	};
 
 }; //LostPeterVulkan

@@ -67,8 +67,10 @@
 #include "Mesh.h"
 #include "MeshSub.h"
 
+#include "TerrainChunked.h"
 #include "TerrainChunkedLod.h"
 #include "TerrainHeightMap.h"
+#include "TerrainManager.h"
 #include "TerrainSetting.h"
 
 
