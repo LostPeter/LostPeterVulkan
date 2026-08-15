@@ -13,9 +13,11 @@
 #define _TERRAIN_CHUNKED_H_
 
 #include "Base.h"
+#include "TerrainRender.h"
 
 namespace LostPeterVulkan
 {
+	/////////////////////////// TerrainChunkedNode ///////////////////////
 	class vulkanExport TerrainChunkedNode
 	{
 	public:
@@ -30,13 +32,20 @@ namespace LostPeterVulkan
 		float fHeightMin;
 		float fHeightMax;
 		float fGeometricError;
-		FAABB aabb;
+		FAABB bounds;
 
 		TerrainChunkedNode* ppChildren[4];
+
+	public:
+		static float DistanceToAABB(const FVector3& point, const FAABB& box);
+		static float DistanceToAABBXZ(const FVector3& point, const FAABB& box);
 
 	public:	
 		bool HasChildren() const;
 		void ClearChildren();
+
+		float DistanceToAABB(const FVector3& point);
+		float DistanceToAABBXZ(const FVector3& point);
 
 	public:
 		void Init(int id,
@@ -48,6 +57,7 @@ namespace LostPeterVulkan
 	};
 
 
+	/////////////////////////// TerrainChunked ///////////////////////////
 	class vulkanExport TerrainChunked : public Base
     {
     public:
@@ -63,6 +73,9 @@ namespace LostPeterVulkan
 		TerrainChunkedNodePtrVector aNodes;
 
 	public:
+		static bool IntervalsOverlap(int a0, int a1, int b0, int b1);
+
+	public:
 		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
@@ -76,15 +89,24 @@ namespace LostPeterVulkan
 				  int leafQuads, 
 				  int patchQuads);
 
+		
+		void SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
+		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataVector& aRenderData);
+
+		int GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const;
 
 	public:
 		
 
 	protected:
-		TerrainChunkedNode* createNode(int x, int z, int size, int level);
+		TerrainChunkedNode* buildNode(int x, int z, int size, int level);
 
 		void computeBoundsAndError(TerrainChunkedNode* pNode);
 		float computeGeometricError(TerrainChunkedNode* pNode);
+
+		void selectDynamicRecursive(TerrainChunkedNode* pNode, const FVector3& vCenter, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
+
+		std::array<float, 4> stitchStepsForNode(const TerrainChunkedNode* pNode, int lod, const TerrainChunkedNodePtrVector& aNodeSelect) const;
 	};
 
 }; //LostPeterVulkan

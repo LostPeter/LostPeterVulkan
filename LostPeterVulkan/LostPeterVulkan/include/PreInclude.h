@@ -71,6 +71,7 @@
 #include "TerrainChunkedLod.h"
 #include "TerrainHeightMap.h"
 #include "TerrainManager.h"
+#include "TerrainRender.h"
 #include "TerrainSetting.h"
 
 

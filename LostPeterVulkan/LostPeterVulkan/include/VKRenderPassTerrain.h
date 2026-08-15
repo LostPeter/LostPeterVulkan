@@ -28,6 +28,8 @@ namespace LostPeterVulkan
         static const uint32 c_nInstanceGridVertexCount;
 
     public:
+		TerrainManager* pTerrainManager;
+
         //Terrain
         uint8* poTerrainHeightMapData;
         float* poTerrainHeightMapDataFloat;
@@ -98,6 +100,10 @@ namespace LostPeterVulkan
         virtual bool Init();
 
     protected:
+		void destroyTerrainManager();
+
+		void createTerrainManager();
+		
         virtual bool loadTerrainData(); 
         virtual void setupTerrainGeometryWhole();
         virtual void setupTerrainGeometryInstance();

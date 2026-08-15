@@ -503,6 +503,25 @@ namespace LostPeterVulkan
     struct MaterialConstants;
     struct InstanceConstants;
 
+	struct vulkanExport IndexRange
+	{
+		IndexRange()
+			: nFirstIndex(0)
+			, nIndexCount(0)
+		{
+
+		}
+		IndexRange(uint32 firstIndex, uint32 indexCount)
+			: nFirstIndex(firstIndex)
+			, nIndexCount(indexCount)
+		{
+
+		}
+
+		uint32 nFirstIndex;
+		uint32 nIndexCount;
+	};
+
     struct vulkanExport MeshInfo
     {
         MeshInfo();
@@ -673,6 +692,11 @@ namespace LostPeterVulkan
 	class TerrainChunkedLod;
 	class TerrainHeightMap;
 	class TerrainManager;
+	class TerrainRenderData;
+	class TerrainRenderInstanceData;
+	class TerrainRenderBatchData;
+	class TerrainRenderBatches;
+	class TerrainRender;
 	class TerrainSetting;
 
 

@@ -11,6 +11,7 @@
 
 #include "../include/TerrainManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainSetting.h"
 #include "../include/TerrainChunked.h"
 
 template<> LostPeterVulkan::TerrainManager* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainManager>::ms_Singleton = nullptr;
@@ -35,6 +36,7 @@ namespace LostPeterVulkan
         : Base("TerrainManager")	
 
 		, pNodePool(nullptr)
+		, pTerrainSetting(nullptr)
 
     {
 
@@ -46,16 +48,22 @@ namespace LostPeterVulkan
 
 	void TerrainManager::Destroy()
 	{
+		destroySetting();
 		destroyPools();
 	}
 		void TerrainManager::destroyPools()
 		{
 			F_DELETE(this->pNodePool)
 		}
+		void TerrainManager::destroySetting()
+		{
+			F_DELETE(this->pTerrainSetting)
+		}
+
     bool TerrainManager::Init()
 	{
 		createPools();
-
+		createSetting();
 
 
 		return true;
@@ -68,6 +76,13 @@ namespace LostPeterVulkan
 			this->pNodePool = new ObjectPointerPool<TerrainChunkedNode>();
 			this->pNodePool->stepCount = s_nNodeCount_Step;
 			this->pNodePool->Reserve(s_nNodeCount_Init);
+		}
+		void TerrainManager::createSetting()
+		{
+			if (this->pTerrainSetting != nullptr)
+				return;
+
+			this->pTerrainSetting = new TerrainSetting();
 		}
 
 }; //LostPeterVulkan

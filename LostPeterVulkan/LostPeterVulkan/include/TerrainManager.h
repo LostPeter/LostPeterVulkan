@@ -31,6 +31,8 @@ namespace LostPeterVulkan
 		
 		ObjectPointerPool<TerrainChunkedNode>* pNodePool;
 
+		TerrainSetting* pTerrainSetting;
+
 	public:
         static TerrainManager& GetSingleton();
 		static TerrainManager* GetSingletonPtr();
@@ -43,8 +45,10 @@ namespace LostPeterVulkan
 
 	protected:
 		void destroyPools();
+		void destroySetting();
 
         void createPools();
+		void createSetting();
 
 	};
 

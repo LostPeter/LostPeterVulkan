@@ -16,16 +16,24 @@
 
 namespace LostPeterVulkan
 {
-	class vulkanExport TerrainSetting : public Base
+	class vulkanExport TerrainSetting : public FSingleton<TerrainSetting>
+                                   	  , public Base
     {
     public:
-        TerrainSetting(const String& nameSetting);
+        TerrainSetting();
         virtual ~TerrainSetting();
 
 	public:
 		float fLodPixelError;
 		bool bHeadless;
 		uint32 nAutoCloseMs;
+
+	public:
+        static TerrainSetting& GetSingleton();
+		static TerrainSetting* GetSingletonPtr();
+
+	public:
+		
 
 	};
 

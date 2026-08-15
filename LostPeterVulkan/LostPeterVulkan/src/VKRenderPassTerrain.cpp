@@ -11,6 +11,7 @@
 
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainManager.h"
 #include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
@@ -83,6 +84,8 @@ namespace LostPeterVulkan
 
     void VKRenderPassTerrain::Destroy()
     {
+		destroyTerrainManager();
+
         F_DELETE_T(this->poTerrainHeightMapData)
         F_DELETE_T(this->poTerrainHeightMapDataFloat)
         this->poTerrainHeightMapDataSize = 0;
@@ -174,9 +177,15 @@ namespace LostPeterVulkan
         }
         this->poTerrainControlImageSampler = VK_NULL_HANDLE;
     } 
+		void VKRenderPassTerrain::destroyTerrainManager()
+		{
+			F_DELETE(this->pTerrainManager)
+		}
 
     bool VKRenderPassTerrain::Init()
     {
+		createTerrainManager();
+		
         if (loadTerrainData())
         {
             setupTerrainGeometryWhole();
@@ -187,6 +196,14 @@ namespace LostPeterVulkan
         }
         return false;
     }
+		void VKRenderPassTerrain::createTerrainManager()
+		{
+			if (this->pTerrainManager != nullptr)
+				return;
+
+			this->pTerrainManager = new TerrainManager();
+		}
+
         bool VKRenderPassTerrain::loadTerrainData()
         {
             const String& pathTerrain = Base::GetWindowPtr()->cfg_terrain_Path; 

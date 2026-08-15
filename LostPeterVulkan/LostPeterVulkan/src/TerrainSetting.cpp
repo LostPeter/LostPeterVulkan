@@ -12,10 +12,23 @@
 #include "../include/TerrainSetting.h"
 #include "../include/VulkanWindow.h"
 
+template<> LostPeterVulkan::TerrainSetting* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainSetting>::ms_Singleton = nullptr;
+
 namespace LostPeterVulkan
 {
-	TerrainSetting::TerrainSetting(const String& nameSetting)
-		: Base(nameSetting)
+	TerrainSetting* TerrainSetting::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	TerrainSetting& TerrainSetting::GetSingleton()
+	{  
+		F_Assert(ms_Singleton && "TerrainSetting::GetSingleton")
+		return (*ms_Singleton);     
+	}
+	
+
+	TerrainSetting::TerrainSetting()
+		: Base("TerrainSetting")
 
 		, fLodPixelError(2.5f)
 		, bHeadless(false)
