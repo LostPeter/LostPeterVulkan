@@ -141,6 +141,7 @@ namespace LostPeterVulkan
                 String nameTexture = "Texture-HizDepth";
                 Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
                                                                   nullptr,
+																  1,
                                                                   (uint32_t)this->nHizDepthWidth,
                                                                   (uint32_t)this->nHizDepthHeight,
                                                                   true,

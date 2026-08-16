@@ -51,11 +51,7 @@ public:
             , countInstance(11)
             
             //Texture
-            , poMipMapCount(0)
-            , poTextureImage(VK_NULL_HANDLE)
-            , poTextureImageMemory(VK_NULL_HANDLE)
-            , poTextureImageView(VK_NULL_HANDLE)
-            , poTextureSampler(VK_NULL_HANDLE)
+            , pTexture(nullptr)
 
             //Pipeline
 			, poStatePipelineGraphics(nullptr)
@@ -105,12 +101,7 @@ public:
 			F_DELETE(this->pBufferVertexIndex)
 
             //Texture
-            this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
-            this->pWindow->destroyVkImageSampler(this->poTextureSampler);
-            this->poTextureImage = VK_NULL_HANDLE;
-            this->poTextureImageMemory = VK_NULL_HANDLE;
-            this->poTextureImageView = VK_NULL_HANDLE;
-            this->poTextureSampler = VK_NULL_HANDLE;
+            F_DELETE(this->pTexture)
 
             CleanupSwapChain();
 
@@ -181,11 +172,7 @@ public:
         VKBufferUniformPtrVector poBuffers_materialCB;
 
         //Texture
-        uint32_t poMipMapCount;
-        VkImage poTextureImage;
-        VkDeviceMemory poTextureImageMemory;
-        VkImageView poTextureImageView;
-        VkSampler poTextureSampler;
+		VKTexture* pTexture;
 
         //Pipeline
         VKStatePipelineGraphics* poStatePipelineGraphics;

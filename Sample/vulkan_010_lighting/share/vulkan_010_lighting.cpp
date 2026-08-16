@@ -256,9 +256,19 @@ bool Vulkan_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
         String nameTexture;
         String pathBase;
         FUtilString::SplitFileName(pModelObject->pathTexture, nameTexture, pathBase);
-        createTexture2D(nameTexture, pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createVkImageView(nameTexture, pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createVkSampler(nameTexture, pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+		StringVector aPathTexture;
+		aPathTexture.push_back(pModelObject->pathTexture);
+		pModelObject->pTexture = new VKTexture(0,
+											   nameTexture,
+											   aPathTexture,
+											   F_Texture_2D,
+											   F_TexturePixelFormat_R8G8B8A8_SRGB,
+											   F_TextureFilter_Bilinear,
+											   F_TextureAddressing_Clamp,
+											   F_TextureBorderColor_OpaqueBlack,
+											   false,
+											   false);
+		pModelObject->pTexture->LoadTexture(512, 512, 1);
 
         F_LogInfo("Vulkan_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -528,17 +538,13 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             }
             //(4) Image
             {
-                VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = pModelObject->poTextureImageView;
-                imageInfo.sampler = pModelObject->poTextureSampler;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pModelObject->pDescriptorSetLayout->poDescriptorSets[j],
                                           4,
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          imageInfo);
+                                          pModelObject->pTexture->GetVkDescriptorImageInfo());
             }
             updateVkDescriptorSets(descriptorWrites);
         }

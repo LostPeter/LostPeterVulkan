@@ -52,6 +52,7 @@ namespace LostPeterVulkan
         VkImageView poTextureImageView;
         VkSampler poTextureSampler;
         VkDescriptorImageInfo poTextureImageInfo;
+		VkDescriptorImageInfo poTextureImageInfo_NoSampler;
         VkImageLayout poTextureImageLayout;
 
         VkBuffer stagingBuffer;
@@ -59,6 +60,7 @@ namespace LostPeterVulkan
 
         //Texture 3D
         uint8* pDataRGBA;
+		bool isDeleteRGBA;
 
         //Texture Animation
         int texChunkMaxX;
@@ -72,14 +74,21 @@ namespace LostPeterVulkan
         VkImageUsageFlags rtImageUsage;
 
     public:
-        
+        F_FORCEINLINE const VkImage& GetVkImage() const { return this->poTextureImage; }
+		F_FORCEINLINE const VkDeviceMemory& GetVkBufferMemory() const { return this->poTextureImageMemory; }
+		F_FORCEINLINE const VkImageView& GetVkImageView() const { return this->poTextureImageView; }
+		F_FORCEINLINE const VkSampler& GetVkSampler() const { return this->poTextureSampler; }
+		F_FORCEINLINE const VkDescriptorImageInfo& GetVkDescriptorImageInfo() const { return this->poTextureImageInfo; }
+		F_FORCEINLINE const VkDescriptorImageInfo& GetVkDescriptorImageInfo_NoSampler() const { return this->poTextureImageInfo_NoSampler; }
 
     public:
         void Destroy();
         virtual int RandomTextureIndex();
         virtual void LoadTexture(int width,
                                  int height,
-                                 int depth);
+                                 int depth,
+								 int channel = 4,
+                                 uint8* pData = nullptr);
         virtual void UpdateTexture();
 
     protected:

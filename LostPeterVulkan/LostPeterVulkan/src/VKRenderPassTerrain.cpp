@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/TerrainManager.h"
 #include "../include/VKBufferVertexIndex.h"
+#include "../include/VKTexture.h"
 
 namespace LostPeterVulkan
 {
@@ -49,31 +50,15 @@ namespace LostPeterVulkan
         , poTerrainIndexBuffer_Data_Instance(nullptr)
         , poBufferVertexIndex_MeshInstance(nullptr)
 
-        //HeightMap
-        , poTerrainHeightMapImage(VK_NULL_HANDLE)
-        , poTerrainHeightMapImageMemory(VK_NULL_HANDLE)
-        , poTerrainHeightMapImageView(VK_NULL_HANDLE)
-        //NormalMap
-        , poTerrainNormalMapImage(VK_NULL_HANDLE)
-        , poTerrainNormalMapImageMemory(VK_NULL_HANDLE)
-        , poTerrainNormalMapImageView(VK_NULL_HANDLE)
-        , poTerrainImageSampler(VK_NULL_HANDLE)
+		//HeightMap/NormalMap
+		, pTexture_HeightMap(nullptr)
+		, pTexture_NormalMap(nullptr)
 
-        //Diffuse
-        , poTerrainDiffuseImage(VK_NULL_HANDLE)
-        , poTerrainDiffuseImageMemory(VK_NULL_HANDLE)
-        , poTerrainDiffuseImageView(VK_NULL_HANDLE)
-        , poTerrainDiffuseImageSampler(VK_NULL_HANDLE)
-        //Normal
-        , poTerrainNormalImage(VK_NULL_HANDLE)
-        , poTerrainNormalImageMemory(VK_NULL_HANDLE)
-        , poTerrainNormalImageView(VK_NULL_HANDLE)
-        , poTerrainNormalImageSampler(VK_NULL_HANDLE)
-        //Control
-        , poTerrainControlImage(VK_NULL_HANDLE)
-        , poTerrainControlImageMemory(VK_NULL_HANDLE)
-        , poTerrainControlImageView(VK_NULL_HANDLE)
-        , poTerrainControlImageSampler(VK_NULL_HANDLE)
+		//Diffuse/Normal/Control
+		, pTexture_Diffuse(nullptr)
+		, pTexture_Normal(nullptr)
+		, pTexture_Control(nullptr)
+
     {
 
     }
@@ -84,7 +69,9 @@ namespace LostPeterVulkan
 
     void VKRenderPassTerrain::Destroy()
     {
+		destroyTerrainTexture();
 		destroyTerrainManager();
+
 
         F_DELETE_T(this->poTerrainHeightMapData)
         F_DELETE_T(this->poTerrainHeightMapDataFloat)
@@ -113,84 +100,32 @@ namespace LostPeterVulkan
         this->poTerrainIndexBuffer_Data_Instance = nullptr;
 		F_DELETE(this->poBufferVertexIndex_MeshInstance)
 
-        //TerrainHeightMapImage
-        if (this->poTerrainHeightMapImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poTerrainHeightMapImage, this->poTerrainHeightMapImageMemory, this->poTerrainHeightMapImageView);
-        }
-        this->poTerrainHeightMapImage = VK_NULL_HANDLE;
-        this->poTerrainHeightMapImageMemory = VK_NULL_HANDLE;
-        this->poTerrainHeightMapImageView = VK_NULL_HANDLE;
-        //TerrainNormalMapImage
-        if (this->poTerrainNormalMapImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poTerrainNormalMapImage, this->poTerrainNormalMapImageMemory, this->poTerrainNormalMapImageView);
-        }
-        this->poTerrainNormalMapImage = VK_NULL_HANDLE;
-        this->poTerrainNormalMapImageMemory = VK_NULL_HANDLE;
-        this->poTerrainNormalMapImageView = VK_NULL_HANDLE;
-        if (this->poTerrainImageSampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainImageSampler);
-        }
-        this->poTerrainImageSampler = VK_NULL_HANDLE;
-
-        //TerrainDiffuseImage
-        if (this->poTerrainDiffuseImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poTerrainDiffuseImage, this->poTerrainDiffuseImageMemory, this->poTerrainDiffuseImageView);
-        }
-        this->poTerrainDiffuseImage = VK_NULL_HANDLE;
-        this->poTerrainDiffuseImageMemory = VK_NULL_HANDLE;
-        this->poTerrainDiffuseImageView = VK_NULL_HANDLE;
-        if (this->poTerrainDiffuseImageSampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainDiffuseImageSampler);
-        }
-        this->poTerrainDiffuseImageSampler = VK_NULL_HANDLE;
-
-        //TerrainNormalImage
-        if (this->poTerrainNormalImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poTerrainNormalImage, this->poTerrainNormalImageMemory, this->poTerrainNormalImageView);
-        }
-        this->poTerrainNormalImage = VK_NULL_HANDLE;
-        this->poTerrainNormalImageMemory = VK_NULL_HANDLE;
-        this->poTerrainNormalImageView = VK_NULL_HANDLE;
-         if (this->poTerrainNormalImageSampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainNormalImageSampler);
-        }
-        this->poTerrainNormalImageSampler = VK_NULL_HANDLE;
-
-        //TerrainControlImage
-        if (this->poTerrainControlImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poTerrainControlImage, this->poTerrainControlImageMemory, this->poTerrainControlImageView);
-        }
-        this->poTerrainControlImage = VK_NULL_HANDLE;
-        this->poTerrainControlImageMemory = VK_NULL_HANDLE;
-        this->poTerrainControlImageView = VK_NULL_HANDLE;
-         if (this->poTerrainControlImageSampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->poTerrainControlImageSampler);
-        }
-        this->poTerrainControlImageSampler = VK_NULL_HANDLE;
+        
     } 
 		void VKRenderPassTerrain::destroyTerrainManager()
 		{
 			F_DELETE(this->pTerrainManager)
 		}
+		void VKRenderPassTerrain::destroyTerrainTexture()
+		{
+			F_DELETE(this->pTexture_Diffuse)
+			F_DELETE(this->pTexture_Normal)
+			F_DELETE(this->pTexture_Control)
+
+			F_DELETE(this->pTexture_NormalMap)
+			F_DELETE(this->pTexture_HeightMap)
+		}
+
 
     bool VKRenderPassTerrain::Init()
     {
 		createTerrainManager();
-		
+
         if (loadTerrainData())
         {
             setupTerrainGeometryWhole();
             setupTerrainGeometryInstance();
-            setupTerrainTexture();
+            createTerrainTexture();
 
             return true;
         }
@@ -240,6 +175,8 @@ namespace LostPeterVulkan
         }
         void VKRenderPassTerrain::setupTerrainGeometryWhole()
         {   
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
             //1> Mesh Geometry
             FMeshData meshData;
             float fSize = (float)(this->poTerrainHeightMapSize - 1.0f);
@@ -296,15 +233,15 @@ namespace LostPeterVulkan
                       (int)this->poTerrain_Indices.size());
 
             //2> createBufferVertexIndex
-			this->poBufferVertexIndex_MeshWhole = Base::GetWindowPtr()->createBufferVertexIndex("Vertex-Whole-" + this->name,
-																								F_MeshVertex_Pos3Color4Normal3Tex2,
-																								this->poTerrainVertexBuffer_Size, 
-																								(uint8*)this->poTerrainVertexBuffer_Data, 
-																								false,
-																								this->poTerrainIndexBuffer_Size, 
-																								(uint8*)this->poTerrainIndexBuffer_Data, 
-																								false,
-																								false);
+			this->poBufferVertexIndex_MeshWhole = pWindow->createBufferVertexIndex("Vertex-Whole-" + this->name,
+																				   F_MeshVertex_Pos3Color4Normal3Tex2,
+																				   this->poTerrainVertexBuffer_Size, 
+																				   (uint8*)this->poTerrainVertexBuffer_Data, 
+																				   false,
+																				   this->poTerrainIndexBuffer_Size, 
+																				   (uint8*)this->poTerrainIndexBuffer_Data, 
+																				   false,
+																				   false);
 			if (this->poBufferVertexIndex_MeshWhole == nullptr)
 			{
 				String msg = "*********************** VKRenderPassTerrain::setupTerrainGeometryWhole: Failed to create terrain vertex whole !";
@@ -314,6 +251,8 @@ namespace LostPeterVulkan
         }
         void VKRenderPassTerrain::setupTerrainGeometryInstance()
         {
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
             //1> Mesh Geometry
             FMeshData meshData;
             float fSize = (float)(c_nInstanceGridVertexCount - 1.0f);
@@ -369,15 +308,15 @@ namespace LostPeterVulkan
                       (int)c_nInstanceGridVertexCount);
 
             //2> createBufferVertexIndex
-			this->poBufferVertexIndex_MeshInstance = Base::GetWindowPtr()->createBufferVertexIndex("Vertex-Whole-" + this->name,
-																								   F_MeshVertex_Pos3Color4Normal3Tex2,
-																								   this->poTerrainVertexBuffer_Size_Instance, 
-																								   (uint8*)this->poTerrainVertexBuffer_Data_Instance, 
-																								   false,
-																								   this->poTerrainIndexBuffer_Size_Instance, 
-																								   (uint8*)this->poTerrainIndexBuffer_Data_Instance, 
-																								   false,
-																								   false);
+			this->poBufferVertexIndex_MeshInstance = pWindow->createBufferVertexIndex("Vertex-Whole-" + this->name,
+																					  F_MeshVertex_Pos3Color4Normal3Tex2,
+																					  this->poTerrainVertexBuffer_Size_Instance, 
+																					  (uint8*)this->poTerrainVertexBuffer_Data_Instance, 
+																					  false,
+																					  this->poTerrainIndexBuffer_Size_Instance, 
+																					  (uint8*)this->poTerrainIndexBuffer_Data_Instance, 
+																					  false,
+																					  false);
 			if (this->poBufferVertexIndex_MeshInstance == nullptr)
 			{
 				String msg = "*********************** VKRenderPassTerrain::setupTerrainGeometryInstance: Failed to create terrain vertex instance !";
@@ -385,98 +324,59 @@ namespace LostPeterVulkan
 				throw std::runtime_error(msg.c_str());
 			}
         }
-        void VKRenderPassTerrain::setupTerrainTexture()
+        void VKRenderPassTerrain::createTerrainTexture()
         {
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
             //Compute
             {
                 //1> TerrainHeightMap Texture
                 {
                     String nameTexture = "Texture-TerrainHeightMap";
-                    Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
-                                                                      this->poTerrainHeightMapData,
-                                                                      this->poTerrainHeightMapSize,
-                                                                      this->poTerrainHeightMapSize,
-                                                                      false,
-                                                                      1,
-                                                                      VK_SAMPLE_COUNT_1_BIT,
-                                                                      VK_FORMAT_R16_UNORM,
-                                                                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                                                                      true,
-                                                                      this->poTerrainHeightMapImage,
-                                                                      this->poTerrainHeightMapImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(nameTexture,
-                                                            this->poTerrainHeightMapImage, 
-                                                            VK_IMAGE_VIEW_TYPE_2D, 
-                                                            VK_FORMAT_R16_UNORM, 
-                                                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                            1, 
-                                                            1, 
-                                                            this->poTerrainHeightMapImageView);
-                    F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Compute: Create render texture [TerrainHeightMap] - [%d, %d] success !",
+					StringVector aPathTextureHeightMap;
+					this->pTexture_HeightMap = new VKTexture(0,
+														     nameTexture,
+														     aPathTextureHeightMap,
+														     F_Texture_2D,
+														     F_TexturePixelFormat_R16_UNORM,
+														     F_TextureFilter_Bilinear,
+														     F_TextureAddressing_Clamp,
+														     F_TextureBorderColor_OpaqueBlack,
+														     true,
+														     true);
+					this->pTexture_HeightMap->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					this->pTexture_HeightMap->LoadTexture(this->poTerrainHeightMapSize, 
+														  this->poTerrainHeightMapSize,
+														  1,
+														  2,
+														  this->poTerrainHeightMapData);
+					
+                    F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Compute: Create render texture [TerrainHeightMap] - [%d, %d] success !",
                               (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
                 }
                 //2> TerrainNormalMap Texture
                 {
                     String nameTexture = "Texture-TerrainNormalMap";
-                    Base::GetWindowPtr()->createTextureRenderTarget2D(nameTexture,
-                                                                      nullptr,
-                                                                      this->poTerrainHeightMapSize,
-                                                                      this->poTerrainHeightMapSize,
-                                                                      false,
-                                                                      1,
-                                                                      VK_SAMPLE_COUNT_1_BIT,
-                                                                      VK_FORMAT_R8G8B8A8_UNORM,
-                                                                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
-                                                                      VK_IMAGE_LAYOUT_GENERAL,
-                                                                      true,
-                                                                      this->poTerrainNormalMapImage,
-                                                                      this->poTerrainNormalMapImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(nameTexture,
-                                                            this->poTerrainNormalMapImage, 
-                                                            VK_IMAGE_VIEW_TYPE_2D, 
-                                                            VK_FORMAT_R8G8B8A8_UNORM, 
-                                                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                            1, 
-                                                            1, 
-                                                            this->poTerrainNormalMapImageView);
-                    F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
-                              (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
-                }
-                //3> Terrain ImageSampler
-                {
-                    Base::GetWindowPtr()->createVkSampler("Texture-Terrain",
-                                                          F_TextureFilter_Bilinear, 
-                                                          F_TextureAddressing_Clamp,
-                                                          F_TextureBorderColor_OpaqueBlack,
-                                                          true,
-                                                          Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                                          0.0f,
-                                                          1.0f,
-                                                          0.0f,
-                                                          this->poTerrainImageSampler);
-                }
-                //4> ImageInfo
-                {
-                    //TerrainHeightMap Texture
-                    this->poTerrainHeightMapImageInfo_NoSampler = {};
-                    this->poTerrainHeightMapImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainHeightMapImageInfo_NoSampler.imageView = this->poTerrainHeightMapImageView;
-                    this->poTerrainHeightMapImageInfo_NoSampler.sampler = nullptr;
-                    this->poTerrainHeightMapImageInfo_Sampler = {};
-                    this->poTerrainHeightMapImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainHeightMapImageInfo_Sampler.imageView = this->poTerrainHeightMapImageView;
-                    this->poTerrainHeightMapImageInfo_Sampler.sampler = this->poTerrainImageSampler;
+					StringVector aPathTextureNormalMap;
+					this->pTexture_NormalMap = new VKTexture(0,
+														     nameTexture,
+														     aPathTextureNormalMap,
+														     F_Texture_2D,
+														     F_TexturePixelFormat_R8G8B8A8_UNORM,
+														     F_TextureFilter_Bilinear,
+														     F_TextureAddressing_Clamp,
+														     F_TextureBorderColor_OpaqueBlack,
+														     true,
+														     true);
+					this->pTexture_NormalMap->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+					this->pTexture_NormalMap->LoadTexture(this->poTerrainHeightMapSize, 
+														  this->poTerrainHeightMapSize,
+														  1,
+														  4,
+														  nullptr);
 
-                    //TerrainNormalMap Texture
-                    this->poTerrainNormalMapImageInfo_NoSampler = {};
-                    this->poTerrainNormalMapImageInfo_NoSampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                    this->poTerrainNormalMapImageInfo_NoSampler.imageView = this->poTerrainNormalMapImageView;
-                    this->poTerrainNormalMapImageInfo_NoSampler.sampler = nullptr;
-                    this->poTerrainNormalMapImageInfo_Sampler = {};
-                    this->poTerrainNormalMapImageInfo_Sampler.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                    this->poTerrainNormalMapImageInfo_Sampler.imageView = this->poTerrainNormalMapImageView;
-                    this->poTerrainNormalMapImageInfo_Sampler.sampler = this->poTerrainImageSampler;
+                    F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
+                              (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
                 }
             }
 
@@ -486,122 +386,65 @@ namespace LostPeterVulkan
                 //1> Terrain Diffuse
                 {
                     String nameTexture = "Texture-Terrain-Diffuse";
-                    StringVector aPathTextureDiffuse = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureDiffuse_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(nameTexture,
-                                                               aPathTextureDiffuse, 
-                                                               VK_IMAGE_TYPE_2D,
-                                                               VK_SAMPLE_COUNT_1_BIT, 
-                                                               VK_FORMAT_R8G8B8A8_SRGB, 
-                                                               true, 
-                                                               mipMapCount, 
-                                                               this->poTerrainDiffuseImage, 
-                                                               this->poTerrainDiffuseImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(nameTexture,
-                                                            this->poTerrainDiffuseImage, 
-                                                            VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                            VK_FORMAT_R8G8B8A8_SRGB, 
-                                                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                            mipMapCount, 
-                                                            (int)aPathTextureDiffuse.size(), 
-                                                            this->poTerrainDiffuseImageView);
-                    Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                          F_TextureFilter_Bilinear, 
-                                                          F_TextureAddressing_Clamp,
-                                                          F_TextureBorderColor_OpaqueBlack,
-                                                          true,
-                                                          Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                                          0.0f,
-                                                          static_cast<float>(mipMapCount),
-                                                          0.0f,
-                                                          this->poTerrainDiffuseImageSampler);
+                    StringVector aPathTextureDiffuse = FUtilString::Split(pWindow->cfg_terrainTextureDiffuse_Path, ";");
+					this->pTexture_Diffuse = new VKTexture(0,
+														   nameTexture,
+														   aPathTextureDiffuse,
+														   F_Texture_2DArray,
+														   F_TexturePixelFormat_R8G8B8A8_SRGB,
+														   F_TextureFilter_Bilinear,
+														   F_TextureAddressing_Clamp,
+														   F_TextureBorderColor_OpaqueBlack,
+														   false,
+														   false);
+					this->pTexture_Diffuse->LoadTexture(1024, 
+														1024,
+														1);
 
-                    this->poTerrainDiffuseImageInfo = {};
-                    this->poTerrainDiffuseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainDiffuseImageInfo.imageView = this->poTerrainDiffuseImageView;
-                    this->poTerrainDiffuseImageInfo.sampler = this->poTerrainDiffuseImageSampler;
-
-                    F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
-                              Base::GetWindowPtr()->cfg_terrainTextureDiffuse_Path.c_str());
+                    F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
+                              pWindow->cfg_terrainTextureDiffuse_Path.c_str());
                 }
                 //2> Terrain Normal
                 {
                     String nameTexture = "Texture-Terrain-Normal";
-                    StringVector aPathTextureNormal = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureNormal_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(nameTexture, 
-                                                               aPathTextureNormal, 
-                                                               VK_IMAGE_TYPE_2D,
-                                                               VK_SAMPLE_COUNT_1_BIT, 
-                                                               VK_FORMAT_R8G8B8A8_UNORM, 
-                                                               true, 
-                                                               mipMapCount, 
-                                                               this->poTerrainNormalImage, 
-                                                               this->poTerrainNormalImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(nameTexture, 
-                                                            this->poTerrainNormalImage, 
-                                                            VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                            VK_FORMAT_R8G8B8A8_UNORM, 
-                                                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                            mipMapCount, 
-                                                            (int)aPathTextureNormal.size(), 
-                                                            this->poTerrainNormalImageView);
-                    Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                          F_TextureFilter_Bilinear, 
-                                                          F_TextureAddressing_Clamp,
-                                                          F_TextureBorderColor_OpaqueBlack,
-                                                          true,
-                                                          Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                                          0.0f,
-                                                          static_cast<float>(mipMapCount),
-                                                          0.0f,
-                                                          this->poTerrainNormalImageSampler);
+                    StringVector aPathTextureNormal = FUtilString::Split(pWindow->cfg_terrainTextureNormal_Path, ";");
+					this->pTexture_Normal = new VKTexture(0,
+														  nameTexture,
+														  aPathTextureNormal,
+														  F_Texture_2DArray,
+														  F_TexturePixelFormat_R8G8B8A8_UNORM,
+														  F_TextureFilter_Bilinear,
+														  F_TextureAddressing_Clamp,
+														  F_TextureBorderColor_OpaqueBlack,
+														  false,
+														  false);
+					this->pTexture_Normal->LoadTexture(1024, 
+														1024,
+														1);
 
-                    this->poTerrainNormalImageInfo = {};
-                    this->poTerrainNormalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainNormalImageInfo.imageView = this->poTerrainNormalImageView;
-                    this->poTerrainNormalImageInfo.sampler = this->poTerrainNormalImageSampler;
-
-                    F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
-                              Base::GetWindowPtr()->cfg_terrainTextureNormal_Path.c_str());
+                    F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
+                              pWindow->cfg_terrainTextureNormal_Path.c_str());
                 }
                 //3> Terrain Control
                 {
                     String nameTexture = "Texture-Terrain-Control";
-                    StringVector aPathTextureControl = FUtilString::Split(Base::GetWindowPtr()->cfg_terrainTextureControl_Path, ";");
-                    Base::GetWindowPtr()->createTexture2DArray(nameTexture, 
-                                                               aPathTextureControl, 
-                                                               VK_IMAGE_TYPE_2D,
-                                                               VK_SAMPLE_COUNT_1_BIT, 
-                                                               VK_FORMAT_R8G8B8A8_UNORM, 
-                                                               true, 
-                                                               mipMapCount, 
-                                                               this->poTerrainControlImage, 
-                                                               this->poTerrainControlImageMemory);
-                    Base::GetWindowPtr()->createVkImageView(nameTexture, 
-                                                            this->poTerrainControlImage, 
-                                                            VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                            VK_FORMAT_R8G8B8A8_UNORM, 
-                                                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                            mipMapCount, 
-                                                            (int)aPathTextureControl.size(), 
-                                                            this->poTerrainControlImageView);
-                    Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                          F_TextureFilter_Bilinear, 
-                                                          F_TextureAddressing_Clamp,
-                                                          F_TextureBorderColor_OpaqueBlack,
-                                                          true,
-                                                          Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                                          0.0f,
-                                                          static_cast<float>(mipMapCount),
-                                                          0.0f,
-                                                          this->poTerrainControlImageSampler);
+                    StringVector aPathTextureControl = FUtilString::Split(pWindow->cfg_terrainTextureControl_Path, ";");
+					this->pTexture_Control = new VKTexture(0,
+														   nameTexture,
+														   aPathTextureControl,
+														   F_Texture_2DArray,
+														   F_TexturePixelFormat_R8G8B8A8_UNORM,
+														   F_TextureFilter_Bilinear,
+														   F_TextureAddressing_Clamp,
+														   F_TextureBorderColor_OpaqueBlack,
+														   false,
+														   false);
+					this->pTexture_Control->LoadTexture(1024, 
+														1024,
+														1);
 
-                    this->poTerrainControlImageInfo = {};
-                    this->poTerrainControlImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    this->poTerrainControlImageInfo.imageView = this->poTerrainControlImageView;
-                    this->poTerrainControlImageInfo.sampler = this->poTerrainControlImageSampler;
-
-                    F_LogInfo("VKRenderPassTerrain::setupTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
-                              Base::GetWindowPtr()->cfg_terrainTextureControl_Path.c_str());
+                    F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
+                              pWindow->cfg_terrainTextureControl_Path.c_str());
                 }
             }
         }

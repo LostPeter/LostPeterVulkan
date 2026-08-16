@@ -12,6 +12,7 @@
 #include "../include/VKPipelineGraphicsTerrain.h"
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKTexture.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKStatePipelineGraphics.h"
 
@@ -64,6 +65,8 @@ namespace LostPeterVulkan
     {
         this->pDescriptorSetLayout = pDSL;
 
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //1> Buffer
         if (this->poBuffer_TerrainObjectCB == nullptr)
         {
@@ -90,13 +93,12 @@ namespace LostPeterVulkan
             }
         }
          
-
         //2> Pipeline
         {
             VkViewportVector aViewports;
-            aViewports.push_back(Base::GetWindowPtr()->poViewport);
+            aViewports.push_back(pWindow->poViewport);
             VkRect2DVector aScissors;
-            aScissors.push_back(Base::GetWindowPtr()->poScissor);
+            aScissors.push_back(pWindow->poScissor);
             VkDynamicStateVector aDynamicStates =
             {
                 VK_DYNAMIC_STATE_VIEWPORT,
@@ -127,18 +129,18 @@ namespace LostPeterVulkan
             VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
             VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-            this->poStatePipelineGraphics = Base::GetWindowPtr()->createStatePipelineGraphics("PipelineGraphics-" + this->name,
-																			 				  pDSL,
-																							  aShaderStageCreateInfos,
-																							  F_MeshVertex_Pos3Color4Normal3Tex2,
-																							  false, 0, 0,
-																							  Base::GetWindowPtr()->poRenderPass, aViewports, aScissors, aDynamicStates,
-																							  vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
-																							  VK_TRUE, isDepthTest, isDepthWrite, vkDepthCompareOp,
-																							  isStencilTest, vkStencilOpFront, vkStencilOpBack, 
-																							  isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
-																							  vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
-																							  vkColorWriteMask);
+            this->poStatePipelineGraphics = pWindow->createStatePipelineGraphics("PipelineGraphics-" + this->name,
+																				 pDSL,
+																				 aShaderStageCreateInfos,
+																				 F_MeshVertex_Pos3Color4Normal3Tex2,
+																				 false, 0, 0,
+																				 pWindow->poRenderPass, aViewports, aScissors, aDynamicStates,
+																				 vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+																				 VK_TRUE, isDepthTest, isDepthWrite, vkDepthCompareOp,
+																				 isStencilTest, vkStencilOpFront, vkStencilOpBack, 
+																				 isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
+																				 vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
+																				 vkColorWriteMask);
             if (this->poStatePipelineGraphics == nullptr)
             {
                 String msg = "*********************** VKPipelineGraphicsTerrain::Init: Failed to create pipeline graphics for [PipelineGraphics_Terrain] !";
@@ -210,20 +212,22 @@ namespace LostPeterVulkan
         }
         bool VKPipelineGraphicsTerrain::createBufferTerrain()
         {
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
             this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
             this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
             this->terrainCB.textureX_Inverse = 1.0f / (this->terrainCB.textureX - 1.0f);
             this->terrainCB.textureZ_Inverse = 1.0f / (this->terrainCB.textureZ - 1.0f);
-            this->terrainCB.heightStart = Base::GetWindowPtr()->cfg_terrainHeightStart;
-            this->terrainCB.heightMax = Base::GetWindowPtr()->cfg_terrainHeightMax;
+            this->terrainCB.heightStart = pWindow->cfg_terrainHeightStart;
+            this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
             this->terrainCB.terrainSizeX = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
             this->terrainCB.terrainSizeZ = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
 
 			String nameBuffer = "TerrainConstants-" + this->name;
-			this->poBuffer_TerrainCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
-																				 sizeof(TerrainConstants), 
-																				 (uint8*)&this->terrainCB,
-																				 false);
+			this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,
+																	sizeof(TerrainConstants), 
+																	(uint8*)&this->terrainCB,
+																	false);
 			if (!this->poBuffer_TerrainCB)
 			{
 				String msg = "*********************** VKPipelineGraphicsTerrain::createBufferTerrain: create buffer uniform: [" + nameBuffer + "] failed !";
@@ -240,6 +244,8 @@ namespace LostPeterVulkan
 
     void VKPipelineGraphicsTerrain::UpdateDescriptorSets()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         size_t count = this->poStatePipelineGraphics->poDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
@@ -247,15 +253,15 @@ namespace LostPeterVulkan
             //<0> PassConstants
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i]->GetVkBuffer();
+                bufferInfo_Pass.buffer = pWindow->poBuffers_PassCB[i]->GetVkBuffer();
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
-                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                  0,
-                                                                  0,
-                                                                  1,
-                                                                  bufferInfo_Pass);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 0,
+													 0,
+													 1,
+													 bufferInfo_Pass);
             }
             //<1> TerrainObjectConstants
             {
@@ -263,12 +269,12 @@ namespace LostPeterVulkan
                 bufferInfo_TerrainObject.buffer = this->poBuffer_TerrainObjectCB->GetVkBuffer();
                 bufferInfo_TerrainObject.offset = 0;
                 bufferInfo_TerrainObject.range = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
-                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                  1,
-                                                                  0,
-                                                                  1,
-                                                                  bufferInfo_TerrainObject);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 1,
+													 0,
+													 1,
+													 bufferInfo_TerrainObject);
             }
             //<2> MaterialConstants
             {
@@ -276,12 +282,12 @@ namespace LostPeterVulkan
                 bufferInfo_Material.buffer = this->poBuffer_MaterialCB->GetVkBuffer();
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
-                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                  2,
-                                                                  0,
-                                                                  1,
-                                                                  bufferInfo_Material);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 2,
+													 0,
+													 1,
+													 bufferInfo_Material);
             }
             //<3> InstanceConstants
             {
@@ -289,12 +295,12 @@ namespace LostPeterVulkan
                 // bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i];
                 // bufferInfo_Instance.offset = 0;
                 // bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-                // Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                //                                                   this->poStatePipelineGraphics->poDescriptorSets[i],
-                //                                                   3,
-                //                                                   0,
-                //                                                   1,
-                //                                                   bufferInfo_Instance);
+                // pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                //                                      this->poStatePipelineGraphics->poDescriptorSets[i],
+                //                                      3,
+                //                                      0,
+                //                                      1,
+                //                                      bufferInfo_Instance);
             }
             //<4> Terrain
             {
@@ -302,64 +308,64 @@ namespace LostPeterVulkan
                 bufferInfo_Terrain.buffer = this->poBuffer_TerrainCB->GetVkBuffer();
                 bufferInfo_Terrain.offset = 0;
                 bufferInfo_Terrain.range = sizeof(TerrainConstants);
-                Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                  this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                  4,
-                                                                  0,
-                                                                  1,
-                                                                  bufferInfo_Terrain);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 4,
+													 0,
+													 1,
+													 bufferInfo_Terrain);
             }
-            //<5> poTerrainHeightMapImage
+            //<5> pTexture_HeightMap
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                5,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo_NoSampler);
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   5,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+												   this->m_pVKRenderPassTerrain->pTexture_HeightMap->GetVkDescriptorImageInfo_NoSampler());
             }
-            //<6> poTerrainNormalMapImage
+            //<6> pTexture_NormalMap
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                6,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo_NoSampler);
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   6,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+												   this->m_pVKRenderPassTerrain->pTexture_NormalMap->GetVkDescriptorImageInfo_NoSampler());
             }
-            //<7> poTerrainDiffuseImage
+            //<7> pTexture_Diffuse
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                7,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainDiffuseImageInfo);
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+											 	   7,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->m_pVKRenderPassTerrain->pTexture_Diffuse->GetVkDescriptorImageInfo());
             }
-            //<8> poTerrainNormalImage
+            //<8> pTexture_Normal
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                8,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainNormalImageInfo);
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   8,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->m_pVKRenderPassTerrain->pTexture_Normal->GetVkDescriptorImageInfo());
             }
-            //<9> poTerrainControlImage
+            //<9> pTexture_Control
             {
-                Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                this->poStatePipelineGraphics->poDescriptorSets[i],
-                                                                9,
-                                                                0,
-                                                                1,
-                                                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainControlImageInfo);
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+											  	   9,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->m_pVKRenderPassTerrain->pTexture_Control->GetVkDescriptorImageInfo());
             }
-            Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
+            pWindow->updateVkDescriptorSets(descriptorWrites);
         }
     }
 

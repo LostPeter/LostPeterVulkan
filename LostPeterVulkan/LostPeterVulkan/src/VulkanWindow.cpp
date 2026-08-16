@@ -5311,13 +5311,13 @@ namespace LostPeterVulkan
             vkDestroySampler(this->poDevice, sampler, nullptr);
         }
     }
-    void VulkanWindow::createTexture1D(const String& nameTex, 
+    void VulkanWindow::createTexture1D(const String& nameTexture, 
                                        const String& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
     {
-        createTexture2D(nameTex, 
+        createTexture2D(nameTexture, 
                         pathAsset_Tex,
                         VK_IMAGE_TYPE_1D,
                         VK_SAMPLE_COUNT_1_BIT,
@@ -5328,7 +5328,7 @@ namespace LostPeterVulkan
                         imageMemory);
     }
     
-    void VulkanWindow::createTexture2D(const String& nameTex, 
+    void VulkanWindow::createTexture2D(const String& nameTexture, 
                                        const String& pathAsset_Tex, 
                                        VkImageType type,
                                        VkSampleCountFlagBits numSamples,
@@ -5354,7 +5354,7 @@ namespace LostPeterVulkan
         }
 
         //2> Create Buffer and copy Texture data to buffer
-        createVkBuffer(nameTex,
+        createVkBuffer(nameTexture,
                        imageSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -5369,7 +5369,7 @@ namespace LostPeterVulkan
         uint32_t numArray = 1;
 
         //3> CreateImage
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -5428,7 +5428,7 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTexture2D(const String& nameTex, 
+    void VulkanWindow::createTexture2D(const String& nameTexture, 
                                        const String& pathAsset_Tex, 
                                        VkImageType type,
                                        VkSampleCountFlagBits numSamples,
@@ -5440,7 +5440,7 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTexture2D(nameTex, 
+        createTexture2D(nameTexture, 
                         pathAsset_Tex, 
                         type, 
                         numSamples,
@@ -5453,13 +5453,13 @@ namespace LostPeterVulkan
                         stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTexture2D(const String& nameTex, 
+    void VulkanWindow::createTexture2D(const String& nameTexture, 
                                        const String& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
     {
-        createTexture2D(nameTex, 
+        createTexture2D(nameTexture, 
                         pathAsset_Tex,
                         VK_IMAGE_TYPE_2D,
                         VK_SAMPLE_COUNT_1_BIT,
@@ -5479,7 +5479,7 @@ namespace LostPeterVulkan
             stbi_image_free(pixels);
         }
     }
-    void VulkanWindow::createTexture2DArray(const String& nameTex, 
+    void VulkanWindow::createTexture2DArray(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex, 
                                             VkImageType type,
                                             VkSampleCountFlagBits numSamples,
@@ -5552,7 +5552,7 @@ namespace LostPeterVulkan
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
-        createVkBuffer(nameTex, 
+        createVkBuffer(nameTexture, 
                        imageSizeAll, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -5567,7 +5567,7 @@ namespace LostPeterVulkan
         s_DeletePixels(aPixels);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -5626,7 +5626,7 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTexture2DArray(const String& nameTex, 
+    void VulkanWindow::createTexture2DArray(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex, 
                                             VkImageType type,
                                             VkSampleCountFlagBits numSamples,
@@ -5638,7 +5638,7 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTexture2DArray(nameTex, 
+        createTexture2DArray(nameTexture, 
                              aPathAsset_Tex, 
                              type, 
                              numSamples,
@@ -5651,13 +5651,13 @@ namespace LostPeterVulkan
                              stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTexture2DArray(const String& nameTex, 
+    void VulkanWindow::createTexture2DArray(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex, 
                                             uint32_t& mipMapCount,
                                             VkImage& image, 
                                             VkDeviceMemory& imageMemory)
     {
-        createTexture2DArray(nameTex, 
+        createTexture2DArray(nameTexture, 
                              aPathAsset_Tex,
                              VK_IMAGE_TYPE_2D,
                              VK_SAMPLE_COUNT_1_BIT,
@@ -5668,7 +5668,7 @@ namespace LostPeterVulkan
                              imageMemory);
     }
     
-    void VulkanWindow::createTexture3D(const String& nameTex, 
+    void VulkanWindow::createTexture3D(const String& nameTexture, 
                                        VkFormat format,
                                        const uint8* pDataRGBA,
                                        uint32_t size,
@@ -5696,7 +5696,7 @@ namespace LostPeterVulkan
 
         //1> Create Buffer and copy Texture data to buffer
         VkDeviceSize imageSize = size;
-        createVkBuffer(nameTex, 
+        createVkBuffer(nameTexture, 
                        imageSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -5706,7 +5706,7 @@ namespace LostPeterVulkan
         updateVKBuffer(0, imageSize, (void*)pDataRGBA, bufferMemory);
 
         //2> CreateImage
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -5765,7 +5765,7 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTexture3D(const String& nameTex, 
+    void VulkanWindow::createTexture3D(const String& nameTexture, 
                                        VkFormat format,
                                        const uint8* pDataRGBA,
                                        uint32_t size,
@@ -5777,7 +5777,7 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTexture3D(nameTex, 
+        createTexture3D(nameTexture, 
                         format, 
                         pDataRGBA, 
                         size,
@@ -5791,7 +5791,7 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureCubeMap(const String& nameTex, 
+    void VulkanWindow::createTextureCubeMap(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex, 
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
@@ -5865,7 +5865,7 @@ namespace LostPeterVulkan
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
-        createVkBuffer(nameTex, 
+        createVkBuffer(nameTexture, 
                        imageSizeAll, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -5880,7 +5880,7 @@ namespace LostPeterVulkan
         s_DeletePixels(aPixels);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -5939,7 +5939,7 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureCubeMap(const String& nameTex, 
+    void VulkanWindow::createTextureCubeMap(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex, 
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
@@ -5950,7 +5950,7 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureCubeMap(nameTex, 
+        createTextureCubeMap(nameTexture, 
                              aPathAsset_Tex, 
                              numSamples, 
                              format,
@@ -5962,13 +5962,13 @@ namespace LostPeterVulkan
                              stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTextureCubeMap(const String& nameTex, 
+    void VulkanWindow::createTextureCubeMap(const String& nameTexture, 
                                             const StringVector& aPathAsset_Tex,
                                             uint32_t& mipMapCount, 
                                             VkImage& image, 
                                             VkDeviceMemory& imageMemory)
     {
-        createTextureCubeMap(nameTex, 
+        createTextureCubeMap(nameTexture, 
                              aPathAsset_Tex, 
                              VK_SAMPLE_COUNT_1_BIT, 
                              VK_FORMAT_R8G8B8A8_SRGB,
@@ -5978,9 +5978,10 @@ namespace LostPeterVulkan
                              imageMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget1D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget1D(const String& nameTexture,
                                                    const FVector4& clDefault,
                                                    bool isSetColor,
+												   int channel,
                                                    uint32_t width, 
                                                    bool autoMipMap, 
                                                    uint32_t mipMapCount,
@@ -5994,9 +5995,10 @@ namespace LostPeterVulkan
                                                    VkBuffer& buffer, 
                                                    VkDeviceMemory& bufferMemory)
     {
-        createTextureRenderTarget2D(nameTex,
+        createTextureRenderTarget2D(nameTexture,
                                     clDefault,
                                     isSetColor,
+									channel,
                                     width,
                                     1,
                                     autoMipMap, 
@@ -6012,9 +6014,10 @@ namespace LostPeterVulkan
                                     buffer,
                                     bufferMemory);
     }
-    void VulkanWindow::createTextureRenderTarget1D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget1D(const String& nameTexture,
                                                    const FVector4& clDefault,
                                                    bool isSetColor,
+												   int channel,
                                                    uint32_t width, 
                                                    bool autoMipMap, 
                                                    uint32_t mipMapCount,
@@ -6028,9 +6031,10 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTarget1D(nameTex,
+        createTextureRenderTarget1D(nameTexture,
                                     clDefault, 
                                     isSetColor,
+									channel,
                                     width, 
                                     autoMipMap, 
                                     mipMapCount,
@@ -6046,9 +6050,10 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget2D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    const FVector4& clDefault,
                                                    bool isSetColor,
+												   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    bool autoMipMap, 
@@ -6065,8 +6070,8 @@ namespace LostPeterVulkan
                                                    VkDeviceMemory& bufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * 4;
-        createVkBuffer(nameTex, 
+        VkDeviceSize imageSize = width * height * channel;
+        createVkBuffer(nameTexture, 
                        imageSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -6085,10 +6090,13 @@ namespace LostPeterVulkan
                 uint8* pColor = (uint8*)data;
                 for (uint32_t i = 0; i < width * height; i++)
                 {
-                    pColor[4 * i + 0] = r;
-                    pColor[4 * i + 1] = g;
-                    pColor[4 * i + 2] = b;
-                    pColor[4 * i + 3] = a;
+					pColor[channel * i + 0] = r;
+					if (channel > 1)
+						pColor[channel * i + 1] = g;
+					if (channel > 2)
+						pColor[channel * i + 2] = b;
+					if (channel > 3)
+						pColor[channel * i + 3] = a;
                 }
             }
             vkUnmapMemory(this->poDevice, bufferMemory);
@@ -6097,7 +6105,7 @@ namespace LostPeterVulkan
         //2> CreateImage
         uint32_t depth = 1;
         uint32_t numArray = 1;
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -6156,9 +6164,10 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureRenderTarget2D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    const FVector4& clDefault,
                                                    bool isSetColor,
+												   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    bool autoMipMap, 
@@ -6173,9 +6182,10 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTarget2D(nameTex,
+        createTextureRenderTarget2D(nameTexture,
                                     clDefault, 
                                     isSetColor,
+									channel,
                                     width, 
                                     height,
                                     autoMipMap, 
@@ -6193,8 +6203,9 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget2D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    uint8* pData,
+												   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    bool autoMipMap, 
@@ -6210,10 +6221,9 @@ namespace LostPeterVulkan
                                                    VkBuffer& buffer, 
                                                    VkDeviceMemory& bufferMemory)
     {
-        uint32_t sizeFormat = getSizeFromFormat(format);
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * sizeFormat;
-        createVkBuffer(nameTex, 
+        VkDeviceSize imageSize = width * height * channel;
+        createVkBuffer(nameTexture, 
                        imageSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -6227,7 +6237,7 @@ namespace LostPeterVulkan
         //2> CreateImage
         uint32_t depth = 1;
         uint32_t numArray = 1;
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -6286,8 +6296,9 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureRenderTarget2D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    uint8* pData,
+												   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    bool autoMipMap, 
@@ -6302,8 +6313,9 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTarget2D(nameTex,
+        createTextureRenderTarget2D(nameTexture,
                                     pData,
+									channel,
                                     width, 
                                     height,
                                     autoMipMap, 
@@ -6321,9 +6333,10 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget2DArray(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget2DArray(const String& nameTexture,
                                                         const FVector4& clDefault,
                                                         bool isSetColor,
+														int channel,
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         uint32_t numArray,
@@ -6341,9 +6354,9 @@ namespace LostPeterVulkan
                                                         VkDeviceMemory& bufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSize = width * height * channel;
         VkDeviceSize imageSizeAll = imageSize * numArray;
-        createVkBuffer(nameTex, 
+        createVkBuffer(nameTexture, 
                        imageSizeAll, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -6362,10 +6375,13 @@ namespace LostPeterVulkan
                 uint8* pColor = (uint8*)data;
                 for (uint32_t i = 0; i < width * height * numArray; i++)
                 {
-                    pColor[4 * i + 0] = r;
-                    pColor[4 * i + 1] = g;
-                    pColor[4 * i + 2] = b;
-                    pColor[4 * i + 3] = a;
+					pColor[channel * i + 0] = r;
+					if (channel > 1)
+						pColor[channel * i + 1] = g;
+					if (channel > 2)
+						pColor[channel * i + 2] = b;
+					if (channel > 3)
+						pColor[channel * i + 3] = a;
                 }
             }
             vkUnmapMemory(this->poDevice, bufferMemory);
@@ -6377,7 +6393,7 @@ namespace LostPeterVulkan
         {
             depth = 0;
         }
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -6436,9 +6452,10 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureRenderTarget2DArray(const String& nameTex,  
+    void VulkanWindow::createTextureRenderTarget2DArray(const String& nameTexture,  
                                                         const FVector4& clDefault,
                                                         bool isSetColor,
+														int channel,
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         uint32_t numArray,
@@ -6454,9 +6471,10 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTarget2DArray(nameTex,  
+        createTextureRenderTarget2DArray(nameTexture,  
                                          clDefault, 
                                          isSetColor,
+										 channel,
                                          width, 
                                          height,
                                          numArray,
@@ -6475,9 +6493,10 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget3D(const String& nameTex,
+    void VulkanWindow::createTextureRenderTarget3D(const String& nameTexture,
                                                    const FVector4& clDefault,
                                                    bool isSetColor,
+												   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    uint32_t depth,
@@ -6494,8 +6513,8 @@ namespace LostPeterVulkan
                                                    VkDeviceMemory& bufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * depth * 4;
-        createVkBuffer(nameTex, 
+        VkDeviceSize imageSize = width * height * depth * channel;
+        createVkBuffer(nameTexture, 
                        imageSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -6514,17 +6533,20 @@ namespace LostPeterVulkan
                 uint8* pColor = (uint8*)data;
                 for (uint32_t i = 0; i < width * height * depth; i++)
                 {
-                    pColor[4 * i + 0] = r;
-                    pColor[4 * i + 1] = g;
-                    pColor[4 * i + 2] = b;
-                    pColor[4 * i + 3] = a;
+					pColor[channel * i + 0] = r;
+					if (channel > 1)
+						pColor[channel * i + 1] = g;
+					if (channel > 2)
+						pColor[channel * i + 2] = b;
+					if (channel > 3)
+						pColor[channel * i + 3] = a;
                 }
             }
             vkUnmapMemory(this->poDevice, bufferMemory);
         }
 
         //2> CreateImage
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -6584,9 +6606,144 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureRenderTarget3D(const String& nameTex,
-                                                   const FVector4& clDefault,
-                                                   bool isSetColor,
+	void VulkanWindow::createTextureRenderTarget3D(const String& nameTexture,
+												   const FVector4& clDefault,
+												   bool isSetColor,
+												   int channel,
+												   uint32_t width, 
+												   uint32_t height,
+												   uint32_t depth,
+												   bool autoMipMap, 
+												   uint32_t mipMapCount,
+												   VkSampleCountFlagBits numSamples,
+												   VkFormat format,
+												   VkImageUsageFlags usage, 
+												   VkImageLayout finalLayout,
+												   bool isGraphicsComputeShared,
+												   VkImage& image, 
+												   VkDeviceMemory& imageMemory)
+	{
+		VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget3D(nameTexture,
+                                    clDefault, 
+									isSetColor,
+                                    channel,
+                                    width, 
+                                    height,
+                                    depth,
+                                    autoMipMap, 
+                                    mipMapCount,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    finalLayout,
+                                    isGraphicsComputeShared,
+                                    image, 
+                                    imageMemory, 
+                                    stagingBuffer, 
+                                    stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+	}
+
+	void VulkanWindow::createTextureRenderTarget3D(const String& nameTexture,
+												   uint8* pData, 
+												   int channel,
+												   uint32_t width, 
+												   uint32_t height,
+												   uint32_t depth,
+												   bool autoMipMap, 
+												   uint32_t mipMapCount,
+												   VkSampleCountFlagBits numSamples,
+												   VkFormat format,
+												   VkImageUsageFlags usage, 
+												   VkImageLayout finalLayout,
+												   bool isGraphicsComputeShared,
+												   VkImage& image, 
+												   VkDeviceMemory& imageMemory,
+												   VkBuffer& buffer, 
+                                                   VkDeviceMemory& bufferMemory)
+	{
+		//1> CreateBuffer
+        VkDeviceSize imageSize = width * height * depth * channel;
+        createVkBuffer(nameTexture, 
+                       imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
+        if (pData != nullptr)
+        {
+            void* data;
+            vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
+				memcpy(data, pData, (size_t)imageSize);
+            vkUnmapMemory(this->poDevice, bufferMemory);
+        }
+
+        //2> CreateImage
+        createVkImage(nameTexture, 
+                      width, 
+                      height, 
+                      depth,
+                      1,
+                      mipMapCount, 
+                      VK_IMAGE_TYPE_3D,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
+
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            uint32_t numArray = 1;
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            finalLayout,
+                            width, 
+                            height,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
+	}
+	void VulkanWindow::createTextureRenderTarget3D(const String& nameTexture,
+                                                   uint8* pData, 
+                                                   int channel,
                                                    uint32_t width, 
                                                    uint32_t height,
                                                    uint32_t depth,
@@ -6602,9 +6759,9 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTarget3D(nameTex,
-                                    clDefault, 
-                                    isSetColor,
+        createTextureRenderTarget3D(nameTexture,
+                                    pData, 
+                                    channel,
                                     width, 
                                     height,
                                     depth,
@@ -6622,7 +6779,7 @@ namespace LostPeterVulkan
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTargetCubeMap(const String& nameTex,
+    void VulkanWindow::createTextureRenderTargetCubeMap(const String& nameTexture,
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         bool autoMipMap, 
@@ -6641,7 +6798,7 @@ namespace LostPeterVulkan
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * numArray;
-        createVkBuffer(nameTex,  
+        createVkBuffer(nameTexture,  
                        imageSizeAll, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -6650,7 +6807,7 @@ namespace LostPeterVulkan
 
         //2> CreateImage
         uint32_t depth = 1;
-        createVkImage(nameTex, 
+        createVkImage(nameTexture, 
                       width, 
                       height, 
                       depth,
@@ -6709,7 +6866,7 @@ namespace LostPeterVulkan
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureRenderTargetCubeMap(const String& nameTex,
+    void VulkanWindow::createTextureRenderTargetCubeMap(const String& nameTexture,
                                                         uint32_t width, 
                                                         uint32_t height,
                                                         bool autoMipMap, 
@@ -6724,7 +6881,7 @@ namespace LostPeterVulkan
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureRenderTargetCubeMap(nameTex,
+        createTextureRenderTargetCubeMap(nameTexture,
                                          width, 
                                          height,
                                          autoMipMap, 
@@ -6755,7 +6912,7 @@ namespace LostPeterVulkan
 
             return sizeFormat;
         }
-        void VulkanWindow::createVkImage(const String& nameTex,
+        void VulkanWindow::createVkImage(const String& nameTexture,
                                          uint32_t width, 
                                          uint32_t height, 
                                          uint32_t depth, 
@@ -6808,7 +6965,7 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            this->poDebug->SetVkImageName(this->poDevice, image, nameTex.c_str());
+            this->poDebug->SetVkImageName(this->poDevice, image, nameTexture.c_str());
 
             VkMemoryRequirements memRequirements;
             vkGetImageMemoryRequirements(this->poDevice, image, &memRequirements);
@@ -6824,10 +6981,10 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            this->poDebug->SetVkDeviceMemoryName(this->poDevice, imageMemory, nameTex.c_str());
+            this->poDebug->SetVkDeviceMemoryName(this->poDevice, imageMemory, nameTexture.c_str());
             vkBindImageMemory(this->poDevice, image, imageMemory, 0);
         }
-        void VulkanWindow::createVkImageView(const String& nameTex,
+        void VulkanWindow::createVkImageView(const String& nameTexture,
                                              VkImage image, 
                                              VkImageViewType type, 
                                              VkFormat format, 
@@ -6854,9 +7011,9 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            this->poDebug->SetVkImageViewName(this->poDevice, imageView, nameTex.c_str());
+            this->poDebug->SetVkImageViewName(this->poDevice, imageView, nameTexture.c_str());
         }
-        void VulkanWindow::createVkImageView(const String& nameTex,
+        void VulkanWindow::createVkImageView(const String& nameTexture,
                                              VkImageViewCreateFlags flags, 
                                              VkImage image, 
                                              VkImageViewType type, 
@@ -6888,13 +7045,13 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            this->poDebug->SetVkImageViewName(this->poDevice, imageView, nameTex.c_str());
+            this->poDebug->SetVkImageViewName(this->poDevice, imageView, nameTexture.c_str());
         }
-        void VulkanWindow::createVkSampler(const String& nameTex,
+        void VulkanWindow::createVkSampler(const String& nameTexture,
                                            uint32_t mipMapCount, 
                                            VkSampler& sampler)
         {
-            createVkSampler(nameTex,
+            createVkSampler(nameTexture,
                             F_TextureFilter_Bilinear,
                             F_TextureAddressing_Clamp,
                             F_TextureBorderColor_OpaqueBlack,
@@ -6905,7 +7062,7 @@ namespace LostPeterVulkan
                             0.0f,
                             sampler);
         }
-        void VulkanWindow::createVkSampler(const String& nameTex,
+        void VulkanWindow::createVkSampler(const String& nameTexture,
                                            FTextureFilterType eTextureFilter,
                                            FTextureAddressingType eTextureAddressing,
                                            FTextureBorderColorType eTextureBorderColor,
@@ -6940,7 +7097,7 @@ namespace LostPeterVulkan
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            this->poDebug->SetVkSamplerName(this->poDevice, sampler, nameTex.c_str());
+            this->poDebug->SetVkSamplerName(this->poDevice, sampler, nameTexture.c_str());
         }
 
 
@@ -8615,7 +8772,7 @@ namespace LostPeterVulkan
                                                           uint32_t dstArrayElement,
                                                           uint32_t descriptorCount,
                                                           VkDescriptorType type,
-                                                          VkDescriptorBufferInfo& bufferInfo)
+                                                          const VkDescriptorBufferInfo& bufferInfo)
             {
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -8633,7 +8790,7 @@ namespace LostPeterVulkan
                                                            uint32_t dstBinding,
                                                            uint32_t dstArrayElement,
                                                            uint32_t descriptorCount,
-                                                           VkDescriptorBufferInfo& bufferInfo)
+                                                           const VkDescriptorBufferInfo& bufferInfo)
             {
                 pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
                                            dstSet,
@@ -8648,7 +8805,7 @@ namespace LostPeterVulkan
                                                                   uint32_t dstBinding,
                                                                   uint32_t dstArrayElement,
                                                                   uint32_t descriptorCount,
-                                                                  VkDescriptorBufferInfo& bufferInfo)
+                                                                  const VkDescriptorBufferInfo& bufferInfo)
             {
                 pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
                                            dstSet,
@@ -8663,7 +8820,7 @@ namespace LostPeterVulkan
                                                            uint32_t dstBinding,
                                                            uint32_t dstArrayElement,
                                                            uint32_t descriptorCount,
-                                                           VkDescriptorBufferInfo& bufferInfo)
+                                                           const VkDescriptorBufferInfo& bufferInfo)
             {
                 pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
                                            dstSet,
@@ -8678,7 +8835,7 @@ namespace LostPeterVulkan
                                                                   uint32_t dstBinding,
                                                                   uint32_t dstArrayElement,
                                                                   uint32_t descriptorCount,
-                                                                  VkDescriptorBufferInfo& bufferInfo)
+                                                                  const VkDescriptorBufferInfo& bufferInfo)
             {
                 pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
                                            dstSet,
@@ -8693,7 +8850,7 @@ namespace LostPeterVulkan
                                                                   uint32_t dstBinding,
                                                                   uint32_t dstArrayElement,
                                                                   uint32_t descriptorCount,
-                                                                  VkDescriptorBufferInfo& bufferInfo)
+                                                                  const VkDescriptorBufferInfo& bufferInfo)
             {
                 pushVkDescriptorSet_Buffer(aWriteDescriptorSets,
                                            dstSet,
@@ -8710,7 +8867,7 @@ namespace LostPeterVulkan
                                                          uint32_t dstArrayElement,
                                                          uint32_t descriptorCount,
                                                          VkDescriptorType descriptorType,
-                                                         VkDescriptorImageInfo& imageInfo)
+                                                         const VkDescriptorImageInfo& imageInfo)
             {
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

@@ -61,39 +61,14 @@ namespace LostPeterVulkan
         void* poTerrainIndexBuffer_Data_Instance;
 		VKBufferVertexIndex* poBufferVertexIndex_MeshInstance;
 
-        //HeightMap
-        VkImage poTerrainHeightMapImage;
-        VkDeviceMemory poTerrainHeightMapImageMemory;
-        VkImageView poTerrainHeightMapImageView;
-        VkDescriptorImageInfo poTerrainHeightMapImageInfo_NoSampler;
-        VkDescriptorImageInfo poTerrainHeightMapImageInfo_Sampler;
-        //NormalMap
-        VkImage poTerrainNormalMapImage;
-        VkDeviceMemory poTerrainNormalMapImageMemory;
-        VkImageView poTerrainNormalMapImageView;
-        VkDescriptorImageInfo poTerrainNormalMapImageInfo_NoSampler;
-        VkDescriptorImageInfo poTerrainNormalMapImageInfo_Sampler;
-        VkSampler poTerrainImageSampler;
-
-        //Diffuse
-        VkImage poTerrainDiffuseImage;
-        VkDeviceMemory poTerrainDiffuseImageMemory;
-        VkImageView poTerrainDiffuseImageView;
-        VkSampler poTerrainDiffuseImageSampler;
-        VkDescriptorImageInfo poTerrainDiffuseImageInfo;
-        //Normal
-        VkImage poTerrainNormalImage;
-        VkDeviceMemory poTerrainNormalImageMemory;
-        VkImageView poTerrainNormalImageView;
-        VkSampler poTerrainNormalImageSampler;
-        VkDescriptorImageInfo poTerrainNormalImageInfo;
-        //Control
-        VkImage poTerrainControlImage;
-        VkDeviceMemory poTerrainControlImageMemory;
-        VkImageView poTerrainControlImageView;
-        VkSampler poTerrainControlImageSampler;
-        VkDescriptorImageInfo poTerrainControlImageInfo;
-
+        //HeightMap/NormalMap
+		VKTexture* pTexture_HeightMap;
+		VKTexture* pTexture_NormalMap;
+		
+        //Diffuse/Normal/Control
+		VKTexture* pTexture_Diffuse;
+		VKTexture* pTexture_Normal;
+		VKTexture* pTexture_Control;
 
     public:
         void Destroy();
@@ -101,13 +76,15 @@ namespace LostPeterVulkan
 
     protected:
 		void destroyTerrainManager();
+		void destroyTerrainTexture();
 
 		void createTerrainManager();
-		
-        virtual bool loadTerrainData(); 
-        virtual void setupTerrainGeometryWhole();
-        virtual void setupTerrainGeometryInstance();
-        virtual void setupTerrainTexture();
+		void createTerrainTexture();
+
+        bool loadTerrainData(); 
+        void setupTerrainGeometryWhole();
+        void setupTerrainGeometryInstance();
+
 
     public:
         void CleanupSwapChain();

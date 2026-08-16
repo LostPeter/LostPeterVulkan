@@ -877,13 +877,13 @@ namespace LostPeterVulkan
                     virtual void destroyVkImageView(VkImageView imageView);
                     virtual void destroyVkImageSampler(VkSampler sampler);
 
-                    virtual void createTexture1D(const String& nameTex, 
+                    virtual void createTexture1D(const String& nameTexture, 
                                                  const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
 
-                    virtual void createTexture2D(const String& nameTex, 
+                    virtual void createTexture2D(const String& nameTexture, 
                                                  const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
@@ -894,7 +894,7 @@ namespace LostPeterVulkan
                                                  VkDeviceMemory& imageMemory,
                                                  VkBuffer& buffer, 
                                                  VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2D(const String& nameTex, 
+                    virtual void createTexture2D(const String& nameTexture, 
                                                  const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
@@ -903,13 +903,13 @@ namespace LostPeterVulkan
                                                  uint32_t& mipMapCount, 
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
-                    virtual void createTexture2D(const String& nameTex, 
+                    virtual void createTexture2D(const String& nameTexture, 
                                                  const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTexture2DArray(const String& nameTex, 
+                    virtual void createTexture2DArray(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
@@ -920,7 +920,7 @@ namespace LostPeterVulkan
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2DArray(const String& nameTex, 
+                    virtual void createTexture2DArray(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
@@ -929,13 +929,13 @@ namespace LostPeterVulkan
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTexture2DArray(const String& nameTex, 
+                    virtual void createTexture2DArray(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex, 
                                                       uint32_t& mipMapCount,
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
 
-                    virtual void createTexture3D(const String& nameTex, 
+                    virtual void createTexture3D(const String& nameTexture, 
                                                  VkFormat format,
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
@@ -946,7 +946,7 @@ namespace LostPeterVulkan
                                                  VkDeviceMemory& imageMemory,
                                                  VkBuffer& buffer, 
                                                  VkDeviceMemory& bufferMemory);
-                    virtual void createTexture3D(const String& nameTex, 
+                    virtual void createTexture3D(const String& nameTexture, 
                                                  VkFormat format,
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
@@ -956,7 +956,7 @@ namespace LostPeterVulkan
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureCubeMap(const String& nameTex, 
+                    virtual void createTextureCubeMap(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -966,7 +966,7 @@ namespace LostPeterVulkan
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTextureCubeMap(const String& nameTex, 
+                    virtual void createTextureCubeMap(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -974,16 +974,17 @@ namespace LostPeterVulkan
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTextureCubeMap(const String& nameTex, 
+                    virtual void createTextureCubeMap(const String& nameTexture, 
                                                       const StringVector& aPathAsset_Tex,
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
 
                     
-                    virtual void createTextureRenderTarget1D(const String& nameTex,
+                    virtual void createTextureRenderTarget1D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
                                                              uint32_t width, 
                                                              bool autoMipMap, 
                                                              uint32_t mipMapCount,
@@ -996,9 +997,10 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget1D(const String& nameTex,
+                    virtual void createTextureRenderTarget1D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
                                                              uint32_t width, 
                                                              bool autoMipMap, 
                                                              uint32_t mipMapCount,
@@ -1010,9 +1012,10 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                    virtual void createTextureRenderTarget2D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -1027,9 +1030,10 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                    virtual void createTextureRenderTarget2D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -1042,8 +1046,9 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
 
-                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                    virtual void createTextureRenderTarget2D(const String& nameTexture,
                                                              uint8* pData,
+															 int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -1058,8 +1063,9 @@ namespace LostPeterVulkan
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2D(const String& nameTex,
+                    virtual void createTextureRenderTarget2D(const String& nameTexture,
                                                              uint8* pData,
+															 int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              bool autoMipMap, 
@@ -1072,9 +1078,10 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2DArray(const String& nameTex,
+                    virtual void createTextureRenderTarget2DArray(const String& nameTexture,
                                                                   const FVector4& clDefault,
                                                                   bool isSetColor,
+																  int channel,
                                                                   uint32_t width, 
                                                                   uint32_t height,
                                                                   uint32_t numArray,
@@ -1090,9 +1097,10 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory,
                                                                   VkBuffer& buffer, 
                                                                   VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2DArray(const String& nameTex,
+                    virtual void createTextureRenderTarget2DArray(const String& nameTexture,
                                                                   const FVector4& clDefault,
                                                                   bool isSetColor,
+																  int channel,
                                                                   uint32_t width, 
                                                                   uint32_t height,
                                                                   uint32_t numArray,
@@ -1106,9 +1114,10 @@ namespace LostPeterVulkan
                                                                   VkImage& image, 
                                                                   VkDeviceMemory& imageMemory);
 
-                    virtual void createTextureRenderTarget3D(const String& nameTex,
+                    virtual void createTextureRenderTarget3D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              uint32_t depth,
@@ -1122,10 +1131,44 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
-                                                             VkDeviceMemory& bufferMemory);                                           
-                    virtual void createTextureRenderTarget3D(const String& nameTex,
+                                                             VkDeviceMemory& bufferMemory);
+					virtual void createTextureRenderTarget3D(const String& nameTexture,
                                                              const FVector4& clDefault,
                                                              bool isSetColor,
+															 int channel,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t depth,
+                                                             bool autoMipMap, 
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             VkImageLayout finalLayout,
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory);
+
+					virtual void createTextureRenderTarget3D(const String& nameTexture,
+                                                             uint8* pData, 
+                                                             int channel,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t depth,
+                                                             bool autoMipMap, 
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             VkImageLayout finalLayout,
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory,
+															 VkBuffer& buffer, 
+                                                             VkDeviceMemory& bufferMemory);
+					virtual void createTextureRenderTarget3D(const String& nameTexture,
+                                                             uint8* pData, 
+                                                             int channel,
                                                              uint32_t width, 
                                                              uint32_t height,
                                                              uint32_t depth,
@@ -1139,7 +1182,7 @@ namespace LostPeterVulkan
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTargetCubeMap(const String& nameTex,
+                    virtual void createTextureRenderTargetCubeMap(const String& nameTexture,
                                                                   uint32_t width, 
                                                                   uint32_t height,
                                                                   bool autoMipMap, 
@@ -1153,7 +1196,7 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory,
                                                                   VkBuffer& buffer, 
                                                                   VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTargetCubeMap(const String& nameTex,
+                    virtual void createTextureRenderTargetCubeMap(const String& nameTexture,
                                                                   uint32_t width, 
                                                                   uint32_t height,
                                                                   bool autoMipMap, 
@@ -1167,7 +1210,7 @@ namespace LostPeterVulkan
                                                                   VkDeviceMemory& imageMemory);
                     
                         virtual uint32_t getSizeFromFormat(VkFormat format);
-                        virtual void createVkImage(const String& nameTex,
+                        virtual void createVkImage(const String& nameTexture,
                                                    uint32_t width, 
                                                    uint32_t height, 
                                                    uint32_t depth, 
@@ -1184,7 +1227,7 @@ namespace LostPeterVulkan
                                                    VkMemoryPropertyFlags properties, 
                                                    VkImage& image, 
                                                    VkDeviceMemory& imageMemory);
-                        virtual void createVkImageView(const String& nameTex,
+                        virtual void createVkImageView(const String& nameTexture,
                                                        VkImage image, 
                                                        VkImageViewType type, 
                                                        VkFormat format, 
@@ -1192,7 +1235,7 @@ namespace LostPeterVulkan
                                                        uint32_t mipMapCount,
                                                        uint32_t numArray,
                                                        VkImageView& imageView);
-                        virtual void createVkImageView(const String& nameTex,
+                        virtual void createVkImageView(const String& nameTexture,
                                                        VkImageViewCreateFlags flags, 
                                                        VkImage image, 
                                                        VkImageViewType type, 
@@ -1205,10 +1248,10 @@ namespace LostPeterVulkan
                                                        uint32_t numArray,
                                                        VkImageView& imageView);
                                                      
-                        virtual void createVkSampler(const String& nameTex,
+                        virtual void createVkSampler(const String& nameTexture,
                                                      uint32_t mipMapCount, 
                                                      VkSampler& sampler);
-                        virtual void createVkSampler(const String& nameTex,
+                        virtual void createVkSampler(const String& nameTexture,
                                                      FTextureFilterType eTextureFilter,
                                                      FTextureAddressingType eTextureAddressing,
                                                      FTextureBorderColorType eTextureBorderColor,
@@ -1468,37 +1511,37 @@ namespace LostPeterVulkan
                                                                 uint32_t dstArrayElement,
                                                                 uint32_t descriptorCount,
                                                                 VkDescriptorType type,
-                                                                VkDescriptorBufferInfo& bufferInfo);
+                                                                const VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                  VkDescriptorSet dstSet,
                                                                  uint32_t dstBinding,
                                                                  uint32_t dstArrayElement,
                                                                  uint32_t descriptorCount,
-                                                                 VkDescriptorBufferInfo& bufferInfo);
+                                                                 const VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_UniformDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                         VkDescriptorSet dstSet,
                                                                         uint32_t dstBinding,
                                                                         uint32_t dstArrayElement,
                                                                         uint32_t descriptorCount,
-                                                                        VkDescriptorBufferInfo& bufferInfo);
+                                                                        const VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_Storage(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                  VkDescriptorSet dstSet,
                                                                  uint32_t dstBinding,
                                                                  uint32_t dstArrayElement,
                                                                  uint32_t descriptorCount,
-                                                                 VkDescriptorBufferInfo& bufferInfo);
+                                                                 const VkDescriptorBufferInfo& bufferInfo);
                         virtual void pushVkDescriptorSet_StorageDynamic(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                         VkDescriptorSet dstSet,
                                                                         uint32_t dstBinding,
                                                                         uint32_t dstArrayElement,
                                                                         uint32_t descriptorCount,
-                                                                        VkDescriptorBufferInfo& bufferInfo);
+                                                                        const VkDescriptorBufferInfo& bufferInfo);
                          virtual void pushVkDescriptorSet_IndirectCommand(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                           VkDescriptorSet dstSet,
                                                                           uint32_t dstBinding,
                                                                           uint32_t dstArrayElement,
                                                                           uint32_t descriptorCount,
-                                                                          VkDescriptorBufferInfo& bufferInfo);
+                                                                          const VkDescriptorBufferInfo& bufferInfo);
 
                         virtual void pushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                VkDescriptorSet dstSet,
@@ -1506,7 +1549,7 @@ namespace LostPeterVulkan
                                                                uint32_t dstArrayElement,
                                                                uint32_t descriptorCount,
                                                                VkDescriptorType descriptorType,
-                                                               VkDescriptorImageInfo& imageInfo);
+                                                               const VkDescriptorImageInfo& imageInfo);
 
                         virtual void updateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
 

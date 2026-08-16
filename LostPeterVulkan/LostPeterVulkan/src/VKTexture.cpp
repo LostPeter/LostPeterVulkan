@@ -49,6 +49,7 @@ namespace LostPeterVulkan
 
         //Texture 3D
         , pDataRGBA(nullptr)
+		, isDeleteRGBA(true)
 
         //Texture Animation
         , texChunkMaxX(0)
@@ -73,17 +74,23 @@ namespace LostPeterVulkan
     }
     void VKTexture::Destroy()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         if (this->stagingBuffer != VK_NULL_HANDLE)
         {
-            Base::GetWindowPtr()->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
+            pWindow->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
         }
-        Base::GetWindowPtr()->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+        pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
         this->poTextureImage = VK_NULL_HANDLE;
         this->poTextureImageMemory = VK_NULL_HANDLE;
         this->poTextureImageView = VK_NULL_HANDLE;
-        Base::GetWindowPtr()->destroyVkImageSampler(this->poTextureSampler);
+        pWindow->destroyVkImageSampler(this->poTextureSampler);
         this->poTextureSampler = VK_NULL_HANDLE;
-        F_DELETE_T(pDataRGBA)
+
+		if (this->isDeleteRGBA)
+        {
+            F_DELETE_T(this->pDataRGBA)
+        }
     }
     int VKTexture::RandomTextureIndex()
     {
@@ -95,69 +102,73 @@ namespace LostPeterVulkan
         return 0;
     }
     void VKTexture::LoadTexture(int width,
-                              int height,
-                              int depth)
+                                int height,
+                                int depth,
+							    int channel /*= 4*/,
+                                uint8* pData /*= nullptr*/)
     {
         this->width = width;
         this->height = height;
         this->depth = depth;
 
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         if (!this->isRenderTarget)
         {
             if (this->typeTexture == F_Texture_1D)
             {
-                Base::GetWindowPtr()->createTexture1D(this->name,
-                                                      this->aPathTexture[0], 
-                                                      this->poMipMapCount, 
-                                                      this->poTextureImage, 
-                                                      this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_1D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+                pWindow->createTexture1D(this->name,
+										 this->aPathTexture[0], 
+										 this->poMipMapCount, 
+										 this->poTextureImage, 
+										 this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_1D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_2D)
             {
-                Base::GetWindowPtr()->createTexture2D(this->name,
-                                                      this->aPathTexture[0], 
-                                                      VK_IMAGE_TYPE_2D, 
-                                                      VK_SAMPLE_COUNT_1_BIT, 
-                                                      this->typeFormat, true, 
-                                                      this->poMipMapCount, 
-                                                      this->poTextureImage, 
-                                                      this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_2D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+                pWindow->createTexture2D(this->name,
+										 this->aPathTexture[0], 
+										 VK_IMAGE_TYPE_2D, 
+										 VK_SAMPLE_COUNT_1_BIT, 
+										 this->typeFormat, true, 
+										 this->poMipMapCount, 
+										 this->poTextureImage, 
+										 this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_2D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_2DArray)
             {
-                Base::GetWindowPtr()->createTexture2DArray(this->name,
-                                                           this->aPathTexture, 
-                                                           VK_IMAGE_TYPE_2D,
-                                                           VK_SAMPLE_COUNT_1_BIT, 
-                                                           this->typeFormat, 
-                                                           true, 
-                                                           this->poMipMapCount, 
-                                                           this->poTextureImage, 
-                                                           this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        (int)this->aPathTexture.size(), 
-                                                        this->poTextureImageView);
+                pWindow->createTexture2DArray(this->name,
+											  this->aPathTexture, 
+											  VK_IMAGE_TYPE_2D,
+											  VK_SAMPLE_COUNT_1_BIT, 
+											  this->typeFormat, 
+											  true, 
+											  this->poMipMapCount, 
+											  this->poTextureImage, 
+											  this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   (int)this->aPathTexture.size(), 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_3D)
             {
@@ -165,41 +176,41 @@ namespace LostPeterVulkan
                 this->pDataRGBA = new uint8[size];
                 memset(this->pDataRGBA, 0, (size_t)size);
                 updateNoiseTextureData();
-                Base::GetWindowPtr()->createTexture3D(this->name,
-                                                      this->typeFormat, 
-                                                      this->pDataRGBA, 
-                                                      size, 
-                                                      width, 
-                                                      height, 
-                                                      depth, 
-                                                      this->poTextureImage, 
-                                                      this->poTextureImageMemory, 
-                                                      this->stagingBuffer, 
-                                                      this->stagingBufferMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_3D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+                pWindow->createTexture3D(this->name,
+										 this->typeFormat, 
+										 this->pDataRGBA, 
+										 size, 
+										 width, 
+										 height, 
+										 depth, 
+										 this->poTextureImage, 
+										 this->poTextureImageMemory, 
+										 this->stagingBuffer, 
+										 this->stagingBufferMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_3D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_CubeMap)
             {
-                Base::GetWindowPtr()->createTextureCubeMap(this->name,
-                                                           this->aPathTexture, 
-                                                           this->poMipMapCount, 
-                                                           this->poTextureImage, 
-                                                           this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        (int)this->aPathTexture.size(), 
-                                                        this->poTextureImageView);
+                pWindow->createTextureCubeMap(this->name,
+											  this->aPathTexture, 
+											  this->poMipMapCount, 
+											  this->poTextureImage, 
+											  this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_CUBE, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   (int)this->aPathTexture.size(), 
+										   this->poTextureImageView);
             }   
             else
             {
@@ -212,127 +223,142 @@ namespace LostPeterVulkan
         {
             if (this->typeTexture == F_Texture_1D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget1D(this->name,
-                                                                  this->rtColorDefault, 
-                                                                  this->rtIsSetColor, 
-                                                                  this->width, 
-                                                                  false,
-                                                                  this->poMipMapCount, 
-                                                                  VK_SAMPLE_COUNT_1_BIT, 
-                                                                  this->typeFormat, 
-                                                                  this->rtImageUsage,
-                                                                  VK_IMAGE_LAYOUT_GENERAL,
-                                                                  this->isGraphicsComputeShared,
-                                                                  this->poTextureImage, 
-                                                                  this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_1D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+                pWindow->createTextureRenderTarget1D(this->name,
+													 this->rtColorDefault, 
+													 this->rtIsSetColor, 
+													 channel,
+													 this->width, 
+													 false,
+													 this->poMipMapCount, 
+													 VK_SAMPLE_COUNT_1_BIT, 
+													 this->typeFormat, 
+													 this->rtImageUsage,
+													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->isGraphicsComputeShared,
+													 this->poTextureImage, 
+													 this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_1D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             } 
             else if (this->typeTexture == F_Texture_2D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget2D(this->name,
-                                                                  this->rtColorDefault, 
-                                                                  this->rtIsSetColor, 
-                                                                  this->width, 
-                                                                  this->height,
-                                                                  false,
-                                                                  this->poMipMapCount, 
-                                                                  VK_SAMPLE_COUNT_1_BIT, 
-                                                                  this->typeFormat, 
-                                                                  this->rtImageUsage,
-                                                                  VK_IMAGE_LAYOUT_GENERAL,
-                                                                  this->isGraphicsComputeShared,
-                                                                  this->poTextureImage, 
-                                                                  this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_2D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+                pWindow->createTextureRenderTarget2D(this->name,
+													 pData,
+													 channel,
+													 this->width, 
+													 this->height,
+													 false,
+													 this->poMipMapCount, 
+													 VK_SAMPLE_COUNT_1_BIT, 
+													 this->typeFormat, 
+													 this->rtImageUsage,
+													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->isGraphicsComputeShared,
+													 this->poTextureImage, 
+													 this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_2D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_2DArray)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget2DArray(this->name,
-                                                                       this->rtColorDefault, 
-                                                                       this->rtIsSetColor, 
-                                                                       this->width, 
-                                                                       this->height,
-                                                                       this->depth,
-                                                                       false,
-                                                                       this->poMipMapCount, 
-                                                                       VK_SAMPLE_COUNT_1_BIT, 
-                                                                       this->typeFormat, 
-                                                                       this->rtImageUsage,
-                                                                       VK_IMAGE_LAYOUT_GENERAL,
-                                                                       this->isGraphicsComputeShared,
-                                                                       this->poTextureImage, 
-                                                                       this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        (int)this->aPathTexture.size(), 
-                                                        this->poTextureImageView);
+                pWindow->createTextureRenderTarget2DArray(this->name,
+														  this->rtColorDefault, 
+														  this->rtIsSetColor, 
+														  channel,
+														  this->width, 
+														  this->height,
+														  this->depth,
+														  false,
+														  this->poMipMapCount, 
+														  VK_SAMPLE_COUNT_1_BIT, 
+														  this->typeFormat, 
+														  this->rtImageUsage,
+														  VK_IMAGE_LAYOUT_GENERAL,
+														  this->isGraphicsComputeShared,
+														  this->poTextureImage, 
+														  this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   (int)this->aPathTexture.size(), 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_3D)
             {
-                Base::GetWindowPtr()->createTextureRenderTarget3D(this->name,
-                                                                  this->rtColorDefault, 
-                                                                  this->rtIsSetColor, 
-                                                                  this->width, 
-                                                                  this->height,
-                                                                  this->depth,
-                                                                  false,
-                                                                  this->poMipMapCount, 
-                                                                  VK_SAMPLE_COUNT_1_BIT,
-                                                                  this->typeFormat, 
-                                                                  this->rtImageUsage,
-                                                                  VK_IMAGE_LAYOUT_GENERAL,
-                                                                  this->isGraphicsComputeShared,
-                                                                  this->poTextureImage, 
-                                                                  this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_3D, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        1, 
-                                                        this->poTextureImageView);
+				if (pData == nullptr)
+                {
+                    uint32_t size = width * height * depth * channel;
+                    this->pDataRGBA = new uint8[size];
+                    memset(this->pDataRGBA, 0, (size_t)size);
+                    updateNoiseTextureData();
+                    this->isDeleteRGBA = true;
+                }
+                else 
+                {
+                    this->pDataRGBA = pData;
+                    this->isDeleteRGBA = false;
+                }
+                pWindow->createTextureRenderTarget3D(this->name,
+													 this->pDataRGBA, 
+													 channel, 
+													 this->width, 
+													 this->height,
+													 this->depth,
+													 false,
+													 this->poMipMapCount, 
+													 VK_SAMPLE_COUNT_1_BIT,
+													 this->typeFormat, 
+													 this->rtImageUsage,
+													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->isGraphicsComputeShared,
+													 this->poTextureImage, 
+													 this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+										   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_3D, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   1, 
+										   this->poTextureImageView);
             }
             else if (this->typeTexture == F_Texture_CubeMap)
             {
-                Base::GetWindowPtr()->createTextureRenderTargetCubeMap(this->name,
-                                                                       this->width, 
-                                                                       this->height,
-                                                                       false,
-                                                                       this->poMipMapCount, 
-                                                                       VK_SAMPLE_COUNT_1_BIT,
-                                                                       this->typeFormat, 
-                                                                       this->rtImageUsage,
-                                                                       VK_IMAGE_LAYOUT_GENERAL,
-                                                                       this->isGraphicsComputeShared,
-                                                                       this->poTextureImage, 
-                                                                       this->poTextureImageMemory);
-                Base::GetWindowPtr()->createVkImageView(this->name,
-                                                        this->poTextureImage, 
-                                                        VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                        this->typeFormat, 
-                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                        this->poMipMapCount, 
-                                                        6, 
-                                                        this->poTextureImageView);
+                pWindow->createTextureRenderTargetCubeMap(this->name,
+														  this->width, 
+														  this->height,
+														  false,
+														  this->poMipMapCount, 
+														  VK_SAMPLE_COUNT_1_BIT,
+														  this->typeFormat, 
+														  this->rtImageUsage,
+														  VK_IMAGE_LAYOUT_GENERAL,
+														  this->isGraphicsComputeShared,
+														  this->poTextureImage, 
+														  this->poTextureImageMemory);
+                pWindow->createVkImageView(this->name,
+									   	   this->poTextureImage, 
+										   VK_IMAGE_VIEW_TYPE_CUBE, 
+										   this->typeFormat, 
+										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->poMipMapCount, 
+										   6, 
+										   this->poTextureImageView);
             }
             else
             {
@@ -342,21 +368,26 @@ namespace LostPeterVulkan
             }
         }
 
-        Base::GetWindowPtr()->createVkSampler(this->name,
-                                              this->typeFilter, 
-                                              this->typeAddressing,
-                                              this->typeBorderColor,
-                                              true,
-                                              Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                              0.0f,
-                                              static_cast<float>(this->poMipMapCount),
-                                              0.0f,
-                                              this->poTextureSampler);
+        pWindow->createVkSampler(this->name,
+								 this->typeFilter, 
+								 this->typeAddressing,
+								 this->typeBorderColor,
+								 true,
+								 pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+								 0.0f,
+								 static_cast<float>(this->poMipMapCount),
+								 0.0f,
+								 this->poTextureSampler);
 
         this->poTextureImageInfo = {};
         this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
         this->poTextureImageInfo.imageView = this->poTextureImageView;
         this->poTextureImageInfo.sampler = this->poTextureSampler;
+
+		this->poTextureImageInfo_NoSampler = {};
+        this->poTextureImageInfo_NoSampler.imageLayout = this->poTextureImageLayout;
+        this->poTextureImageInfo_NoSampler.imageView = this->poTextureImageView;
+        this->poTextureImageInfo_NoSampler.sampler = nullptr;
     }   
     void VKTexture::UpdateTexture()
     {
@@ -388,25 +419,27 @@ namespace LostPeterVulkan
     }
     void VKTexture::updateNoiseTexture()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //1> updateNoiseTextureData
         updateNoiseTextureData();
 
         //2> MapData to stagingBuffer
         VkDeviceSize bufSize = this->width * this->height * this->depth;
-        Base::GetWindowPtr()->updateVKBuffer(0, bufSize, (void*)this->pDataRGBA, this->stagingBufferMemory);
+        pWindow->updateVKBuffer(0, bufSize, (void*)this->pDataRGBA, this->stagingBufferMemory);
 
         //3> CopyToImage
-        VkCommandBuffer cmdBuffer = Base::GetWindowPtr()->beginSingleTimeCommands();
+        VkCommandBuffer cmdBuffer = pWindow->beginSingleTimeCommands();
         {   
-            Base::GetWindowPtr()->copyBufferToImage(cmdBuffer,
-                                                    this->stagingBuffer, 
-                                                    this->poTextureImage, 
-                                                    static_cast<uint32_t>(this->width), 
-                                                    static_cast<uint32_t>(this->height),
-                                                    static_cast<uint32_t>(this->depth), 
-                                                    1);
+            pWindow->copyBufferToImage(cmdBuffer,
+									   this->stagingBuffer, 
+									   this->poTextureImage, 
+									   static_cast<uint32_t>(this->width), 
+									   static_cast<uint32_t>(this->height),
+									   static_cast<uint32_t>(this->depth), 
+									   1);
         }
-        Base::GetWindowPtr()->endSingleTimeCommands(cmdBuffer);
+        pWindow->endSingleTimeCommands(cmdBuffer);
     }
 
 }; //LostPeterVulkan

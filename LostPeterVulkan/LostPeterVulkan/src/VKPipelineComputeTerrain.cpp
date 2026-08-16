@@ -12,6 +12,7 @@
 #include "../include/VKPipelineComputeTerrain.h"
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKTexture.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKStatePipelineCompute.h"
 
@@ -137,7 +138,7 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                this->m_pVKRenderPassTerrain->poTerrainHeightMapImageInfo_Sampler);
+                                                                this->m_pVKRenderPassTerrain->pTexture_HeightMap->GetVkDescriptorImageInfo());
             }
             else if (nameDescriptor == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
             {
@@ -147,7 +148,7 @@ namespace LostPeterVulkan
                                                                 0,
                                                                 1,
                                                                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-                                                                this->m_pVKRenderPassTerrain->poTerrainNormalMapImageInfo_Sampler);
+                                                                this->m_pVKRenderPassTerrain->pTexture_NormalMap->GetVkDescriptorImageInfo());
             }
             else
             {
