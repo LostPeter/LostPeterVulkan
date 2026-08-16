@@ -45,15 +45,20 @@ namespace LostPeterVulkan
         int height;
         int depth;
 
+		VkImageUsageFlags rtImageUsage;
+		VkImageAspectFlags aspectFlags;
+		VkImageLayout poTextureImageLayout;
+
+		uint32_t poMipMapCount;
+		bool isAutoMipmap;
+
         VkFormat typeFormat; 
-        uint32_t poMipMapCount;
         VkImage poTextureImage;
         VkDeviceMemory poTextureImageMemory;
         VkImageView poTextureImageView;
         VkSampler poTextureSampler;
         VkDescriptorImageInfo poTextureImageInfo;
 		VkDescriptorImageInfo poTextureImageInfo_NoSampler;
-        VkImageLayout poTextureImageLayout;
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
@@ -71,7 +76,6 @@ namespace LostPeterVulkan
         //Texture RenderTarget
         FVector4 rtColorDefault;
         bool rtIsSetColor; 
-        VkImageUsageFlags rtImageUsage;
 
     public:
         F_FORCEINLINE const VkImage& GetVkImage() const { return this->poTextureImage; }

@@ -11,6 +11,7 @@
 
 #include "../include/VKRenderPassShadowMap.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKTexture.h"
 
 namespace LostPeterVulkan
 {
@@ -19,10 +20,7 @@ namespace LostPeterVulkan
         : Base(nameRenderPass)
 
         //Depth
-        , poDepthImage(VK_NULL_HANDLE)
-        , poDepthImageMemory(VK_NULL_HANDLE)
-        , poDepthImageView(VK_NULL_HANDLE)
-        , sampler(VK_NULL_HANDLE)
+		, pTexture_Depth(nullptr)
 
         //RenderPass
         , poRenderPass(VK_NULL_HANDLE)
@@ -38,41 +36,31 @@ namespace LostPeterVulkan
     }   
     void VKRenderPassShadowMap::Destroy()
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //RenderPass
         if (this->poRenderPass != VK_NULL_HANDLE)
         {
-            Base::GetWindowPtr()->destroyVkRenderPass(this->poRenderPass);
+            pWindow->destroyVkRenderPass(this->poRenderPass);
         }
         this->poRenderPass = VK_NULL_HANDLE;
 
         //FrameBuffer
         if (this->poFrameBuffer != VK_NULL_HANDLE)
         {
-            Base::GetWindowPtr()->destroyVkFramebuffer(this->poFrameBuffer);
+            pWindow->destroyVkFramebuffer(this->poFrameBuffer);
         }
         this->poFrameBuffer = VK_NULL_HANDLE;
 
         //Depth
-        if (this->poDepthImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poDepthImage, this->poDepthImageMemory, this->poDepthImageView);
-        }
-        this->poDepthImage = VK_NULL_HANDLE;
-        this->poDepthImageMemory = VK_NULL_HANDLE;
-        this->poDepthImageView = VK_NULL_HANDLE;
-        if (this->sampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->sampler);
-        }
-        this->sampler = VK_NULL_HANDLE;
-
-        this->imageInfo.imageView = VK_NULL_HANDLE;
-        this->imageInfo.sampler = VK_NULL_HANDLE;
+		F_DELETE(this->pTexture_Depth)
     } 
     void VKRenderPassShadowMap::Init(uint32_t width, 
                                      uint32_t height,
-                                     VkFormat format)
+                                     FTexturePixelFormatType format)
     {
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
         //0> Common
         {
             this->offset.x = 0;
@@ -98,48 +86,26 @@ namespace LostPeterVulkan
 
         //1> Depth
         {
-            String nameTexture = "Texture-ShadowMapDepth";
-            Base::GetWindowPtr()->createVkImage(nameTexture,
-                                                width, 
-                                                height, 
-                                                1,
-                                                1,
-                                                1,
-                                                VK_IMAGE_TYPE_2D, 
-                                                false,
-                                                VK_SAMPLE_COUNT_1_BIT, 
-                                                format, 
-                                                VK_IMAGE_TILING_OPTIMAL, 
-                                                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                                VK_SHARING_MODE_EXCLUSIVE,
-                                                false,
-                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                                                this->poDepthImage, 
-                                                this->poDepthImageMemory);
-            
-            Base::GetWindowPtr()->createVkImageView(nameTexture,
-                                                    this->poDepthImage, 
-                                                    VK_IMAGE_VIEW_TYPE_2D,
-                                                    format, 
-                                                    VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                    1, 
-                                                    1,
-                                                    this->poDepthImageView);
-
-            Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                  F_TextureFilter_Bilinear, 
-                                                  F_TextureAddressing_Clamp,
-                                                  F_TextureBorderColor_OpaqueWhite,
-                                                  false,
-                                                  1.0f,
-                                                  0.0f,
-                                                  1.0f,
-                                                  0.0f,
-                                                  this->sampler);
-            
-            this->imageInfo.sampler = this->sampler;
-            this->imageInfo.imageView = this->poDepthImageView;
-            this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            String nameTexture = "Texture-ShadowMapDepth-" + GetName();
+			StringVector aPathTextureShadowMapDepth;
+			this->pTexture_Depth = new VKTexture(0,
+												 nameTexture,
+												 aPathTextureShadowMapDepth,
+												 F_Texture_2D,
+												 format,
+												 F_TextureFilter_Bilinear,
+												 F_TextureAddressing_Clamp,
+												 F_TextureBorderColor_OpaqueBlack,
+												 true,
+												 true);
+			this->pTexture_Depth->rtImageUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+			this->pTexture_Depth->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+			this->pTexture_Depth->poTextureImageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			this->pTexture_Depth->LoadTexture(width, 
+											  height,
+											  1,
+											  1,
+											  nullptr);
         }
 
         //2> RenderPass
@@ -150,16 +116,16 @@ namespace LostPeterVulkan
             
             //VkAttachmentDescription Depth
             VkAttachmentDescription attachmentSR_Depth = {};
-            Base::GetWindowPtr()->createAttachmentDescription(attachmentSR_Depth,
-                                                              0,
-                                                              format,
-                                                              VK_SAMPLE_COUNT_1_BIT,
-                                                              VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                              VK_ATTACHMENT_STORE_OP_STORE,
-                                                              VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                              VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                              VK_IMAGE_LAYOUT_UNDEFINED,
-                                                              VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+            pWindow->createAttachmentDescription(attachmentSR_Depth,
+												 0,
+												 this->pTexture_Depth->typeFormat,
+												 VK_SAMPLE_COUNT_1_BIT,
+												 VK_ATTACHMENT_LOAD_OP_CLEAR,
+												 VK_ATTACHMENT_STORE_OP_STORE,
+												 VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+												 VK_ATTACHMENT_STORE_OP_DONT_CARE,
+												 VK_IMAGE_LAYOUT_UNDEFINED,
+												 VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
             aAttachmentDescription.push_back(attachmentSR_Depth);
 
             //VkSubpassDescription
@@ -195,15 +161,15 @@ namespace LostPeterVulkan
             subpassDependency1.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
             aSubpassDependency.push_back(subpassDependency1);
 
-
-            if (!Base::GetWindowPtr()->createVkRenderPass(GetName(),
-                                                          aAttachmentDescription,
-                                                          aSubpassDescription,
-                                                          aSubpassDependency,
-                                                          nullptr,
-                                                          this->poRenderPass))
+			String nameRenderPass = "RenderPass-ShadowMapDepth-" + GetName();
+            if (!pWindow->createVkRenderPass(nameRenderPass,
+											 aAttachmentDescription,
+											 aSubpassDescription,
+											 aSubpassDependency,
+											 nullptr,
+											 this->poRenderPass))
             {
-                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create renderpass: " + GetName();
+                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create renderpass: " + nameRenderPass;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -212,17 +178,18 @@ namespace LostPeterVulkan
         //3> Framebuffer
         {
             VkImageViewVector aImageViews;
-            aImageViews.push_back(this->poDepthImageView);
-            if (!Base::GetWindowPtr()->createVkFramebuffer(GetName(),
-                                                           aImageViews, 
-                                                           this->poRenderPass,
-                                                           0,
-                                                           width,
-                                                           height,
-                                                           1,
-                                                           this->poFrameBuffer))
+            aImageViews.push_back(this->pTexture_Depth->GetVkImageView());
+			String nameFrameBuffer = "FrameBuffer-ShadowMapDepth-" + GetName();
+            if (!pWindow->createVkFramebuffer(nameFrameBuffer,
+											  aImageViews, 
+											  this->poRenderPass,
+											  0,
+											  width,
+											  height,
+											  1,
+											  this->poFrameBuffer))
             {
-                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create framebuffer: " + GetName();
+                String msg = "*********************** VKRenderPassShadowMap::Init: Failed to create framebuffer: " + nameFrameBuffer;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }

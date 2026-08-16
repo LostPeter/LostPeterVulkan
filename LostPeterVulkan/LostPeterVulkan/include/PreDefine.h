@@ -280,6 +280,7 @@ namespace LostPeterVulkan
     vulkanExport VkImageType Util_Transform2VkImageType(FTextureType type);
     vulkanExport VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
     vulkanExport VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
+	vulkanExport FTexturePixelFormatType Util_TransformFromVkFormat(VkFormat type);
     vulkanExport VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
     vulkanExport VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
     vulkanExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);

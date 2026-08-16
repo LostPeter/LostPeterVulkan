@@ -38,7 +38,12 @@ namespace LostPeterVulkan
         , height(0)
         , depth(0)
 
+		, rtImageUsage(VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT)
+		, aspectFlags(VK_IMAGE_ASPECT_COLOR_BIT)
+
         , poMipMapCount(1)
+		, isAutoMipmap(true)
+
         , poTextureImage(VK_NULL_HANDLE)
         , poTextureImageMemory(VK_NULL_HANDLE)
         , poTextureImageView(VK_NULL_HANDLE)
@@ -60,11 +65,13 @@ namespace LostPeterVulkan
         //Texture RenderTarget
         , rtColorDefault(0, 0, 0, 1)
         , rtIsSetColor(false)
-        , rtImageUsage(VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT)
     {
         this->typeFormat = Util_Transform2VkFormat(this->typePixelFormat);
         if (this->isRenderTarget)
-            this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+        {
+			this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+			this->isAutoMipmap = false;
+		}
         else
             this->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
@@ -126,7 +133,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_1D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -137,7 +144,8 @@ namespace LostPeterVulkan
 										 this->aPathTexture[0], 
 										 VK_IMAGE_TYPE_2D, 
 										 VK_SAMPLE_COUNT_1_BIT, 
-										 this->typeFormat, true, 
+										 this->typeFormat, 
+										 this->isAutoMipmap, 
 										 this->poMipMapCount, 
 										 this->poTextureImage, 
 										 this->poTextureImageMemory);
@@ -145,7 +153,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_2D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -157,7 +165,7 @@ namespace LostPeterVulkan
 											  VK_IMAGE_TYPE_2D,
 											  VK_SAMPLE_COUNT_1_BIT, 
 											  this->typeFormat, 
-											  true, 
+											  this->isAutoMipmap, 
 											  this->poMipMapCount, 
 											  this->poTextureImage, 
 											  this->poTextureImageMemory);
@@ -165,7 +173,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   (int)this->aPathTexture.size(), 
 										   this->poTextureImageView);
@@ -178,6 +186,7 @@ namespace LostPeterVulkan
                 updateNoiseTextureData();
                 pWindow->createTexture3D(this->name,
 										 this->typeFormat, 
+										 this->isAutoMipmap, 
 										 this->pDataRGBA, 
 										 size, 
 										 width, 
@@ -191,7 +200,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_3D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -207,7 +216,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_CUBE, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   (int)this->aPathTexture.size(), 
 										   this->poTextureImageView);
@@ -228,12 +237,12 @@ namespace LostPeterVulkan
 													 this->rtIsSetColor, 
 													 channel,
 													 this->width, 
-													 false,
+													 this->isAutoMipmap, 
 													 this->poMipMapCount, 
 													 VK_SAMPLE_COUNT_1_BIT, 
 													 this->typeFormat, 
 													 this->rtImageUsage,
-													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->poTextureImageLayout,
 													 this->isGraphicsComputeShared,
 													 this->poTextureImage, 
 													 this->poTextureImageMemory);
@@ -241,7 +250,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_1D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -253,12 +262,12 @@ namespace LostPeterVulkan
 													 channel,
 													 this->width, 
 													 this->height,
-													 false,
+													 this->isAutoMipmap, 
 													 this->poMipMapCount, 
 													 VK_SAMPLE_COUNT_1_BIT, 
 													 this->typeFormat, 
 													 this->rtImageUsage,
-													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->poTextureImageLayout,
 													 this->isGraphicsComputeShared,
 													 this->poTextureImage, 
 													 this->poTextureImageMemory);
@@ -266,7 +275,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_2D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -280,12 +289,12 @@ namespace LostPeterVulkan
 														  this->width, 
 														  this->height,
 														  this->depth,
-														  false,
+														  this->isAutoMipmap, 
 														  this->poMipMapCount, 
 														  VK_SAMPLE_COUNT_1_BIT, 
 														  this->typeFormat, 
 														  this->rtImageUsage,
-														  VK_IMAGE_LAYOUT_GENERAL,
+														  this->poTextureImageLayout,
 														  this->isGraphicsComputeShared,
 														  this->poTextureImage, 
 														  this->poTextureImageMemory);
@@ -293,7 +302,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   (int)this->aPathTexture.size(), 
 										   this->poTextureImageView);
@@ -319,12 +328,12 @@ namespace LostPeterVulkan
 													 this->width, 
 													 this->height,
 													 this->depth,
-													 false,
+													 this->isAutoMipmap, 
 													 this->poMipMapCount, 
 													 VK_SAMPLE_COUNT_1_BIT,
 													 this->typeFormat, 
 													 this->rtImageUsage,
-													 VK_IMAGE_LAYOUT_GENERAL,
+													 this->poTextureImageLayout,
 													 this->isGraphicsComputeShared,
 													 this->poTextureImage, 
 													 this->poTextureImageMemory);
@@ -332,7 +341,7 @@ namespace LostPeterVulkan
 										   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_3D, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   1, 
 										   this->poTextureImageView);
@@ -342,12 +351,12 @@ namespace LostPeterVulkan
                 pWindow->createTextureRenderTargetCubeMap(this->name,
 														  this->width, 
 														  this->height,
-														  false,
+														  this->isAutoMipmap, 
 														  this->poMipMapCount, 
 														  VK_SAMPLE_COUNT_1_BIT,
 														  this->typeFormat, 
 														  this->rtImageUsage,
-														  VK_IMAGE_LAYOUT_GENERAL,
+														  this->poTextureImageLayout,
 														  this->isGraphicsComputeShared,
 														  this->poTextureImage, 
 														  this->poTextureImageMemory);
@@ -355,7 +364,7 @@ namespace LostPeterVulkan
 									   	   this->poTextureImage, 
 										   VK_IMAGE_VIEW_TYPE_CUBE, 
 										   this->typeFormat, 
-										   VK_IMAGE_ASPECT_COLOR_BIT, 
+										   this->aspectFlags, 
 										   this->poMipMapCount, 
 										   6, 
 										   this->poTextureImageView);

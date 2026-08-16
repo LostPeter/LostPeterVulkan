@@ -11,6 +11,7 @@
 
 #include "../include/VKRenderPassCopyBlitFromFrame.h"
 #include "../include/VulkanWindow.h"
+#include "../include/VKTexture.h"
 
 namespace LostPeterVulkan
 {
@@ -19,10 +20,7 @@ namespace LostPeterVulkan
         : Base(nameRenderPass)
 
         //Image
-        , poImage(VK_NULL_HANDLE)
-        , poImageMemory(VK_NULL_HANDLE)
-        , poImageView(VK_NULL_HANDLE)
-        , poSampler(VK_NULL_HANDLE)
+		, poTexture(nullptr)
 
         , poRenderPass(VK_NULL_HANDLE)
         , poFrameBuffer(VK_NULL_HANDLE)
@@ -50,26 +48,12 @@ namespace LostPeterVulkan
         }
         this->poFrameBuffer = VK_NULL_HANDLE;
 
-        //Depth
-        if (this->poImage != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->poImage, this->poImageMemory, this->poImageView);
-        }
-        this->poImage = VK_NULL_HANDLE;
-        this->poImageMemory = VK_NULL_HANDLE;
-        this->poImageView = VK_NULL_HANDLE;
-        if (this->poSampler != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImageSampler(this->poSampler);
-        }
-        this->poSampler = VK_NULL_HANDLE;
-
-        this->imageInfo.imageView = VK_NULL_HANDLE;
-        this->imageInfo.sampler = VK_NULL_HANDLE;
+        //Texture
+		F_DELETE(this->poTexture)
     } 
     bool VKRenderPassCopyBlitFromFrame::Init(uint32_t width,
                                              uint32_t height,
-                                             VkFormat format,
+                                             FTexturePixelFormatType format,
                                              bool isDepth)
     {
         //0> Common
@@ -109,50 +93,28 @@ namespace LostPeterVulkan
             aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
         }
 
-        //1> Image
+        //1> Texture
         {
             String nameTexture = "Texture-CopyBlitFromFrame-" + this->name;
-            Base::GetWindowPtr()->createVkImage(nameTexture,
-                                                width, 
-                                                height, 
-                                                1,
-                                                1,
-                                                1,
-                                                VK_IMAGE_TYPE_2D, 
-                                                false,
-                                                VK_SAMPLE_COUNT_1_BIT, 
-                                                format, 
-                                                VK_IMAGE_TILING_OPTIMAL, 
-                                                usage,
-                                                VK_SHARING_MODE_EXCLUSIVE,
-                                                false,
-                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                                                this->poImage, 
-                                                this->poImageMemory);
-            
-            Base::GetWindowPtr()->createVkImageView(nameTexture,
-                                                    this->poImage, 
-                                                    VK_IMAGE_VIEW_TYPE_2D,
-                                                    format, 
-                                                    aspectFlags,
-                                                    1, 
-                                                    1,
-                                                    this->poImageView);
-
-            Base::GetWindowPtr()->createVkSampler(nameTexture,
-                                                  F_TextureFilter_Bilinear, 
-                                                  F_TextureAddressing_Clamp,
-                                                  F_TextureBorderColor_OpaqueWhite,
-                                                  false,
-                                                  1.0f,
-                                                  0.0f,
-                                                  1.0f,
-                                                  0.0f,
-                                                  this->poSampler);
-            
-            this->imageInfo.sampler = this->poSampler;
-            this->imageInfo.imageView = this->poImageView;
-            this->imageInfo.imageLayout = imageLayout;
+			StringVector aPathTextureCopyBlitFromFrame;
+			this->poTexture = new VKTexture(0,
+											nameTexture,
+											aPathTextureCopyBlitFromFrame,
+											F_Texture_2D,
+											format,
+											F_TextureFilter_Bilinear,
+											F_TextureAddressing_Clamp,
+											F_TextureBorderColor_OpaqueBlack,
+											true,
+											true);
+			this->poTexture->rtImageUsage = usage;
+			this->poTexture->aspectFlags = aspectFlags;
+			this->poTexture->poTextureImageLayout = imageLayout;
+			this->poTexture->LoadTexture(width, 
+										 height,
+										 1,
+										 1,
+										 nullptr);
         }
 
         //2> RenderPass
@@ -165,7 +127,7 @@ namespace LostPeterVulkan
             VkAttachmentDescription attachmentSR = {};
             Base::GetWindowPtr()->createAttachmentDescription(attachmentSR,
                                                               0,
-                                                              format,
+                                                              this->poTexture->typeFormat,
                                                               VK_SAMPLE_COUNT_1_BIT,
                                                               VK_ATTACHMENT_LOAD_OP_DONT_CARE,
                                                               VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -226,7 +188,7 @@ namespace LostPeterVulkan
         //3> Framebuffer
         {
             VkImageViewVector aImageViews;
-            aImageViews.push_back(this->poImageView);
+            aImageViews.push_back(this->poTexture->GetVkImageView());
             String nameFramebuffer = "Framebuffer-" + GetName();
             if (!Base::GetWindowPtr()->createVkFramebuffer(nameFramebuffer,
                                                            aImageViews, 

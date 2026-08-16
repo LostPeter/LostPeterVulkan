@@ -31,12 +31,8 @@ namespace LostPeterVulkan
         VkViewport viewPort;
         VkRect2D rtScissor;
 
-        //Image
-        VkImage poImage;
-        VkDeviceMemory poImageMemory;
-        VkImageView poImageView;
-        VkSampler poSampler;
-        VkDescriptorImageInfo imageInfo;
+        //Texture
+		VKTexture* poTexture;
 
         //RenderPass
         VkRenderPass poRenderPass;
@@ -49,7 +45,7 @@ namespace LostPeterVulkan
 
         virtual bool Init(uint32_t width, 
                           uint32_t height,
-                          VkFormat format,
+                          FTexturePixelFormatType format,
                           bool isDepth);
 
     public:

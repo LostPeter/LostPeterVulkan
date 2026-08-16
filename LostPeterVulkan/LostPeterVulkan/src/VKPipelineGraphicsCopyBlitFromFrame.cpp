@@ -12,6 +12,7 @@
 #include "../include/VKPipelineGraphicsCopyBlitFromFrame.h"
 #include "../include/VulkanWindow.h"
 #include "../include/VKRenderPassCopyBlitFromFrame.h"
+#include "../include/VKTexture.h"
 #include "../include/Mesh.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKStatePipelineGraphics.h"
@@ -49,7 +50,7 @@ namespace LostPeterVulkan
 
     bool VKPipelineGraphicsCopyBlitFromFrame::Init(uint32_t width, 
                                                    uint32_t height,
-                                                   VkFormat format,
+                                                   FTexturePixelFormatType format,
                                                    bool isDepth,
                                                    Mesh* pMesh,
 												   DescriptorSetLayout* pDSL,
@@ -152,7 +153,7 @@ namespace LostPeterVulkan
     void VKPipelineGraphicsCopyBlitFromFrame::UpdateDescriptorSets(const VkImageView& imageView)
     {
         VkDescriptorImageInfo imageInfo = { };
-        imageInfo.sampler = this->pVKRenderPassCopyBlitFromFrame->poSampler;
+        imageInfo.sampler = this->pVKRenderPassCopyBlitFromFrame->poTexture->GetVkSampler();
         imageInfo.imageView = imageView;
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 

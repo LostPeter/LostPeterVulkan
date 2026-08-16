@@ -359,12 +359,10 @@ namespace LostPeterVulkan
 		String poDescriptorSetLayoutName;
         DescriptorSetLayout* poDescriptorSetLayout;
 
-        uint32_t poMipMapCount;
-        VkImage poTextureImage;
-        VkDeviceMemory poTextureImageMemory;
-        VkImageView poTextureImageView;
-        VkSampler poTextureSampler;
+		//Texture
+		VKTexture* poTexture;
 
+		//DescriptorPool
         VkDescriptorPool poDescriptorPool;
 
         //Synchronization Objects
@@ -937,6 +935,7 @@ namespace LostPeterVulkan
 
                     virtual void createTexture3D(const String& nameTexture, 
                                                  VkFormat format,
+												 bool autoMipMap, 
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
                                                  uint32_t width,
@@ -948,6 +947,7 @@ namespace LostPeterVulkan
                                                  VkDeviceMemory& bufferMemory);
                     virtual void createTexture3D(const String& nameTexture, 
                                                  VkFormat format,
+												 bool autoMipMap, 
                                                  const uint8* pDataRGBA,
                                                  uint32_t size,
                                                  uint32_t width,
@@ -1474,8 +1474,8 @@ namespace LostPeterVulkan
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Terrain();
                     virtual void createDescriptorSets_Custom();
-                        virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
-						virtual void updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics, VkImageView vkTextureView, VkSampler vkSampler); 
+                        virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets); 
+						virtual void updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics); 
 
                         virtual void destroyVkDescriptorSet(VkDescriptorSet& vkDescriptorSet);
                         virtual void destroyVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets);

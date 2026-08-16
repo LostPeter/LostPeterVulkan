@@ -32,11 +32,7 @@ namespace LostPeterVulkan
         VkRect2D rtScissor;
 
         //Depth
-        VkImage poDepthImage;
-        VkDeviceMemory poDepthImageMemory;
-        VkImageView poDepthImageView;
-        VkSampler sampler;
-        VkDescriptorImageInfo imageInfo;
+		VKTexture* pTexture_Depth;
         
         //RenderPass
         VkRenderPass poRenderPass;
@@ -49,7 +45,7 @@ namespace LostPeterVulkan
 
         virtual void Init(uint32_t width, 
                           uint32_t height,
-                          VkFormat format);
+                          FTexturePixelFormatType format);
     
     public:
         void CleanupSwapChain();

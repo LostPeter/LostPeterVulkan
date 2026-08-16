@@ -2693,7 +2693,7 @@ void Vulkan_027_GPUCulling::updateDescriptorSets_Graphics(ModelObjectRend* pRend
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          m_pVKRenderPassShadowMap->imageInfo);
+                                          m_pVKRenderPassShadowMap->pTexture_Depth->GetVkDescriptorImageInfo());
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_BufferRWObjectCullInstance)) //BufferRWObjectCullInstance
             {

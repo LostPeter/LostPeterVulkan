@@ -1689,7 +1689,7 @@ void Vulkan_019_ShadowMap::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                           0,
                                           1,
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          m_pVKRenderPassShadowMap->imageInfo);
+                                          m_pVKRenderPassShadowMap->pTexture_Depth->GetVkDescriptorImageInfo());
             }
             else
             {

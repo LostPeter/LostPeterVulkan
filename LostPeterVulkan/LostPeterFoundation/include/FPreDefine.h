@@ -722,8 +722,13 @@ namespace LostPeterFoundation
     {
         F_TexturePixelFormat_R8_UNORM = 0,              //0: R8_UNORM
         F_TexturePixelFormat_R16_UNORM,                 //1: R16_UNORM
-        F_TexturePixelFormat_R8G8B8A8_SRGB,             //2: R8G8B8A8_SRGB
-        F_TexturePixelFormat_R8G8B8A8_UNORM,            //3: R8G8B8A8_UNORM
+		F_TexturePixelFormat_D16_UNORM,					//2: D16_UNORM
+		F_TexturePixelFormat_D32_SFLOAT,				//3: D32_SFLOAT
+		F_TexturePixelFormat_D16_UNORM_S8_UINT,			//4: D16_UNORM_S8_UINT
+		F_TexturePixelFormat_D24_UNORM_S8_UINT,			//5: D24_UNORM_S8_UINT
+		F_TexturePixelFormat_D32_SFLOAT_S8_UINT,		//6: D32_SFLOAT_S8_UINT
+        F_TexturePixelFormat_R8G8B8A8_SRGB,             //7: R8G8B8A8_SRGB
+        F_TexturePixelFormat_R8G8B8A8_UNORM,            //8: R8G8B8A8_UNORM
 
         F_TextureFormat_Count,
     };

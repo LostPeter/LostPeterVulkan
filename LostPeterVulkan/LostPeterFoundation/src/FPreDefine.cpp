@@ -244,8 +244,13 @@ namespace LostPeterFoundation
     {
         "R8_UNORM",                 //0: R8_UNORM
         "R16_UNORM",                //1: R16_UNORM
-        "R8G8B8A8_SRGB",            //2: R8G8B8A8_SRGB
-        "R8G8B8A8_UNORM",           //3: R8G8B8A8_UNORM
+		"D16_UNORM",                //2: D16_UNORM
+		"D32_SFLOAT",               //3: D32_SFLOAT
+		"D16_UNORM_S8_UINT",        //4: D16_UNORM_S8_UINT
+		"D24_UNORM_S8_UINT",        //5: D24_UNORM_S8_UINT
+		"D32_SFLOAT_S8_UINT",       //6: D32_SFLOAT_S8_UINT
+        "R8G8B8A8_SRGB",            //7: R8G8B8A8_SRGB
+        "R8G8B8A8_UNORM",           //8: R8G8B8A8_UNORM
     };
     const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type)
     {

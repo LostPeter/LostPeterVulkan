@@ -149,14 +149,36 @@ namespace LostPeterVulkan
     {
         switch ((int32)type)
         {
-            case F_TexturePixelFormat_R8_UNORM:          return VK_FORMAT_R8_UNORM;
-            case F_TexturePixelFormat_R16_UNORM:         return VK_FORMAT_R16_UNORM;
-            case F_TexturePixelFormat_R8G8B8A8_SRGB:     return VK_FORMAT_R8G8B8A8_SRGB;
-            case F_TexturePixelFormat_R8G8B8A8_UNORM:    return VK_FORMAT_R8G8B8A8_UNORM;
+            case F_TexturePixelFormat_R8_UNORM:          	return VK_FORMAT_R8_UNORM;
+            case F_TexturePixelFormat_R16_UNORM:         	return VK_FORMAT_R16_UNORM;
+			case F_TexturePixelFormat_D16_UNORM:         	return VK_FORMAT_D16_UNORM;
+			case F_TexturePixelFormat_D32_SFLOAT:         	return VK_FORMAT_D32_SFLOAT;
+			case F_TexturePixelFormat_D16_UNORM_S8_UINT:    return VK_FORMAT_D16_UNORM_S8_UINT;
+			case F_TexturePixelFormat_D24_UNORM_S8_UINT:    return VK_FORMAT_D24_UNORM_S8_UINT;
+			case F_TexturePixelFormat_D32_SFLOAT_S8_UINT:   return VK_FORMAT_D32_SFLOAT_S8_UINT;
+            case F_TexturePixelFormat_R8G8B8A8_SRGB:     	return VK_FORMAT_R8G8B8A8_SRGB;
+            case F_TexturePixelFormat_R8G8B8A8_UNORM:    	return VK_FORMAT_R8G8B8A8_UNORM;
         }
         F_Assert(false && "Util_Transform2VkFormat: Wrong type !")
         return VK_FORMAT_R8G8B8A8_SRGB;
     }
+	FTexturePixelFormatType Util_TransformFromVkFormat(VkFormat type)
+	{
+		switch ((int32)type)
+		{
+			case VK_FORMAT_R8_UNORM:          	return F_TexturePixelFormat_R8_UNORM;
+            case VK_FORMAT_R16_UNORM:         	return F_TexturePixelFormat_R16_UNORM;
+			case VK_FORMAT_D16_UNORM:         	return F_TexturePixelFormat_D16_UNORM;
+			case VK_FORMAT_D32_SFLOAT:         	return F_TexturePixelFormat_D32_SFLOAT;
+			case VK_FORMAT_D16_UNORM_S8_UINT:   return F_TexturePixelFormat_D16_UNORM_S8_UINT;
+			case VK_FORMAT_D24_UNORM_S8_UINT:   return F_TexturePixelFormat_D24_UNORM_S8_UINT;
+			case VK_FORMAT_D32_SFLOAT_S8_UINT:  return F_TexturePixelFormat_D32_SFLOAT_S8_UINT;
+            case VK_FORMAT_R8G8B8A8_SRGB:     	return F_TexturePixelFormat_R8G8B8A8_SRGB;
+            case VK_FORMAT_R8G8B8A8_UNORM:    	return F_TexturePixelFormat_R8G8B8A8_UNORM;
+		}
+		F_Assert(false && "Util_TransformFromVkFormat: Wrong type !")
+        return F_TexturePixelFormat_R8G8B8A8_SRGB;
+	}
     VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type)
     {
         VkComponentMapping componentMapping;

@@ -37,7 +37,7 @@ namespace LostPeterVulkan
 
         virtual bool Init(uint32_t width, 
                           uint32_t height,
-                          VkFormat format,
+                          FTexturePixelFormatType format,
                           bool isDepth,
                           Mesh* pMesh,
 						  DescriptorSetLayout* pDSL,

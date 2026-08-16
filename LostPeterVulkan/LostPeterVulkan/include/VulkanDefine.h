@@ -1106,7 +1106,7 @@ namespace LostPeterVulkan
         float zNear; //For Light ShadowMap's depthMVP
 	    float zFar; //For Light ShadowMap's depthMVP
         uint32_t depthSize; //For Light ShadowMap's depth size
-        VkFormat format; //For Light ShadowMap's depth format
+        FTexturePixelFormatType format; //For Light ShadowMap's depth format
 	    float depthBiasConstant; //For Light ShadowMap's constant depth bias factor
 	    float depthBiasSlope; //For Light ShadowMap's slope depth bias factor
 
@@ -1119,7 +1119,7 @@ namespace LostPeterVulkan
 #else
             , depthSize(1024)
 #endif
-            , format(VK_FORMAT_D16_UNORM)
+            , format(F_TexturePixelFormat_D16_UNORM)
             , depthBiasConstant(1.25f)
             , depthBiasSlope(1.75f)
         {

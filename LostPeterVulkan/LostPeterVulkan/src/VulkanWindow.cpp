@@ -963,9 +963,10 @@ namespace LostPeterVulkan
 
                 Mesh* pMeshBlit = FindMesh_Internal("quad");
                 F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Color");
+				FTexturePixelFormatType typeColor = Util_TransformFromVkFormat(this->poSwapChainImageFormat);
                 if (!this->m_pPipelineGraphics_CopyBlitFromFrameColor->Init(this->poSwapChainExtent.width,
                                                                             this->poSwapChainExtent.height,
-                                                                            this->poSwapChainImageFormat,
+																			typeColor,
                                                                             false,
                                                                             pMeshBlit,
 																			pDescriptorSetLayout,
@@ -1001,9 +1002,10 @@ namespace LostPeterVulkan
 
                 Mesh* pMeshBlit = FindMesh_Internal("quad");
                 F_Assert(pMeshBlit && "VulkanWindow::createPipelineGraphics_CopyBlitFromFrame Depth");
+				FTexturePixelFormatType typeDepth = Util_TransformFromVkFormat(this->poDepthImageFormat);
                 if (!this->m_pPipelineGraphics_CopyBlitFromFrameDepth->Init(this->poSwapChainExtent.width,
                                                                             this->poSwapChainExtent.height,
-                                                                            this->poDepthImageFormat,
+                                                                            typeDepth,
                                                                             true,
                                                                             pMeshBlit,
 																			pDescriptorSetLayout,
@@ -2006,10 +2008,7 @@ namespace LostPeterVulkan
 		, poDescriptorSetLayoutName("")
         , poDescriptorSetLayout(nullptr)
 
-        , poTextureImage(VK_NULL_HANDLE)
-        , poTextureImageMemory(VK_NULL_HANDLE)
-        , poTextureImageView(VK_NULL_HANDLE)
-        , poTextureSampler(VK_NULL_HANDLE)
+		, poTexture(nullptr)
 
         , poDescriptorPool(VK_NULL_HANDLE)
 
@@ -5277,9 +5276,19 @@ namespace LostPeterVulkan
                 String nameTexture;
                 String pathBase;
                 FUtilString::SplitFileName(this->cfg_texture_Path, nameTexture, pathBase);
-                createTexture2D(nameTexture, this->cfg_texture_Path, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                createVkImageView(nameTexture, this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-                createVkSampler(nameTexture, this->poMipMapCount, this->poTextureSampler);
+				StringVector aPathTexture;
+				aPathTexture.push_back(this->cfg_texture_Path);
+				this->poTexture = new VKTexture(0,
+												nameTexture,
+												aPathTexture,
+												F_Texture_2D,
+												F_TexturePixelFormat_R8G8B8A8_SRGB,
+												F_TextureFilter_Bilinear,
+												F_TextureAddressing_Clamp,
+												F_TextureBorderColor_OpaqueBlack,
+												false,
+												false);
+				this->poTexture->LoadTexture(512, 512, 1);
 
                 F_LogInfo("<2-1-2-1> VulkanWindow::loadTexture_Default finish !");
             }
@@ -5416,15 +5425,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            width, 
-                            height, 
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+								width, 
+								height, 
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -5614,15 +5626,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -5670,6 +5685,7 @@ namespace LostPeterVulkan
     
     void VulkanWindow::createTexture3D(const String& nameTexture, 
                                        VkFormat format,
+									   bool autoMipMap, 
                                        const uint8* pDataRGBA,
                                        uint32_t size,
                                        uint32_t width,
@@ -5753,20 +5769,24 @@ namespace LostPeterVulkan
                                   0,
                                   1);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            width, 
-                            height,
-                            1,
-                            1,
-                            false);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+								width, 
+								height,
+								1,
+								1,
+								false);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTexture3D(const String& nameTexture, 
                                        VkFormat format,
+									   bool autoMipMap, 
                                        const uint8* pDataRGBA,
                                        uint32_t size,
                                        uint32_t width,
@@ -5779,6 +5799,7 @@ namespace LostPeterVulkan
         VkDeviceMemory stagingBufferMemory;
         createTexture3D(nameTexture, 
                         format, 
+						autoMipMap, 
                         pDataRGBA, 
                         size,
                         width,
@@ -5927,15 +5948,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6124,45 +6148,49 @@ namespace LostPeterVulkan
                       imageMemory);
         
         //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
-        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
-        {
-            transitionImageLayout(cmdBuffer,
-                                  image, 
-                                  VK_IMAGE_LAYOUT_UNDEFINED, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                  0,
-                                  1,
-                                  0,
-                                  numArray);
-            {   
-                copyBufferToImage(cmdBuffer,
-                                  buffer, 
-                                  image, 
-                                  static_cast<uint32_t>(width), 
-                                  static_cast<uint32_t>(height),
-                                  static_cast<uint32_t>(depth), 
-                                  numArray);
-            }
-            transitionImageLayout(cmdBuffer,
-                                  image, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                  0,
-                                  1,
-                                  0,
-                                  numArray);
+		VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+		{
+			transitionImageLayout(cmdBuffer,
+								  image, 
+							  	  VK_IMAGE_LAYOUT_UNDEFINED, 
+								  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+								  0,
+								  1,
+								  0,
+								  numArray);
+			{   
+				copyBufferToImage(cmdBuffer,
+								  buffer, 
+								  image, 
+								  static_cast<uint32_t>(width), 
+								  static_cast<uint32_t>(height),
+								  static_cast<uint32_t>(depth), 
+								  numArray);
+			}
+			transitionImageLayout(cmdBuffer,
+								  image, 
+								  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+								  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+								  0,
+								  1,
+								  0,
+								  numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
-        }
-        endSingleTimeCommands(cmdBuffer);
+			if (autoMipMap)
+			{			
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
+		}
+		endSingleTimeCommands(cmdBuffer);
+		
     }
     void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    const FVector4& clDefault,
@@ -6256,45 +6284,48 @@ namespace LostPeterVulkan
                       imageMemory);
 
         //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
-        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
-        {
-            transitionImageLayout(cmdBuffer,
-                                  image, 
-                                  VK_IMAGE_LAYOUT_UNDEFINED, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                  0,
-                                  1,
-                                  0,
-                                  numArray);
-            {   
-                copyBufferToImage(cmdBuffer,
-                                  buffer, 
-                                  image, 
-                                  static_cast<uint32_t>(width), 
-                                  static_cast<uint32_t>(height),
-                                  static_cast<uint32_t>(depth), 
-                                  numArray);
-            }
-            transitionImageLayout(cmdBuffer,
-                                  image, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                  0,
-                                  1,
-                                  0,
-                                  numArray);
+		VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+		{
+			transitionImageLayout(cmdBuffer,
+								  image, 
+								  VK_IMAGE_LAYOUT_UNDEFINED, 
+								  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+								  0,
+								  1,
+								  0,
+								  numArray);
+			{   
+				copyBufferToImage(cmdBuffer,
+								  buffer, 
+								  image, 
+								  static_cast<uint32_t>(width), 
+								  static_cast<uint32_t>(height),
+								  static_cast<uint32_t>(depth), 
+								  numArray);
+			}
+			transitionImageLayout(cmdBuffer,
+								  image, 
+								  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+								  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+								  0,
+								  1,
+								  0,
+								  numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
-        }
-        endSingleTimeCommands(cmdBuffer);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
+		}
+		endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTextureRenderTarget2D(const String& nameTexture,
                                                    uint8* pData,
@@ -6440,15 +6471,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6594,15 +6628,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6729,15 +6766,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
 	}
@@ -6854,15 +6894,18 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-            generateMipMaps(cmdBuffer,
-                            image, 
-                            format, 
-                            finalLayout,
-                            width, 
-                            height,
-                            mipMapCount,
-                            numArray,
-                            autoMipMap);
+			if (autoMipMap)
+			{
+				generateMipMaps(cmdBuffer,
+								image, 
+								format, 
+								finalLayout,
+								width, 
+								height,
+								mipMapCount,
+								numArray,
+								autoMipMap);
+			}
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -8471,8 +8514,7 @@ namespace LostPeterVulkan
             {
 				return;
 			}
-			
-			updateDescriptorSets(this->poStatePipelineGraphics, this->poTextureImageView, this->poTextureSampler);
+			updateDescriptorSets(this->poStatePipelineGraphics);
         }
         void VulkanWindow::createDescriptorSets_Terrain()
         {
@@ -8481,7 +8523,7 @@ namespace LostPeterVulkan
         {   
             
         }
-            void VulkanWindow::updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler)
+            void VulkanWindow::updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets)
             {
                 size_t count = aDescriptorSets.size();
                 for (size_t i = 0; i < count; i++)
@@ -8540,24 +8582,20 @@ namespace LostPeterVulkan
                                                     bufferInfo_Instance);
                     }
                     //(4) Image
-                    if (vkTextureView != VK_NULL_HANDLE)
+                    if (this->poTexture != nullptr)
                     {
-                        VkDescriptorImageInfo imageInfo = {};
-                        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                        imageInfo.imageView = vkTextureView;
-                        imageInfo.sampler = vkSampler;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   aDescriptorSets[i],
                                                   4,
                                                   0,
                                                   1,
                                                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                  imageInfo);
+                                                  this->poTexture->GetVkDescriptorImageInfo());
                     }
                     updateVkDescriptorSets(descriptorWrites);
                 }
             }
-			void VulkanWindow::updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics, VkImageView vkTextureView, VkSampler vkSampler)
+			void VulkanWindow::updateDescriptorSets(VKStatePipelineGraphics* pStatePipelineGraphics)
 			{
 				size_t count_ds = pStatePipelineGraphics->poDescriptorSets.size();
                 for (size_t i = 0; i < count_ds; i++)
@@ -8616,19 +8654,15 @@ namespace LostPeterVulkan
                                                     bufferInfo_Instance);
                     }
                     //(4) Image
-                    if (vkTextureView != VK_NULL_HANDLE)
+                    if (this->poTexture != nullptr)
                     {
-                        VkDescriptorImageInfo imageInfo = {};
-                        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                        imageInfo.imageView = vkTextureView;
-                        imageInfo.sampler = vkSampler;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pStatePipelineGraphics->poDescriptorSets[i],
                                                   4,
                                                   0,
                                                   1,
                                                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                  imageInfo);
+                                                  this->poTexture->GetVkDescriptorImageInfo());
                     }
                     updateVkDescriptorSets(descriptorWrites);
                 }
@@ -11130,12 +11164,7 @@ namespace LostPeterVulkan
         }
             void VulkanWindow::cleanupTexture()
             {
-                destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
-                destroyVkImageSampler(this->poTextureSampler);
-                this->poTextureImage = VK_NULL_HANDLE;
-                this->poTextureImageMemory = VK_NULL_HANDLE;
-                this->poTextureImageView = VK_NULL_HANDLE;
-                this->poTextureSampler = VK_NULL_HANDLE;            
+				F_DELETE(this->poTexture)         
             }
             void VulkanWindow::cleanupVertexIndexBuffer()
             {
