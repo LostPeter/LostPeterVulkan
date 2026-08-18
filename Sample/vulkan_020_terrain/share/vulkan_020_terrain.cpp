@@ -1808,7 +1808,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1821,7 +1821,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1834,7 +1834,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1847,7 +1847,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1860,7 +1860,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
-                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                             p,
                                             0,
                                             1,
@@ -1871,7 +1871,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1883,7 +1883,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1895,7 +1895,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
@@ -1907,7 +1907,7 @@ void Vulkan_020_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& po
                 VKTexture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->poStatePipelineGraphics->poDescriptorSets[j],
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : poDescriptorSets[j],
                                           p,
                                           0,
                                           1,
