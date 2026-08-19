@@ -7184,6 +7184,15 @@ namespace LostPeterVulkan
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                     destinationStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
                 } 
+				else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+                    barrier.srcAccessMask = 0;
+                    barrier.dstAccessMask = 0; 
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                } 
                 else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
                 {
                     // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
