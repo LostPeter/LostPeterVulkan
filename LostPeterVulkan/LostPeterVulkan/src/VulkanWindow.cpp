@@ -5425,18 +5425,15 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-								width, 
-								height, 
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+							width, 
+							height, 
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -5626,18 +5623,15 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -5769,18 +5763,15 @@ namespace LostPeterVulkan
                                   0,
                                   1);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-								width, 
-								height,
-								1,
-								1,
-								false);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+							width, 
+							height,
+							1,
+							1,
+							false);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -5948,18 +5939,15 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6175,19 +6163,16 @@ namespace LostPeterVulkan
 								  1,
 								  0,
 								  numArray);
-
-			if (autoMipMap)
-			{			
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
 		}
 		endSingleTimeCommands(cmdBuffer);
 		
@@ -6311,19 +6296,16 @@ namespace LostPeterVulkan
 								  1,
 								  0,
 								  numArray);
-
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
 		}
 		endSingleTimeCommands(cmdBuffer);
     }
@@ -6470,19 +6452,16 @@ namespace LostPeterVulkan
                                   1,
                                   0,
                                   numArray);
-
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6628,18 +6607,15 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }
@@ -6766,18 +6742,15 @@ namespace LostPeterVulkan
                                   0,
                                   numArray);
 
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
 	}
@@ -6893,19 +6866,16 @@ namespace LostPeterVulkan
                                   1,
                                   0,
                                   numArray);
-
-			if (autoMipMap)
-			{
-				generateMipMaps(cmdBuffer,
-								image, 
-								format, 
-								finalLayout,
-								width, 
-								height,
-								mipMapCount,
-								numArray,
-								autoMipMap);
-			}
+			
+			generateMipMaps(cmdBuffer,
+							image, 
+							format, 
+							finalLayout,
+							width, 
+							height,
+							mipMapCount,
+							numArray,
+							autoMipMap);
         }
         endSingleTimeCommands(cmdBuffer);
     }

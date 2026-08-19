@@ -344,6 +344,7 @@ namespace LostPeterVulkan
 														     F_TextureBorderColor_OpaqueBlack,
 														     true,
 														     true);
+					this->pTexture_HeightMap->rtImageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 					this->pTexture_HeightMap->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 					this->pTexture_HeightMap->LoadTexture(this->poTerrainHeightMapSize, 
 														  this->poTerrainHeightMapSize,
@@ -368,6 +369,7 @@ namespace LostPeterVulkan
 														     F_TextureBorderColor_OpaqueBlack,
 														     true,
 														     true);
+					this->pTexture_NormalMap->rtImageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 					this->pTexture_NormalMap->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
 					this->pTexture_NormalMap->LoadTexture(this->poTerrainHeightMapSize, 
 														  this->poTerrainHeightMapSize,
