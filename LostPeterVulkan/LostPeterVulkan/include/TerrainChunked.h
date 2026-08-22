@@ -65,6 +65,10 @@ namespace LostPeterVulkan
         virtual ~TerrainChunked();
 
 	public:	
+		int nChunkedX;
+		int nChunkedZ;
+		int nChunkedID;
+
 		TerrainHeightMap* pHeightMap;
 		int nLeafQuads;
 		int nPatchQuads;
@@ -72,31 +76,38 @@ namespace LostPeterVulkan
 		int nMaxDepth;
 		TerrainChunkedNodePtrVector aNodes;
 
+		bool bIsInit;
+
 	public:
 		static bool IntervalsOverlap(int a0, int a1, int b0, int b1);
 
 	public:
+		F_FORCEINLINE int GetChunkedX() const { return this->nChunkedX; }
+		F_FORCEINLINE int GetChunkedZ() const { return this->nChunkedZ; }
+		F_FORCEINLINE void GetChunkedXZ(int& x, int& z) const { x = this->nChunkedX; z = this->nChunkedZ; }
+		F_FORCEINLINE int GetChunkedID() const { return this->nChunkedID; }
+
 		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 		F_FORCEINLINE TerrainChunkedNode* GetRootNode() const { return this->pRootNode; }
 		F_FORCEINLINE int GetMaxDepth() const { return this->nMaxDepth; }
-		const TerrainChunkedNodePtrVector& GetNodes() const { return this->aNodes; }
+		F_FORCEINLINE const TerrainChunkedNodePtrVector& GetNodes() const { return this->aNodes; }
+
+		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
+		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
 
 	public:
 		void Destroy();
-		bool Init(TerrainHeightMap* pHeightMap,
+		bool Init(int chunkedX, int chunkedZ,
+				  TerrainHeightMap* pHeightMap,
 				  int leafQuads, 
 				  int patchQuads);
 
-		
 		void SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
 		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataVector& aRenderData);
 
 		int GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const;
-
-	public:
-		
 
 	protected:
 		TerrainChunkedNode* buildNode(int x, int z, int size, int level);

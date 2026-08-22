@@ -699,6 +699,7 @@ namespace LostPeterVulkan
 	class TerrainRenderBatches;
 	class TerrainRender;
 	class TerrainSetting;
+	class TerrainUtil;
 
 
     typedef std::vector<CullLodData*> CullLodDataPtrVector;
@@ -719,11 +720,13 @@ namespace LostPeterVulkan
     typedef std::map<String, Mesh*> MeshPtrMap;
 
 	typedef std::vector<TerrainChunkedNode*> TerrainChunkedNodePtrVector;
-    typedef std::map<String, TerrainChunkedNode*> TerrainChunkedNodePtrMap;
+	typedef std::map<int, TerrainChunkedNode*> TerrainChunkedNodePtrMap;
 	typedef std::vector<TerrainChunked*> TerrainChunkedPtrVector;
-    typedef std::map<String, TerrainChunked*> TerrainChunkedPtrMap;
+    typedef std::map<int, TerrainChunked*> TerrainChunkedPtrMap;
+	typedef std::vector<TerrainChunkedLod*> TerrainChunkedLodPtrVector;
+    typedef std::map<int, TerrainChunkedLod*> TerrainChunkedLodPtrMap;
 	typedef std::vector<TerrainHeightMap*> TerrainHeightMapPtrVector;
-    typedef std::map<String, TerrainHeightMap*> TerrainHeightMapPtrMap;
+    typedef std::map<int, TerrainHeightMap*> TerrainHeightMapPtrMap;
 
 
 }; //LostPeterVulkan

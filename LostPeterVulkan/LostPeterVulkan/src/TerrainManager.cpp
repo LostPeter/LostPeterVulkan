@@ -12,7 +12,9 @@
 #include "../include/TerrainManager.h"
 #include "../include/VulkanWindow.h"
 #include "../include/TerrainSetting.h"
+#include "../include/TerrainHeightMap.h"
 #include "../include/TerrainChunked.h"
+#include "../include/TerrainChunkedLod.h"
 
 template<> LostPeterVulkan::TerrainManager* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainManager>::ms_Singleton = nullptr;
 
@@ -48,17 +50,84 @@ namespace LostPeterVulkan
 
 	void TerrainManager::Destroy()
 	{
+		destroyChunkedLods();
+		destroyHeightMaps();
+
 		destroySetting();
 		destroyPools();
 	}
-		void TerrainManager::destroyPools()
+		void TerrainManager::destroyChunkedLods()
 		{
-			F_DELETE(this->pNodePool)
+			for (TerrainChunkedLodPtrVector::iterator it = this->aChunkedLods.begin();
+				 it != this->aChunkedLods.end(); ++it) 
+			{
+				TerrainChunkedLod* pChunkedLod = *it;
+				F_DELETE(pChunkedLod)
+			}
+			this->aChunkedLods.clear();
+			this->mapChunkedLods.clear();
 		}
+			bool TerrainManager::destroyChunkedLod(TerrainChunkedLod* pChunkedLod)
+			{
+				F_Assert(pChunkedLod != nullptr && "TerrainManager::destroyChunkedLod")
+
+				TerrainChunked* pChunked = pChunkedLod->GetTerrainChunked();
+				TerrainChunkedLodPtrMap::iterator itFind = this->mapChunkedLods.find(pChunked->GetChunkedID());
+				if (itFind == this->mapChunkedLods.end())
+				{
+					F_LogError("*********************** TerrainManager::destroyChunkedLod failed, ChunkedLod: [%d, %d] !", pChunked->GetChunkedX(), pChunked->GetChunkedZ());
+					return false;
+				}
+				this->mapChunkedLods.erase(itFind);
+				TerrainChunkedLodPtrVector::iterator itA = std::find(this->aChunkedLods.begin(), this->aChunkedLods.end(), pChunkedLod);
+				if (itA != this->aChunkedLods.end())
+				{
+					this->aChunkedLods.erase(itA);
+				}
+
+				F_DELETE(pChunkedLod)
+				return true;
+			}
+		void TerrainManager::destroyHeightMaps()
+		{
+			for (TerrainHeightMapPtrVector::iterator it = this->aHeightMaps.begin();
+				 it != this->aHeightMaps.end(); ++it) 
+			{
+				TerrainHeightMap* pHeightMap = *it;
+				F_DELETE(pHeightMap)
+			}
+			this->aHeightMaps.clear();
+			this->mapHeightMaps.clear();
+		}
+			bool TerrainManager::destroyHeightMap(TerrainHeightMap* pHeightMap)
+			{
+				F_Assert(pHeightMap != nullptr && "TerrainManager::destroyHeightMap")
+
+				TerrainHeightMapPtrMap::iterator itFind = this->mapHeightMaps.find(pHeightMap->GetID());
+				if (itFind == this->mapHeightMaps.end())
+				{
+					F_LogError("*********************** TerrainManager::destroyHeightMap failed, HeightMap: [%d, %d] !", pHeightMap->GetX(), pHeightMap->GetZ());
+					return false;
+				}
+				this->mapHeightMaps.erase(itFind);
+				TerrainHeightMapPtrVector::iterator itA = std::find(this->aHeightMaps.begin(), this->aHeightMaps.end(), pHeightMap);
+				if (itA != this->aHeightMaps.end())
+				{
+					this->aHeightMaps.erase(itA);
+				}
+				
+				F_DELETE(pHeightMap)
+				return true;
+			}
 		void TerrainManager::destroySetting()
 		{
 			F_DELETE(this->pTerrainSetting)
 		}
+		void TerrainManager::destroyPools()
+		{
+			F_DELETE(this->pNodePool)
+		}
+
 
     bool TerrainManager::Init()
 	{
@@ -68,21 +137,56 @@ namespace LostPeterVulkan
 
 		return true;
 	}
-        void TerrainManager::createPools()
+        bool TerrainManager::createPools()
 		{
 			if (this->pNodePool != nullptr)
-				return;
+				return true;
 
 			this->pNodePool = new ObjectPointerPool<TerrainChunkedNode>();
 			this->pNodePool->stepCount = s_nNodeCount_Step;
 			this->pNodePool->Reserve(s_nNodeCount_Init);
+
+			return true;
 		}
-		void TerrainManager::createSetting()
+		bool TerrainManager::createSetting()
 		{
 			if (this->pTerrainSetting != nullptr)
-				return;
+				return true;
 
 			this->pTerrainSetting = new TerrainSetting();
+
+			return true;
 		}
+		bool TerrainManager::createHeightMaps()
+		{
+
+			return true;
+		}
+		bool TerrainManager::createChunkedLods()
+		{
+
+			return true;
+		}
+		TerrainHeightMap* TerrainManager::createHeightMap(int x, int z)
+		{
+
+			return nullptr;
+		}	
+		TerrainChunkedLod* TerrainManager::createChunkedLod(int x, int z)
+		{
+
+			return nullptr;
+		}
+
+	TerrainHeightMap* TerrainManager::CreateHeightMap(int x, int z)
+	{
+
+		return nullptr;
+	}
+	TerrainChunkedLod* TerrainManager::CreateChunkedLod(int x, int z)
+	{
+
+		return nullptr;
+	}
 
 }; //LostPeterVulkan

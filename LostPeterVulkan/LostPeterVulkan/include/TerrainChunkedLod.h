@@ -23,7 +23,17 @@ namespace LostPeterVulkan
         virtual ~TerrainChunkedLod();
 
 	public:
+		TerrainChunked* pTerrainChunked;
 		
+	public:
+		F_FORCEINLINE TerrainChunked* GetTerrainChunked() const { return this->pTerrainChunked; }
+
+	public:
+		void Destroy();
+		bool Init(int chunkedX, int chunkedZ, 
+				  TerrainHeightMap* pHeightMap);
+
+	public:
 		
 
 	};

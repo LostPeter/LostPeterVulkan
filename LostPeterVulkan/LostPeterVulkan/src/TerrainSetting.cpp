@@ -30,6 +30,9 @@ namespace LostPeterVulkan
 	TerrainSetting::TerrainSetting()
 		: Base("TerrainSetting")
 
+		, nLeafQuads(16)
+		, nPatchQuads(16)
+		
 		, fLodPixelError(2.5f)
 		, bHeadless(false)
 		, nAutoCloseMs(0)

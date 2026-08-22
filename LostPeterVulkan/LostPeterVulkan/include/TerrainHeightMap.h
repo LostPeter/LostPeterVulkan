@@ -29,6 +29,10 @@ namespace LostPeterVulkan
 	public:
 		String pathRaw;
 
+		int nX;
+		int nZ;
+		int nID;
+
 		int nResolution;
 		float fCellSize;
 
@@ -46,6 +50,10 @@ namespace LostPeterVulkan
 		bool bIsInit;
 
 	public:
+		F_FORCEINLINE int GetX() const { return this->nX; }
+		F_FORCEINLINE int GetZ() const { return this->nZ; }
+		F_FORCEINLINE int GetID() const { return this->nID; }
+		
 		F_FORCEINLINE int GetResolution() const { return this->nResolution; }
 		F_FORCEINLINE float GetCellSize() const { return this->fCellSize; }
 
@@ -61,14 +69,17 @@ namespace LostPeterVulkan
 		F_FORCEINLINE const HeightMapDataF& GetDataRawF() const { return this->dataRawF; }
 
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
+		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
 
 	public:
 		void Destroy();
 		bool InitFromRaw16(const String& path,
+						   int x, int z,
 						   int resolution, 
 						   float cellSize);
 
-		bool NewFromRaw16(int resolution, 
+		bool NewFromRaw16(int x, int z,
+						  int resolution, 
 						  float cellSize);
 
 	public:

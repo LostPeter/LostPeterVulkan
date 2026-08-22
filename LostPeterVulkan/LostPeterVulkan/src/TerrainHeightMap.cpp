@@ -11,6 +11,7 @@
 
 #include "../include/TerrainHeightMap.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainUtil.h"
 
 namespace LostPeterVulkan
 {
@@ -18,6 +19,9 @@ namespace LostPeterVulkan
 		: Base(nameHeightMap)
 
 		, pathRaw("")
+		, nX(0)
+		, nZ(0)
+		, nID(-1)
 
 		, nResolution(1025)
 		, fCellSize(2.0f)
@@ -34,7 +38,7 @@ namespace LostPeterVulkan
 
 	{
 		
-	}
+	}	
     TerrainHeightMap::~TerrainHeightMap()
 	{
 		Destroy();	
@@ -46,10 +50,14 @@ namespace LostPeterVulkan
 	}
 
 	bool TerrainHeightMap::InitFromRaw16(const String& path,
+										 int x, int z,
 										 int resolution, 
 										 float cellSize)
 	{
 		this->pathRaw = path;
+		this->nX = x;
+		this->nZ = z;
+		this->nID = TerrainUtil::ToChunkedID(x, z);
 
 		this->nResolution = resolution;
 		this->fCellSize = cellSize;
@@ -71,13 +79,18 @@ namespace LostPeterVulkan
 			return false;
 		}
 
-		this->bIsInit = true;
+		SetIsInit(true);
 		return true;
 	}
 
-	bool TerrainHeightMap::NewFromRaw16(int resolution, 
+	bool TerrainHeightMap::NewFromRaw16(int x, int z,
+										int resolution, 
 						  				float cellSize)
 	{
+		this->nX = x;
+		this->nZ = z;
+		this->nID = TerrainUtil::ToChunkedID(x, z);
+
 		this->nResolution = resolution;
 		this->fCellSize = cellSize;
 
@@ -98,7 +111,7 @@ namespace LostPeterVulkan
 			return false;
 		}
 
-		this->bIsInit = true;
+		SetIsInit(true);
 		return true;
 	}
 

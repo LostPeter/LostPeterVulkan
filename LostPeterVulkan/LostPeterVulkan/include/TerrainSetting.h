@@ -24,6 +24,9 @@ namespace LostPeterVulkan
         virtual ~TerrainSetting();
 
 	public:
+		int nLeafQuads;
+		int nPatchQuads;
+
 		float fLodPixelError;
 		bool bHeadless;
 		uint32 nAutoCloseMs;
@@ -33,8 +36,10 @@ namespace LostPeterVulkan
 		static TerrainSetting* GetSingletonPtr();
 
 	public:
-		
+		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
+		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 
+		
 	};
 
 }; //LostPeterVulkan

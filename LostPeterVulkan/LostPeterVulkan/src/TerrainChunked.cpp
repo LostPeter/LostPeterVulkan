@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/TerrainHeightMap.h"
 #include "../include/TerrainManager.h"
+#include "../include/TerrainUtil.h"
 
 namespace LostPeterVulkan
 {
@@ -93,11 +94,17 @@ namespace LostPeterVulkan
 	TerrainChunked::TerrainChunked(const String& nameChunked)
 		: Base(nameChunked)
 
+		, nChunkedX(0)
+		, nChunkedZ(0)
+		, nChunkedID(-1)
+
 		, pHeightMap(nullptr)
 		, nLeafQuads(16)
 		, nPatchQuads(16)
 		, pRootNode(nullptr)
 		, nMaxDepth(0)
+
+		, bIsInit(false)
 	{
 		
 	}
@@ -108,20 +115,26 @@ namespace LostPeterVulkan
 
 	void TerrainChunked::Destroy()
 	{
-
+		
 	}
 
-	bool TerrainChunked::Init(TerrainHeightMap* pHeightMap,
+	bool TerrainChunked::Init(int chunkedX, int chunkedZ,
+							  TerrainHeightMap* pHeightMap,
 							  int leafQuads, 
 				  			  int patchQuads)
 	{
-		F_Assert(leafQuads > 0 && patchQuads > 0 && "TerrainChunked::Init")
+		F_Assert(!IsInit() && leafQuads > 0 && patchQuads > 0 && pHeightMap != nullptr && "TerrainChunked::Init")
+		
+		this->nChunkedX = chunkedX;
+		this->nChunkedZ = chunkedZ;
+		this->nChunkedID = TerrainUtil::ToChunkedID(chunkedX, chunkedZ);
 
 		this->pHeightMap = pHeightMap;
 		this->nLeafQuads = leafQuads;
 		this->nPatchQuads = patchQuads;
 		this->pRootNode = buildNode(0, 0, pHeightMap->GetResolution() - 1, 0);
 
+		SetIsInit(true);
 		return true;
 	}
 
