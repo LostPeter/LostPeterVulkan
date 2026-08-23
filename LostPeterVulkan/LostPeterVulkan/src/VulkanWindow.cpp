@@ -2061,6 +2061,8 @@ namespace LostPeterVulkan
         , cfg_shaderVertex_Path("")
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
+		
+		, cfg_terrain_setting_path("default_1_1.terrain")
         , cfg_terrain_Path("")
         , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
         , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")

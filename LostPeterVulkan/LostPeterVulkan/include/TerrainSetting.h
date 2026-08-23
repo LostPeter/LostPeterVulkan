@@ -16,6 +16,27 @@
 
 namespace LostPeterVulkan
 {
+	/////////////////////////// TerrainChunkedSetting ////////////////////
+	class vulkanExport TerrainChunkedSetting
+	{
+	public:
+		TerrainChunkedSetting();
+		~TerrainChunkedSetting();
+
+	public:
+		int nX;
+		int nZ;
+		int nID;
+		String nameHeightMap;
+		String pathHeightMap;
+		float scale;
+		
+	public:
+
+	};
+
+
+	/////////////////////////// TerrainSetting ///////////////////////////
 	class vulkanExport TerrainSetting : public FSingleton<TerrainSetting>
                                    	  , public Base
     {
@@ -24,12 +45,22 @@ namespace LostPeterVulkan
         virtual ~TerrainSetting();
 
 	public:
+		String nameSetting;
+		String pathSetting;
+
 		int nLeafQuads;
 		int nPatchQuads;
 
 		float fLodPixelError;
 		bool bHeadless;
 		uint32 nAutoCloseMs;
+
+		int nW;
+		int nH;
+		TerrainChunkedSettingPtrVector aChunkedSettings;
+		TerrainChunkedSettingPtrMap mapChunkedSettings;
+
+		bool bIsInit;
 
 	public:
         static TerrainSetting& GetSingleton();
@@ -39,7 +70,33 @@ namespace LostPeterVulkan
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 
+		F_FORCEINLINE const TerrainChunkedSettingPtrVector& GetChunkedSettingPtrVector() const { return this->aChunkedSettings; }
+		F_FORCEINLINE const TerrainChunkedSettingPtrMap& GetChunkedSettingPtrMap() const { return this->mapChunkedSettings; }
+
+		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
+		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
+
+	public:
+		void Destroy();
+        bool Init(const String& path);
+
+		bool LoadSetting(const String& path);
+		bool SaveSetting(const String& path);
 		
+	protected:
+	////destroy
+		void destroySettings();
+
+	////create
+		void addChunkedSetting(TerrainChunkedSetting* pCS);
+		void destroyChunkedSetting(TerrainChunkedSetting* pCS);
+		
+	////load/save
+		bool loadChunkedSettings(FXMLElement* pElement);
+			TerrainChunkedSetting* loadChunkedSetting(FXMLElement* pElement);
+
+		bool saveChunkedSettings(FXMLElement* pElement, const TerrainChunkedSettingPtrVector& aCSs);
+			bool saveChunkedSettings(FXMLElement* pElement, TerrainChunkedSetting* pCS);
 	};
 
 }; //LostPeterVulkan

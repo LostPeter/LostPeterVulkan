@@ -50,7 +50,7 @@ namespace LostPeterVulkan
 
 	public:
         void Destroy();
-        bool Init();
+        bool Init(const String& pathSetting);
 
 		TerrainHeightMap* CreateHeightMap(int x, int z);
 		TerrainChunkedLod* CreateChunkedLod(int x, int z);
@@ -66,7 +66,7 @@ namespace LostPeterVulkan
 
 	////create
         bool createPools();
-		bool createSetting();
+		bool createSetting(const String& pathSetting);
 		bool createHeightMaps();
 		bool createChunkedLods();
 		

@@ -15,6 +15,7 @@
 namespace LostPeterVulkan
 {
 	const int TerrainUtil::s_nIDMax = 100000;
+	const String TerrainUtil::s_strNameTerrain = "Terrain";
 
 	int TerrainUtil::ToChunkedID(int x, int z)
 	{
@@ -25,6 +26,15 @@ namespace LostPeterVulkan
 	{
 		z = id / s_nIDMax;
 		x = id - z * s_nIDMax;
+	}
+
+	String TerrainUtil::GetTerrainSettingPath(const String& nameSetting)
+	{
+		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameSetting;
+	}
+	String TerrainUtil::GetTerrainHeightMapPath(const String& nameHeightMap)
+	{
+		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameHeightMap;
 	}
 
 }; //LostPeterVulkan

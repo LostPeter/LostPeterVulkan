@@ -698,6 +698,7 @@ namespace LostPeterVulkan
 	class TerrainRenderBatchData;
 	class TerrainRenderBatches;
 	class TerrainRender;
+	class TerrainChunkedSetting;
 	class TerrainSetting;
 	class TerrainUtil;
 
@@ -728,6 +729,9 @@ namespace LostPeterVulkan
 	typedef std::vector<TerrainHeightMap*> TerrainHeightMapPtrVector;
     typedef std::map<int, TerrainHeightMap*> TerrainHeightMapPtrMap;
 
+	typedef std::vector<TerrainChunkedSetting*> TerrainChunkedSettingPtrVector;
+	typedef std::map<int, TerrainChunkedSetting*> TerrainChunkedSettingPtrMap;
+	typedef std::map<String, TerrainChunkedSetting*> TerrainChunkedSettingPtrPathMap;
 
 }; //LostPeterVulkan
 

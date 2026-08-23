@@ -12,6 +12,7 @@
 #include "../include/VKRenderPassTerrain.h"
 #include "../include/VulkanWindow.h"
 #include "../include/TerrainManager.h"
+#include "../include/TerrainUtil.h"
 #include "../include/VKBufferVertexIndex.h"
 #include "../include/VKTexture.h"
 
@@ -119,8 +120,14 @@ namespace LostPeterVulkan
 
     bool VKRenderPassTerrain::Init()
     {
-		createTerrainManager();
+		if (!createTerrainManager())
+		{
+			F_LogError("*********************** VKRenderPassTerrain::Init: createTerrainManager failed !");
+			return false;
+		}
+		F_LogInfo("VKRenderPassTerrain::Init: createTerrainManager success !");
 
+		
         if (loadTerrainData())
         {
             setupTerrainGeometryWhole();
@@ -131,12 +138,21 @@ namespace LostPeterVulkan
         }
         return false;
     }
-		void VKRenderPassTerrain::createTerrainManager()
+		bool VKRenderPassTerrain::createTerrainManager()
 		{
 			if (this->pTerrainManager != nullptr)
-				return;
+				return true;
 
 			this->pTerrainManager = new TerrainManager();
+
+			String pathSetting = TerrainUtil::GetTerrainSettingPath(Base::GetWindowPtr()->cfg_terrain_setting_path);
+			if (!this->pTerrainManager->Init(pathSetting))
+			{
+				F_LogError("*********************** VKRenderPassTerrain::createTerrainManager: failed, path: [%s] !", pathSetting.c_str());
+				return false;
+			}
+
+			return true;
 		}
 
         bool VKRenderPassTerrain::loadTerrainData()

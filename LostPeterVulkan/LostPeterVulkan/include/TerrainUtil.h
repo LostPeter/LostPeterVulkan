@@ -20,10 +20,15 @@ namespace LostPeterVulkan
     {
 	public:
 		static const int s_nIDMax; 
+		static const String s_strNameTerrain;
 
     public:
 		static int ToChunkedID(int x, int z);
 		static void FromChunkedID(int id, int& x, int& z);
+
+
+		static String GetTerrainSettingPath(const String& nameSetting);
+		static String GetTerrainHeightMapPath(const String& nameHeightMap);
 
 	};
 

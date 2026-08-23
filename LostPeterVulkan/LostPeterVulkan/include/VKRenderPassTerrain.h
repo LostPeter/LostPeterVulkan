@@ -78,13 +78,12 @@ namespace LostPeterVulkan
 		void destroyTerrainManager();
 		void destroyTerrainTexture();
 
-		void createTerrainManager();
+		bool createTerrainManager();
 		void createTerrainTexture();
 
         bool loadTerrainData(); 
         void setupTerrainGeometryWhole();
         void setupTerrainGeometryInstance();
-
 
     public:
         void CleanupSwapChain();

@@ -129,11 +129,14 @@ namespace LostPeterVulkan
 		}
 
 
-    bool TerrainManager::Init()
+    bool TerrainManager::Init(const String& pathSetting)
 	{
 		createPools();
-		createSetting();
-
+		if (!createSetting(pathSetting))
+		{
+			F_LogError("*********************** TerrainManager::Init: failed, path: [%s] !", pathSetting.c_str());
+			return false;
+		}
 
 		return true;
 	}
@@ -148,13 +151,18 @@ namespace LostPeterVulkan
 
 			return true;
 		}
-		bool TerrainManager::createSetting()
+		bool TerrainManager::createSetting(const String& pathSetting)
 		{
 			if (this->pTerrainSetting != nullptr)
 				return true;
 
 			this->pTerrainSetting = new TerrainSetting();
-
+			if (!this->pTerrainSetting->Init(pathSetting))
+			{
+				F_LogError("*********************** TerrainManager::createSetting: failed, path: [%s] !", pathSetting.c_str());
+				return false;
+			}
+			
 			return true;
 		}
 		bool TerrainManager::createHeightMaps()

@@ -435,6 +435,8 @@ namespace LostPeterVulkan
         String cfg_shaderVertex_Path;
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
+
+		String cfg_terrain_setting_path;
         String cfg_terrain_Path;
         String cfg_terrainTextureDiffuse_Path;
         String cfg_terrainTextureNormal_Path;

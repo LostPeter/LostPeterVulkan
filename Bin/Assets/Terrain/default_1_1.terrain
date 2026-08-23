@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<setting>
+    <terrain name="default_1_1">
+		<param leaf_quads="16" patch_quads="16" />
+        <chunks w="1" h="1">
+			<chunk x="0" z="0" height_map="terrain_1025_1025.raw" scale="2.0" />
+        </chunks>
+    </terrain>
+</setting>
