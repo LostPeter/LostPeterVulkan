@@ -18,6 +18,7 @@ namespace LostPeterVulkan
 	const int TerrainUtil::s_nIDMax = 100000;
 	const String TerrainUtil::s_strNameAssets = "Assets";
 	const String TerrainUtil::s_strNameTerrain = "Terrain";
+	const String TerrainUtil::s_strNameTextureTerrain = "Assets/Texture/Terrain/";
 
 	String TerrainUtil::GetTerrainSettingPath(const String& nameSetting)
 	{
@@ -30,6 +31,10 @@ namespace LostPeterVulkan
 	String TerrainUtil::GetTerrainHeightMapRelativePath(const String& nameHeightMap)
 	{
 		return s_strNameAssets + "/" + s_strNameTerrain + "/" + nameHeightMap;
+	}
+	String TerrainUtil::GetTerrainTexturePath(const String& nameTexture)
+	{
+		return s_strNameTextureTerrain + nameTexture;
 	}
 
 

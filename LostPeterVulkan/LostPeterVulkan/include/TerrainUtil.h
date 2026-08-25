@@ -22,12 +22,14 @@ namespace LostPeterVulkan
 		static const int s_nIDMax; 
 		static const String s_strNameAssets;
 		static const String s_strNameTerrain;
+		static const String s_strNameTextureTerrain;
 
     public:
 		static String GetTerrainSettingPath(const String& nameSetting);
 		static String GetTerrainHeightMapPath(const String& nameHeightMap);
 		static String GetTerrainHeightMapRelativePath(const String& nameHeightMap);
-
+		static String GetTerrainTexturePath(const String& nameTexture);
+		
 
 		static int ToChunkedID(int x, int z);
 		static void FromChunkedID(int id, int& x, int& z);

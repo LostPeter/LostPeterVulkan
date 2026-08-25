@@ -11,9 +11,11 @@
 
 #include "../include/TerrainChunked.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainSetting.h"
 #include "../include/TerrainHeightMap.h"
 #include "../include/TerrainManager.h"
 #include "../include/TerrainUtil.h"
+#include "../include/VKTexture.h"
 
 namespace LostPeterVulkan
 {
@@ -98,11 +100,19 @@ namespace LostPeterVulkan
 		, nChunkedZ(0)
 		, nChunkedID(-1)
 
-		, pHeightMap(nullptr)
+		//Node
 		, nLeafQuads(16)
 		, nPatchQuads(16)
 		, pRootNode(nullptr)
 		, nMaxDepth(0)
+
+		//HeightMap
+		, pHeightMap(nullptr)
+		, pTexture_HeightMap(nullptr)
+		, pTexture_NormalMap(nullptr)
+
+		//TextureDiffuse/Normal/Control
+
 
 		, bIsInit(false)
 	{
@@ -115,27 +125,113 @@ namespace LostPeterVulkan
 
 	void TerrainChunked::Destroy()
 	{
-		
+		F_DELETE(this->pTexture_NormalMap)
+		F_DELETE(this->pTexture_HeightMap)
 	}
 
-	bool TerrainChunked::Init(int chunkedX, int chunkedZ,
+	bool TerrainChunked::Init(TerrainChunkedSetting* pChunkedSetting, 
 							  TerrainHeightMap* pHeightMap,
 							  int leafQuads, int patchQuads)
 	{
 		F_Assert(!IsInit() && leafQuads > 0 && patchQuads > 0 && pHeightMap != nullptr && "TerrainChunked::Init")
-		
-		this->nChunkedX = chunkedX;
-		this->nChunkedZ = chunkedZ;
-		this->nChunkedID = TerrainUtil::ToChunkedID(chunkedX, chunkedZ);
 
+		//1> Node
+		this->nChunkedX = pChunkedSetting->nX;
+		this->nChunkedZ = pChunkedSetting->nZ;
+		this->nChunkedID = pChunkedSetting->nID;
 		this->pHeightMap = pHeightMap;
 		this->nLeafQuads = leafQuads;
 		this->nPatchQuads = patchQuads;
 		this->pRootNode = buildNode(0, 0, pHeightMap->GetResolution() - 1, 0);
 
+		//2> Texture
+		if (!createTextures(pChunkedSetting))
+		{
+			F_LogError("*********************** TerrainManager::Init: createTextures failed !");
+			return false;
+		}
+
 		SetIsInit(true);
 		return true;
 	}
+
+		void TerrainChunked::destroyTextures()
+		{
+			F_DELETE(this->pTexture_NormalMap)
+			F_DELETE(this->pTexture_HeightMap)
+		}
+
+		bool TerrainChunked::createTextures(TerrainChunkedSetting* pChunkedSetting)
+		{
+			//HeightMap
+			{
+				String nameTexture = "Texture-TerrainHeightMap-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
+				StringVector aPathTextureHeightMap;
+				this->pTexture_HeightMap = new VKTexture(0,
+														 nameTexture,
+														 aPathTextureHeightMap,
+														 F_Texture_2D,
+														 F_TexturePixelFormat_R16_UNORM,
+														 F_TextureFilter_Bilinear,
+														 F_TextureAddressing_Clamp,
+														 F_TextureBorderColor_OpaqueBlack,
+														 true,
+														 true);
+				this->pTexture_HeightMap->rtImageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+				this->pTexture_HeightMap->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				this->pTexture_HeightMap->LoadTexture(pChunkedSetting->nResolution, 
+													  pChunkedSetting->nResolution,
+													  1,
+													  2,
+													  (uint8*)this->pHeightMap->dataRawI.data());
+				
+				F_LogInfo("TerrainChunked::createTextures: Create render texture [TerrainHeightMap] - [%d, %d] success !",
+						  pChunkedSetting->nResolution, pChunkedSetting->nResolution);
+			}
+
+			//NormalMap
+			{
+				String nameTexture = "Texture-TerrainNormalMap" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
+				StringVector aPathTextureNormalMap;
+				this->pTexture_NormalMap = new VKTexture(0,
+														 nameTexture,
+														 aPathTextureNormalMap,
+														 F_Texture_2D,
+														 F_TexturePixelFormat_R8G8B8A8_UNORM,
+														 F_TextureFilter_Bilinear,
+														 F_TextureAddressing_Clamp,
+														 F_TextureBorderColor_OpaqueBlack,
+														 true,
+														 true);
+				this->pTexture_NormalMap->rtImageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+				this->pTexture_NormalMap->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+				this->pTexture_NormalMap->LoadTexture(pChunkedSetting->nResolution, 
+													  pChunkedSetting->nResolution,
+												  	  1,
+													  4,
+													  nullptr);
+
+				F_LogInfo("TerrainChunked::createTextures: Create render texture [TerrainNormalMap] - [%d, %d] success !",
+						  pChunkedSetting->nResolution, pChunkedSetting->nResolution);
+			}
+
+			
+			uint32_t mipMapCount = 1;
+			//1> Terrain Diffuse
+			{
+
+			}
+			//2> Terrain Normal
+			{
+
+			}
+			//3> Terrain Control
+			{
+				
+			}
+
+			return true;
+		}
 
 	void TerrainChunked::SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect)
 	{
@@ -345,5 +441,7 @@ namespace LostPeterVulkan
         }
         return stitchStepWorld;
 	}
+
+
 
 }; //LostPeterVulkan

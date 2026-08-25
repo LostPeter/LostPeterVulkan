@@ -171,12 +171,12 @@ namespace LostPeterVulkan
         }
 
 		this->dataRawI.resize(this->dataRawF.size());
-        uint16_t rawMin = std::numeric_limits<uint16_t>::max();
-        uint16_t rawMax = std::numeric_limits<uint16_t>::lowest();
+        uint16 rawMin = std::numeric_limits<uint16>::max();
+        uint16 rawMax = std::numeric_limits<uint16>::lowest();
         for (size_t i = 0; i < this->dataRawI.size(); ++i)
         {
-            const uint16_t value = static_cast<uint16_t>(bytes[i * 2u]) |
-                                   static_cast<uint16_t>(static_cast<uint16_t>(bytes[i * 2u + 1u]) << 8u);
+            const uint16 value = static_cast<uint16>(bytes[i * 2u]) |
+                                   static_cast<uint16>(static_cast<uint16>(bytes[i * 2u + 1u]) << 8u);
             this->dataRawI[i] = value;
             rawMin = std::min(rawMin, value);
             rawMax = std::max(rawMax, value);

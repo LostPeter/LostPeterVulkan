@@ -24,12 +24,29 @@ namespace LostPeterVulkan
 		, nID(-1)
 		, nameHeightMap("")
 		, pathHeightMap("")
+		, nResolution(0)
+		, nSize(0)
+
+		, strTextureDiffuse("")
+		, strTextureNormal("")
+		, strTextureControl("")
 	{
 
 	}
 	TerrainChunkedSetting::~TerrainChunkedSetting()
 	{
 
+	}
+
+	StringVector TerrainChunkedSetting::ToPathTextures(const String& names)
+	{
+		StringVector aPath = FUtilString::Split(names, ";");
+		for (size_t i = 0; i < aPath.size(); i++)
+		{
+			String name = aPath[i];
+			aPath[i] = TerrainUtil::GetTerrainTexturePath(name);
+		}
+		return aPath;
 	}
 
 
@@ -67,7 +84,9 @@ namespace LostPeterVulkan
 	#define	TERRAIN_TAG_ATTRIBUTE_X	        		"x"
 	#define	TERRAIN_TAG_ATTRIBUTE_Z	        		"z"
 	#define	TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP	    "height_map"
-
+	#define	TERRAIN_TAG_ATTRIBUTE_TEX_DIFFUSE	    "tex_diffuse"
+	#define	TERRAIN_TAG_ATTRIBUTE_TEX_NORMAL    	"tex_normal"
+	#define	TERRAIN_TAG_ATTRIBUTE_TEX_CONTROL	    "tex_control"
 
 	TerrainSetting::TerrainSetting()
 		: Base("TerrainSetting")
@@ -90,6 +109,7 @@ namespace LostPeterVulkan
 		, fSizeZ(0.0f)	
 		, nResolution(0)
 		, fCellSize(1.0f)
+		, nSize(0)
 
 		, bIsInit(false)
 		
@@ -182,7 +202,8 @@ namespace LostPeterVulkan
 			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_Z, this->fSizeZ);
 			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
 			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
-			
+			this->nSize = (int)((this->nResolution - 1) * this->fCellSize);
+				
 			int count_child = pElement->GetElementChildrenCount();
 			for (int i = 0; i < count_child; i++)
 			{
@@ -204,6 +225,14 @@ namespace LostPeterVulkan
 				pCS->nID = TerrainUtil::ToChunkedID(pCS->nX, pCS->nZ);
 				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP, pCS->nameHeightMap);
 				pCS->pathHeightMap = TerrainUtil::GetTerrainHeightMapRelativePath(pCS->nameHeightMap);
+				pCS->nResolution = this->nResolution;
+				pCS->nSize = this->nSize;
+				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_DIFFUSE, pCS->strTextureDiffuse);
+				pCS->aPathTextureDiffuse = pCS->ToPathTextures(pCS->strTextureDiffuse);
+				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_NORMAL, pCS->strTextureNormal);
+				pCS->aPathTextureNormal = pCS->ToPathTextures(pCS->strTextureNormal);
+				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_CONTROL, pCS->strTextureControl);
+				pCS->aPathTextureControl = pCS->ToPathTextures(pCS->strTextureControl);
 				addChunkedSetting(pCS);	
 
 				return pCS;
@@ -267,6 +296,9 @@ namespace LostPeterVulkan
 				pElement->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_X, pCS->nX);
 				pElement->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_Z, pCS->nZ);
 				pElement->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP, pCS->nameHeightMap);
+				pElement->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_DIFFUSE, pCS->strTextureDiffuse);
+				pElement->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_NORMAL, pCS->strTextureNormal);
+				pElement->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_CONTROL, pCS->strTextureControl);
 
 				return true;
 			}

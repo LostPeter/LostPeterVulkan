@@ -23,7 +23,7 @@ namespace LostPeterVulkan
         virtual ~TerrainHeightMap();
 
 	public:
-		typedef std::vector<uint32> HeightMapDataI;
+		typedef std::vector<uint16> HeightMapDataI;
 		typedef std::vector<float> HeightMapDataF;
 
 	public:

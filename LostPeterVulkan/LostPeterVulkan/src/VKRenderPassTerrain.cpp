@@ -438,8 +438,8 @@ namespace LostPeterVulkan
 														  false,
 														  false);
 					this->pTexture_Normal->LoadTexture(1024, 
-														1024,
-														1);
+													   1024,
+													   1);
 
                     F_LogInfo("VKRenderPassTerrain::createTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
                               pWindow->cfg_terrainTextureNormal_Path.c_str());

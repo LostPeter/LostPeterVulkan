@@ -206,9 +206,12 @@ namespace LostPeterVulkan
 		}
 			TerrainChunkedLod* TerrainManager::createChunkedLod(TerrainHeightMap* pHeightMap)
 			{
+				TerrainChunkedSetting* pChunkedSetting = this->pTerrainSetting->GetChunkedSetting(pHeightMap->nID);
+				F_Assert(pChunkedSetting != nullptr && "TerrainManager::createChunkedLod")
+
 				String nameChunkedLod = "ChunkedLod-" + FUtilString::SaveInt(pHeightMap->nX) + "-" + FUtilString::SaveInt(pHeightMap->nZ);
 				TerrainChunkedLod* pChunkedLod = new TerrainChunkedLod(nameChunkedLod);
-				if (!pChunkedLod->Init(pHeightMap->nX, pHeightMap->nZ, 
+				if (!pChunkedLod->Init(pChunkedSetting, 
 									   pHeightMap,
 									   pTerrainSetting->nLeafQuads, pTerrainSetting->nPatchQuads))
 				{

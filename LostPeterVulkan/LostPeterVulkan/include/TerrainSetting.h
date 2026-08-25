@@ -29,7 +29,18 @@ namespace LostPeterVulkan
 		int nID;
 		String nameHeightMap;
 		String pathHeightMap;
+		int nResolution;
+		int nSize;
 		
+		String strTextureDiffuse;
+		String strTextureNormal;
+		String strTextureControl;
+		StringVector aPathTextureDiffuse;
+		StringVector aPathTextureNormal;
+		StringVector aPathTextureControl;
+
+	public:
+		StringVector ToPathTextures(const String& names);
 	};
 
 
@@ -60,6 +71,7 @@ namespace LostPeterVulkan
 		float fSizeZ;
 		int nResolution;
 		float fCellSize;
+		int nSize;
 		TerrainChunkedSettingPtrVector aChunkedSettings;
 		TerrainChunkedSettingPtrMap mapChunkedSettings;
 

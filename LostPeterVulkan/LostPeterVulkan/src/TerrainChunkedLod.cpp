@@ -11,6 +11,7 @@
 
 #include "../include/TerrainChunkedLod.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainSetting.h"
 #include "../include/TerrainManager.h"
 #include "../include/TerrainChunked.h"
 #include "../include/TerrainHeightMap.h"
@@ -35,21 +36,21 @@ namespace LostPeterVulkan
 		F_DELETE(this->pTerrainChunked)
 	}
 
-	bool TerrainChunkedLod::Init(int chunkedX, int chunkedZ,
+	bool TerrainChunkedLod::Init(TerrainChunkedSetting* pChunkedSetting, 
 				  				 TerrainHeightMap* pHeightMap,
 								 int leafQuads, int patchQuads)
 	{
 		//1> pTerrainChunked
-		String nameChunked = "Chunked-" + FUtilString::SaveInt(chunkedX) + "-" + FUtilString::SaveInt(chunkedZ);
+		String nameChunked = "Chunked-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
 		this->pTerrainChunked = new TerrainChunked(nameChunked);
-		if (!this->pTerrainChunked->Init(chunkedX, chunkedZ,
+		if (!this->pTerrainChunked->Init(pChunkedSetting,
 										 pHeightMap,
 										 leafQuads, patchQuads))
 		{
-			F_LogError("*********************** TerrainChunkedLod::Init: Create Chunked [%d, %d] failed !", chunkedX, chunkedZ);
+			F_LogError("*********************** TerrainChunkedLod::Init: Create Chunked [%d, %d] failed !", pChunkedSetting->nX, pChunkedSetting->nZ);
 			return false;
 		}
-		F_LogInfo("TerrainChunkedLod::Init: Create Chunked [%d, %d] success !", chunkedX, chunkedZ);
+		F_LogInfo("TerrainChunkedLod::Init: Create Chunked [%d, %d] success !", pChunkedSetting->nX, pChunkedSetting->nZ);
 
 		return true;
 	}

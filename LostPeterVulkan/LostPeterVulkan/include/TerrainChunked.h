@@ -69,12 +69,20 @@ namespace LostPeterVulkan
 		int nChunkedZ;
 		int nChunkedID;
 
-		TerrainHeightMap* pHeightMap;
+		//Node
 		int nLeafQuads;
 		int nPatchQuads;
 		TerrainChunkedNode* pRootNode;
 		int nMaxDepth;
 		TerrainChunkedNodePtrVector aNodes;
+
+		//HeightMap
+		TerrainHeightMap* pHeightMap;
+		VKTexture* pTexture_HeightMap;
+		VKTexture* pTexture_NormalMap;
+
+		//TextureDiffuse/Normal/Control
+
 
 		bool bIsInit;
 
@@ -87,19 +95,20 @@ namespace LostPeterVulkan
 		F_FORCEINLINE void GetChunkedXZ(int& x, int& z) const { x = this->nChunkedX; z = this->nChunkedZ; }
 		F_FORCEINLINE int GetChunkedID() const { return this->nChunkedID; }
 
-		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 		F_FORCEINLINE TerrainChunkedNode* GetRootNode() const { return this->pRootNode; }
 		F_FORCEINLINE int GetMaxDepth() const { return this->nMaxDepth; }
 		F_FORCEINLINE const TerrainChunkedNodePtrVector& GetNodes() const { return this->aNodes; }
 
+		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
+
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
 		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
 
 	public:
 		void Destroy();
-		bool Init(int chunkedX, int chunkedZ,
+		bool Init(TerrainChunkedSetting* pChunkedSetting, 
 				  TerrainHeightMap* pHeightMap,
 				  int leafQuads, int patchQuads);
 
@@ -117,6 +126,12 @@ namespace LostPeterVulkan
 		void selectDynamicRecursive(TerrainChunkedNode* pNode, const FVector3& vCenter, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
 
 		std::array<float, 4> stitchStepsForNode(const TerrainChunkedNode* pNode, int lod, const TerrainChunkedNodePtrVector& aNodeSelect) const;
+	
+	protected:
+		void destroyTextures();
+			
+		bool createTextures(TerrainChunkedSetting* pChunkedSetting);
+
 	};
 
 }; //LostPeterVulkan
