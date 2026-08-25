@@ -31,7 +31,8 @@ namespace LostPeterVulkan
 	public:
 		void Destroy();
 		bool Init(int chunkedX, int chunkedZ, 
-				  TerrainHeightMap* pHeightMap);
+				  TerrainHeightMap* pHeightMap,
+				  int leafQuads, int patchQuads);
 
 	public:
 		

@@ -508,6 +508,8 @@ namespace LostPeterVulkan
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
 
+		virtual void OnTick();
+
         virtual bool OnBeginCompute_BeforeRender();
             virtual void OnUpdateCompute_BeforeRender();
             virtual void OnCompute_BeforeRender();

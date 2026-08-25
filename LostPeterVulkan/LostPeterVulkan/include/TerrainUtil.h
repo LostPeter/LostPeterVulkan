@@ -20,17 +20,26 @@ namespace LostPeterVulkan
     {
 	public:
 		static const int s_nIDMax; 
+		static const String s_strNameAssets;
 		static const String s_strNameTerrain;
 
     public:
+		static String GetTerrainSettingPath(const String& nameSetting);
+		static String GetTerrainHeightMapPath(const String& nameHeightMap);
+		static String GetTerrainHeightMapRelativePath(const String& nameHeightMap);
+
+
 		static int ToChunkedID(int x, int z);
 		static void FromChunkedID(int id, int& x, int& z);
 
 
-		static String GetTerrainSettingPath(const String& nameSetting);
-		static String GetTerrainHeightMapPath(const String& nameHeightMap);
+		static void ParseChunkedXZ(float posX, float posZ, int& x, int& z);
+		static void ParseChunkedXZ(const FVector2& pos, int& x, int& z);
+		static void ParseChunkedXZ(const FVector3& pos, int& x, int& z);
+		static void ParseChunkedXZ(const FCamera* pCamera, int& x, int& z);
 
-	};
+
+	};	
 
 }; //LostPeterVulkan
 

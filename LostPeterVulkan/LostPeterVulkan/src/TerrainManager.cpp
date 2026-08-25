@@ -15,6 +15,7 @@
 #include "../include/TerrainHeightMap.h"
 #include "../include/TerrainChunked.h"
 #include "../include/TerrainChunkedLod.h"
+#include "../include/TerrainUtil.h"
 
 template<> LostPeterVulkan::TerrainManager* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainManager>::ms_Singleton = nullptr;
 
@@ -163,38 +164,181 @@ namespace LostPeterVulkan
 				return false;
 			}
 			
+			F_LogInfo("TerrainManager::createSetting: success, path setting: [%s] !", pathSetting.c_str());
 			return true;
 		}
+
 		bool TerrainManager::createHeightMaps()
 		{
 
 			return true;
 		}
+			TerrainHeightMap* TerrainManager::createHeightMap(TerrainChunkedSetting* pCS)
+			{
+				TerrainHeightMap* pHeightMap = new TerrainHeightMap(pCS->nameHeightMap);
+				if (!pHeightMap->InitFromRaw16(pCS->pathHeightMap,
+											   pCS->nX, pCS->nZ,
+											   pTerrainSetting->nResolution, pTerrainSetting->fCellSize))
+				{
+					F_DELETE(pHeightMap)
+					F_LogError("*********************** TerrainManager::createHeightMap: Create height map failed, path: [%s] !", pCS->pathHeightMap.c_str());
+					return nullptr;
+				}
+				F_LogInfo("TerrainManager::createHeightMap: Create height map success, path: [%s] !", pCS->pathHeightMap.c_str());
+
+				addHeightMap(pHeightMap);
+				return pHeightMap;
+			}	
+			void TerrainManager::addHeightMap(TerrainHeightMap* pHeightMap)
+			{
+				TerrainHeightMapPtrMap::iterator itFind = this->mapHeightMaps.find(pHeightMap->nID);
+				if (itFind != this->mapHeightMaps.end())
+					return;
+
+				this->aHeightMaps.push_back(pHeightMap);
+				this->mapHeightMaps[pHeightMap->nID] = pHeightMap;
+			}
+
 		bool TerrainManager::createChunkedLods()
 		{
 
 			return true;
 		}
-		TerrainHeightMap* TerrainManager::createHeightMap(int x, int z)
-		{
+			TerrainChunkedLod* TerrainManager::createChunkedLod(TerrainHeightMap* pHeightMap)
+			{
+				String nameChunkedLod = "ChunkedLod-" + FUtilString::SaveInt(pHeightMap->nX) + "-" + FUtilString::SaveInt(pHeightMap->nZ);
+				TerrainChunkedLod* pChunkedLod = new TerrainChunkedLod(nameChunkedLod);
+				if (!pChunkedLod->Init(pHeightMap->nX, pHeightMap->nZ, 
+									   pHeightMap,
+									   pTerrainSetting->nLeafQuads, pTerrainSetting->nPatchQuads))
+				{
+					F_LogError("*********************** TerrainManager::createChunkedLod: Create ChunkedLod [%d, %d] failed !", pHeightMap->nX, pHeightMap->nZ);
+					return nullptr;
+				}
+				F_LogInfo("TerrainManager::createChunkedLod: Create ChunkedLod [%d, %d] success !", pHeightMap->nX, pHeightMap->nZ);
 
-			return nullptr;
-		}	
-		TerrainChunkedLod* TerrainManager::createChunkedLod(int x, int z)
-		{
+				addChunkedLod(pChunkedLod);
+				return pChunkedLod;
+			}
+			void TerrainManager::addChunkedLod(TerrainChunkedLod* pChunkedLod)
+			{
+				TerrainChunkedLodPtrMap::iterator itFind = this->mapChunkedLods.find(pChunkedLod->pTerrainChunked->nChunkedID);
+				if (itFind != this->mapChunkedLods.end())
+					return;
 
-			return nullptr;
-		}
+				this->aChunkedLods.push_back(pChunkedLod);
+				this->mapChunkedLods[pChunkedLod->pTerrainChunked->nChunkedID] = pChunkedLod;
+			}
 
-	TerrainHeightMap* TerrainManager::CreateHeightMap(int x, int z)
+	void TerrainManager::OnTick()
 	{
 
+	}
+	void TerrainManager::ForceUpdate()
+	{
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
+		int nX = 0;
+		int nZ = 0;
+		TerrainUtil::ParseChunkedXZ(pWindow->pCamera, nX, nZ);
+		int nID = TerrainUtil::ToChunkedID(nX, nZ);
+		F_LogInfo("TerrainManager::ForceUpdate: Start to load chunk: [%d, %d] - [%d] !", nX, nZ, nID);
+		{
+			//1> TerrainHeightMap
+			TerrainHeightMap* pHeightMap = CreateHeightMap(nID);
+			if (!pHeightMap)
+			{
+				F_LogError("*********************** TerrainManager::ForceUpdate: Can not create height map: [%d, %d] !", nX, nZ);
+				return;
+			}
+
+			//2> TerrainChunkedLod
+			TerrainChunkedLod* pChunkedLod = CreateChunkedLod(pHeightMap);
+			if (!pChunkedLod)
+			{
+				F_LogError("*********************** TerrainManager::ForceUpdate: Can not create chunked lod: [%d, %d] !", nX, nZ);
+				return;
+			}
+		}
+		F_LogInfo("TerrainManager::ForceUpdate: Complete to load chunk: [%d, %d] - [%d] !", nX, nZ, nID);
+	}
+
+	TerrainHeightMap* TerrainManager::GetHeightMap(int x, int z)
+	{
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return GetHeightMap(nID);
+	}
+	TerrainHeightMap* TerrainManager::GetHeightMap(int id)
+	{
+		TerrainHeightMapPtrMap::iterator itFind = this->mapHeightMaps.find(id);
+		if (itFind != this->mapHeightMaps.end())
+			return itFind->second;
+		return nullptr;
+	}
+	TerrainHeightMap* TerrainManager::CreateHeightMap(int x, int z)
+	{
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return CreateHeightMap(nID);
+	}
+	TerrainHeightMap* TerrainManager::CreateHeightMap(int id)
+	{
+		TerrainChunkedSetting* pCS = TerrainSetting::GetSingleton().GetChunkedSetting(id);
+		if (pCS == nullptr)
+		{
+			F_LogError("*********************** TerrainManager::CreateHeightMap: Can not find chunked setting by id: [%d] !", id);
+			return nullptr;
+		}
+		return CreateHeightMap(pCS);
+	}
+	TerrainHeightMap* TerrainManager::CreateHeightMap(TerrainChunkedSetting* pCS)
+	{
+		TerrainHeightMapPtrMap::iterator itFind = this->mapHeightMaps.find(pCS->nID);
+		if (itFind != this->mapHeightMaps.end())
+			return itFind->second;
+		return createHeightMap(pCS);
+	}
+
+	TerrainChunkedLod* TerrainManager::GetChunkedLod(int x, int z)
+	{
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return GetChunkedLod(nID);
+	}
+	TerrainChunkedLod* TerrainManager::GetChunkedLod(int id)
+	{
+		TerrainChunkedLodPtrMap::iterator itFind = this->mapChunkedLods.find(id);
+		if (itFind != this->mapChunkedLods.end())
+			return itFind->second;
 		return nullptr;
 	}
 	TerrainChunkedLod* TerrainManager::CreateChunkedLod(int x, int z)
 	{
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return CreateChunkedLod(nID);
+	}
+	TerrainChunkedLod* TerrainManager::CreateChunkedLod(int id)
+	{
+		TerrainChunkedLod* pChunkedLod = GetChunkedLod(id);
+		if (pChunkedLod != nullptr)
+			return pChunkedLod;
 
-		return nullptr;
+		TerrainHeightMap* pHeightMap = GetHeightMap(id);
+		if (pHeightMap == nullptr)
+		{
+			pHeightMap = CreateHeightMap(id);
+			if (pHeightMap == nullptr)
+			{
+				F_LogError("*********************** TerrainManager::CreateChunkedLod: Can not find and create height map by id: [%d] !", id);
+				return nullptr;
+			}
+		}
+		return CreateChunkedLod(pHeightMap);
+	}
+	TerrainChunkedLod* TerrainManager::CreateChunkedLod(TerrainHeightMap* pHeightMap)
+	{
+		TerrainChunkedLod* pChunkedLod = GetChunkedLod(pHeightMap->nID);
+		if (pChunkedLod != nullptr)
+			return pChunkedLod;
+		return createChunkedLod(pHeightMap);
 	}
 
 }; //LostPeterVulkan

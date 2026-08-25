@@ -151,6 +151,7 @@ namespace LostPeterVulkan
 				F_LogError("*********************** VKRenderPassTerrain::createTerrainManager: failed, path: [%s] !", pathSetting.c_str());
 				return false;
 			}
+			this->pTerrainManager->ForceUpdate();
 
 			return true;
 		}
@@ -466,6 +467,11 @@ namespace LostPeterVulkan
                 }
             }
         }
+
+	void VKRenderPassTerrain::OnTick()
+	{
+		this->pTerrainManager->OnTick();
+	}
 
     void VKRenderPassTerrain::CleanupSwapChain()
     {

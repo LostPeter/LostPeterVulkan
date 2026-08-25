@@ -120,8 +120,7 @@ namespace LostPeterVulkan
 
 	bool TerrainChunked::Init(int chunkedX, int chunkedZ,
 							  TerrainHeightMap* pHeightMap,
-							  int leafQuads, 
-				  			  int patchQuads)
+							  int leafQuads, int patchQuads)
 	{
 		F_Assert(!IsInit() && leafQuads > 0 && patchQuads > 0 && pHeightMap != nullptr && "TerrainChunked::Init")
 		

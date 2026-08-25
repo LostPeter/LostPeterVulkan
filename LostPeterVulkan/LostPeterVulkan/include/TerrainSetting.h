@@ -29,10 +29,7 @@ namespace LostPeterVulkan
 		int nID;
 		String nameHeightMap;
 		String pathHeightMap;
-		float scale;
 		
-	public:
-
 	};
 
 
@@ -55,8 +52,14 @@ namespace LostPeterVulkan
 		bool bHeadless;
 		uint32 nAutoCloseMs;
 
-		int nW;
-		int nH;
+		int nStartX;
+		int nStartZ;
+		int nCountX;
+		int nCountZ;
+		float fSizeX;
+		float fSizeZ;
+		int nResolution;
+		float fCellSize;
 		TerrainChunkedSettingPtrVector aChunkedSettings;
 		TerrainChunkedSettingPtrMap mapChunkedSettings;
 
@@ -70,6 +73,13 @@ namespace LostPeterVulkan
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 
+		F_FORCEINLINE int GetStartX() const { return this->nStartX; }
+		F_FORCEINLINE int GetStartZ() const { return this->nStartZ; }
+		F_FORCEINLINE int GetCountX() const { return this->nCountX; }
+		F_FORCEINLINE int GetCountZ() const { return this->nCountZ; }
+		F_FORCEINLINE float GetSizeX() const { return this->fSizeX; }
+		F_FORCEINLINE float GetSizeZ() const { return this->fSizeZ; }
+
 		F_FORCEINLINE const TerrainChunkedSettingPtrVector& GetChunkedSettingPtrVector() const { return this->aChunkedSettings; }
 		F_FORCEINLINE const TerrainChunkedSettingPtrMap& GetChunkedSettingPtrMap() const { return this->mapChunkedSettings; }
 
@@ -82,14 +92,18 @@ namespace LostPeterVulkan
 
 		bool LoadSetting(const String& path);
 		bool SaveSetting(const String& path);
+
+		TerrainChunkedSetting* GetChunkedSetting(int x, int z);
+		TerrainChunkedSetting* GetChunkedSetting(int id);
+
 		
 	protected:
 	////destroy
 		void destroySettings();
 
 	////create
-		void addChunkedSetting(TerrainChunkedSetting* pCS);
 		void destroyChunkedSetting(TerrainChunkedSetting* pCS);
+		void addChunkedSetting(TerrainChunkedSetting* pCS);
 		
 	////load/save
 		bool loadChunkedSettings(FXMLElement* pElement);

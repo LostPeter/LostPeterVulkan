@@ -74,6 +74,8 @@ namespace LostPeterVulkan
         void Destroy();
         virtual bool Init();
 
+		void OnTick();
+
     protected:
 		void destroyTerrainManager();
 		void destroyTerrainTexture();

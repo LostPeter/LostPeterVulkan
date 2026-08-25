@@ -79,6 +79,7 @@ namespace LostPeterVulkan
                 if (!pBase->isAppPaused)
                 {
                     pBase->CalculateFrameStats(s_pWindow);
+					pBase->OnTick();
 
                     //Compute Before Render
                     if (pBase->OnBeginCompute_BeforeRender())

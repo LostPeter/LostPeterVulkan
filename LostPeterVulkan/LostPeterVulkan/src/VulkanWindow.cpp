@@ -2168,6 +2168,12 @@ namespace LostPeterVulkan
         }
     }
 
+	void VulkanWindow::OnTick()
+	{
+		if (this->m_pVKRenderPassTerrain != nullptr)
+			this->m_pVKRenderPassTerrain->OnTick();
+	}
+
     bool VulkanWindow::OnBeginCompute_BeforeRender()
     {
         return beginCompute_BeforeRender();

@@ -2,8 +2,8 @@
 <setting>
     <terrain name="default_1_1">
 		<param leaf_quads="16" patch_quads="16" />
-        <chunks w="1" h="1">
-			<chunk x="0" z="0" height_map="terrain_1025_1025.raw" scale="2.0" />
+        <chunks start_x="0" start_z="0" count_x="1" count_z="1" size_x="2048" size_z="2048" resolution="1025" cell_size="2.0">
+			<chunk x="0" z="0" height_map="terrain_1025_1025.raw" />
         </chunks>
     </terrain>
 </setting>

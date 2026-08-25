@@ -52,8 +52,20 @@ namespace LostPeterVulkan
         void Destroy();
         bool Init(const String& pathSetting);
 
+		void OnTick();
+		void ForceUpdate();
+
+		TerrainHeightMap* GetHeightMap(int x, int z);
+		TerrainHeightMap* GetHeightMap(int id);
 		TerrainHeightMap* CreateHeightMap(int x, int z);
+		TerrainHeightMap* CreateHeightMap(int id);
+		TerrainHeightMap* CreateHeightMap(TerrainChunkedSetting* pCS);
+
+		TerrainChunkedLod* GetChunkedLod(int x, int z);
+		TerrainChunkedLod* GetChunkedLod(int id);
 		TerrainChunkedLod* CreateChunkedLod(int x, int z);
+		TerrainChunkedLod* CreateChunkedLod(int id);
+		TerrainChunkedLod* CreateChunkedLod(TerrainHeightMap* pHeightMap);
 
 	protected:
 	////destroy
@@ -67,11 +79,14 @@ namespace LostPeterVulkan
 	////create
         bool createPools();
 		bool createSetting(const String& pathSetting);
+
 		bool createHeightMaps();
+			TerrainHeightMap* createHeightMap(TerrainChunkedSetting* pCS);
+			void addHeightMap(TerrainHeightMap* pHeightMap);
+
 		bool createChunkedLods();
-		
-		TerrainHeightMap* createHeightMap(int x, int z);
-		TerrainChunkedLod* createChunkedLod(int x, int z);
+			TerrainChunkedLod* createChunkedLod(TerrainHeightMap* pHeightMap);
+			void addChunkedLod(TerrainChunkedLod* pChunkedLod);
 
 	};
 

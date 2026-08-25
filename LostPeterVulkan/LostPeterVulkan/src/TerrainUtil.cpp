@@ -11,11 +11,27 @@
 
 #include "../include/TerrainUtil.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainSetting.h"
 
 namespace LostPeterVulkan
 {
 	const int TerrainUtil::s_nIDMax = 100000;
+	const String TerrainUtil::s_strNameAssets = "Assets";
 	const String TerrainUtil::s_strNameTerrain = "Terrain";
+
+	String TerrainUtil::GetTerrainSettingPath(const String& nameSetting)
+	{
+		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameSetting;
+	}
+	String TerrainUtil::GetTerrainHeightMapPath(const String& nameHeightMap)
+	{
+		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameHeightMap;
+	}
+	String TerrainUtil::GetTerrainHeightMapRelativePath(const String& nameHeightMap)
+	{
+		return s_strNameAssets + "/" + s_strNameTerrain + "/" + nameHeightMap;
+	}
+
 
 	int TerrainUtil::ToChunkedID(int x, int z)
 	{
@@ -28,13 +44,34 @@ namespace LostPeterVulkan
 		x = id - z * s_nIDMax;
 	}
 
-	String TerrainUtil::GetTerrainSettingPath(const String& nameSetting)
+
+	void TerrainUtil::ParseChunkedXZ(float posX, float posZ, int& x, int& z)
 	{
-		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameSetting;
+		TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
+		int nStartX = pSetting->GetStartX();
+		int nStartZ = pSetting->GetStartZ();
+		int nCountX = pSetting->GetCountX();
+		int nCountZ = pSetting->GetCountZ();
+		int nSizeX = pSetting->GetSizeX();
+		int nSizeZ = pSetting->GetSizeZ();
+
+		int nX = posX / nSizeX;
+		int nZ = posZ / nSizeZ;
+		x = nX < nStartX ? nStartX : (nX > (nSizeX + nCountX) ? (nSizeX + nCountX) : nX);
+		z = nZ < nStartZ ? nStartZ : (nZ > (nSizeZ + nCountZ) ? (nSizeZ + nCountZ) : nZ); 
 	}
-	String TerrainUtil::GetTerrainHeightMapPath(const String& nameHeightMap)
+	void TerrainUtil::ParseChunkedXZ(const FVector2& pos, int& x, int& z)
 	{
-		return FUtil::GetPathAssets() + s_strNameTerrain + "/" + nameHeightMap;
+		ParseChunkedXZ(pos.x, pos.y, x, z);
+	}
+	void TerrainUtil::ParseChunkedXZ(const FVector3& pos, int& x, int& z)
+	{
+		ParseChunkedXZ(pos.x, pos.z, x, z);
+	}
+	void TerrainUtil::ParseChunkedXZ(const FCamera* pCamera, int& x, int& z)
+	{
+		const FVector3& pos = pCamera->GetPos();
+		ParseChunkedXZ(pos.x, pos.z, x, z);
 	}
 
 }; //LostPeterVulkan

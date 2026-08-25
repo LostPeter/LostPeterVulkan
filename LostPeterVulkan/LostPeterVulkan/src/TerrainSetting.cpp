@@ -24,7 +24,6 @@ namespace LostPeterVulkan
 		, nID(-1)
 		, nameHeightMap("")
 		, pathHeightMap("")
-		, scale(1.0f)
 	{
 
 	}
@@ -57,12 +56,17 @@ namespace LostPeterVulkan
 	#define	TERRAIN_TAG_ATTRIBUTE_NAME	        	"name"
 	#define	TERRAIN_TAG_ATTRIBUTE_LEAF_QUADS	    "leaf_quads"
 	#define	TERRAIN_TAG_ATTRIBUTE_PATCH_QUADS	    "patch_quads"
-	#define	TERRAIN_TAG_ATTRIBUTE_W	        		"w"
-	#define	TERRAIN_TAG_ATTRIBUTE_H	        		"h"
+	#define	TERRAIN_TAG_ATTRIBUTE_START_X	        "start_x"
+	#define	TERRAIN_TAG_ATTRIBUTE_START_Z	        "start_z"
+	#define	TERRAIN_TAG_ATTRIBUTE_COUNT_X	        "count_x"
+	#define	TERRAIN_TAG_ATTRIBUTE_COUNT_Z	        "count_z"
+	#define	TERRAIN_TAG_ATTRIBUTE_SIZE_X	       	"size_x"
+	#define	TERRAIN_TAG_ATTRIBUTE_SIZE_Z	        "size_z"
+	#define	TERRAIN_TAG_ATTRIBUTE_RESOLUTION	    "resolution"
+	#define	TERRAIN_TAG_ATTRIBUTE_CELL_SIZE	       	"cell_size"
 	#define	TERRAIN_TAG_ATTRIBUTE_X	        		"x"
 	#define	TERRAIN_TAG_ATTRIBUTE_Z	        		"z"
 	#define	TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP	    "height_map"
-	#define	TERRAIN_TAG_ATTRIBUTE_SCALE	        	"scale"
 
 
 	TerrainSetting::TerrainSetting()
@@ -78,8 +82,14 @@ namespace LostPeterVulkan
 		, bHeadless(false)
 		, nAutoCloseMs(0)
 
-		, nW(0)
-		, nH(0)
+		, nStartX(0)
+		, nStartZ(0)
+		, nCountX(0)
+		, nCountZ(0)
+		, fSizeX(0.0f)
+		, fSizeZ(0.0f)	
+		, nResolution(0)
+		, fCellSize(1.0f)
 
 		, bIsInit(false)
 		
@@ -164,8 +174,15 @@ namespace LostPeterVulkan
 	}
 		bool TerrainSetting::loadChunkedSettings(FXMLElement* pElement)
 		{
-			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_W, this->nW);
-			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_H, this->nH);
+			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_START_X, this->nStartX);
+			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_START_Z, this->nStartZ);
+			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_COUNT_X, this->nCountX);
+			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_COUNT_Z, this->nCountZ);
+			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_X, this->fSizeX);
+			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_Z, this->fSizeZ);
+			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
+			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
+			
 			int count_child = pElement->GetElementChildrenCount();
 			for (int i = 0; i < count_child; i++)
 			{
@@ -186,8 +203,7 @@ namespace LostPeterVulkan
 				pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_Z, pCS->nZ);
 				pCS->nID = TerrainUtil::ToChunkedID(pCS->nX, pCS->nZ);
 				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP, pCS->nameHeightMap);
-				pCS->pathHeightMap = TerrainUtil::GetTerrainHeightMapPath(pCS->nameHeightMap);
-				pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SCALE, pCS->scale);
+				pCS->pathHeightMap = TerrainUtil::GetTerrainHeightMapRelativePath(pCS->nameHeightMap);
 				addChunkedSetting(pCS);	
 
 				return pCS;
@@ -216,8 +232,14 @@ namespace LostPeterVulkan
 
 		//Chunks
 		FXMLElement* pChunks = pTerrain->AddElementChild(new FXMLElement(TERRAIN_TAG_CHUNKS));
-		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_W, this->nW);
-		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_H, this->nH);
+		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_START_X, this->nStartX);
+		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_START_Z, this->nStartZ);
+		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_COUNT_X, this->nCountX);
+		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_COUNT_Z, this->nCountZ);
+		pChunks->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_X, this->fSizeX);
+		pChunks->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_Z, this->fSizeZ);
+		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
+		pChunks->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
 
 		if (!saveChunkedSettings(pChunks, this->aChunkedSettings))
 		{
@@ -245,20 +267,24 @@ namespace LostPeterVulkan
 				pElement->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_X, pCS->nX);
 				pElement->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_Z, pCS->nZ);
 				pElement->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP, pCS->nameHeightMap);
-				pElement->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SCALE, pCS->scale);
 
 				return true;
 			}
 
-	void TerrainSetting::addChunkedSetting(TerrainChunkedSetting* pCS)
+	TerrainChunkedSetting* TerrainSetting::GetChunkedSetting(int x, int z)
 	{
-		TerrainChunkedSettingPtrMap::iterator itFind = this->mapChunkedSettings.find(pCS->nID);
-		if (itFind != this->mapChunkedSettings.end())
-			return;
-
-		this->aChunkedSettings.push_back(pCS);
-		this->mapChunkedSettings[pCS->nID] = pCS;
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return GetChunkedSetting(nID);
 	}
+	TerrainChunkedSetting* TerrainSetting::GetChunkedSetting(int id)
+	{
+		TerrainChunkedSettingPtrMap::iterator itFind = this->mapChunkedSettings.find(id);
+		if (itFind != this->mapChunkedSettings.end())
+			return itFind->second;
+		return nullptr;
+	}
+
+	
 	void TerrainSetting::destroyChunkedSetting(TerrainChunkedSetting* pCS)
 	{
 		TerrainChunkedSettingPtrMap::iterator itFind = this->mapChunkedSettings.find(pCS->nID);
@@ -271,6 +297,15 @@ namespace LostPeterVulkan
 			this->aChunkedSettings.erase(itA);
 		}
 		F_DELETE(pCS)
+	}
+	void TerrainSetting::addChunkedSetting(TerrainChunkedSetting* pCS)
+	{
+		TerrainChunkedSettingPtrMap::iterator itFind = this->mapChunkedSettings.find(pCS->nID);
+		if (itFind != this->mapChunkedSettings.end())
+			return;
+
+		this->aChunkedSettings.push_back(pCS);
+		this->mapChunkedSettings[pCS->nID] = pCS;
 	}
 
 

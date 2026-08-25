@@ -101,8 +101,7 @@ namespace LostPeterVulkan
 		void Destroy();
 		bool Init(int chunkedX, int chunkedZ,
 				  TerrainHeightMap* pHeightMap,
-				  int leafQuads, 
-				  int patchQuads);
+				  int leafQuads, int patchQuads);
 
 		void SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
 		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataVector& aRenderData);

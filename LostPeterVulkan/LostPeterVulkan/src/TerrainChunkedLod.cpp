@@ -32,13 +32,24 @@ namespace LostPeterVulkan
 
 	void TerrainChunkedLod::Destroy()
 	{
-
+		F_DELETE(this->pTerrainChunked)
 	}
 
 	bool TerrainChunkedLod::Init(int chunkedX, int chunkedZ,
-				  				 TerrainHeightMap* pHeightMap)
+				  				 TerrainHeightMap* pHeightMap,
+								 int leafQuads, int patchQuads)
 	{
-		
+		//1> pTerrainChunked
+		String nameChunked = "Chunked-" + FUtilString::SaveInt(chunkedX) + "-" + FUtilString::SaveInt(chunkedZ);
+		this->pTerrainChunked = new TerrainChunked(nameChunked);
+		if (!this->pTerrainChunked->Init(chunkedX, chunkedZ,
+										 pHeightMap,
+										 leafQuads, patchQuads))
+		{
+			F_LogError("*********************** TerrainChunkedLod::Init: Create Chunked [%d, %d] failed !", chunkedX, chunkedZ);
+			return false;
+		}
+		F_LogInfo("TerrainChunkedLod::Init: Create Chunked [%d, %d] success !", chunkedX, chunkedZ);
 
 		return true;
 	}
