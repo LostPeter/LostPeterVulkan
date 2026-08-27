@@ -11,6 +11,8 @@
 
 #include "../include/TerrainRender.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TerrainManager.h"
+#include "../include/TerrainSetting.h"
 
 namespace LostPeterVulkan
 {
@@ -91,25 +93,25 @@ namespace LostPeterVulkan
 	}
 
 	/////////////////////////// TerrainRenderInstanceData ////////////////
-	TerrainRenderInstanceData TerrainRenderInstanceData::MakeInstanceData(const TerrainRenderData& renderData)
+	TerrainRenderInstanceData* TerrainRenderInstanceData::MakeInstanceData(const TerrainRenderData* pRenderData)
 	{
-		TerrainRenderInstanceData instance;
-		instance.Init(renderData);
-		return instance;
+		TerrainRenderInstanceData* pInstance = TerrainManager::GetSingletonPtr()->GetRenderInstanceDataFromPool();
+		MakeInstanceData(pInstance, pRenderData);
+		return pInstance;
 	}
-	void TerrainRenderInstanceData::MakeInstanceData(TerrainRenderInstanceData* pInstance, const TerrainRenderData& renderData)
+	void TerrainRenderInstanceData::MakeInstanceData(TerrainRenderInstanceData* pInstance, const TerrainRenderData* pRenderData)
 	{
-		pInstance->aPatch[0] = renderData.fOriginX;
-		pInstance->aPatch[1] = renderData.fOriginZ;
-		pInstance->aPatch[2] = renderData.fSize;
-		pInstance->aPatch[3] = static_cast<float>(renderData.nLod);
-		pInstance->aLodTint[0] = renderData.vTint.x;
-		pInstance->aLodTint[1] = renderData.vTint.y;
-		pInstance->aLodTint[2] = renderData.vTint.z;
+		pInstance->aPatch[0] = pRenderData->fOriginX;
+		pInstance->aPatch[1] = pRenderData->fOriginZ;
+		pInstance->aPatch[2] = pRenderData->fSize;
+		pInstance->aPatch[3] = static_cast<float>(pRenderData->nLod);
+		pInstance->aLodTint[0] = pRenderData->vTint.x;
+		pInstance->aLodTint[1] = pRenderData->vTint.y;
+		pInstance->aLodTint[2] = pRenderData->vTint.z;
 		pInstance->aLodTint[3] = 1.0f;
 		for (size_t i = 0; i < 4; ++i)
 		{
-			pInstance->aStitchStep[i] = renderData.aStitchStepWorld[i];
+			pInstance->aStitchStep[i] = pRenderData->aStitchStepWorld[i];
 		}
 	}
 
@@ -132,82 +134,143 @@ namespace LostPeterVulkan
 		}
 	}
 
-	void TerrainRenderInstanceData::Init(const TerrainRenderData& renderData)
+	void TerrainRenderInstanceData::Init(const TerrainRenderData* pRenderData)
 	{
-		TerrainRenderInstanceData::MakeInstanceData(this, renderData);
+		TerrainRenderInstanceData::MakeInstanceData(this, pRenderData);
 	}
 
 
 	/////////////////////////// TerrainRenderBatchData ///////////////////
 	TerrainRenderBatchData::TerrainRenderBatchData()
+		: nLod(0)
+		, nFirstInstance(0)
+		, nInstanceCount(0)
 	{
-		Clear();
+
 	}
 	TerrainRenderBatchData::~TerrainRenderBatchData()
 	{
-
+		Destroy();
 	}
 
-	void TerrainRenderBatchData::Clear()
+	void TerrainRenderBatchData::Destroy()
 	{
-		this->nLod = 0;
+		ClearInstanceDatas();
+	}
+
+	void TerrainRenderBatchData::Init(uint32 lod)
+	{
+		this->nLod = lod;
 		this->nFirstInstance = 0;
 		this->nInstanceCount = 0;
 	}
-
-	void TerrainRenderBatchData::Init(uint32 lod, uint32 firstInstance, uint32 instanceCount)
+	void TerrainRenderBatchData::Refresh(uint32 firstInstance, uint32 instanceCount)
 	{
-		this->nLod = lod;
 		this->nFirstInstance = firstInstance;
 		this->nInstanceCount = instanceCount;
 	}
 
-
-	/////////////////////////// TerrainRenderBatches /////////////////////
-	TerrainRenderBatches TerrainRenderBatches::MakeBatches(const TerrainRenderDataVector& aRenderData)
+	void TerrainRenderBatchData::ClearInstanceDatas()
 	{
-		TerrainRenderBatches batches;
-		batches.Init(aRenderData);
-		return batches;
-	}
-	void TerrainRenderBatches::MakeBatches(TerrainRenderBatches* pBatches, const TerrainRenderDataVector& aRenderData)
-	{
-		pBatches->aInstances.reserve(aRenderData.size());
-		for (uint32 lod = 0; lod < pBatches->aBatches.size(); ++lod)
+		TerrainManager* pTerrainManager = TerrainManager::GetSingletonPtr();
+		size_t count = this->aInstances.size();
+		for (size_t i = 0; i < count; i++)
 		{
-			for (const TerrainRenderData& renderData : aRenderData)
-			{
-				if (std::min<uint32>(renderData.nLod, 2u) != lod)
-				{
-					continue;
-				}
-				pBatches->aInstances.push_back(TerrainRenderInstanceData::MakeInstanceData(renderData));
-			}
+			pTerrainManager->BackRenderInstanceDataToPool(this->aInstances[i]);
+		}
+		this->aInstances.clear();
+	}
 
-			TerrainRenderBatchData batch;
-			batch.Init(lod, static_cast<uint32>(pBatches->aInstances.size()), static_cast<uint32>(pBatches->aInstances.size()) - batch.nFirstInstance);
-			pBatches->aBatches[lod] = batch;
+	void TerrainRenderBatchData::AddInstanceData(const TerrainRenderData* pRenderData)
+	{
+		TerrainRenderInstanceData* pInstanceData = TerrainRenderInstanceData::MakeInstanceData(pRenderData);
+		this->aInstances.push_back(pInstanceData);
+	}
+	void TerrainRenderBatchData::AddInstanceDatas(const TerrainRenderDataPtrVector& aRenderData)
+	{
+		for (const TerrainRenderData* pRenderData : aRenderData)
+		{
+			if (pRenderData->nLod != this->nLod)
+			{
+				continue;
+			}
+			AddInstanceData(pRenderData);
 		}
 	}
 
+	/////////////////////////// TerrainRenderBatches /////////////////////
 	TerrainRenderBatches::TerrainRenderBatches()
+		: bAddBatches(false)
 	{
-		Clear();
+
 	}
 	TerrainRenderBatches::~TerrainRenderBatches()
 	{
 
 	}
 
-	void TerrainRenderBatches::Clear()
+	void TerrainRenderBatches::Destroy()
 	{
-		this->aInstances.clear();
+		ClearBatches();
+	}
+	void TerrainRenderBatches::Init()
+	{
+		this->aBatches.clear();
+		int lod_count = TerrainSetting::GetSingleton().GetLodCount();
+		for (int i = 0; i < lod_count; i++)
+		{
+			TerrainRenderBatchData bd;
+			bd.Init(i);
+			this->aBatches.push_back(bd);
+		}
 	}
 
-	void TerrainRenderBatches::Init(const TerrainRenderDataVector& aRenderData)
+	void TerrainRenderBatches::BeginBatches()
 	{
-		TerrainRenderBatches::MakeBatches(this, aRenderData);
+		SetIsAddBatches(true);
+		ClearBatches();
+	}
+		void TerrainRenderBatches::ClearBatches()
+		{
+			size_t count = this->aBatches.size();
+			for (size_t i = 0; i < count; i++)
+			{
+				TerrainRenderBatchData& batch = this->aBatches[i];
+				batch.ClearInstanceDatas();
+			}
+			this->aInstances.clear();
+		}
+		void TerrainRenderBatches::AddBatches(const TerrainRenderDataPtrVector& aRenderData)
+		{
+			size_t count = this->aBatches.size();
+			for (size_t i = 0; i < count; i++)
+			{
+				TerrainRenderBatchData& batch = this->aBatches[i];
+				batch.AddInstanceDatas(aRenderData);
+			}
+		}
+		void TerrainRenderBatches::SetupBatches()
+		{
+			size_t count_ins = 0;
+			size_t count = this->aBatches.size();
+			for (size_t i = 0; i < count; i++)
+			{
+				TerrainRenderBatchData& batch = this->aBatches[i];
+				count_ins += batch.aInstances.size();
+			}
 
+			this->aInstances.reserve(count_ins);
+			for (size_t i = 0; i < count; i++)
+			{
+				TerrainRenderBatchData& batch = this->aBatches[i];
+				batch.Refresh((uint32)this->aInstances.size(), (uint32)batch.aInstances.size());
+				this->aInstances.insert(this->aInstances.end(), batch.aInstances.begin(), batch.aInstances.end());
+			}
+		}
+	void TerrainRenderBatches::EndBatches()
+	{
+		SetIsAddBatches(false);
+		SetupBatches();
 	}
 
 	uint32 TerrainRenderBatches::GetActiveBatchCount() const
@@ -377,14 +440,14 @@ namespace LostPeterVulkan
 
 	TerrainRenderPatchGeometry::TerrainRenderPatchGeometry()
 	{
-		Clear();
+		
 	}
 	TerrainRenderPatchGeometry::~TerrainRenderPatchGeometry()
 	{
-
+		Destroy();
 	}
 
-	void TerrainRenderPatchGeometry::Clear()
+	void TerrainRenderPatchGeometry::Destroy()
 	{
 
 	}
@@ -392,23 +455,100 @@ namespace LostPeterVulkan
 	void TerrainRenderPatchGeometry::Init(int nPatchQuads)
 	{
 		TerrainRenderPatchGeometry::MakePatchGeometry(this, nPatchQuads);
-
 	}
 
 
 	/////////////////////////// TerrainRender ////////////////////////////
+	TerrainRenderPatchGeometry* TerrainRender::s_pPatchGeometry = nullptr;
+	TerrainRenderBatches* TerrainRender::s_pRenderBatches = nullptr;
+
+	bool TerrainRender::InitRenderStatic(int nPatchQuads)
+	{
+		//s_pPatchGeometry
+		if (s_pPatchGeometry == nullptr)
+		{
+			s_pPatchGeometry = new TerrainRenderPatchGeometry();
+			s_pPatchGeometry->Init(nPatchQuads);
+		}
+		
+		//s_pRenderBatches
+		if (s_pRenderBatches == nullptr)
+		{
+			s_pRenderBatches = new TerrainRenderBatches();
+			s_pRenderBatches->Init();
+		}
+
+		return true;
+	}
+	void TerrainRender::DestroyRenderStatic()
+	{
+		F_DELETE(s_pRenderBatches)
+		F_DELETE(s_pPatchGeometry)
+	}
+
+	void TerrainRender::BeginRenderBatches()
+	{
+		s_pRenderBatches->BeginBatches();
+	}
+	void TerrainRender::EndRenderBatches()
+	{
+		s_pRenderBatches->EndBatches();
+	}
+
+
 	TerrainRender::TerrainRender(const String& nameRender)
 		: Base(nameRender)
 
+		, bAddRenderDatas(false)
 		
 	{
 		
 	}
     TerrainRender::~TerrainRender()
 	{
-		
+		Destroy();
 	}
 
+	void TerrainRender::Destroy()
+	{
+		ClearRenderDatas();
+	}
+	bool TerrainRender::Init()
+	{
 
+		return true;
+	}
+
+	void TerrainRender::BeginAddRenderDatas()
+	{
+		SetIsAddRenderDatas(true);
+		ClearRenderDatas();
+	}
+		void TerrainRender::ClearRenderDatas()
+		{
+			TerrainManager* pTerrainManager = TerrainManager::GetSingletonPtr();
+			for (TerrainRenderDataPtrVector::iterator it = this->aRenderDatas.begin();
+				 it != this->aRenderDatas.end(); ++it)
+			{
+				pTerrainManager->BackRenderDataToPool(*it);
+			}
+			this->aRenderDatas.clear();
+		}
+		void TerrainRender::AddRenderData(TerrainRenderData* pRenderData)
+		{
+			this->aRenderDatas.push_back(pRenderData);
+		}
+		void TerrainRender::AddRenderDatas(const TerrainRenderDataPtrVector& aRDs)
+		{
+			this->aRenderDatas.insert(this->aRenderDatas.end(), aRDs.begin(), aRDs.end());
+		}
+	void TerrainRender::EndAddRenderDatas()
+	{	
+		SetIsAddRenderDatas(false);
+		if (this->aRenderDatas.size() > 0)
+		{
+			s_pRenderBatches->AddBatches(this->aRenderDatas);
+		}
+	}
 
 }; //LostPeterVulkan

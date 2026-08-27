@@ -697,6 +697,7 @@ namespace LostPeterVulkan
 	class TerrainRenderInstanceData;
 	class TerrainRenderBatchData;
 	class TerrainRenderBatches;
+	class TerrainRenderPatchGeometry;
 	class TerrainRender;
 	class TerrainChunkedSetting;
 	class TerrainSetting;

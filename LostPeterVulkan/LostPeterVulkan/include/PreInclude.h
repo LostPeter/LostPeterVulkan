@@ -73,6 +73,7 @@
 #include "TerrainManager.h"
 #include "TerrainRender.h"
 #include "TerrainSetting.h"
+#include "TerrainUtil.h"
 
 
 namespace LostPeterVulkan

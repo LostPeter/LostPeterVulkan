@@ -73,6 +73,12 @@ namespace LostPeterVulkan
 	#define	TERRAIN_TAG_ATTRIBUTE_NAME	        	"name"
 	#define	TERRAIN_TAG_ATTRIBUTE_LEAF_QUADS	    "leaf_quads"
 	#define	TERRAIN_TAG_ATTRIBUTE_PATCH_QUADS	    "patch_quads"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_COUNT	    	"lod_count"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_UPDATE_DIS	"lod_update_dis"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_0	    "lod_radius_0"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_1	    "lod_radius_1"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_2	    "lod_radius_2"
+	#define	TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_3	    "lod_radius_3"
 	#define	TERRAIN_TAG_ATTRIBUTE_START_X	        "start_x"
 	#define	TERRAIN_TAG_ATTRIBUTE_START_Z	        "start_z"
 	#define	TERRAIN_TAG_ATTRIBUTE_COUNT_X	        "count_x"
@@ -96,6 +102,7 @@ namespace LostPeterVulkan
 
 		, nLeafQuads(16)
 		, nPatchQuads(16)
+		, nLodCount(3)
 
 		, fLodPixelError(2.5f)
 		, bHeadless(false)
@@ -179,6 +186,12 @@ namespace LostPeterVulkan
 		F_Assert(pParam != nullptr && "TerrainSetting::LoadSetting")
 		pParam->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_LEAF_QUADS, this->nLeafQuads);
 		pParam->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_PATCH_QUADS, this->nPatchQuads);
+		pParam->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_LOD_COUNT, this->nLodCount);
+		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_UPDATE_DIS, this->fLodUpdateDis);
+		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_0, this->fLodRadius0);
+		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_1, this->fLodRadius1);
+		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_2, this->fLodRadius2);
+		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_3, this->fLodRadius3);
 
 		//Chunks
 		FXMLElement* pChunks = pTerrain->FindElementChild(TERRAIN_TAG_CHUNKS);
@@ -258,6 +271,12 @@ namespace LostPeterVulkan
 		FXMLElement* pParam = pTerrain->AddElementChild(new FXMLElement(TERRAIN_TAG_PARAM));
 		pParam->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_LEAF_QUADS, this->nLeafQuads);
 		pParam->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_PATCH_QUADS, this->nPatchQuads);
+		pParam->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_LOD_COUNT, this->nLodCount);
+		pParam->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_UPDATE_DIS, this->fLodUpdateDis);
+		pParam->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_0, this->fLodRadius0);
+		pParam->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_1, this->fLodRadius1);
+		pParam->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_2, this->fLodRadius2);
+		pParam->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_3, this->fLodRadius3);
 
 		//Chunks
 		FXMLElement* pChunks = pTerrain->AddElementChild(new FXMLElement(TERRAIN_TAG_CHUNKS));

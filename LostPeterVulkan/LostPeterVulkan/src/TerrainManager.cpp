@@ -15,6 +15,7 @@
 #include "../include/TerrainHeightMap.h"
 #include "../include/TerrainChunked.h"
 #include "../include/TerrainChunkedLod.h"
+#include "../include/TerrainRender.h"
 #include "../include/TerrainUtil.h"
 
 template<> LostPeterVulkan::TerrainManager* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainManager>::ms_Singleton = nullptr;
@@ -32,15 +33,21 @@ namespace LostPeterVulkan
 	}
 
 	int TerrainManager::s_nNodeCount_Init = 500;
-    int TerrainManager::s_nNodeCount_Max = 100000;
     int TerrainManager::s_nNodeCount_Step = 20;
+	int TerrainManager::s_nRenderDataCount_Init = 500;
+    int TerrainManager::s_nRenderDataCount_Step = 20;
+	int TerrainManager::s_nRenderInstanceDataCount_Init = 500;
+    int TerrainManager::s_nRenderInstanceDataCount_Step = 20;
 
 	TerrainManager::TerrainManager()
         : Base("TerrainManager")	
 
-		, pNodePool(nullptr)
 		, pTerrainSetting(nullptr)
-
+		
+		, pNodePool(nullptr)
+		, pRenderDataPool(nullptr)
+		, pRenderInstanceDataPool(nullptr)
+		
     {
 
     }
@@ -54,6 +61,7 @@ namespace LostPeterVulkan
 		destroyChunkedLods();
 		destroyHeightMaps();
 
+		destroyStatic();
 		destroySetting();
 		destroyPools();
 	}
@@ -120,12 +128,18 @@ namespace LostPeterVulkan
 				F_DELETE(pHeightMap)
 				return true;
 			}
+		void TerrainManager::destroyStatic()
+		{
+			TerrainRender::DestroyRenderStatic();
+		}
 		void TerrainManager::destroySetting()
 		{
 			F_DELETE(this->pTerrainSetting)
 		}
 		void TerrainManager::destroyPools()
 		{
+			F_DELETE(this->pRenderInstanceDataPool)
+			F_DELETE(this->pRenderDataPool)
 			F_DELETE(this->pNodePool)
 		}
 
@@ -138,17 +152,36 @@ namespace LostPeterVulkan
 			F_LogError("*********************** TerrainManager::Init: failed, path: [%s] !", pathSetting.c_str());
 			return false;
 		}
+		createStatic();
 
 		return true;
 	}
         bool TerrainManager::createPools()
 		{
-			if (this->pNodePool != nullptr)
-				return true;
+			//pNodePool
+			if (this->pNodePool == nullptr)
+			{
+				this->pNodePool = new ObjectPointerPool<TerrainChunkedNode>();
+				this->pNodePool->stepCount = s_nNodeCount_Step;
+				this->pNodePool->Reserve(s_nNodeCount_Init);
+			}
 
-			this->pNodePool = new ObjectPointerPool<TerrainChunkedNode>();
-			this->pNodePool->stepCount = s_nNodeCount_Step;
-			this->pNodePool->Reserve(s_nNodeCount_Init);
+			//pRenderDataPool
+			if (this->pRenderDataPool == nullptr)
+			{
+				this->pRenderDataPool = new ObjectPointerPool<TerrainRenderData>();
+				this->pRenderDataPool->stepCount = s_nRenderDataCount_Step;
+				this->pRenderDataPool->Reserve(s_nRenderDataCount_Init);
+			}
+
+			//pRenderInstanceDataPool
+			if (this->pRenderInstanceDataPool == nullptr)
+			{
+				this->pRenderInstanceDataPool = new ObjectPointerPool<TerrainRenderInstanceData>();
+				this->pRenderInstanceDataPool->stepCount = s_nRenderInstanceDataCount_Step;
+				this->pRenderInstanceDataPool->Reserve(s_nRenderInstanceDataCount_Init);
+			}
+
 
 			return true;
 		}
@@ -165,6 +198,12 @@ namespace LostPeterVulkan
 			}
 			
 			F_LogInfo("TerrainManager::createSetting: success, path setting: [%s] !", pathSetting.c_str());
+			return true;
+		}
+		bool TerrainManager::createStatic()
+		{
+			TerrainRender::InitRenderStatic(this->pTerrainSetting->nPatchQuads);
+
 			return true;
 		}
 
@@ -235,8 +274,32 @@ namespace LostPeterVulkan
 
 	void TerrainManager::OnTick()
 	{
-
+		updateLod();
 	}
+		void TerrainManager::updateLod()
+		{
+			TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+			const FVector3& vPosCamera = pWindow->pCamera->GetPos();
+
+			const float lodDx = vPosCamera.x - this->vCenterLod.x;
+            const float lodDz = vPosCamera.z - this->vCenterLod.z;
+            if ((lodDx * lodDx + lodDz * lodDz) >= pSetting->fLodUpdateDis * pSetting->fLodUpdateDis)
+			{
+				TerrainRender::BeginRenderBatches();
+				{
+					for (TerrainChunkedLodPtrVector::iterator it = this->aChunkedLods.begin();
+						 it != this->aChunkedLods.end(); ++it)
+					{
+						(*it)->UpdateLod(vPosCamera);
+					}
+				}
+				TerrainRender::EndRenderBatches();
+				
+				this->vCenterLod = vPosCamera;
+			}
+		}
+
 	void TerrainManager::ForceUpdate()
 	{
 		VulkanWindow* pWindow = Base::GetWindowPtr();
@@ -245,27 +308,39 @@ namespace LostPeterVulkan
 		int nZ = 0;
 		TerrainUtil::ParseChunkedXZ(pWindow->pCamera, nX, nZ);
 		int nID = TerrainUtil::ToChunkedID(nX, nZ);
-		F_LogInfo("TerrainManager::ForceUpdate: Start to load chunk: [%d, %d] - [%d] !", nX, nZ, nID);
-		{
-			//1> TerrainHeightMap
-			TerrainHeightMap* pHeightMap = CreateHeightMap(nID);
-			if (!pHeightMap)
-			{
-				F_LogError("*********************** TerrainManager::ForceUpdate: Can not create height map: [%d, %d] !", nX, nZ);
-				return;
-			}
-
-			//2> TerrainChunkedLod
-			TerrainChunkedLod* pChunkedLod = CreateChunkedLod(pHeightMap);
-			if (!pChunkedLod)
-			{
-				F_LogError("*********************** TerrainManager::ForceUpdate: Can not create chunked lod: [%d, %d] !", nX, nZ);
-				return;
-			}
-		}
-		F_LogInfo("TerrainManager::ForceUpdate: Complete to load chunk: [%d, %d] - [%d] !", nX, nZ, nID);
+		CreateChunk(nX, nZ, nID);
 	}
 
+////Pool
+	TerrainChunkedNode* TerrainManager::GetNodeFromPool()
+	{
+		return this->pNodePool->Get();
+	}
+	void TerrainManager::BackNodeToPool(TerrainChunkedNode* pNode)
+	{
+		this->pNodePool->Back(pNode);
+	}
+
+	TerrainRenderData* TerrainManager::GetRenderDataFromPool()
+	{
+		return this->pRenderDataPool->Get();
+	}
+	void TerrainManager::BackRenderDataToPool(TerrainRenderData* pRenderData)
+	{
+		this->pRenderDataPool->Back(pRenderData);
+	}
+
+	TerrainRenderInstanceData* TerrainManager::GetRenderInstanceDataFromPool()
+	{
+		return this->pRenderInstanceDataPool->Get();
+	}
+	void TerrainManager::BackRenderInstanceDataToPool(TerrainRenderInstanceData* pRenderInstanceData)
+	{
+		this->pRenderInstanceDataPool->Back(pRenderInstanceData);
+	}
+
+
+////HeightMap
 	TerrainHeightMap* TerrainManager::GetHeightMap(int x, int z)
 	{
 		int nID = TerrainUtil::ToChunkedID(x, z);
@@ -301,6 +376,7 @@ namespace LostPeterVulkan
 		return createHeightMap(pCS);
 	}
 
+////ChunkedLod
 	TerrainChunkedLod* TerrainManager::GetChunkedLod(int x, int z)
 	{
 		int nID = TerrainUtil::ToChunkedID(x, z);
@@ -342,6 +418,35 @@ namespace LostPeterVulkan
 		if (pChunkedLod != nullptr)
 			return pChunkedLod;
 		return createChunkedLod(pHeightMap);
+	}
+
+////Chunk
+	void TerrainManager::CreateChunk(int x, int z)
+	{
+		int nID = TerrainUtil::ToChunkedID(x, z);
+		return CreateChunk(x, z, nID);
+	}
+	void TerrainManager::CreateChunk(int x, int z, int id)
+	{
+		F_LogInfo("***** TerrainManager::CreateChunk: Start to load chunk: [%d, %d] - [%d] !", x, z, id);
+		{
+			//1> TerrainHeightMap
+			TerrainHeightMap* pHeightMap = CreateHeightMap(id);
+			if (!pHeightMap)
+			{
+				F_LogError("*********************** TerrainManager::CreateChunk: Can not create height map: [%d, %d] - [%d] !", x, z, id);
+				return;
+			}
+
+			//2> TerrainChunkedLod
+			TerrainChunkedLod* pChunkedLod = CreateChunkedLod(pHeightMap);
+			if (!pChunkedLod)
+			{
+				F_LogError("*********************** TerrainManager::CreateChunk: Can not create chunked lod: [%d, %d] - [%d] !", x, z, id);
+				return;
+			}
+		}
+		F_LogInfo("***** TerrainManager::CreateChunk: Complete to load chunk: [%d, %d] - [%d] !", x, z, id);
 	}
 
 }; //LostPeterVulkan

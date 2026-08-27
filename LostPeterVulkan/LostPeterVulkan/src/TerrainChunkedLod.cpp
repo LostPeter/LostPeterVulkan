@@ -55,5 +55,25 @@ namespace LostPeterVulkan
 		return true;
 	}
 
+	void TerrainChunkedLod::UpdateLod(const FVector3& vCenterLod)
+	{	
+		if (!this->pTerrainChunked)
+			return;
+
+		TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
+		//1> Nodes
+		TerrainChunkedNodePtrVector aNodeSelect;
+		this->pTerrainChunked->SelectDynamicLod(vCenterLod, pSetting->fLodRadius0, pSetting->fLodRadius1, aNodeSelect);
+
+		//2> RenderDatas
+		TerrainRenderDataPtrVector aRenderData;
+		this->pTerrainChunked->BuildRenderData(aNodeSelect, aRenderData);
+
+		//3> Batches
+		this->pTerrainChunked->BuildBatches(aRenderData);
+	}
+
 
 }; //LostPeterVulkan

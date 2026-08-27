@@ -58,6 +58,12 @@ namespace LostPeterVulkan
 
 		int nLeafQuads;
 		int nPatchQuads;
+		int nLodCount;
+		float fLodUpdateDis;
+		float fLodRadius0;
+		float fLodRadius1;
+		float fLodRadius2;
+		float fLodRadius3;
 
 		float fLodPixelError;
 		bool bHeadless;
@@ -84,6 +90,7 @@ namespace LostPeterVulkan
 	public:
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
+		F_FORCEINLINE int GetLodCount() const { return this->nLodCount; }
 
 		F_FORCEINLINE int GetStartX() const { return this->nStartX; }
 		F_FORCEINLINE int GetStartZ() const { return this->nStartZ; }

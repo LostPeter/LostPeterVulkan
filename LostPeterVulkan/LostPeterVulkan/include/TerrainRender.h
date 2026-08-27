@@ -57,7 +57,7 @@ namespace LostPeterVulkan
 				  float stitchStepWorld2,
 				  float stitchStepWorld3);
 	};
-	typedef std::vector<TerrainRenderData> TerrainRenderDataVector;
+	typedef std::vector<TerrainRenderData*> TerrainRenderDataPtrVector;
 
 	/////////////////////////// TerrainRenderInstanceData ////////////////
 	class vulkanExport TerrainRenderInstanceData
@@ -72,16 +72,16 @@ namespace LostPeterVulkan
 		float aStitchStep[4];
 
 	public:
-		static TerrainRenderInstanceData MakeInstanceData(const TerrainRenderData& renderData);
-		static void MakeInstanceData(TerrainRenderInstanceData* pInstance, const TerrainRenderData& renderData);
+		static TerrainRenderInstanceData* MakeInstanceData(const TerrainRenderData* pRenderData);
+		static void MakeInstanceData(TerrainRenderInstanceData* pInstance, const TerrainRenderData* pRenderData);
 
 	public:
 		void Clear();
 
-		void Init(const TerrainRenderData& renderData);
+		void Init(const TerrainRenderData* pRenderData);
 
 	};
-	typedef std::vector<TerrainRenderInstanceData> TerrainRenderInstanceDataVector;
+	typedef std::vector<TerrainRenderInstanceData*> TerrainRenderInstanceDataPtrVector;
 
 	/////////////////////////// TerrainRenderBatchData ///////////////////
 	class vulkanExport TerrainRenderBatchData
@@ -95,14 +95,20 @@ namespace LostPeterVulkan
 		uint32 nFirstInstance;
 		uint32 nInstanceCount;
 
+		TerrainRenderInstanceDataPtrVector aInstances;
+		
 	public:
-		void Clear();
+		void Destroy();
 
-		void Init(uint32 lod, uint32 firstInstance, uint32 instanceCount);
+		void Init(uint32 lod);
+		void Refresh(uint32 firstInstance, uint32 instanceCount);
+
+		void ClearInstanceDatas();
+		void AddInstanceData(const TerrainRenderData* pRenderData);
+		void AddInstanceDatas(const TerrainRenderDataPtrVector& aRenderData);
 
 	};
 	typedef std::vector<TerrainRenderBatchData> TerrainRenderBatchDataVector;
-	typedef std::array<TerrainRenderBatchData, 3> TerrainRenderBatchDataArray;
 
 	/////////////////////////// TerrainRenderBatches /////////////////////
 	class vulkanExport TerrainRenderBatches
@@ -112,20 +118,25 @@ namespace LostPeterVulkan
 		~TerrainRenderBatches();
 
 	public:
-		TerrainRenderInstanceDataVector aInstances;
-		TerrainRenderBatchDataArray aBatches;
+		bool bAddBatches;
+		TerrainRenderBatchDataVector aBatches;
+		TerrainRenderInstanceDataPtrVector aInstances;
 
 	public:
-		static TerrainRenderBatches MakeBatches(const TerrainRenderDataVector& aRenderData);
-		static void MakeBatches(TerrainRenderBatches* pBatches, const TerrainRenderDataVector& aRenderData);
+		F_FORCEINLINE bool IsAddBatches() const { return this->bAddBatches; }
+		F_FORCEINLINE void SetIsAddBatches(bool b) { this->bAddBatches = b; }
 
 	public:
-		void Clear();
+		void Destroy();
+		void Init();
 
-		void Init(const TerrainRenderDataVector& aRenderData);
+		void BeginBatches();
+			void ClearBatches();
+			void AddBatches(const TerrainRenderDataPtrVector& aRenderData);
+			void SetupBatches();
+		void EndBatches();
 
 		uint32 GetActiveBatchCount() const;
-
 	};
 
 	/////////////////////////// TerrainRenderPatchGeometry ///////////////
@@ -148,10 +159,11 @@ namespace LostPeterVulkan
 		static IndexRange AppendWireframeRange(const std::vector<uint32>& aTriangleIndices, IndexRange triangleRange, std::vector<uint32>& aLineIndices);
 
 	public:
-		void Clear();
+		
 
+	public:
+		void Destroy();
 		void Init(int nPatchQuads);
-
 
 	};
 
@@ -164,6 +176,40 @@ namespace LostPeterVulkan
         virtual ~TerrainRender();
 
 	public:
+	////RenderPatchGeometry
+		static TerrainRenderPatchGeometry* s_pPatchGeometry;
+
+	////RenderBatches
+		static TerrainRenderBatches* s_pRenderBatches;
+
+	////Init/Destroy
+		static bool InitRenderStatic(int nPatchQuads);
+		static void DestroyRenderStatic();
+
+		static void BeginRenderBatches();
+		static void EndRenderBatches();
+
+	public:
+		bool bAddRenderDatas;
+		TerrainRenderDataPtrVector aRenderDatas;
+
+
+	public:
+		F_FORCEINLINE bool IsAddRenderDatas() const { return this->bAddRenderDatas; }
+		F_FORCEINLINE void SetIsAddRenderDatas(bool b) { this->bAddRenderDatas = b; }
+
+
+	public:
+		void Destroy();
+		bool Init();
+
+		void BeginAddRenderDatas();
+			void ClearRenderDatas();
+			void AddRenderData(TerrainRenderData* pRenderData);
+			void AddRenderDatas(const TerrainRenderDataPtrVector& aRDs);
+		void EndAddRenderDatas();
+
+	protected:
 		
 
 	};

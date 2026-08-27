@@ -60,6 +60,18 @@ namespace LostPeterVulkan
 		this->nSize = size;
 	}
 
+	void TerrainChunkedNode::BackNodeToPool()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (ppChildren[i] != nullptr)
+			{
+				ppChildren[i]->BackNodeToPool();
+			}
+		}
+		TerrainManager::GetSingleton().BackNodeToPool(this);
+	}
+
 	bool TerrainChunkedNode::HasChildren() const
 	{	
 		for (int i = 0; i < 4; i++)
@@ -112,7 +124,12 @@ namespace LostPeterVulkan
 		, pTexture_NormalMap(nullptr)
 
 		//TextureDiffuse/Normal/Control
+		, pTexture_Diffuse(nullptr)
+		, pTexture_Normal(nullptr)
+		, pTexture_Control(nullptr)
 
+		//Render
+		, pRender(nullptr)
 
 		, bIsInit(false)
 	{
@@ -125,8 +142,8 @@ namespace LostPeterVulkan
 
 	void TerrainChunked::Destroy()
 	{
-		F_DELETE(this->pTexture_NormalMap)
-		F_DELETE(this->pTexture_HeightMap)
+		destroyTextures();
+		destroyNodes();
 	}
 
 	bool TerrainChunked::Init(TerrainChunkedSetting* pChunkedSetting, 
@@ -147,23 +164,46 @@ namespace LostPeterVulkan
 		//2> Texture
 		if (!createTextures(pChunkedSetting))
 		{
-			F_LogError("*********************** TerrainManager::Init: createTextures failed !");
+			F_LogError("*********************** TerrainChunked::Init: createTextures failed !");
 			return false;
 		}
 
+		//3> Render
+		if (!createRender())
+		{
+			F_LogError("*********************** TerrainChunked::Init: createRender failed !");
+			return false;
+		}
+
+		F_LogInfo("TerrainChunked::Init: Create chunk: [%d, %d] success !", this->nChunkedX, this->nChunkedZ);
 		SetIsInit(true);
 		return true;
 	}
-
+		void TerrainChunked::destroyNodes()
+		{
+			if (this->pRootNode != nullptr)
+			{
+				this->pRootNode->BackNodeToPool();
+			}
+			this->pRootNode = nullptr;
+		}
+		void TerrainChunked::destroyRender()
+		{	
+			F_DELETE(this->pRender)
+		}
 		void TerrainChunked::destroyTextures()
 		{
 			F_DELETE(this->pTexture_NormalMap)
 			F_DELETE(this->pTexture_HeightMap)
+
+			F_DELETE(this->pTexture_Diffuse)
+			F_DELETE(this->pTexture_Normal)
+			F_DELETE(this->pTexture_Control)
 		}
 
 		bool TerrainChunked::createTextures(TerrainChunkedSetting* pChunkedSetting)
 		{
-			//HeightMap
+			//1> Texture_HeightMap
 			{
 				String nameTexture = "Texture-TerrainHeightMap-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
 				StringVector aPathTextureHeightMap;
@@ -185,11 +225,11 @@ namespace LostPeterVulkan
 													  2,
 													  (uint8*)this->pHeightMap->dataRawI.data());
 				
-				F_LogInfo("TerrainChunked::createTextures: Create render texture [TerrainHeightMap] - [%d, %d] success !",
+				F_LogInfo("TerrainChunked::createTextures: Create terrain render texture [TerrainHeightMap] - [%d, %d] success !",
 						  pChunkedSetting->nResolution, pChunkedSetting->nResolution);
 			}
 
-			//NormalMap
+			//2> Texture_NormalMap
 			{
 				String nameTexture = "Texture-TerrainNormalMap" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
 				StringVector aPathTextureNormalMap;
@@ -211,25 +251,87 @@ namespace LostPeterVulkan
 													  4,
 													  nullptr);
 
-				F_LogInfo("TerrainChunked::createTextures: Create render texture [TerrainNormalMap] - [%d, %d] success !",
+				F_LogInfo("TerrainChunked::createTextures: Create terrain render texture [TerrainNormalMap] - [%d, %d] success !",
 						  pChunkedSetting->nResolution, pChunkedSetting->nResolution);
 			}
 
 			
 			uint32_t mipMapCount = 1;
-			//1> Terrain Diffuse
+			//3> Terrain Diffuse
 			{
+				String nameTexture = "Texture-Terrain-Diffuse-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
+				this->pTexture_Diffuse = new VKTexture(0,
+													   nameTexture,
+													   pChunkedSetting->aPathTextureDiffuse,
+													   F_Texture_2DArray,
+													   F_TexturePixelFormat_R8G8B8A8_SRGB,
+													   F_TextureFilter_Bilinear,
+													   F_TextureAddressing_Clamp,
+													   F_TextureBorderColor_OpaqueBlack,
+													   false,
+													   false);
+				this->pTexture_Diffuse->LoadTexture(1024, 
+													1024,
+													1);
 
+				F_LogInfo("TerrainChunked::createTextures: Create terrain diffuse texture array: [%s] success !",
+						  pChunkedSetting->strTextureDiffuse.c_str());
 			}
-			//2> Terrain Normal
+			//4> Terrain Normal
 			{
+				String nameTexture = "Texture-Terrain-Normal-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
+				this->pTexture_Normal = new VKTexture(0,
+													  nameTexture,
+												  	  pChunkedSetting->aPathTextureNormal,
+													  F_Texture_2DArray,
+													  F_TexturePixelFormat_R8G8B8A8_UNORM,
+													  F_TextureFilter_Bilinear,
+													  F_TextureAddressing_Clamp,
+													  F_TextureBorderColor_OpaqueBlack,
+													  false,
+													  false);
+				this->pTexture_Normal->LoadTexture(1024, 
+												   1024,
+												   1);
 
+				F_LogInfo("TerrainChunked::createTextures: Create terrain normal texture array: [%s] success !",
+						  pChunkedSetting->strTextureNormal.c_str());
 			}
-			//3> Terrain Control
+			//5> Terrain Control
 			{
-				
+				String nameTexture = "Texture-Terrain-Control-" + FUtilString::SaveInt(pChunkedSetting->nX) + "-" + FUtilString::SaveInt(pChunkedSetting->nZ);
+				this->pTexture_Control = new VKTexture(0,
+													   nameTexture,
+													   pChunkedSetting->aPathTextureControl,
+													   F_Texture_2DArray,
+													   F_TexturePixelFormat_R8G8B8A8_UNORM,
+													   F_TextureFilter_Bilinear,
+													   F_TextureAddressing_Clamp,
+													   F_TextureBorderColor_OpaqueBlack,
+													   false,
+													   false);
+				this->pTexture_Control->LoadTexture(1024, 
+													1024,
+													1);
+
+				F_LogInfo("TerrainChunked::createTextures: Create terrain control texture array: [%s] success !",
+						  pChunkedSetting->strTextureControl.c_str());
 			}
 
+			return true;
+		}
+
+		bool TerrainChunked::createRender()
+		{
+			String nameRender = "Render-Terrain-" + FUtilString::SaveInt(this->nChunkedX) + "-" + FUtilString::SaveInt(this->nChunkedZ);
+			this->pRender = new TerrainRender(nameRender);
+			if (!this->pRender->Init())
+			{
+				F_LogError("*********************** TerrainChunked::createRender: Create terrain render [%d, %d] failed !", this->nChunkedX, this->nChunkedZ);
+				return false;
+			}
+			F_LogInfo("TerrainChunked::createRender: Create terrain render [%d, %d] success !", this->nChunkedX, this->nChunkedZ);
+			
 			return true;
 		}
 
@@ -241,11 +343,9 @@ namespace LostPeterVulkan
         selectDynamicRecursive(this->pRootNode, vLodCenter, fRadiusLod0, fRadiusLod1, aNodeSelect);
 	}
 
-	void TerrainChunked::BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataVector& aRenderData)
+	void TerrainChunked::BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataPtrVector& aRenderData)
 	{
-		aRenderData.clear();
-		aRenderData.reserve(aNodeSelect.size());
-
+		TerrainManager* pTerrainManager = TerrainManager::GetSingletonPtr();
 		for (const TerrainChunkedNode* pNode: aNodeSelect)
 		{
 			const int lod = std::max(0, std::min(2, this->nMaxDepth - pNode->nLevel));
@@ -263,17 +363,30 @@ namespace LostPeterVulkan
                 tint = {1.06f, 0.96f, 0.90f};
             }
 
-			TerrainRenderData rd(origin.x,
-								 origin.z,
-								 sizeWorld,
-								 static_cast<uint32>(lod),
-								 tint,
-								 stitchStepWorld[0],
-								 stitchStepWorld[1],
-								 stitchStepWorld[2],
-								 stitchStepWorld[3]);
-			aRenderData.push_back(rd);
+			TerrainRenderData* pRenderData = pTerrainManager->GetRenderDataFromPool();
+			pRenderData->Init(origin.x,
+							  origin.z,
+							  sizeWorld,
+							  static_cast<uint32>(lod),
+							  tint,
+							  stitchStepWorld[0],
+							  stitchStepWorld[1],
+							  stitchStepWorld[2],
+							  stitchStepWorld[3]);
+			aRenderData.push_back(pRenderData);
 		}
+	}
+
+	void TerrainChunked::BuildBatches(const TerrainRenderDataPtrVector& aRenderData)
+	{
+		if (!this->pRender)
+			return;
+
+		this->pRender->BeginAddRenderDatas();
+		{
+			this->pRender->AddRenderDatas(aRenderData);
+		}
+		this->pRender->EndAddRenderDatas();
 	}
 
 	int TerrainChunked::GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const
@@ -284,7 +397,7 @@ namespace LostPeterVulkan
 	TerrainChunkedNode* TerrainChunked::buildNode(int x, int z, int size, int level)
 	{
 		const int id = static_cast<int>(this->aNodes.size());
-		TerrainChunkedNode* pNode = TerrainManager::GetSingletonPtr()->pNodePool->Get();
+		TerrainChunkedNode* pNode = TerrainManager::GetSingletonPtr()->GetNodeFromPool();
 		pNode->Init(id,
 					level,
 					x,

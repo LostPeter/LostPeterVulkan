@@ -54,6 +54,7 @@ namespace LostPeterVulkan
 				  int z,
 				  int size);
 
+		void BackNodeToPool();
 	};
 
 
@@ -82,6 +83,12 @@ namespace LostPeterVulkan
 		VKTexture* pTexture_NormalMap;
 
 		//TextureDiffuse/Normal/Control
+		VKTexture* pTexture_Diffuse;
+		VKTexture* pTexture_Normal;
+		VKTexture* pTexture_Control;
+
+		//Render
+		TerrainRender* pRender;
 
 
 		bool bIsInit;
@@ -102,6 +109,12 @@ namespace LostPeterVulkan
 		F_FORCEINLINE const TerrainChunkedNodePtrVector& GetNodes() const { return this->aNodes; }
 
 		F_FORCEINLINE TerrainHeightMap* GetHeightMap() const { return this->pHeightMap; }
+		F_FORCEINLINE VKTexture* GetTexture_HeightMap() const { return this->pTexture_HeightMap; }
+		F_FORCEINLINE VKTexture* GetTexture_NormalMap() const { return this->pTexture_NormalMap; }
+
+		F_FORCEINLINE VKTexture* GetTexture_Diffuse() const { return this->pTexture_Diffuse; }
+		F_FORCEINLINE VKTexture* GetTexture_Normal() const { return this->pTexture_Normal; }
+		F_FORCEINLINE VKTexture* GetTexture_Control() const { return this->pTexture_Control; }
 
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
 		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
@@ -113,11 +126,13 @@ namespace LostPeterVulkan
 				  int leafQuads, int patchQuads);
 
 		void SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
-		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataVector& aRenderData);
-
+		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataPtrVector& aRenderData);
+		void BuildBatches(const TerrainRenderDataPtrVector& aRenderData);
+			
 		int GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const;
 
 	protected:
+		void destroyNodes();
 		TerrainChunkedNode* buildNode(int x, int z, int size, int level);
 
 		void computeBoundsAndError(TerrainChunkedNode* pNode);
@@ -129,8 +144,11 @@ namespace LostPeterVulkan
 	
 	protected:
 		void destroyTextures();
-			
 		bool createTextures(TerrainChunkedSetting* pChunkedSetting);
+
+	protected:
+		void destroyRender();
+		bool createRender();
 
 	};
 

@@ -26,8 +26,11 @@ namespace LostPeterVulkan
 
 	public:
 		static int s_nNodeCount_Init;
-        static int s_nNodeCount_Max;
         static int s_nNodeCount_Step;
+		static int s_nRenderDataCount_Init;
+        static int s_nRenderDataCount_Step;
+		static int s_nRenderInstanceDataCount_Init;
+        static int s_nRenderInstanceDataCount_Step;
 
 	public:
 		TerrainSetting* pTerrainSetting;
@@ -37,6 +40,10 @@ namespace LostPeterVulkan
 		TerrainChunkedLodPtrMap mapChunkedLods;
 
 		ObjectPointerPool<TerrainChunkedNode>* pNodePool;
+		ObjectPointerPool<TerrainRenderData>* pRenderDataPool;
+		ObjectPointerPool<TerrainRenderInstanceData>* pRenderInstanceDataPool;
+		
+		FVector3 vCenterLod;
 
 	public:
         static TerrainManager& GetSingleton();
@@ -48,6 +55,12 @@ namespace LostPeterVulkan
 		F_FORCEINLINE const TerrainChunkedLodPtrVector& GetChunkedLodPtrVector() const { return this->aChunkedLods; }
 		F_FORCEINLINE const TerrainChunkedLodPtrMap& GetChunkedLodPtrMap() const { return this->mapChunkedLods; }
 
+		F_FORCEINLINE ObjectPointerPool<TerrainChunkedNode>* GetNodePool() const { return this->pNodePool; }
+		F_FORCEINLINE ObjectPointerPool<TerrainRenderData>* GetRenderDataPool() const { return this->pRenderDataPool; }
+		F_FORCEINLINE ObjectPointerPool<TerrainRenderInstanceData>* GetRenderInstanceDataPool() const { return this->pRenderInstanceDataPool; }
+
+		F_FORCEINLINE const FVector3& GetCenterLod() const { return this->vCenterLod; }
+
 	public:
         void Destroy();
         bool Init(const String& pathSetting);
@@ -55,17 +68,33 @@ namespace LostPeterVulkan
 		void OnTick();
 		void ForceUpdate();
 
+	////Pool
+		TerrainChunkedNode* GetNodeFromPool();
+		void BackNodeToPool(TerrainChunkedNode* pNode);
+
+		TerrainRenderData* GetRenderDataFromPool();
+		void BackRenderDataToPool(TerrainRenderData* pRenderData);
+
+		TerrainRenderInstanceData* GetRenderInstanceDataFromPool();
+		void BackRenderInstanceDataToPool(TerrainRenderInstanceData* pRenderInstanceData);
+
+	////HeightMap
 		TerrainHeightMap* GetHeightMap(int x, int z);
 		TerrainHeightMap* GetHeightMap(int id);
 		TerrainHeightMap* CreateHeightMap(int x, int z);
 		TerrainHeightMap* CreateHeightMap(int id);
 		TerrainHeightMap* CreateHeightMap(TerrainChunkedSetting* pCS);
 
+	////ChunkedLod
 		TerrainChunkedLod* GetChunkedLod(int x, int z);
 		TerrainChunkedLod* GetChunkedLod(int id);
 		TerrainChunkedLod* CreateChunkedLod(int x, int z);
 		TerrainChunkedLod* CreateChunkedLod(int id);
 		TerrainChunkedLod* CreateChunkedLod(TerrainHeightMap* pHeightMap);
+
+	////Chunk
+		void CreateChunk(int x, int z);
+		void CreateChunk(int x, int z, int id);
 
 	protected:
 	////destroy
@@ -73,12 +102,15 @@ namespace LostPeterVulkan
 			bool destroyChunkedLod(TerrainChunkedLod* pChunkedLod);
 		void destroyHeightMaps();
 			bool destroyHeightMap(TerrainHeightMap* pHeightMap);
+
+		void destroyStatic();
 		void destroySetting();
 		void destroyPools();
 
 	////create
         bool createPools();
 		bool createSetting(const String& pathSetting);
+		bool createStatic();
 
 		bool createHeightMaps();
 			TerrainHeightMap* createHeightMap(TerrainChunkedSetting* pCS);
@@ -87,6 +119,10 @@ namespace LostPeterVulkan
 		bool createChunkedLods();
 			TerrainChunkedLod* createChunkedLod(TerrainHeightMap* pHeightMap);
 			void addChunkedLod(TerrainChunkedLod* pChunkedLod);
+
+	protected:
+	////lod
+		void updateLod();	
 
 	};
 

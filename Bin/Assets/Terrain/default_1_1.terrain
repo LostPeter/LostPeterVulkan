@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <setting>
     <terrain name="default_1_1">
-		<param leaf_quads="16" patch_quads="16" />
+		<param leaf_quads="16" patch_quads="16" lod_count="3" lod_update_dis="24.0" lod_radius_0="220.0" lod_radius_1="680.0" lod_radius_2="0.0" lod_radius_3="0.0" />
         <chunks start_x="0" start_z="0" count_x="1" count_z="1" size_x="2048" size_z="2048" resolution="1025" cell_size="2.0">
 			<chunk x="0" z="0" height_map="terrain_1025_1025.raw" tex_diffuse="shore_sand_albedo.png;moss_albedo.png;rock_cliff_albedo.png;cliff_albedo.png" tex_normal="shore_sand_norm.png;moss_norm.tga;rock_cliff_norm.tga;cliff_norm.png" tex_control="terrain_control.png" />
         </chunks>

@@ -24,9 +24,12 @@ namespace LostPeterVulkan
 
 	public:
 		TerrainChunked* pTerrainChunked;
+
+		FVector3 vCenterLod;
 		
 	public:
 		F_FORCEINLINE TerrainChunked* GetTerrainChunked() const { return this->pTerrainChunked; }
+		F_FORCEINLINE const FVector3& GetCenterLod() const { return this->vCenterLod; }
 
 	public:
 		void Destroy();
@@ -34,7 +37,13 @@ namespace LostPeterVulkan
 				  TerrainHeightMap* pHeightMap,
 				  int leafQuads, int patchQuads);
 
+
+		void UpdateLod(const FVector3& vCenterLod);
+
 	public:
+		
+
+	protected:
 		
 
 	};
