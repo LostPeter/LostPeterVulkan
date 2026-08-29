@@ -463,7 +463,7 @@ namespace LostPeterVulkan
 	TerrainRenderPatchGeometry* TerrainRender::s_pPatchGeometry = nullptr;
 	TerrainRenderBatches* TerrainRender::s_pRenderBatches = nullptr;
 
-	bool TerrainRender::InitRenderStatic(int nPatchQuads)
+	bool TerrainRender::InitStatic(int nPatchQuads)
 	{
 		//s_pPatchGeometry
 		if (s_pPatchGeometry == nullptr)
@@ -484,7 +484,7 @@ namespace LostPeterVulkan
 		
 		return true;
 	}
-	void TerrainRender::DestroyRenderStatic()
+	void TerrainRender::DestroyStatic()
 	{
 		F_DELETE(s_pRenderBatches)
 		F_DELETE(s_pPatchGeometry)

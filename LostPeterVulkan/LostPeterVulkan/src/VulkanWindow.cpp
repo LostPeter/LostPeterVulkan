@@ -34,7 +34,7 @@ namespace LostPeterVulkan
 		//Shader
         createShaders_Internal();
 		//DescriptorSetLayout
-
+		createDescriptorSetLayouts_Internal();
         //Texture
         createTextures_Internal();
     }
@@ -47,7 +47,7 @@ namespace LostPeterVulkan
         //Texture
         destroyTextures_Internal();
 		//DescriptorSetLayout
-
+		destroyDescriptorSetLayouts_Internal();
 		//Shader
         destroyShaders_Internal();
         //Mesh
@@ -56,9 +56,6 @@ namespace LostPeterVulkan
 
     void VulkanWindow::createResourceInternal()
     {
-        //DescriptorSetLayout
-        createDescriptorSetLayouts_Internal();
-
         //Uniform ConstantBuffer
         createUniformCB_Internal();
         //PipelineCompute
@@ -74,10 +71,7 @@ namespace LostPeterVulkan
         destroyPipelineCompute_Internal();
         //PipelineGraphics
         destroyPipelineGraphics_Internal();
-
-        //DescriptorSetLayout
-        destroyDescriptorSetLayouts_Internal();
-
+        
         //RenderPassShadowMap
         if (m_pVKRenderPassShadowMap != nullptr)
         {
@@ -420,6 +414,136 @@ namespace LostPeterVulkan
         return itFind->second;
     }
 
+	//ShaderModule
+    static const int g_ShaderCount_Internal = 19;
+    static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
+    {
+        //name                                                     //type               //path
+        ///////////////////////////////////////// vert /////////////////////////////////////////
+        "vert_standard_copy_blit_from_frame",                     "vert",              "Assets/Shader/standard_copy_blit_from_frame.vert.spv", //standard_copy_blit_from_frame vert
+        "vert_standard_copy_blit_to_frame",                       "vert",              "Assets/Shader/standard_copy_blit_to_frame.vert.spv", //standard_copy_blit_to_frame vert
+        "vert_standard_copy_blit_hiz_depth_from_frame",           "vert",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.vert.spv", //standard_copy_blit_hiz_depth_from_frame vert
+        "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
+        "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
+        "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
+
+        ///////////////////////////////////////// tesc /////////////////////////////////////////
+    
+
+        ///////////////////////////////////////// tese /////////////////////////////////////////
+    
+
+        ///////////////////////////////////////// geom /////////////////////////////////////////
+
+
+        ///////////////////////////////////////// frag /////////////////////////////////////////
+        "frag_standard_copy_blit_from_frame",                     "frag",              "Assets/Shader/standard_copy_blit_from_frame.frag.spv", //standard_copy_blit_from_frame frag
+        "frag_standard_copy_blit_to_frame",                       "frag",              "Assets/Shader/standard_copy_blit_to_frame.frag.spv", //standard_copy_blit_to_frame frag
+        "frag_standard_copy_blit_hiz_depth_from_frame",           "frag",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.frag.spv", //standard_copy_blit_hiz_depth_from_frame frag
+        "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
+        "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
+
+        ///////////////////////////////////////// comp /////////////////////////////////////////
+        "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
+        "comp_standard_compute_texcopy_tex2darray",               "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
+        "comp_standard_compute_texgen_normalmap",                 "comp",              "Assets/Shader/standard_compute_texgen_normalmap.comp.spv", //standard_compute_texgen_normalmap comp
+
+        "comp_standard_compute_cull_clear_args",                  "comp",              "Assets/Shader/standard_compute_cull_clear_args.comp.spv", //standard_compute_cull_clear_args comp
+        "comp_standard_compute_cull_frustum",                     "comp",              "Assets/Shader/standard_compute_cull_frustum.comp.spv", //standard_compute_cull_frustum comp
+        "comp_standard_compute_cull_frustum_depth_hiz",           "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz.comp.spv", //standard_compute_cull_frustum_depth_hiz comp
+        "comp_standard_compute_cull_frustum_depth_hiz_clip",      "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz_clip.comp.spv", //standard_compute_cull_frustum_depth_hiz_clip comp
+        "comp_standard_compute_hiz_depth_generate",               "comp",              "Assets/Shader/standard_compute_hiz_depth_generate.comp.spv", //standard_compute_hiz_depth_generate comp
+    };
+    void VulkanWindow::destroyShaders_Internal()
+    {
+        size_t count = this->m_aShaders_Internal.size();
+        for (size_t i = 0; i < count; i++)
+        {
+			VKShader* pShader = this->m_aShaders_Internal[i];
+            delete pShader;
+        }
+        this->m_aShaders_Internal.clear();
+        this->m_mapShaders_Internal.clear();
+    }
+    void VulkanWindow::createShaders_Internal()
+    {
+        for (int i = 0; i < g_ShaderCount_Internal; i++)
+        {
+            String shaderName = g_ShaderModulePaths_Internal[3 * i + 0];
+            String shaderType = g_ShaderModulePaths_Internal[3 * i + 1];
+            String shaderPath = g_ShaderModulePaths_Internal[3 * i + 2];
+
+			VKShader* pShader = createShader(shaderName, shaderPath, shaderType);
+            this->m_aShaders_Internal.push_back(pShader);
+            this->m_mapShaders_Internal[shaderName] = pShader;
+            F_LogInfo("VulkanWindow::createShaders_Internal: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
+        }
+    }
+    VKShader* VulkanWindow::FindShader_Internal(const String& nameShader)
+    {
+        VKShaderPtrMap::iterator itFind = this->m_mapShaders_Internal.find(nameShader);
+        if (itFind == this->m_mapShaders_Internal.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
+	//DescriptorSetLayouts
+    static const int g_DescriptorSetLayoutCount_Internal = 13;
+    static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
+    {
+        "Pass",
+        "Pass-Object",
+        "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB",
+        "ObjectCopyBlit-TextureFrameColor",
+        "ObjectCopyBlit-TextureFrameDepth",
+        "Cull-BufferRWArgsCB",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
+        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
+        "HizDepth-TextureFS",
+        "HizDepth-TextureCSRWSrc-TextureCSRWDst",
+        "TextureCopy-TextureCSR-TextureCSRW",
+        "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
+    };
+    void VulkanWindow::destroyDescriptorSetLayouts_Internal()
+    {
+        size_t count = this->m_aDescriptorSetLayouts.size();
+		for (size_t i = 0; i < count; i++)
+		{
+			DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
+			delete pDSL;
+		}
+		this->m_aDescriptorSetLayouts.clear();
+		this->m_mapDescriptorSetLayouts.clear();
+    }   
+    void VulkanWindow::createDescriptorSetLayouts_Internal()
+    {
+        for (int i = 0; i < g_DescriptorSetLayoutCount_Internal; i++)
+        {
+            String nameLayout(g_DescriptorSetLayoutNames_Internal[i]);
+            StringVector aLayouts = FUtilString::Split(nameLayout, "-");
+			DescriptorSetLayout* pDSL = new DescriptorSetLayout();
+			pDSL->Init(nameLayout, true, false);
+			
+			this->m_aDescriptorSetLayouts.push_back(pDSL);
+			this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
+
+            F_LogInfo("VulkanWindow::createDescriptorSetLayouts_Internal: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        }
+    }
+    DescriptorSetLayout* VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
+    {
+        DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
+        if (itFind == this->m_mapDescriptorSetLayouts.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
     //Texture
     static const int g_TextureCount_Internal = 4;
     static const char* g_TexturePaths_Internal[5 * g_TextureCount_Internal] = 
@@ -536,136 +660,6 @@ namespace LostPeterVulkan
     {
         VKTexturePtrMap::iterator itFind = this->m_mapTextures_Internal.find(nameTexture);
         if (itFind == this->m_mapTextures_Internal.end())
-        {
-            return nullptr;
-        }
-        return itFind->second;
-    }
-
-    //DescriptorSetLayouts
-    static const int g_DescriptorSetLayoutCount_Internal = 13;
-    static const char* g_DescriptorSetLayoutNames_Internal[g_DescriptorSetLayoutCount_Internal] =
-    {
-        "Pass",
-        "Pass-Object",
-        "Pass-CullInstance-BufferRWObjectCullInstance-BufferRWResultCB",
-        "ObjectCopyBlit-TextureFrameColor",
-        "ObjectCopyBlit-TextureFrameDepth",
-        "Cull-BufferRWArgsCB",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
-        "HizDepth-TextureFS",
-        "HizDepth-TextureCSRWSrc-TextureCSRWDst",
-        "TextureCopy-TextureCSR-TextureCSRW",
-        "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
-    };
-    void VulkanWindow::destroyDescriptorSetLayouts_Internal()
-    {
-        size_t count = this->m_aDescriptorSetLayouts.size();
-		for (size_t i = 0; i < count; i++)
-		{
-			DescriptorSetLayout* pDSL = this->m_aDescriptorSetLayouts[i];
-			delete pDSL;
-		}
-		this->m_aDescriptorSetLayouts.clear();
-		this->m_mapDescriptorSetLayouts.clear();
-    }   
-    void VulkanWindow::createDescriptorSetLayouts_Internal()
-    {
-        for (int i = 0; i < g_DescriptorSetLayoutCount_Internal; i++)
-        {
-            String nameLayout(g_DescriptorSetLayoutNames_Internal[i]);
-            StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-			DescriptorSetLayout* pDSL = new DescriptorSetLayout();
-			pDSL->Init(nameLayout, true, false);
-			
-			this->m_aDescriptorSetLayouts.push_back(pDSL);
-			this->m_mapDescriptorSetLayouts[nameLayout] = pDSL;
-
-            F_LogInfo("VulkanWindow::createDescriptorSetLayouts_Internal: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
-        }
-    }
-    DescriptorSetLayout* VulkanWindow::FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout)
-    {
-        DescriptorSetLayoutPtrMap::iterator itFind = this->m_mapDescriptorSetLayouts.find(nameDescriptorSetLayout);
-        if (itFind == this->m_mapDescriptorSetLayouts.end())
-        {
-            return nullptr;
-        }
-        return itFind->second;
-    }
-
-    //ShaderModule
-    static const int g_ShaderCount_Internal = 19;
-    static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
-    {
-        //name                                                     //type               //path
-        ///////////////////////////////////////// vert /////////////////////////////////////////
-        "vert_standard_copy_blit_from_frame",                     "vert",              "Assets/Shader/standard_copy_blit_from_frame.vert.spv", //standard_copy_blit_from_frame vert
-        "vert_standard_copy_blit_to_frame",                       "vert",              "Assets/Shader/standard_copy_blit_to_frame.vert.spv", //standard_copy_blit_to_frame vert
-        "vert_standard_copy_blit_hiz_depth_from_frame",           "vert",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.vert.spv", //standard_copy_blit_hiz_depth_from_frame vert
-        "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
-        "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
-        "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
-
-        ///////////////////////////////////////// tesc /////////////////////////////////////////
-    
-
-        ///////////////////////////////////////// tese /////////////////////////////////////////
-    
-
-        ///////////////////////////////////////// geom /////////////////////////////////////////
-
-
-        ///////////////////////////////////////// frag /////////////////////////////////////////
-        "frag_standard_copy_blit_from_frame",                     "frag",              "Assets/Shader/standard_copy_blit_from_frame.frag.spv", //standard_copy_blit_from_frame frag
-        "frag_standard_copy_blit_to_frame",                       "frag",              "Assets/Shader/standard_copy_blit_to_frame.frag.spv", //standard_copy_blit_to_frame frag
-        "frag_standard_copy_blit_hiz_depth_from_frame",           "frag",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.frag.spv", //standard_copy_blit_hiz_depth_from_frame frag
-        "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
-        "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
-
-        ///////////////////////////////////////// comp /////////////////////////////////////////
-        "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
-        "comp_standard_compute_texcopy_tex2darray",               "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
-        "comp_standard_compute_texgen_normalmap",                 "comp",              "Assets/Shader/standard_compute_texgen_normalmap.comp.spv", //standard_compute_texgen_normalmap comp
-
-        "comp_standard_compute_cull_clear_args",                  "comp",              "Assets/Shader/standard_compute_cull_clear_args.comp.spv", //standard_compute_cull_clear_args comp
-        "comp_standard_compute_cull_frustum",                     "comp",              "Assets/Shader/standard_compute_cull_frustum.comp.spv", //standard_compute_cull_frustum comp
-        "comp_standard_compute_cull_frustum_depth_hiz",           "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz.comp.spv", //standard_compute_cull_frustum_depth_hiz comp
-        "comp_standard_compute_cull_frustum_depth_hiz_clip",      "comp",              "Assets/Shader/standard_compute_cull_frustum_depth_hiz_clip.comp.spv", //standard_compute_cull_frustum_depth_hiz_clip comp
-        "comp_standard_compute_hiz_depth_generate",               "comp",              "Assets/Shader/standard_compute_hiz_depth_generate.comp.spv", //standard_compute_hiz_depth_generate comp
-    };
-    void VulkanWindow::destroyShaders_Internal()
-    {
-        size_t count = this->m_aShaders_Internal.size();
-        for (size_t i = 0; i < count; i++)
-        {
-			VKShader* pShader = this->m_aShaders_Internal[i];
-            delete pShader;
-        }
-        this->m_aShaders_Internal.clear();
-        this->m_mapShaders_Internal.clear();
-    }
-    void VulkanWindow::createShaders_Internal()
-    {
-        for (int i = 0; i < g_ShaderCount_Internal; i++)
-        {
-            String shaderName = g_ShaderModulePaths_Internal[3 * i + 0];
-            String shaderType = g_ShaderModulePaths_Internal[3 * i + 1];
-            String shaderPath = g_ShaderModulePaths_Internal[3 * i + 2];
-
-			VKShader* pShader = createShader(shaderName, shaderPath, shaderType);
-            this->m_aShaders_Internal.push_back(pShader);
-            this->m_mapShaders_Internal[shaderName] = pShader;
-            F_LogInfo("VulkanWindow::createShaders_Internal: create shader, name: [%s], type: [%s], path: [%s] success !", 
-                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
-        }
-    }
-    VKShader* VulkanWindow::FindShader_Internal(const String& nameShader)
-    {
-        VKShaderPtrMap::iterator itFind = this->m_mapShaders_Internal.find(nameShader);
-        if (itFind == this->m_mapShaders_Internal.end())
         {
             return nullptr;
         }
@@ -2091,10 +2085,19 @@ namespace LostPeterVulkan
         , m_pPipelineGraphics_DepthHiz(nullptr)
         , m_pPipelineGraphics_Terrain(nullptr)
 
+		//Camera
         , pCamera(nullptr)
         , pCameraRight(nullptr)
-        , pCameraMainLight(new FCamera)
 
+		//Light
+
+		//Shadow
+		, pCameraMainLight(new FCamera)
+
+		//Terrain
+		, pTerrainManager(nullptr)
+
+		//Mouse
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
         , mouseButtonDownMiddle(false)
@@ -2170,8 +2173,8 @@ namespace LostPeterVulkan
 
 	void VulkanWindow::OnTick()
 	{
-		if (this->m_pVKRenderPassTerrain != nullptr)
-			this->m_pVKRenderPassTerrain->OnTick();
+		if (this->pTerrainManager != nullptr)
+			this->pTerrainManager->OnTick();
 	}
 
     bool VulkanWindow::OnBeginCompute_BeforeRender()
@@ -2581,7 +2584,6 @@ namespace LostPeterVulkan
             createCamera();
             createLightMain();
             createShadowLightMain();
-            createTerrain();
 
             //9> Create Pipeline Objects
             createPipelineObjects();
@@ -2589,9 +2591,10 @@ namespace LostPeterVulkan
             //10> Create Sync Objects
             createSyncObjects();
 
-            //11> createInternal/createResourceInternal
+			//11> createInternal/createResourceInternal
             createInternal();
             createResourceInternal();
+			createTerrain();
 
             //12> createDescriptorSetLayouts
             createDescriptorSetLayouts();
@@ -3337,7 +3340,21 @@ namespace LostPeterVulkan
     }
     void VulkanWindow::createTerrain()
     {
-        
+        if (this->pTerrainManager != nullptr)
+			return;
+		if (!this->cfg_isRenderPassTerrain || this->cfg_terrain_setting_path.empty())
+			return;
+
+		this->pTerrainManager = new TerrainManager();
+		String pathSetting = TerrainUtil::GetTerrainSettingPath(this->cfg_terrain_setting_path);
+		if (!this->pTerrainManager->Init(pathSetting))
+		{
+			F_LogError("*********************** VulkanWindow::createTerrain: Create terrain manager failed, path: [%s] !", pathSetting.c_str());
+			return;
+		}
+		this->pTerrainManager->ForceUpdate();
+
+		F_LogInfo("VulkanWindow::createTerrain: createTerrainManager: Create terrain manager success, path: [%s] !", pathSetting.c_str());
     }
 
 
@@ -11148,6 +11165,7 @@ namespace LostPeterVulkan
 
             cleanupTexture();
             cleanupVertexIndexBuffer();
+			cleanupTerrain();
         }
             void VulkanWindow::cleanupTexture()
             {
@@ -11167,6 +11185,10 @@ namespace LostPeterVulkan
                 this->poIndexBuffer_Size = 0;
                 this->poIndexBuffer_Data = nullptr;
             }
+			void VulkanWindow::cleanupTerrain()
+			{
+				F_DELETE(this->pTerrainManager)
+			}
         void VulkanWindow::cleanupImGUI()
         {
             destroyVkDescriptorPool(this->imgui_DescriptorPool);

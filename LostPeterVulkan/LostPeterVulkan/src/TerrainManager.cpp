@@ -16,6 +16,7 @@
 #include "../include/TerrainChunked.h"
 #include "../include/TerrainChunkedLod.h"
 #include "../include/TerrainRender.h"
+#include "../include/TerrainCompute.h"
 #include "../include/TerrainUtil.h"
 
 template<> LostPeterVulkan::TerrainManager* LostPeterFoundation::FSingleton<LostPeterVulkan::TerrainManager>::ms_Singleton = nullptr;
@@ -130,7 +131,8 @@ namespace LostPeterVulkan
 			}
 		void TerrainManager::destroyStatic()
 		{
-			TerrainRender::DestroyRenderStatic();
+			TerrainRender::DestroyStatic();
+			TerrainCompute::DestroyStatic();
 		}
 		void TerrainManager::destroySetting()
 		{
@@ -202,7 +204,8 @@ namespace LostPeterVulkan
 		}
 		bool TerrainManager::createStatic()
 		{
-			TerrainRender::InitRenderStatic(this->pTerrainSetting->nPatchQuads);
+			TerrainRender::InitStatic(this->pTerrainSetting->nPatchQuads);
+			TerrainCompute::InitStatic();
 
 			return true;
 		}

@@ -23,7 +23,23 @@ namespace LostPeterVulkan
         virtual ~TerrainCompute();
 
 	public:
-		
+		static const String s_nameDescriptorSetLayout;
+		static const String s_nameShader;
+
+		static DescriptorSetLayout* s_pDescriptorSetLayout;
+		static VKShader* s_pShader;
+
+		static void InitStatic();
+		static void DestroyStatic();
+
+	public:
+		VKStatePipelineCompute* poStatePipelineCompute;
+        
+        TextureCopyConstants* pTextureCopy;
+        VKBufferUniform* poBuffer_TextureCopy;  
+
+        bool isNormalUpdated;
+        bool isNormalUpdated_Sustained;
 
     public:
 		TerrainChunked* pChunked;
@@ -33,7 +49,13 @@ namespace LostPeterVulkan
 		bool Init(TerrainChunked* pChunked);
 
 	public:
-		
+		virtual void CleanupSwapChain();
+        virtual void UpdateDescriptorSet();
+
+	protected:
+		void destroyBufferTextureCopy();
+        
+        bool createBufferTextureCopy(int nHeightMapSize);
 
 	};	
 

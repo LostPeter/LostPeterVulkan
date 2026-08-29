@@ -933,6 +933,12 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
+
+	this->cfg_isRenderPassTerrain = true;
+	this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+
+	this->cfg_terrainHeightStart = -50.0f;
+	this->cfg_terrainHeightMax = 500.0f;
 }
 
 void Vulkan_020_Terrain::setUpEnabledFeatures()
@@ -970,23 +976,6 @@ void Vulkan_020_Terrain::createCamera()
         this->pCamera->SetFarZ(1000000.0f);
         this->pCamera->UpdateViewMatrix();
         this->pCamera->UpdateProjectionMatrix();
-    }
-
-void Vulkan_020_Terrain::createTerrain()
-{
-    VulkanWindow::createTerrain();
-
-    terrainReset();
-}
-    void Vulkan_020_Terrain::terrainReset()
-    {
-        VulkanWindow::terrainReset();
-
-        this->cfg_isRenderPassTerrain = true;
-        this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
-
-        this->cfg_terrainHeightStart = -50.0f;
-        this->cfg_terrainHeightMax = 500.0f;
     }
 
 void Vulkan_020_Terrain::loadModel_Custom()

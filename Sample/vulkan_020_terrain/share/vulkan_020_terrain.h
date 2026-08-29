@@ -526,7 +526,6 @@ protected:
     //Load Assets
         //Camera
         virtual void createCamera();
-        virtual void createTerrain();
 
         //Geometry/Texture
         virtual void loadModel_Custom();
@@ -558,7 +557,6 @@ protected:
 
         virtual bool beginRenderImgui();
             virtual void cameraReset();
-            virtual void terrainReset();
             virtual void modelConfig();
 
         virtual void endRenderImgui();

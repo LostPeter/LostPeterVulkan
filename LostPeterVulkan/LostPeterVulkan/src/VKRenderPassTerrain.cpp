@@ -71,8 +71,6 @@ namespace LostPeterVulkan
     void VKRenderPassTerrain::Destroy()
     {
 		destroyTerrainTexture();
-		destroyTerrainManager();
-
 
         F_DELETE_T(this->poTerrainHeightMapData)
         F_DELETE_T(this->poTerrainHeightMapDataFloat)
@@ -103,10 +101,6 @@ namespace LostPeterVulkan
 
         
     } 
-		void VKRenderPassTerrain::destroyTerrainManager()
-		{
-			F_DELETE(this->pTerrainManager)
-		}
 		void VKRenderPassTerrain::destroyTerrainTexture()
 		{
 			F_DELETE(this->pTexture_Diffuse)
@@ -120,14 +114,6 @@ namespace LostPeterVulkan
 
     bool VKRenderPassTerrain::Init()
     {
-		if (!createTerrainManager())
-		{
-			F_LogError("*********************** VKRenderPassTerrain::Init: createTerrainManager failed !");
-			return false;
-		}
-		F_LogInfo("VKRenderPassTerrain::Init: createTerrainManager success !");
-
-		
         if (loadTerrainData())
         {
             setupTerrainGeometryWhole();
@@ -138,24 +124,6 @@ namespace LostPeterVulkan
         }
         return false;
     }
-		bool VKRenderPassTerrain::createTerrainManager()
-		{
-			if (this->pTerrainManager != nullptr)
-				return true;
-
-			this->pTerrainManager = new TerrainManager();
-
-			String pathSetting = TerrainUtil::GetTerrainSettingPath(Base::GetWindowPtr()->cfg_terrain_setting_path);
-			if (!this->pTerrainManager->Init(pathSetting))
-			{
-				F_LogError("*********************** VKRenderPassTerrain::createTerrainManager: failed, path: [%s] !", pathSetting.c_str());
-				return false;
-			}
-			this->pTerrainManager->ForceUpdate();
-
-			return true;
-		}
-
         bool VKRenderPassTerrain::loadTerrainData()
         {
             const String& pathTerrain = Base::GetWindowPtr()->cfg_terrain_Path; 
@@ -467,12 +435,7 @@ namespace LostPeterVulkan
                 }
             }
         }
-
-	void VKRenderPassTerrain::OnTick()
-	{
-		this->pTerrainManager->OnTick();
-	}
-
+		
     void VKRenderPassTerrain::CleanupSwapChain()
     {
         Destroy();

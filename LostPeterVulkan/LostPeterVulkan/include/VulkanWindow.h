@@ -50,30 +50,30 @@ namespace LostPeterVulkan
         MeshPtrVector m_aMeshes_Internal;
         MeshPtrMap m_mapMeshes_Internal;    
 
-        //Texture
-        VKTexturePtrVector m_aTextures_Internal;
-        VKTexturePtrMap m_mapTextures_Internal;
+		//Shader
+		VKShaderPtrVector m_aShaders_Internal;
+		VKShaderPtrMap m_mapShaders_Internal;
 
         //DescriptorSetLayouts
 		DescriptorSetLayoutPtrVector m_aDescriptorSetLayouts;
     	DescriptorSetLayoutPtrMap m_mapDescriptorSetLayouts;
 
-        //Shader
-		VKShaderPtrVector m_aShaders_Internal;
-		VKShaderPtrMap m_mapShaders_Internal;
+        //Texture
+        VKTexturePtrVector m_aTextures_Internal;
+        VKTexturePtrMap m_mapTextures_Internal;
 
     public:
         //Mesh
         virtual Mesh* FindMesh_Internal(const String& nameMesh);
 
-        //Texture
-        virtual VKTexture* FindTexture_Internal(const String& nameTexture);
+		//Shader
+        virtual VKShader* FindShader_Internal(const String& nameShader);
 
         //DescriptorSetLayouts
 		virtual DescriptorSetLayout* FindDescriptorSetLayout_Internal(const String& nameDescriptorSetLayout);
 
-        //Shader
-        virtual VKShader* FindShader_Internal(const String& nameShader);
+        //Texture
+        virtual VKTexture* FindTexture_Internal(const String& nameTexture);
 
         //PipelineCompute
         //PipelineCompute-Cull
@@ -142,17 +142,17 @@ namespace LostPeterVulkan
         virtual void destroyMeshes_Internal();
         virtual void createMeshes_Internal();
 
-        //Texture
-        virtual void destroyTextures_Internal();
-        virtual void createTextures_Internal();
+		//Shader
+        virtual void destroyShaders_Internal();
+        virtual void createShaders_Internal();
 
         //DescriptorSetLayouts
         virtual void destroyDescriptorSetLayouts_Internal();
         virtual void createDescriptorSetLayouts_Internal();
 
-        //Shader
-        virtual void destroyShaders_Internal();
-        virtual void createShaders_Internal();
+        //Texture
+        virtual void destroyTextures_Internal();
+        virtual void createTextures_Internal();
 
         //Uniform ConstantBuffer
         virtual void destroyUniformCB_Internal();
@@ -473,6 +473,9 @@ namespace LostPeterVulkan
         ShadowConstants shadowMainLight; //mainLight's shadow
         ShadowConstants shadowMainLight_Cfg; //mainLight's shadow cfg
         FCamera* pCameraMainLight; //mainLight's shadow camera
+
+		//Terrain
+		TerrainManager* pTerrainManager;
         
         //Mouse
         FVector2 mousePosLast;
@@ -1732,6 +1735,7 @@ namespace LostPeterVulkan
             virtual void cleanupDefault();
                 virtual void cleanupTexture();
                 virtual void cleanupVertexIndexBuffer();
+				virtual void cleanupTerrain();
             virtual void cleanupImGUI();
             virtual void cleanupEditor();
             virtual void cleanupCustom();

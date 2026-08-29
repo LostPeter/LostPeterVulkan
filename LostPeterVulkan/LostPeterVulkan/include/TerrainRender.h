@@ -183,8 +183,8 @@ namespace LostPeterVulkan
 		static TerrainRenderBatches* s_pRenderBatches;
 
 	////Init/Destroy
-		static bool InitRenderStatic(int nPatchQuads);
-		static void DestroyRenderStatic();
+		static bool InitStatic(int nPatchQuads);
+		static void DestroyStatic();
 
 		static void BeginRenderBatches();
 		static void EndRenderBatches();
