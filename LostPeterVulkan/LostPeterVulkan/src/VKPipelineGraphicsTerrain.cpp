@@ -216,8 +216,8 @@ namespace LostPeterVulkan
 
             this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
             this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
-            this->terrainCB.textureX_Inverse = 1.0f / (this->terrainCB.textureX - 1.0f);
-            this->terrainCB.textureZ_Inverse = 1.0f / (this->terrainCB.textureZ - 1.0f);
+            this->terrainCB.textureX_Inverse = 1.0f / this->terrainCB.textureX;
+            this->terrainCB.textureZ_Inverse = 1.0f / this->terrainCB.textureZ;
             this->terrainCB.heightStart = pWindow->cfg_terrainHeightStart;
             this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
             this->terrainCB.terrainSizeX = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);

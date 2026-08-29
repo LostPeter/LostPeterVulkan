@@ -21,9 +21,9 @@
 namespace LostPeterVulkan
 {
 	const String TerrainCompute::s_nameDescriptorSetLayout = "TextureCopy-TextureCSR-TextureCSRW";
-	const String TerrainCompute::s_nameShader = "comp_standard_compute_texgen_normalmap";
+	const String TerrainCompute::s_nameShaderCompute = "comp_standard_compute_texgen_normalmap";
 	DescriptorSetLayout* TerrainCompute::s_pDescriptorSetLayout = nullptr;
-	VKShader* TerrainCompute::s_pShader = nullptr;
+	VKShader* TerrainCompute::s_pShaderCompute = nullptr;
 
 	void TerrainCompute::InitStatic()
 	{
@@ -37,10 +37,10 @@ namespace LostPeterVulkan
 		}
 
 		//Shader
-		s_pShader = pWindow->FindShader_Internal(s_nameShader);
-		if (s_pShader == nullptr)
+		s_pShaderCompute = pWindow->FindShader_Internal(s_nameShaderCompute);
+		if (s_pShaderCompute == nullptr)
 		{
-			F_LogError("*********************** TerrainCompute::InitStatic: Can not find Shader: [%s] !", s_nameShader.c_str());
+			F_LogError("*********************** TerrainCompute::InitStatic: Can not find Shader: [%s] !", s_nameShaderCompute.c_str());
 		}
 	}
 	void TerrainCompute::DestroyStatic()
@@ -100,7 +100,7 @@ namespace LostPeterVulkan
 		String namePipelineCompute = "PipelineCompute-Terrain-" + this->name;
 		this->poStatePipelineCompute = Base::GetWindowPtr()->createStatePipelineCompute(namePipelineCompute,
 																						s_pDescriptorSetLayout,
-																						s_pShader,
+																						s_pShaderCompute,
 																						false);
 
         if (this->poStatePipelineCompute == nullptr)

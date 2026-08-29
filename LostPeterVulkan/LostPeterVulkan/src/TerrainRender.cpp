@@ -14,6 +14,9 @@
 #include "../include/TerrainManager.h"
 #include "../include/TerrainSetting.h"
 #include "../include/TerrainChunked.h"
+#include "../include/VKTexture.h"
+#include "../include/VKBufferUniform.h"
+#include "../include/VKStatePipelineGraphics.h"
 
 namespace LostPeterVulkan
 {
@@ -462,9 +465,16 @@ namespace LostPeterVulkan
 	/////////////////////////// TerrainRender ////////////////////////////
 	TerrainRenderPatchGeometry* TerrainRender::s_pPatchGeometry = nullptr;
 	TerrainRenderBatches* TerrainRender::s_pRenderBatches = nullptr;
+	const String TerrainRender::s_nameDescriptorSetLayout = "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS";
+	const String TerrainRender::s_nameShaderVertex = "vert_standard_terrain_lit";
+	const String TerrainRender::s_nameShaderFragment = "frag_standard_terrain_lit";
+	DescriptorSetLayout* TerrainRender::s_pDescriptorSetLayout = nullptr;
+	VkPipelineShaderStageCreateInfoVector TerrainRender::s_shaderStageCreateInfo;
 
 	bool TerrainRender::InitStatic(int nPatchQuads)
 	{
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
 		//s_pPatchGeometry
 		if (s_pPatchGeometry == nullptr)
 		{
@@ -481,7 +491,26 @@ namespace LostPeterVulkan
 				s_pRenderBatches->Init();
 			}
 		}
-		
+
+		//s_pDescriptorSetLayout
+		s_pDescriptorSetLayout = pWindow->FindDescriptorSetLayout_Internal(s_nameDescriptorSetLayout);
+		if (s_pDescriptorSetLayout == nullptr)
+		{
+			F_LogError("*********************** TerrainRender::InitStatic: Can not find DescriptorSetLayout: [%s] !", s_nameDescriptorSetLayout.c_str());
+		}
+
+		//s_shaderStageCreateInfo
+		if (!pWindow->CreatePipelineShaderStageCreateInfos(s_nameShaderVertex,
+														   "",
+														   "",
+														   "",
+														   s_nameShaderFragment,
+														   pWindow->m_mapShaders_Internal,
+														   s_shaderStageCreateInfo))
+		{
+			F_LogError("*********************** TerrainRender::InitStatic: Can not find shader vertex: [%s], fragment: [%s] !", s_nameShaderVertex.c_str(), s_nameShaderFragment.c_str());
+		}
+			
 		return true;
 	}
 	void TerrainRender::DestroyStatic()
@@ -513,7 +542,13 @@ namespace LostPeterVulkan
 		, pRenderBatches(nullptr)
 
 		, bAddRenderDatas(false)
-		
+
+		, poStatePipelineGraphics(nullptr)
+
+        , poBuffer_TerrainObjectCB(nullptr)
+        , poBuffer_MaterialCB(nullptr)
+        , poBuffer_TerrainCB(nullptr)
+
 	{
 		
 	}
@@ -525,24 +560,84 @@ namespace LostPeterVulkan
 	void TerrainRender::Destroy()
 	{
 		ClearRenderDatas();
+		CleanupSwapChain();
+
 		destroyRenderBatches();
+		destroyBufferTerrainObject();
+		destroyBufferMaterial();
+		destroyBufferTerrain();
 	}
 		void TerrainRender::destroyRenderBatches()
 		{
 			F_DELETE(this->pRenderBatches)
+		}
+		void TerrainRender::destroyBufferTerrainObject()
+		{
+			this->terrainObjectCBs.clear();
+			F_DELETE(this->poBuffer_TerrainObjectCB)
+		}
+        void TerrainRender::destroyBufferMaterial()
+		{
+			this->materialCBs.clear();
+			F_DELETE(this->poBuffer_MaterialCB)
+		}
+        void TerrainRender::destroyBufferTerrain()
+		{
+			F_DELETE(this->poBuffer_TerrainCB)
 		}
 
 	bool TerrainRender::Init(TerrainChunked* pChunked)
 	{
 		this->pChunked = pChunked;
 
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
 		if (!TerrainSetting::GetSingleton().GetIsGPUCullingAll())
 		{
+			//1> createRenderBatches
 			if (!createRenderBatches())
 			{
 				F_LogError("*********************** TerrainRender::Init: createRenderBatches: [%d, %d] failed !", pChunked->GetChunkedX(), pChunked->GetChunkedZ());
 				return false;
 			}
+
+			//2> Buffer
+			if (this->poBuffer_TerrainObjectCB == nullptr)
+			{
+				if (!createBufferTerrainObject())
+				{
+					F_LogError("*********************** TerrainRender::Init: createBufferTerrainObject failed !");
+					return false;
+				}
+			}
+			if (this->poBuffer_MaterialCB == nullptr)
+			{
+				if (!createBufferMaterial())
+				{
+					F_LogError("*********************** TerrainRender::Init: createBufferMaterial failed !");
+					return false;
+				}
+			}
+			if (this->poBuffer_TerrainCB == nullptr)
+			{
+				if (!createBufferTerrain())
+				{
+					F_LogError("*********************** TerrainRender::Init: createBufferTerrain failed !");
+					return false;
+				}
+			}
+
+			//3> Pipeline
+			{
+				if (!createPipelineTerrain())
+				{
+					F_LogError("*********************** TerrainRender::Init: createPipelineTerrain failed !");
+					return false;
+				}
+			}
+
+			//4> DescriptorSet
+        	UpdateDescriptorSets();
 		}
 
 		return true;
@@ -557,6 +652,159 @@ namespace LostPeterVulkan
 
 			return true;
 		}
+		bool TerrainRender::createBufferTerrainObject()
+		{
+			// this->terrainObjectCBs.clear();
+            // TerrainObjectConstants toWhole;
+            // this->terrainObjectCBs.push_back(toWhole);
+            // float fTerrainSize = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
+            // float fTerrainSizeHalf = fTerrainSize / 2.0f;
+            // float fTerrainInstanceSize = (float)(VKRenderPassTerrain::c_nInstanceGridVertexCount - 1.0f);
+            // float fTerrainInstanceSizeHalf = fTerrainInstanceSize / 2.0f;
+            // for (int i = 0; i < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; i++)
+            // {
+            //     for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; j++)
+            //     {
+            //         TerrainObjectConstants toInstance;
+            //         toInstance.offsetX = j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
+            //         toInstance.offsetZ = i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
+            //         this->terrainObjectCBs.push_back(toInstance);
+            //     }
+            // }
+            // F_Assert(this->terrainObjectCBs.size() < MAX_OBJECT_TERRAIN_COUNT && "TerrainRender::createBufferTerrainObject")
+            // VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
+			// String nameBuffer = "TerrainObjectConstants-" + this->name;
+			// this->poBuffer_TerrainObjectCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+			// 																		   sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size(), 
+			// 																		   (uint8*)this->terrainObjectCBs.data(),
+			// 																		   false);
+			// if (!this->poBuffer_TerrainObjectCB)
+			// {
+			// 	String msg = "*********************** TerrainRender::createBufferTerrainObject: create buffer uniform: [" + nameBuffer + "] failed !";
+			// 	F_LogError(msg.c_str());
+			// 	throw std::runtime_error(msg);
+			// }
+            return true;
+		}
+        bool TerrainRender::createBufferMaterial()
+		{
+			this->materialCBs.clear();
+            for (int i = 0; i < MAX_MATERIAL_COUNT; i++)
+            {
+                MaterialConstants mcWhole;
+                this->materialCBs.push_back(mcWhole);
+            }
+			String nameBuffer = "MaterialConstants-" + this->name;
+			this->poBuffer_MaterialCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
+																				  sizeof(MaterialConstants) * this->materialCBs.size(), 
+																				  (uint8*)this->materialCBs.data(),
+																				  false);
+			if (!this->poBuffer_MaterialCB)
+			{
+				String msg = "*********************** TerrainRender::createBufferMaterial: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
+			return true;
+		}
+        bool TerrainRender::createBufferTerrain()
+		{
+			// VulkanWindow* pWindow = Base::GetWindowPtr();
+
+            // this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            // this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
+            // this->terrainCB.textureX_Inverse = 1.0f / (this->terrainCB.textureX - 1.0f);
+            // this->terrainCB.textureZ_Inverse = 1.0f / (this->terrainCB.textureZ - 1.0f);
+            // this->terrainCB.heightStart = pWindow->cfg_terrainHeightStart;
+            // this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
+            // this->terrainCB.terrainSizeX = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
+            // this->terrainCB.terrainSizeZ = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
+
+			// String nameBuffer = "TerrainConstants-" + this->name;
+			// this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,
+			// 														sizeof(TerrainConstants), 
+			// 														(uint8*)&this->terrainCB,
+			// 														false);
+			// if (!this->poBuffer_TerrainCB)
+			// {
+			// 	String msg = "*********************** TerrainRender::createBufferTerrain: create buffer uniform: [" + nameBuffer + "] failed !";
+			// 	F_LogError(msg.c_str());
+			// 	throw std::runtime_error(msg);
+			// }
+			return true;
+		}
+		bool TerrainRender::createPipelineTerrain()
+		{
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
+			VkViewportVector aViewports;
+			aViewports.push_back(pWindow->poViewport);
+			VkRect2DVector aScissors;
+			aScissors.push_back(pWindow->poScissor);
+			VkDynamicStateVector aDynamicStates =
+			{
+				VK_DYNAMIC_STATE_VIEWPORT,
+				VK_DYNAMIC_STATE_SCISSOR
+			};
+
+			VkPrimitiveTopology vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			VkFrontFace vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
+			VkPolygonMode vkPolygonMode = VK_POLYGON_MODE_FILL;
+			VkCullModeFlagBits vkCullModeFlagBits = VK_CULL_MODE_BACK_BIT;
+			VkBool32 depthBiasEnable = VK_FALSE;
+			float depthBiasConstantFactor = 0.0f;
+			float depthBiasClamp = 0.0f;
+			float depthBiasSlopeFactor = 0.0f;
+			float lineWidth = 1.0f;
+			VkBool32 isDepthTest = VK_TRUE;
+			VkBool32 isDepthWrite = VK_TRUE; 
+			VkCompareOp vkDepthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL; 
+			VkBool32 isStencilTest = VK_FALSE;
+			VkStencilOpState vkStencilOpFront; 
+			VkStencilOpState vkStencilOpBack; 
+			VkBool32 isBlend = VK_FALSE;
+			VkBlendFactor vkBlendColorFactorSrc = VK_BLEND_FACTOR_ONE; 
+			VkBlendFactor vkBlendColorFactorDst = VK_BLEND_FACTOR_ZERO; 
+			VkBlendOp vkBlendColorOp = VK_BLEND_OP_ADD;
+			VkBlendFactor vkBlendAlphaFactorSrc = VK_BLEND_FACTOR_ONE;
+			VkBlendFactor vkBlendAlphaFactorDst = VK_BLEND_FACTOR_ZERO; 
+			VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
+			VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+			String namePipeline = "PipelineGraphics-" + this->name;
+			this->poStatePipelineGraphics = pWindow->createStatePipelineGraphics(namePipeline,
+																				 s_pDescriptorSetLayout,
+																				 s_shaderStageCreateInfo,
+																				 F_MeshVertex_Pos3Color4Normal3Tex2,
+																				 false, 0, 0,
+																				 pWindow->poRenderPass, aViewports, aScissors, aDynamicStates,
+																				 vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, depthBiasEnable, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor, lineWidth,
+																				 VK_TRUE, isDepthTest, isDepthWrite, vkDepthCompareOp,
+																				 isStencilTest, vkStencilOpFront, vkStencilOpBack, 
+																				 isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
+																				 vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
+																				 vkColorWriteMask);
+			if (this->poStatePipelineGraphics == nullptr)
+			{
+				F_LogError("*********************** TerrainRender::createPipelineTerrain: Create terrain pipeline graphics: [%s] failed !", namePipeline.c_str());
+				return false;
+			}
+			F_LogInfo("TerrainRender::createPipelineTerrain: Create terrain pipeline graphics: [%s] success !", namePipeline.c_str());
+			return true;
+		}
+
+	void TerrainRender::CleanupSwapChain()
+	{
+		F_DELETE(this->poStatePipelineGraphics)
+	}
+    void TerrainRender::UpdateDescriptorSets()
+	{
+
+	}
+	void TerrainRender::UpdateBufferTerrain()
+	{
+
+	}
 
 	void TerrainRender::BeginAddRenderDatas()
 	{

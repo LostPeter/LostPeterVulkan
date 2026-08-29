@@ -436,7 +436,6 @@ namespace LostPeterVulkan
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
 
-		String cfg_terrain_setting_path;
         String cfg_terrain_Path;
         String cfg_terrainTextureDiffuse_Path;
         String cfg_terrainTextureNormal_Path;
@@ -475,6 +474,8 @@ namespace LostPeterVulkan
         FCamera* pCameraMainLight; //mainLight's shadow camera
 
 		//Terrain
+		bool cfg_isTerrainChunkedLod;
+		String cfg_terrain_setting_path;
 		TerrainManager* pTerrainManager;
         
         //Mouse

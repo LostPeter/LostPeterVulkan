@@ -936,9 +936,10 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
 
 	this->cfg_isRenderPassTerrain = true;
 	this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
-
 	this->cfg_terrainHeightStart = -50.0f;
 	this->cfg_terrainHeightMax = 500.0f;
+
+	this->cfg_isTerrainChunkedLod = true;
 }
 
 void Vulkan_020_Terrain::setUpEnabledFeatures()

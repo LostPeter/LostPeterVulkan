@@ -24,15 +24,16 @@ namespace LostPeterVulkan
 
 	public:
 		static const String s_nameDescriptorSetLayout;
-		static const String s_nameShader;
-
+		static const String s_nameShaderCompute;
 		static DescriptorSetLayout* s_pDescriptorSetLayout;
-		static VKShader* s_pShader;
+		static VKShader* s_pShaderCompute;
 
 		static void InitStatic();
 		static void DestroyStatic();
 
 	public:
+		TerrainChunked* pChunked;
+
 		VKStatePipelineCompute* poStatePipelineCompute;
         
         TextureCopyConstants* pTextureCopy;
@@ -40,17 +41,14 @@ namespace LostPeterVulkan
 
         bool isNormalUpdated;
         bool isNormalUpdated_Sustained;
-
-    public:
-		TerrainChunked* pChunked;
-
+		
 	public:
 		void Destroy();
 		bool Init(TerrainChunked* pChunked);
 
 	public:
-		virtual void CleanupSwapChain();
-        virtual void UpdateDescriptorSet();
+		void CleanupSwapChain();
+        void UpdateDescriptorSet();
 
 	protected:
 		void destroyBufferTextureCopy();

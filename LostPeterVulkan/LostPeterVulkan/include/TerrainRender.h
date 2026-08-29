@@ -182,6 +182,13 @@ namespace LostPeterVulkan
 	////RenderBatches
 		static TerrainRenderBatches* s_pRenderBatches;
 
+	////DescriptorSetLayout/VKShader
+		static const String s_nameDescriptorSetLayout;
+		static const String s_nameShaderVertex;
+		static const String s_nameShaderFragment;
+		static DescriptorSetLayout* s_pDescriptorSetLayout;
+		static VkPipelineShaderStageCreateInfoVector s_shaderStageCreateInfo;
+
 	////Init/Destroy
 		static bool InitStatic(int nPatchQuads);
 		static void DestroyStatic();
@@ -196,6 +203,16 @@ namespace LostPeterVulkan
 		bool bAddRenderDatas;
 		TerrainRenderDataPtrVector aRenderDatas;
 
+		VKStatePipelineGraphics* poStatePipelineGraphics;
+
+        std::vector<TerrainObjectConstants> terrainObjectCBs;
+        VKBufferUniform* poBuffer_TerrainObjectCB;
+
+        std::vector<MaterialConstants> materialCBs;
+        VKBufferUniform* poBuffer_MaterialCB;
+
+        TerrainConstants terrainCB;
+        VKBufferUniform* poBuffer_TerrainCB;
 
 	public:
 		F_FORCEINLINE bool IsAddRenderDatas() const { return this->bAddRenderDatas; }
@@ -206,16 +223,31 @@ namespace LostPeterVulkan
 		void Destroy();
 		bool Init(TerrainChunked* pChunked);
 
+	public:
+		void CleanupSwapChain();
+        
+        void UpdateDescriptorSets();
+        void UpdateBufferTerrain();
+
+	public:
 		void BeginAddRenderDatas();
 			void ClearRenderDatas();
 			void AddRenderData(TerrainRenderData* pRenderData);
 			void AddRenderDatas(const TerrainRenderDataPtrVector& aRDs);
 		void EndAddRenderDatas();
 
+
 	protected:
 		void destroyRenderBatches();
-		bool createRenderBatches();
+		void destroyBufferTerrainObject();
+        void destroyBufferMaterial();
+        void destroyBufferTerrain();
 
+		bool createRenderBatches();
+		bool createBufferTerrainObject();
+        bool createBufferMaterial();
+        bool createBufferTerrain();
+		bool createPipelineTerrain();
 	};
 
 }; //LostPeterVulkan

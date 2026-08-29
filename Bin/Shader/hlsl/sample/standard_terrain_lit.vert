@@ -45,7 +45,7 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     TerrainObjectConstants obj = terrainObjectConsts[instanceIndex];
     
-    float posX = input.inPosition.x + terrainConsts.terrainSizeX / 2.0 + obj.offsetX;
+    float posX = terrainConsts.terrainSizeX / 2.0 + input.inPosition.x + obj.offsetX;
     float posZ = terrainConsts.terrainSizeZ / 2.0 - input.inPosition.z + obj.offsetZ;
     float xPerf = posX / terrainConsts.terrainSizeX;
     float zPerf = posZ / terrainConsts.terrainSizeZ;
