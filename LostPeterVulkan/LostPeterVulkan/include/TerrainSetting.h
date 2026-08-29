@@ -78,6 +78,7 @@ namespace LostPeterVulkan
 		int nResolution;
 		float fCellSize;
 		int nSize;
+		bool isGPUCullingAll;
 		TerrainChunkedSettingPtrVector aChunkedSettings;
 		TerrainChunkedSettingPtrMap mapChunkedSettings;
 
@@ -91,6 +92,11 @@ namespace LostPeterVulkan
 		F_FORCEINLINE int GetLeafQuads() const { return this->nLeafQuads; }
 		F_FORCEINLINE int GetPatchQuads() const { return this->nPatchQuads; }
 		F_FORCEINLINE int GetLodCount() const { return this->nLodCount; }
+		F_FORCEINLINE float GetLodUpdateDis() const { return this->fLodUpdateDis; }
+		F_FORCEINLINE float GetLodRadius0() const { return this->fLodRadius0; }
+		F_FORCEINLINE float GetLodRadius1() const { return this->fLodRadius1; }
+		F_FORCEINLINE float GetLodRadius2() const { return this->fLodRadius2; }
+		F_FORCEINLINE float GetLodRadius3() const { return this->fLodRadius3; }
 
 		F_FORCEINLINE int GetStartX() const { return this->nStartX; }
 		F_FORCEINLINE int GetStartZ() const { return this->nStartZ; }
@@ -98,6 +104,10 @@ namespace LostPeterVulkan
 		F_FORCEINLINE int GetCountZ() const { return this->nCountZ; }
 		F_FORCEINLINE float GetSizeX() const { return this->fSizeX; }
 		F_FORCEINLINE float GetSizeZ() const { return this->fSizeZ; }
+		F_FORCEINLINE int GetResolution() const { return this->nResolution; }
+		F_FORCEINLINE float GetCellSize() const { return this->fCellSize; }
+		F_FORCEINLINE int GetSize() const { return this->nSize; }
+		F_FORCEINLINE bool GetIsGPUCullingAll() const { return this->isGPUCullingAll; }
 
 		F_FORCEINLINE const TerrainChunkedSettingPtrVector& GetChunkedSettingPtrVector() const { return this->aChunkedSettings; }
 		F_FORCEINLINE const TerrainChunkedSettingPtrMap& GetChunkedSettingPtrMap() const { return this->mapChunkedSettings; }

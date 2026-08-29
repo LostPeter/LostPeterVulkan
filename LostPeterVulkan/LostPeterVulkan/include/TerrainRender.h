@@ -190,6 +190,9 @@ namespace LostPeterVulkan
 		static void EndRenderBatches();
 
 	public:
+		TerrainChunked* pChunked;
+		TerrainRenderBatches* pRenderBatches;
+
 		bool bAddRenderDatas;
 		TerrainRenderDataPtrVector aRenderDatas;
 
@@ -201,7 +204,7 @@ namespace LostPeterVulkan
 
 	public:
 		void Destroy();
-		bool Init();
+		bool Init(TerrainChunked* pChunked);
 
 		void BeginAddRenderDatas();
 			void ClearRenderDatas();
@@ -210,7 +213,8 @@ namespace LostPeterVulkan
 		void EndAddRenderDatas();
 
 	protected:
-		
+		void destroyRenderBatches();
+		bool createRenderBatches();
 
 	};
 

@@ -90,6 +90,9 @@ namespace LostPeterVulkan
 		//Render
 		TerrainRender* pRender;
 
+		//Compute
+		TerrainCompute* pCompute;
+
 
 		bool bIsInit;
 
@@ -133,6 +136,14 @@ namespace LostPeterVulkan
 
 	protected:
 		void destroyNodes();
+		void destroyCompute();
+		void destroyRender();
+		void destroyTextures();
+
+		bool createTextures(TerrainChunkedSetting* pChunkedSetting);
+		bool createRender();
+		bool createCompute();
+
 		TerrainChunkedNode* buildNode(int x, int z, int size, int level);
 
 		void computeBoundsAndError(TerrainChunkedNode* pNode);
@@ -141,15 +152,6 @@ namespace LostPeterVulkan
 		void selectDynamicRecursive(TerrainChunkedNode* pNode, const FVector3& vCenter, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
 
 		std::array<float, 4> stitchStepsForNode(const TerrainChunkedNode* pNode, int lod, const TerrainChunkedNodePtrVector& aNodeSelect) const;
-	
-	protected:
-		void destroyTextures();
-		bool createTextures(TerrainChunkedSetting* pChunkedSetting);
-
-	protected:
-		void destroyRender();
-		bool createRender();
-
 	};
 
 }; //LostPeterVulkan

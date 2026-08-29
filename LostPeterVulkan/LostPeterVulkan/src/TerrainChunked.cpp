@@ -15,6 +15,8 @@
 #include "../include/TerrainHeightMap.h"
 #include "../include/TerrainManager.h"
 #include "../include/TerrainUtil.h"
+#include "../include/TerrainRender.h"
+#include "../include/TerrainCompute.h"
 #include "../include/VKTexture.h"
 
 namespace LostPeterVulkan
@@ -131,6 +133,9 @@ namespace LostPeterVulkan
 		//Render
 		, pRender(nullptr)
 
+		//Compute
+		, pCompute(nullptr)
+
 		, bIsInit(false)
 	{
 		
@@ -175,6 +180,13 @@ namespace LostPeterVulkan
 			return false;
 		}
 
+		//4> Compute
+		if (!createCompute())
+		{
+			F_LogError("*********************** TerrainChunked::Init: createCompute failed !");
+			return false;
+		}
+
 		F_LogInfo("TerrainChunked::Init: Create chunk: [%d, %d] success !", this->nChunkedX, this->nChunkedZ);
 		SetIsInit(true);
 		return true;
@@ -186,6 +198,10 @@ namespace LostPeterVulkan
 				this->pRootNode->BackNodeToPool();
 			}
 			this->pRootNode = nullptr;
+		}
+		void TerrainChunked::destroyCompute()
+		{
+			F_DELETE(this->pCompute)
 		}
 		void TerrainChunked::destroyRender()
 		{	
@@ -325,12 +341,26 @@ namespace LostPeterVulkan
 		{
 			String nameRender = "Render-Terrain-" + FUtilString::SaveInt(this->nChunkedX) + "-" + FUtilString::SaveInt(this->nChunkedZ);
 			this->pRender = new TerrainRender(nameRender);
-			if (!this->pRender->Init())
+			if (!this->pRender->Init(this))
 			{
 				F_LogError("*********************** TerrainChunked::createRender: Create terrain render [%d, %d] failed !", this->nChunkedX, this->nChunkedZ);
 				return false;
 			}
 			F_LogInfo("TerrainChunked::createRender: Create terrain render [%d, %d] success !", this->nChunkedX, this->nChunkedZ);
+			
+			return true;
+		}
+
+		bool TerrainChunked::createCompute()
+		{
+			String nameCompute = "Compute-Terrain-" + FUtilString::SaveInt(this->nChunkedX) + "-" + FUtilString::SaveInt(this->nChunkedZ);
+			this->pCompute = new TerrainCompute(nameCompute);
+			if (!this->pCompute->Init(this))
+			{
+				F_LogError("*********************** TerrainChunked::createCompute: Create terrain compute [%d, %d] failed !", this->nChunkedX, this->nChunkedZ);
+				return false;
+			}
+			F_LogInfo("TerrainChunked::createCompute: Create terrain compute [%d, %d] success !", this->nChunkedX, this->nChunkedZ);
 			
 			return true;
 		}

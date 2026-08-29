@@ -66,6 +66,7 @@ namespace LostPeterVulkan
 	#define TERRAIN_TAG_SETTING                 	"setting"
 		#define TERRAIN_TAG_TERRAIN             		"terrain"
 			#define TERRAIN_TAG_PARAM               		"param"
+			#define TERRAIN_TAG_TEXTURES               		"textures"
 			#define TERRAIN_TAG_CHUNKS               		"chunks"
 				#define TERRAIN_TAG_CHUNK               		"chunk"
 
@@ -117,6 +118,7 @@ namespace LostPeterVulkan
 		, nResolution(0)
 		, fCellSize(1.0f)
 		, nSize(0)
+		, isGPUCullingAll(false)
 
 		, bIsInit(false)
 		
@@ -192,6 +194,18 @@ namespace LostPeterVulkan
 		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_1, this->fLodRadius1);
 		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_2, this->fLodRadius2);
 		pParam->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_LOD_RADIUS_3, this->fLodRadius3);
+
+		//Textures
+		FXMLElement* pTextures = pTerrain->FindElementChild(TERRAIN_TAG_TEXTURES);
+		if (pTextures != nullptr)
+		{
+			this->isGPUCullingAll = true;
+			
+		}
+		else
+		{
+			this->isGPUCullingAll = false;
+		}
 
 		//Chunks
 		FXMLElement* pChunks = pTerrain->FindElementChild(TERRAIN_TAG_CHUNKS);

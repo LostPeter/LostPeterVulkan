@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/TerrainManager.h"
 #include "../include/TerrainSetting.h"
+#include "../include/TerrainChunked.h"
 
 namespace LostPeterVulkan
 {
@@ -472,12 +473,15 @@ namespace LostPeterVulkan
 		}
 		
 		//s_pRenderBatches
-		if (s_pRenderBatches == nullptr)
+		if (TerrainSetting::GetSingleton().GetIsGPUCullingAll())
 		{
-			s_pRenderBatches = new TerrainRenderBatches();
-			s_pRenderBatches->Init();
+			if (s_pRenderBatches == nullptr)
+			{
+				s_pRenderBatches = new TerrainRenderBatches();
+				s_pRenderBatches->Init();
+			}
 		}
-
+		
 		return true;
 	}
 	void TerrainRender::DestroyRenderStatic()
@@ -488,16 +492,25 @@ namespace LostPeterVulkan
 
 	void TerrainRender::BeginRenderBatches()
 	{
+		if (!s_pRenderBatches)
+			return;
+
 		s_pRenderBatches->BeginBatches();
 	}
 	void TerrainRender::EndRenderBatches()
 	{
+		if (!s_pRenderBatches)
+			return;
+
 		s_pRenderBatches->EndBatches();
 	}
 
 
 	TerrainRender::TerrainRender(const String& nameRender)
 		: Base(nameRender)
+
+		, pChunked(nullptr)
+		, pRenderBatches(nullptr)
 
 		, bAddRenderDatas(false)
 		
@@ -512,12 +525,38 @@ namespace LostPeterVulkan
 	void TerrainRender::Destroy()
 	{
 		ClearRenderDatas();
+		destroyRenderBatches();
 	}
-	bool TerrainRender::Init()
+		void TerrainRender::destroyRenderBatches()
+		{
+			F_DELETE(this->pRenderBatches)
+		}
+
+	bool TerrainRender::Init(TerrainChunked* pChunked)
 	{
+		this->pChunked = pChunked;
+
+		if (!TerrainSetting::GetSingleton().GetIsGPUCullingAll())
+		{
+			if (!createRenderBatches())
+			{
+				F_LogError("*********************** TerrainRender::Init: createRenderBatches: [%d, %d] failed !", pChunked->GetChunkedX(), pChunked->GetChunkedZ());
+				return false;
+			}
+		}
 
 		return true;
 	}
+		bool TerrainRender::createRenderBatches()
+		{
+			if (this->pRenderBatches == nullptr)
+			{
+				this->pRenderBatches = new TerrainRenderBatches();
+				this->pRenderBatches->Init();
+			}
+
+			return true;
+		}
 
 	void TerrainRender::BeginAddRenderDatas()
 	{
@@ -547,7 +586,14 @@ namespace LostPeterVulkan
 		SetIsAddRenderDatas(false);
 		if (this->aRenderDatas.size() > 0)
 		{
-			s_pRenderBatches->AddBatches(this->aRenderDatas);
+			if (TerrainSetting::GetSingleton().GetIsGPUCullingAll())
+			{
+				s_pRenderBatches->AddBatches(this->aRenderDatas);
+			}
+			else
+			{
+				pRenderBatches->AddBatches(this->aRenderDatas);
+			}
 		}
 	}
 
