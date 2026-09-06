@@ -939,7 +939,8 @@ Vulkan_020_Terrain::Vulkan_020_Terrain(int width, int height, String name)
 	this->cfg_terrainHeightStart = -50.0f;
 	this->cfg_terrainHeightMax = 500.0f;
 
-	this->cfg_isTerrainChunkedLod = true;
+	this->cfg_terrain_chunked_enabled = true;
+	this->cfg_terrain_chunked_setting_path = "default_1_1.terrain";
 }
 
 void Vulkan_020_Terrain::setUpEnabledFeatures()
@@ -2202,8 +2203,9 @@ bool Vulkan_020_Terrain::beginRenderImgui()
         //3> Shadow
         shadowConfig();
 
-        //4> Terrain
+        //4> Terrain/TerrainChunked
         terrainConfig();
+		terrainChunkedConfig();
 
         //5> PassConstants
         passConstantsConfig();

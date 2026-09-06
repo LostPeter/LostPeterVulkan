@@ -65,7 +65,10 @@ namespace LostPeterVulkan
         void Destroy();
         bool Init(const String& pathSetting);
 
+		void OnCompute(VkCommandBuffer& commandBuffer);
+		void OnRender(VkCommandBuffer& commandBuffer);
 		void OnTick();
+
 		void ForceUpdate();
 
 	////Pool
@@ -121,6 +124,10 @@ namespace LostPeterVulkan
 			void addChunkedLod(TerrainChunkedLod* pChunkedLod);
 
 	protected:
+	////compute
+		void computeTerrain(VkCommandBuffer& commandBuffer);
+	////render
+		void renderTerrain(VkCommandBuffer& commandBuffer);
 	////lod
 		void updateLod();	
 

@@ -496,6 +496,7 @@ namespace LostPeterVulkan
     struct PassConstants;
     struct ObjectConstants;
     struct TerrainObjectConstants;
+	struct TerrainChunkedObjecctInstanceConstants;
     struct GridObjectConstants;
     struct CameraAxisObjectConstants;
     struct CoordinateAxisObjectConstants;

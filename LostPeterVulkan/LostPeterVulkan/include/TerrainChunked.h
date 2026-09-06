@@ -119,6 +119,9 @@ namespace LostPeterVulkan
 		F_FORCEINLINE VKTexture* GetTexture_Normal() const { return this->pTexture_Normal; }
 		F_FORCEINLINE VKTexture* GetTexture_Control() const { return this->pTexture_Control; }
 
+		F_FORCEINLINE TerrainRender* GetRender() const { return this->pRender; }
+		F_FORCEINLINE TerrainCompute* GetCompute() const { return this->pCompute; }
+		
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
 		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
 

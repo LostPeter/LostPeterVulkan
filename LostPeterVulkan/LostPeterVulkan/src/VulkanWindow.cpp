@@ -415,7 +415,7 @@ namespace LostPeterVulkan
     }
 
 	//ShaderModule
-    static const int g_ShaderCount_Internal = 19;
+    static const int g_ShaderCount_Internal = 21;
     static const char* g_ShaderModulePaths_Internal[3 * g_ShaderCount_Internal] = 
     {
         //name                                                     //type               //path
@@ -426,6 +426,7 @@ namespace LostPeterVulkan
         "vert_standard_renderpass_shadowmap",                     "vert",              "Assets/Shader/standard_renderpass_shadowmap.vert.spv", //standard_renderpass_shadowmap vert
         "vert_standard_renderpass_shadowmap_cull",                "vert",              "Assets/Shader/standard_renderpass_shadowmap_cull.vert.spv", //standard_renderpass_shadowmap_cull vert
         "vert_standard_terrain_lit",                              "vert",              "Assets/Shader/standard_terrain_lit.vert.spv", //standard_terrain_lit vert
+		"vert_standard_terrain_chunked_lit",                      "vert",              "Assets/Shader/standard_terrain_chunked_lit.vert.spv", //standard_terrain_chunked_lit vert
 
         ///////////////////////////////////////// tesc /////////////////////////////////////////
     
@@ -442,6 +443,7 @@ namespace LostPeterVulkan
         "frag_standard_copy_blit_hiz_depth_from_frame",           "frag",              "Assets/Shader/standard_copy_blit_hiz_depth_from_frame.frag.spv", //standard_copy_blit_hiz_depth_from_frame frag
         "frag_standard_renderpass_shadowmap",                     "frag",              "Assets/Shader/standard_renderpass_shadowmap.frag.spv", //standard_renderpass_shadowmap frag
         "frag_standard_terrain_lit",                              "frag",              "Assets/Shader/standard_terrain_lit.frag.spv", //standard_terrain_lit frag
+		"frag_standard_terrain_chunked_lit",                      "frag",              "Assets/Shader/standard_terrain_chunked_lit.frag.spv", //standard_terrain_chunked_lit frag
 
         ///////////////////////////////////////// comp /////////////////////////////////////////
         "comp_standard_compute_texcopy_tex2d",                    "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
@@ -2093,9 +2095,9 @@ namespace LostPeterVulkan
 		//Shadow
 		, pCameraMainLight(new FCamera)
 
-		//Terrain
-		, cfg_isTerrainChunkedLod(false)
-		, cfg_terrain_setting_path("default_1_1.terrain")
+		//TerrainChunked
+		, cfg_terrain_chunked_enabled(false)
+		, cfg_terrain_chunked_setting_path("default_1_1.terrain")
 		, pTerrainManager(nullptr)
 
 		//Mouse
@@ -2174,10 +2176,9 @@ namespace LostPeterVulkan
 
 	void VulkanWindow::OnTick()
 	{
-		if (this->pTerrainManager != nullptr)
-		{
-			this->pTerrainManager->OnTick();
-		}
+		//TerrainChunked
+		terrainChunkedTick();
+		
 	}
 
     bool VulkanWindow::OnBeginCompute_BeforeRender()
@@ -2597,12 +2598,15 @@ namespace LostPeterVulkan
 			//11> createInternal/createResourceInternal
             createInternal();
             createResourceInternal();
-			createTerrain();
 
             //12> createDescriptorSetLayouts
             createDescriptorSetLayouts();
 
-            //13> isCreateDevice
+			//13> TerrainChunked/Sky/Scene/GrassTree/Water/Fog
+			terrainChunkedCreate();
+
+
+            //14> isCreateDevice
             this->isCreateDevice = true;
         }
         F_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
@@ -3340,24 +3344,6 @@ namespace LostPeterVulkan
     void VulkanWindow::createShadowLightMain()
     {
 
-    }
-    void VulkanWindow::createTerrain()
-    {
-		if (!this->cfg_isTerrainChunkedLod || this->cfg_terrain_setting_path.empty())
-			return;
-        if (this->pTerrainManager != nullptr)
-			return;
-
-		this->pTerrainManager = new TerrainManager();
-		String pathSetting = TerrainUtil::GetTerrainSettingPath(this->cfg_terrain_setting_path);
-		if (!this->pTerrainManager->Init(pathSetting))
-		{
-			F_LogError("*********************** VulkanWindow::createTerrain: Create terrain manager failed, path: [%s] !", pathSetting.c_str());
-			return;
-		}
-		this->pTerrainManager->ForceUpdate();
-
-		F_LogInfo("VulkanWindow::createTerrain: createTerrainManager: Create terrain manager success, path: [%s] !", pathSetting.c_str());
     }
 
 
@@ -4766,6 +4752,53 @@ namespace LostPeterVulkan
                     vkDestroyFence(this->poDevice, vkFence, nullptr);
                 }
             }
+
+		//TerrainChunked/Sky/Scene/GrassTree/Water/Fog
+		void VulkanWindow::terrainChunkedCreate()
+		{
+			if (!this->cfg_terrain_chunked_enabled || this->cfg_terrain_chunked_setting_path.empty())
+				return;
+			if (this->pTerrainManager != nullptr)
+				return;
+
+			this->pTerrainManager = new TerrainManager();
+			String pathSetting = TerrainUtil::GetTerrainSettingPath(this->cfg_terrain_chunked_setting_path);
+			if (!this->pTerrainManager->Init(pathSetting))
+			{
+				F_LogError("*********************** VulkanWindow::terrainChunkedCreate: Create terrain manager failed, path: [%s] !", pathSetting.c_str());
+				return;
+			}
+			this->pTerrainManager->ForceUpdate();
+
+			F_LogInfo("VulkanWindow::terrainChunkedCreate: createTerrainManager: Create terrain manager success, path: [%s] !", pathSetting.c_str());
+		}
+			void VulkanWindow::terrainChunkedCompute(VkCommandBuffer& commandBuffer)
+			{
+				if (this->pTerrainManager != nullptr)
+				{
+					this->pTerrainManager->OnCompute(commandBuffer);
+				}
+			}
+			void VulkanWindow::terrainChunkedRender(VkCommandBuffer& commandBuffer)
+			{
+				if (this->pTerrainManager != nullptr)
+				{
+					this->pTerrainManager->OnRender(commandBuffer);
+				}
+			}
+			void VulkanWindow::terrainChunkedTick()
+			{
+				if (this->pTerrainManager != nullptr)
+				{
+					this->pTerrainManager->OnTick();
+				}
+			}
+		void VulkanWindow::terrainChunkedDestroy()
+		{
+			F_DELETE(this->pTerrainManager)
+		}
+
+
 
     void VulkanWindow::loadAssets()
     {
@@ -9224,6 +9257,8 @@ namespace LostPeterVulkan
                     }
                     void VulkanWindow::updateCompute_BeforeRender_Terrain(VkCommandBuffer& commandBuffer)
                     {
+						terrainChunkedCompute(commandBuffer);
+
                         if (!this->cfg_isRenderPassTerrain ||
                             this->m_pPipelineCompute_Terrain == nullptr)
                             return;
@@ -10450,6 +10485,148 @@ namespace LostPeterVulkan
                         {
 
                         }
+					void VulkanWindow::terrainChunkedConfig()
+					{
+						if (!this->cfg_terrain_chunked_enabled ||
+                            this->pTerrainManager == nullptr)
+                        {
+                            return;
+                        }
+
+						if (ImGui::CollapsingHeader("TerrainChunked Settings"))
+                        {
+							const TerrainChunkedLodPtrVector& aChunkedLod = this->pTerrainManager->GetChunkedLodPtrVector();
+							for (TerrainChunkedLodPtrVector::const_iterator it = aChunkedLod.begin();
+								 it != aChunkedLod.end(); ++it)
+							{
+								const TerrainChunkedLod* pChunkedLod = (*it);
+								terrainChunkedConfigItem(pChunkedLod);
+							}
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+					}
+						void VulkanWindow::terrainChunkedConfigItem(const TerrainChunkedLod* pChunkedLod)
+						{
+							TerrainConstants& tc = pChunkedLod->GetTerrainChunked()->GetRender()->GetTerrainConstants();
+							const String& name = pChunkedLod->GetName();
+							if (ImGui::CollapsingHeader(name.c_str()))
+                            {
+                                bool isChange = false;
+
+                                //heightStart
+                                float fHeightStart = tc.heightStart;
+                                String nameHeightStart = "HeightStart - " + name;
+                                if (ImGui::DragFloat(nameHeightStart.c_str(), &fHeightStart, 0.05f, -500.0f, 1000.0f))
+                                {
+                                    tc.heightStart = fHeightStart;
+                                    isChange = true;
+                                }
+                                ImGui::Spacing();
+
+                                //heightMax
+                                 float fHeightMax = tc.heightMax;
+                                String nameHeightMax = "heightMax - " + name;
+                                if (ImGui::DragFloat(nameHeightMax.c_str(), &fHeightMax, 0.05f, -500.0f, 1000.0f))
+                                {
+                                    tc.heightMax = fHeightMax;
+                                    isChange = true;
+                                }
+                                ImGui::Spacing();
+
+                                //aSplats
+                                for (int i = 0; i < MAX_TERRAIN_SPLAT_COUNT; i++)
+                                {
+                                    String nameSplat = "Splat - " + FUtilString::SaveInt(i) + " - " + name;
+                                    if (terrainConfigSplatItem(tc.aSplats[i], nameSplat))
+                                    {
+                                        isChange = true;
+                                    }
+                                }
+
+                                if (isChange)
+                                {
+									
+                                }
+                            }
+						}
+                            bool VulkanWindow::terrainChunkedConfigSplatItem(TerrainSplatConstants& tsc, const String& name)
+							{	
+								bool isChange = false;
+                                if (ImGui::CollapsingHeader(name.c_str()))
+                                {
+                                    //splatSizeX
+                                    float fSplatSizeX = tsc.splatSizeX;
+                                    String nameSplatSizeX = "SplatSizeX - " + name;
+                                    if (ImGui::DragFloat(nameSplatSizeX.c_str(), &fSplatSizeX, 0.05f, 1.0f, 2048.0f))
+                                    {
+                                        tsc.splatSizeX = fSplatSizeX;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatSizeY
+                                    float fSplatSizeY = tsc.splatSizeY;
+                                    String nameSplatSizeY = "SplatSizeY - " + name;
+                                    if (ImGui::DragFloat(nameSplatSizeY.c_str(), &fSplatSizeY, 0.05f, 1.0f, 2048.0f))
+                                    {
+                                        tsc.splatSizeY = fSplatSizeY;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatOffsetX
+                                    float fSplatOffsetX = tsc.splatOffsetX;
+                                    String nameSplatOffsetX = "SplatOffsetX - " + name;
+                                    if (ImGui::DragFloat(nameSplatOffsetX.c_str(), &fSplatOffsetX, 0.05f, 0.0f, 1024.0f))
+                                    {
+                                        tsc.splatOffsetX = fSplatOffsetX;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //splatOffsetY
+                                    float fSplatOffsetY = tsc.splatOffsetY;
+                                    String nameSplatOffsetY = "SplatOffsetY - " + name;
+                                    if (ImGui::DragFloat(nameSplatOffsetY.c_str(), &fSplatOffsetY, 0.05f, 0.0f, 1024.0f))
+                                    {
+                                        tsc.splatOffsetY = fSplatOffsetY;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+
+                                    //diffuseRemapScale
+                                    float fDiffuseRemapScale[4] = { tsc.diffuseRemapScale[0], tsc.diffuseRemapScale[1], tsc.diffuseRemapScale[2], tsc.diffuseRemapScale[3] };
+                                    String namediffuseRemapScale = "DiffuseRemapScale - " + name;
+                                    if (ImGui::DragFloat4(namediffuseRemapScale.c_str(), &fDiffuseRemapScale[0], 0.01f, 0.0f, 1.0f))
+                                    {
+                                        tsc.diffuseRemapScale.x = fDiffuseRemapScale[0];
+                                        tsc.diffuseRemapScale.y = fDiffuseRemapScale[1];
+                                        tsc.diffuseRemapScale.z = fDiffuseRemapScale[2];
+                                        tsc.diffuseRemapScale.w = fDiffuseRemapScale[3];
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //normalRemapScale
+                                    float fNormalRemapScale = tsc.normalRemapScale;
+                                    String nameNormalRemapScale = "NormalRemapScale - " + name;
+                                    if (ImGui::DragFloat(nameNormalRemapScale.c_str(), &fNormalRemapScale, 0.01f, 0.1f, 1.0f))
+                                    {
+                                        tsc.normalRemapScale = fNormalRemapScale;
+                                        isChange = true;
+                                    }
+                                    ImGui::Spacing();
+
+                                }
+                                return isChange;
+							}
+                    	void VulkanWindow::terrainChunkedReset()
+						{
+
+						}
+
                     void VulkanWindow::passConstantsConfig()
                     {
                         if (ImGui::CollapsingHeader("PassConstants Settings"))
@@ -10672,6 +10849,8 @@ namespace LostPeterVulkan
                         }
                         void VulkanWindow::drawMeshTerrain(VkCommandBuffer& commandBuffer)
                         {
+							terrainChunkedRender(commandBuffer);
+
                             if (!this->cfg_isRenderPassTerrain || 
                                 this->m_pVKRenderPassTerrain == nullptr ||
                                 this->m_pPipelineGraphics_Terrain == nullptr)
@@ -11168,7 +11347,9 @@ namespace LostPeterVulkan
 
             cleanupTexture();
             cleanupVertexIndexBuffer();
-			cleanupTerrain();
+
+			//TerrainChunked/Sky/Scene/GrassTree/Water/Fog
+			terrainChunkedDestroy();
         }
             void VulkanWindow::cleanupTexture()
             {
@@ -11188,10 +11369,6 @@ namespace LostPeterVulkan
                 this->poIndexBuffer_Size = 0;
                 this->poIndexBuffer_Data = nullptr;
             }
-			void VulkanWindow::cleanupTerrain()
-			{
-				F_DELETE(this->pTerrainManager)
-			}
         void VulkanWindow::cleanupImGUI()
         {
             destroyVkDescriptorPool(this->imgui_DescriptorPool);

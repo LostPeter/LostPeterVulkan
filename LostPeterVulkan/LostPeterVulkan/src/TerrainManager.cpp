@@ -275,6 +275,24 @@ namespace LostPeterVulkan
 				this->mapChunkedLods[pChunkedLod->pTerrainChunked->nChunkedID] = pChunkedLod;
 			}
 
+	void TerrainManager::OnCompute(VkCommandBuffer& commandBuffer)
+	{
+		computeTerrain(commandBuffer);
+	}
+		void TerrainManager::computeTerrain(VkCommandBuffer& commandBuffer)
+		{
+
+		}
+
+	void TerrainManager::OnRender(VkCommandBuffer& commandBuffer)
+	{
+		renderTerrain(commandBuffer);
+	}
+		void TerrainManager::renderTerrain(VkCommandBuffer& commandBuffer)
+		{
+			
+		}
+
 	void TerrainManager::OnTick()
 	{
 		updateLod();

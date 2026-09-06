@@ -30,7 +30,7 @@ namespace LostPeterVulkan
 		String nameHeightMap;
 		String pathHeightMap;
 		int nResolution;
-		int nSize;
+		float fTerrainSize;
 		
 		String strTextureDiffuse;
 		String strTextureNormal;
@@ -77,7 +77,7 @@ namespace LostPeterVulkan
 		float fSizeZ;
 		int nResolution;
 		float fCellSize;
-		int nSize;
+		float fTerrainSize;
 		bool isGPUCullingAll;
 		TerrainChunkedSettingPtrVector aChunkedSettings;
 		TerrainChunkedSettingPtrMap mapChunkedSettings;
@@ -106,7 +106,7 @@ namespace LostPeterVulkan
 		F_FORCEINLINE float GetSizeZ() const { return this->fSizeZ; }
 		F_FORCEINLINE int GetResolution() const { return this->nResolution; }
 		F_FORCEINLINE float GetCellSize() const { return this->fCellSize; }
-		F_FORCEINLINE int GetSize() const { return this->nSize; }
+		F_FORCEINLINE float GetTerrainSize() const { return this->fTerrainSize; }
 		F_FORCEINLINE bool GetIsGPUCullingAll() const { return this->isGPUCullingAll; }
 
 		F_FORCEINLINE const TerrainChunkedSettingPtrVector& GetChunkedSettingPtrVector() const { return this->aChunkedSettings; }

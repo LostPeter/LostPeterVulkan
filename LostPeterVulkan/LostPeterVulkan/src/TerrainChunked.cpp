@@ -282,7 +282,7 @@ namespace LostPeterVulkan
 													   F_Texture_2DArray,
 													   F_TexturePixelFormat_R8G8B8A8_SRGB,
 													   F_TextureFilter_Bilinear,
-													   F_TextureAddressing_Clamp,
+													   F_TextureAddressing_Wrap,
 													   F_TextureBorderColor_OpaqueBlack,
 													   false,
 													   false);
@@ -302,7 +302,7 @@ namespace LostPeterVulkan
 													  F_Texture_2DArray,
 													  F_TexturePixelFormat_R8G8B8A8_UNORM,
 													  F_TextureFilter_Bilinear,
-													  F_TextureAddressing_Clamp,
+													  F_TextureAddressing_Wrap,
 													  F_TextureBorderColor_OpaqueBlack,
 													  false,
 													  false);
@@ -322,7 +322,7 @@ namespace LostPeterVulkan
 													   F_Texture_2DArray,
 													   F_TexturePixelFormat_R8G8B8A8_UNORM,
 													   F_TextureFilter_Bilinear,
-													   F_TextureAddressing_Clamp,
+													   F_TextureAddressing_Wrap,
 													   F_TextureBorderColor_OpaqueBlack,
 													   false,
 													   false);

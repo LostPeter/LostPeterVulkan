@@ -25,7 +25,7 @@ namespace LostPeterVulkan
 		, nameHeightMap("")
 		, pathHeightMap("")
 		, nResolution(0)
-		, nSize(0)
+		, fTerrainSize(0)
 
 		, strTextureDiffuse("")
 		, strTextureNormal("")
@@ -117,7 +117,7 @@ namespace LostPeterVulkan
 		, fSizeZ(0.0f)	
 		, nResolution(0)
 		, fCellSize(1.0f)
-		, nSize(0)
+		, fTerrainSize(0)
 		, isGPUCullingAll(false)
 
 		, bIsInit(false)
@@ -229,7 +229,7 @@ namespace LostPeterVulkan
 			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_Z, this->fSizeZ);
 			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
 			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
-			this->nSize = (int)((this->nResolution - 1) * this->fCellSize);
+			this->fTerrainSize = (float)((this->nResolution - 1) * this->fCellSize);
 				
 			int count_child = pElement->GetElementChildrenCount();
 			for (int i = 0; i < count_child; i++)
@@ -253,7 +253,7 @@ namespace LostPeterVulkan
 				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP, pCS->nameHeightMap);
 				pCS->pathHeightMap = TerrainUtil::GetTerrainHeightMapRelativePath(pCS->nameHeightMap);
 				pCS->nResolution = this->nResolution;
-				pCS->nSize = this->nSize;
+				pCS->fTerrainSize = this->fTerrainSize;
 				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_DIFFUSE, pCS->strTextureDiffuse);
 				pCS->aPathTextureDiffuse = pCS->ToPathTextures(pCS->strTextureDiffuse);
 				pElement->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_TEX_NORMAL, pCS->strTextureNormal);

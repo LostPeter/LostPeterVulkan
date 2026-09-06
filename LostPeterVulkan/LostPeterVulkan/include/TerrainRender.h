@@ -181,6 +181,7 @@ namespace LostPeterVulkan
 
 	////RenderBatches
 		static TerrainRenderBatches* s_pRenderBatches;
+		static int s_nRenderInstanceMaxCount;
 
 	////DescriptorSetLayout/VKShader
 		static const String s_nameDescriptorSetLayout;
@@ -195,6 +196,9 @@ namespace LostPeterVulkan
 
 		static void BeginRenderBatches();
 		static void EndRenderBatches();
+
+		static void RenderBatches(VkCommandBuffer& commandBuffer);
+
 
 	public:
 		TerrainChunked* pChunked;
@@ -218,10 +222,14 @@ namespace LostPeterVulkan
 		F_FORCEINLINE bool IsAddRenderDatas() const { return this->bAddRenderDatas; }
 		F_FORCEINLINE void SetIsAddRenderDatas(bool b) { this->bAddRenderDatas = b; }
 
+		F_FORCEINLINE const TerrainConstants& GetTerrainConstants() const { return this->terrainCB; }
+		F_FORCEINLINE TerrainConstants& GetTerrainConstants() { return this->terrainCB; }
 
 	public:
 		void Destroy();
 		bool Init(TerrainChunked* pChunked);
+
+		void Render(VkCommandBuffer& commandBuffer);
 
 	public:
 		void CleanupSwapChain();

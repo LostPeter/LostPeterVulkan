@@ -1481,6 +1481,22 @@ namespace LostPeterVulkan
 
         }
     };
+
+	struct vulkanExport TerrainChunkedObjecctInstanceConstants
+	{
+		FVector4 vPatch;
+		FVector4 vLodTint;
+		FVector4 vStitchStep;
+
+		TerrainChunkedObjecctInstanceConstants()
+			: vPatch(0, 0, 0, 0)
+			, vLodTint(0, 0, 0, 0)
+			, vStitchStep(0, 0, 0, 0)
+		{
+
+		}
+	};
+
     
     //////////////////////////////// CullConstants //////////////////////////////////
     struct vulkanExport CullConstants

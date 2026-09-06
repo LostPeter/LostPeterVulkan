@@ -473,10 +473,12 @@ namespace LostPeterVulkan
         ShadowConstants shadowMainLight_Cfg; //mainLight's shadow cfg
         FCamera* pCameraMainLight; //mainLight's shadow camera
 
-		//Terrain
-		bool cfg_isTerrainChunkedLod;
-		String cfg_terrain_setting_path;
+		//TerrainChunked/Sky/Scene/GrassTree/Water/Fog
+		//TerrainChunked
+		bool cfg_terrain_chunked_enabled;
+		String cfg_terrain_chunked_setting_path;
 		TerrainManager* pTerrainManager;
+
         
         //Mouse
         FVector2 mousePosLast;
@@ -645,7 +647,7 @@ namespace LostPeterVulkan
             virtual void createCamera();
             virtual void createLightMain();
             virtual void createShadowLightMain();
-            virtual void createTerrain();
+
 
             virtual void createCommandObjects();
                 virtual void createCommandPool();
@@ -750,6 +752,24 @@ namespace LostPeterVulkan
                     virtual VkResult resetVkFence(VkFence vkFence);
                     virtual VkResult resetVkFences(VkFenceVector& vkFences);
                     virtual void destroyVkFence(VkFence vkFence);
+
+			//TerrainChunked/Sky/Scene/GrassTree/Water/Fog
+			//TerrainChunked
+			virtual void terrainChunkedCreate();
+			    virtual void terrainChunkedCompute(VkCommandBuffer& commandBuffer);
+				virtual void terrainChunkedRender(VkCommandBuffer& commandBuffer);
+				virtual void terrainChunkedTick();
+			virtual void terrainChunkedDestroy();
+			//Sky
+
+			//Scene
+
+			//GrassTree
+
+			//Water
+
+			//Fog
+
 
         //Load Assets
         virtual void loadAssets();
@@ -1636,13 +1656,18 @@ namespace LostPeterVulkan
                         virtual void shadowConfig();
                             virtual void shadowConfigItem(ShadowConstants& sc, const String& name, bool bIsMainLight);
                             virtual void shadowReset();
-                         //Cull
+                        //Cull
                         virtual void cullConfig();
                         //Terrain
                         virtual void terrainConfig();
                             virtual void terrainConfigItem(TerrainConstants& tc, const String& name);
                                 virtual bool terrainConfigSplatItem(TerrainSplatConstants& tsc, const String& name);
                             virtual void terrainReset();
+						//TerrainChunked
+						virtual void terrainChunkedConfig();
+							virtual void terrainChunkedConfigItem(const TerrainChunkedLod* pChunkedLod);
+                                virtual bool terrainChunkedConfigSplatItem(TerrainSplatConstants& tsc, const String& name);
+                            virtual void terrainChunkedReset();
                         //PassConstants
                         virtual void passConstantsConfig();
                         //Model
@@ -1736,7 +1761,6 @@ namespace LostPeterVulkan
             virtual void cleanupDefault();
                 virtual void cleanupTexture();
                 virtual void cleanupVertexIndexBuffer();
-				virtual void cleanupTerrain();
             virtual void cleanupImGUI();
             virtual void cleanupEditor();
             virtual void cleanupCustom();

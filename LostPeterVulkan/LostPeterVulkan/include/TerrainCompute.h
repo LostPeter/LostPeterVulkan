@@ -31,6 +31,8 @@ namespace LostPeterVulkan
 		static void InitStatic();
 		static void DestroyStatic();
 
+		static void ComputeBatches(VkCommandBuffer& commandBuffer);
+
 	public:
 		TerrainChunked* pChunked;
 
@@ -45,6 +47,8 @@ namespace LostPeterVulkan
 	public:
 		void Destroy();
 		bool Init(TerrainChunked* pChunked);
+
+		void Compute(VkCommandBuffer& commandBuffer);
 
 	public:
 		void CleanupSwapChain();

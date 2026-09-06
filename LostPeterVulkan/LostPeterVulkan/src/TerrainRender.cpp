@@ -465,9 +465,10 @@ namespace LostPeterVulkan
 	/////////////////////////// TerrainRender ////////////////////////////
 	TerrainRenderPatchGeometry* TerrainRender::s_pPatchGeometry = nullptr;
 	TerrainRenderBatches* TerrainRender::s_pRenderBatches = nullptr;
+	int TerrainRender::s_nRenderInstanceMaxCount = 2048;
 	const String TerrainRender::s_nameDescriptorSetLayout = "Pass-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS";
-	const String TerrainRender::s_nameShaderVertex = "vert_standard_terrain_lit";
-	const String TerrainRender::s_nameShaderFragment = "frag_standard_terrain_lit";
+	const String TerrainRender::s_nameShaderVertex = "vert_standard_terrain_chunked_lit";
+	const String TerrainRender::s_nameShaderFragment = "frag_standard_terrain_chunked_lit";
 	DescriptorSetLayout* TerrainRender::s_pDescriptorSetLayout = nullptr;
 	VkPipelineShaderStageCreateInfoVector TerrainRender::s_shaderStageCreateInfo;
 
@@ -532,6 +533,14 @@ namespace LostPeterVulkan
 			return;
 
 		s_pRenderBatches->EndBatches();
+	}
+
+	void TerrainRender::RenderBatches(VkCommandBuffer& commandBuffer)
+	{
+		if (!s_pRenderBatches)
+			return;
+
+
 	}
 
 
@@ -654,51 +663,39 @@ namespace LostPeterVulkan
 		}
 		bool TerrainRender::createBufferTerrainObject()
 		{
-			// this->terrainObjectCBs.clear();
-            // TerrainObjectConstants toWhole;
-            // this->terrainObjectCBs.push_back(toWhole);
-            // float fTerrainSize = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
-            // float fTerrainSizeHalf = fTerrainSize / 2.0f;
-            // float fTerrainInstanceSize = (float)(VKRenderPassTerrain::c_nInstanceGridVertexCount - 1.0f);
-            // float fTerrainInstanceSizeHalf = fTerrainInstanceSize / 2.0f;
-            // for (int i = 0; i < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; i++)
-            // {
-            //     for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; j++)
-            //     {
-            //         TerrainObjectConstants toInstance;
-            //         toInstance.offsetX = j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
-            //         toInstance.offsetZ = i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
-            //         this->terrainObjectCBs.push_back(toInstance);
-            //     }
-            // }
-            // F_Assert(this->terrainObjectCBs.size() < MAX_OBJECT_TERRAIN_COUNT && "TerrainRender::createBufferTerrainObject")
-            // VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
-			// String nameBuffer = "TerrainObjectConstants-" + this->name;
-			// this->poBuffer_TerrainObjectCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
-			// 																		   sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size(), 
-			// 																		   (uint8*)this->terrainObjectCBs.data(),
-			// 																		   false);
-			// if (!this->poBuffer_TerrainObjectCB)
-			// {
-			// 	String msg = "*********************** TerrainRender::createBufferTerrainObject: create buffer uniform: [" + nameBuffer + "] failed !";
-			// 	F_LogError(msg.c_str());
-			// 	throw std::runtime_error(msg);
-			// }
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
+			this->terrainObjectCBs.clear();
+			this->terrainObjectCBs.resize(s_nRenderInstanceMaxCount);
+            VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
+			String nameBuffer = "TerrainObjectConstants-" + this->name;
+			this->poBuffer_TerrainObjectCB = pWindow->createBufferUniform(nameBuffer,
+																		  sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size(), 
+																		  (uint8*)this->terrainObjectCBs.data(),
+																		  false);
+			if (!this->poBuffer_TerrainObjectCB)
+			{
+				String msg = "*********************** TerrainRender::createBufferTerrainObject: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
             return true;
 		}
         bool TerrainRender::createBufferMaterial()
 		{
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+
 			this->materialCBs.clear();
             for (int i = 0; i < MAX_MATERIAL_COUNT; i++)
             {
-                MaterialConstants mcWhole;
-                this->materialCBs.push_back(mcWhole);
+                MaterialConstants mc;
+                this->materialCBs.push_back(mc);
             }
 			String nameBuffer = "MaterialConstants-" + this->name;
-			this->poBuffer_MaterialCB = Base::GetWindowPtr()->createBufferUniform(nameBuffer,
-																				  sizeof(MaterialConstants) * this->materialCBs.size(), 
-																				  (uint8*)this->materialCBs.data(),
-																				  false);
+			this->poBuffer_MaterialCB = pWindow->createBufferUniform(nameBuffer,
+																	 sizeof(MaterialConstants) * this->materialCBs.size(), 
+																	 (uint8*)this->materialCBs.data(),
+																	 false);
 			if (!this->poBuffer_MaterialCB)
 			{
 				String msg = "*********************** TerrainRender::createBufferMaterial: create buffer uniform: [" + nameBuffer + "] failed !";
@@ -709,28 +706,29 @@ namespace LostPeterVulkan
 		}
         bool TerrainRender::createBufferTerrain()
 		{
-			// VulkanWindow* pWindow = Base::GetWindowPtr();
+			VulkanWindow* pWindow = Base::GetWindowPtr();
+			TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
 
-            // this->terrainCB.textureX = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
-            // this->terrainCB.textureZ = (float)this->m_pVKRenderPassTerrain->poTerrainHeightMapSize;
-            // this->terrainCB.textureX_Inverse = 1.0f / (this->terrainCB.textureX - 1.0f);
-            // this->terrainCB.textureZ_Inverse = 1.0f / (this->terrainCB.textureZ - 1.0f);
-            // this->terrainCB.heightStart = pWindow->cfg_terrainHeightStart;
-            // this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
-            // this->terrainCB.terrainSizeX = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
-            // this->terrainCB.terrainSizeZ = (float)(this->m_pVKRenderPassTerrain->poTerrainHeightMapSize - 1.0f);
+            this->terrainCB.textureX = (float)pSetting->GetResolution();
+            this->terrainCB.textureZ = (float)pSetting->GetResolution();
+            this->terrainCB.textureX_Inverse = 1.0f / this->terrainCB.textureX;
+            this->terrainCB.textureZ_Inverse = 1.0f / this->terrainCB.textureZ;
+            this->terrainCB.heightStart = pWindow->cfg_terrainHeightStart;
+            this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
+            this->terrainCB.terrainSizeX = pSetting->GetTerrainSize();
+            this->terrainCB.terrainSizeZ = pSetting->GetTerrainSize();
 
-			// String nameBuffer = "TerrainConstants-" + this->name;
-			// this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,
-			// 														sizeof(TerrainConstants), 
-			// 														(uint8*)&this->terrainCB,
-			// 														false);
-			// if (!this->poBuffer_TerrainCB)
-			// {
-			// 	String msg = "*********************** TerrainRender::createBufferTerrain: create buffer uniform: [" + nameBuffer + "] failed !";
-			// 	F_LogError(msg.c_str());
-			// 	throw std::runtime_error(msg);
-			// }
+			String nameBuffer = "TerrainConstants-" + this->name;
+			this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,
+																	sizeof(TerrainConstants), 
+																	(uint8*)&this->terrainCB,
+																	false);
+			if (!this->poBuffer_TerrainCB)
+			{
+				String msg = "*********************** TerrainRender::createBufferTerrain: create buffer uniform: [" + nameBuffer + "] failed !";
+				F_LogError(msg.c_str());
+				throw std::runtime_error(msg);
+			}
 			return true;
 		}
 		bool TerrainRender::createPipelineTerrain()
@@ -792,6 +790,11 @@ namespace LostPeterVulkan
 			F_LogInfo("TerrainRender::createPipelineTerrain: Create terrain pipeline graphics: [%s] success !", namePipeline.c_str());
 			return true;
 		}
+
+	void TerrainRender::Render(VkCommandBuffer& commandBuffer)
+	{
+
+	}
 
 	void TerrainRender::CleanupSwapChain()
 	{

@@ -48,6 +48,12 @@ namespace LostPeterVulkan
 
 	}
 
+	void TerrainCompute::ComputeBatches(VkCommandBuffer& commandBuffer)
+	{
+		
+
+	}
+
 
 	TerrainCompute::TerrainCompute(const String& nameCompute)
 		: Base(nameCompute)
@@ -85,6 +91,8 @@ namespace LostPeterVulkan
 	{
 		this->pChunked = pChunked;
 
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
 		//1> Buffer
         if (this->pTextureCopy == nullptr)
         {
@@ -98,10 +106,10 @@ namespace LostPeterVulkan
 
         //2> Pipeline
 		String namePipelineCompute = "PipelineCompute-Terrain-" + this->name;
-		this->poStatePipelineCompute = Base::GetWindowPtr()->createStatePipelineCompute(namePipelineCompute,
-																						s_pDescriptorSetLayout,
-																						s_pShaderCompute,
-																						false);
+		this->poStatePipelineCompute = pWindow->createStatePipelineCompute(namePipelineCompute,
+																		   s_pDescriptorSetLayout,
+																		   s_pShaderCompute,
+																		   false);
 
         if (this->poStatePipelineCompute == nullptr)
         {
@@ -134,6 +142,11 @@ namespace LostPeterVulkan
 			}
             return true;
 		}
+
+	void TerrainCompute::Compute(VkCommandBuffer& commandBuffer)
+	{
+
+	}
 
 	void TerrainCompute::CleanupSwapChain()
 	{

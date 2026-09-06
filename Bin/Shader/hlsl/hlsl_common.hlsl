@@ -262,6 +262,12 @@ struct TerrainObjectConstants
     float offsetZ; //Instance offset Z
 };
 
+struct TerrainChunkedObjecctInstanceConstants
+{
+	float4 patch;
+	float4 lodTint;
+	float4 stitchStep;
+};
 
 //////////////////////////////// CullConstants //////////////////////////////////
 struct CullConstants
