@@ -164,16 +164,6 @@ namespace LostPeterVulkan
             float fTerrainSizeHalf = fTerrainSize / 2.0f;
             float fTerrainInstanceSize = (float)(VKRenderPassTerrain::c_nInstanceGridVertexCount - 1.0f);
             float fTerrainInstanceSizeHalf = fTerrainInstanceSize / 2.0f;
-            for (int i = 0; i < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; i++)
-            {
-                for (int j = 0; j < this->m_pVKRenderPassTerrain->poTerrainInstanceCount; j++)
-                {
-                    TerrainObjectConstants toInstance;
-                    toInstance.offsetX = j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
-                    toInstance.offsetZ = i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf;
-                    this->terrainObjectCBs.push_back(toInstance);
-                }
-            }
             F_Assert(this->terrainObjectCBs.size() < MAX_OBJECT_TERRAIN_COUNT && "VKPipelineGraphicsTerrain::createBufferTerrainObject")
             VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
 			String nameBuffer = "TerrainObjectConstants-" + this->name;

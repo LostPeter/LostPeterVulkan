@@ -34,8 +34,7 @@ namespace LostPeterVulkan
         int32 poTerrainHeightMapDataSize;
         int32 poTerrainHeightMapSize;
 
-        bool poTerrainInstanceIsDraw;
-        int32 poTerrainInstanceCount;
+		bool poTerrainIsRendering;
 
         //Mesh Whole
         std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2;
@@ -47,17 +46,6 @@ namespace LostPeterVulkan
         size_t poTerrainIndexBuffer_Size;
         void* poTerrainIndexBuffer_Data;
 		VKBufferVertexIndex* poBufferVertexIndex_MeshWhole;
-
-        //Mesh Instance
-        std::vector<FVertex_Pos3Color4Normal3Tex2> poTerrain_Pos3Color4Normal3Tex2_Instance;
-        uint32_t poTerrainVertexCount_Instance;
-        size_t poTerrainVertexBuffer_Size_Instance;
-        void* poTerrainVertexBuffer_Data_Instance;
-        std::vector<uint32_t> poTerrain_Indices_Instance;
-        uint32_t poTerrainIndexCount_Instance;
-        size_t poTerrainIndexBuffer_Size_Instance;
-        void* poTerrainIndexBuffer_Data_Instance;
-		VKBufferVertexIndex* poBufferVertexIndex_MeshInstance;
 
         //HeightMap/NormalMap
 		VKTexture* pTexture_HeightMap;
@@ -79,7 +67,6 @@ namespace LostPeterVulkan
 
         bool loadTerrainData(); 
         void setupTerrainGeometryWhole();
-        void setupTerrainGeometryInstance();
 
     public:
         void CleanupSwapChain();

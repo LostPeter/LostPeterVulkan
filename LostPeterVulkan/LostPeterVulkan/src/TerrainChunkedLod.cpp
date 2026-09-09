@@ -80,14 +80,14 @@ namespace LostPeterVulkan
 		if (!this->pTerrainChunked)
 			return;
 		
-		
+		this->pTerrainChunked->Compute(commandBuffer);
 	}
 	void TerrainChunkedLod::Render(VkCommandBuffer& commandBuffer)
 	{
 		if (!this->pTerrainChunked)
 			return;
 
-		
+		this->pTerrainChunked->Render(commandBuffer);
 	}
 
 }; //LostPeterVulkan

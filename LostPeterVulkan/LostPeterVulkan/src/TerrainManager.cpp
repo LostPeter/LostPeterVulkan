@@ -281,7 +281,19 @@ namespace LostPeterVulkan
 	}
 		void TerrainManager::computeTerrain(VkCommandBuffer& commandBuffer)
 		{
-
+			TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
+			if (pSetting->GetIsGPUCullingAll())
+			{
+				TerrainCompute::ComputeBatches(commandBuffer);
+			}
+			else
+			{
+				for (TerrainChunkedLodPtrVector::iterator it = this->aChunkedLods.begin();
+					 it != this->aChunkedLods.end(); ++it)
+				{
+					(*it)->Compute(commandBuffer);
+				}
+			}
 		}
 
 	void TerrainManager::OnRender(VkCommandBuffer& commandBuffer)
@@ -290,7 +302,19 @@ namespace LostPeterVulkan
 	}
 		void TerrainManager::renderTerrain(VkCommandBuffer& commandBuffer)
 		{
-			
+			TerrainSetting* pSetting = TerrainSetting::GetSingletonPtr();
+			if (pSetting->GetIsGPUCullingAll())
+			{
+				TerrainRender::RenderBatches(commandBuffer);
+			}
+			else
+			{
+				for (TerrainChunkedLodPtrVector::iterator it = this->aChunkedLods.begin();
+					 it != this->aChunkedLods.end(); ++it)
+				{
+					(*it)->Render(commandBuffer);
+				}
+			}
 		}
 
 	void TerrainManager::OnTick()

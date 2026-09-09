@@ -1457,14 +1457,7 @@ namespace LostPeterVulkan
             this->m_pVKRenderPassTerrain == nullptr)
             return;
 
-        if (!this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw)
-        {
-            Draw_Graphics_Terrain_Whole(commandBuffer);
-        }
-        else
-        {
-            Draw_Graphics_Terrain_Instance(commandBuffer);
-        }   
+		Draw_Graphics_Terrain_Whole(commandBuffer);
     }
         void VulkanWindow::Draw_Graphics_Terrain_Whole(VkCommandBuffer& commandBuffer)
         {
@@ -1479,10 +1472,6 @@ namespace LostPeterVulkan
             drawIndexed(commandBuffer, this->m_pVKRenderPassTerrain->poTerrainIndexCount, 1, 0, 0, 0);
 
 			this->m_pPipelineGraphics_Terrain->poStatePipelineGraphics->UnBindState(commandBuffer);
-        }
-        void VulkanWindow::Draw_Graphics_Terrain_Instance(VkCommandBuffer& commandBuffer)
-        {
-
         }
 
     float VulkanWindow::GetTerrainHeight(const FVector3& vPos)
@@ -10354,11 +10343,11 @@ namespace LostPeterVulkan
 
                         if (ImGui::CollapsingHeader("Terrain Settings"))
                         {
-                            //poTerrainInstanceIsDraw
-                            bool isInstanceIsDraw = this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw;
-                            if (ImGui::Checkbox("Instance Draw", &isInstanceIsDraw))
+                            //poTerrainIsRendering
+                            bool isTerrainRendering = this->m_pVKRenderPassTerrain->poTerrainIsRendering;
+                            if (ImGui::Checkbox("Is Terrain Rendering", &isTerrainRendering))
                             {   
-                                this->m_pVKRenderPassTerrain->poTerrainInstanceIsDraw = isInstanceIsDraw;
+                                this->m_pVKRenderPassTerrain->poTerrainIsRendering = isTerrainRendering;
                             }
                             ImGui::Spacing();
 
@@ -10546,7 +10535,7 @@ namespace LostPeterVulkan
 
                                 if (isChange)
                                 {
-									
+
                                 }
                             }
 						}
@@ -10853,7 +10842,8 @@ namespace LostPeterVulkan
 
                             if (!this->cfg_isRenderPassTerrain || 
                                 this->m_pVKRenderPassTerrain == nullptr ||
-                                this->m_pPipelineGraphics_Terrain == nullptr)
+                                this->m_pPipelineGraphics_Terrain == nullptr ||
+							    !this->m_pVKRenderPassTerrain->poTerrainIsRendering)
                                 return;
                             
                             Draw_Graphics_Terrain(commandBuffer);
