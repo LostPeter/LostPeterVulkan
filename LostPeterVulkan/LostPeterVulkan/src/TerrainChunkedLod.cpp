@@ -75,5 +75,19 @@ namespace LostPeterVulkan
 		this->pTerrainChunked->BuildBatches(aRenderData);
 	}
 
+	void TerrainChunkedLod::Compute(VkCommandBuffer& commandBuffer)
+	{
+		if (!this->pTerrainChunked)
+			return;
+		
+		
+	}
+	void TerrainChunkedLod::Render(VkCommandBuffer& commandBuffer)
+	{
+		if (!this->pTerrainChunked)
+			return;
+
+		
+	}
 
 }; //LostPeterVulkan

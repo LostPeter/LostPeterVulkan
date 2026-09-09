@@ -130,12 +130,13 @@ namespace LostPeterVulkan
 		, pTexture_Normal(nullptr)
 		, pTexture_Control(nullptr)
 
-		//Render
-		, pRender(nullptr)
-
 		//Compute
 		, pCompute(nullptr)
 
+		//Render
+		, pRender(nullptr)
+
+		//Common
 		, bIsInit(false)
 	{
 		
@@ -365,6 +366,11 @@ namespace LostPeterVulkan
 			return true;
 		}
 
+	int TerrainChunked::GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const
+	{
+		return std::max(1, (pNode->nSize * (1 << lod)) / this->nPatchQuads);
+	}
+
 	void TerrainChunked::SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect)
 	{
         FVector3 vLodCenter = vPos;
@@ -419,10 +425,22 @@ namespace LostPeterVulkan
 		this->pRender->EndAddRenderDatas();
 	}
 
-	int TerrainChunked::GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const
+	void TerrainChunked::Compute(VkCommandBuffer& commandBuffer)
 	{
-		return std::max(1, (pNode->nSize * (1 << lod)) / this->nPatchQuads);
+		if (!this->pCompute)
+			return;
+
+		this->pCompute->Compute(commandBuffer);
 	}
+
+	void TerrainChunked::Render(VkCommandBuffer& commandBuffer)
+	{
+		if (!this->pRender)
+			return;
+
+		this->pRender->Render(commandBuffer);
+	}
+
 
 	TerrainChunkedNode* TerrainChunked::buildNode(int x, int z, int size, int level)
 	{

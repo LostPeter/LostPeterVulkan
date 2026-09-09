@@ -125,6 +125,10 @@ namespace LostPeterVulkan
 	public:
 		F_FORCEINLINE bool IsAddBatches() const { return this->bAddBatches; }
 		F_FORCEINLINE void SetIsAddBatches(bool b) { this->bAddBatches = b; }
+		F_FORCEINLINE const TerrainRenderBatchDataVector& GetBatches() const { return this->aBatches; }
+		F_FORCEINLINE TerrainRenderBatchDataVector& GetBatches() { return this->aBatches; }
+		F_FORCEINLINE const TerrainRenderInstanceDataPtrVector& GetInstances() const { return this->aInstances; }
+		F_FORCEINLINE TerrainRenderInstanceDataPtrVector& GetInstances() { return this->aInstances; }
 
 	public:
 		void Destroy();
@@ -153,18 +157,42 @@ namespace LostPeterVulkan
 		std::array<IndexRange, 3> aRangesTriangle;
     	std::array<IndexRange, 3> aRangesWireFrame;
 
+		VKBufferVertexIndex* pBufferVertexIndex;
+		VKBufferVertexIndex* pBufferVertexIndex_WireFrame;
+
 	public:
 		static TerrainRenderPatchGeometry MakePatchGeometry(int nPatchQuads);
 		static void MakePatchGeometry(TerrainRenderPatchGeometry* pPatchGeometry, int nPatchQuads);
 		static IndexRange AppendWireframeRange(const std::vector<uint32>& aTriangleIndices, IndexRange triangleRange, std::vector<uint32>& aLineIndices);
 
 	public:
-		
+		F_FORCEINLINE const IndexRange& GetRangesTriangle(int lod) const { return this->aRangesTriangle[lod]; }
+		F_FORCEINLINE IndexRange* GetRangesTrianglePtr(int lod) { return &this->aRangesTriangle[lod]; }
+		F_FORCEINLINE const IndexRange& GetRangesWireFrame(int lod) const { return this->aRangesWireFrame[lod]; }
+		F_FORCEINLINE IndexRange* GetRangesWireFramePtr(int lod) { return &this->aRangesWireFrame[lod]; }
+
+		F_FORCEINLINE VKBufferVertexIndex* GetBufferVertexIndex() const { return this->pBufferVertexIndex; }
+		const VkBuffer& GetVkBufferVertex() const;
+		const VkDeviceMemory& GetVkBufferVertexMemory() const;
+		const VkBuffer& GetVkBufferIndex() const;
+		const VkDeviceMemory& GetVkBufferIndexMemory() const;
+
+		F_FORCEINLINE VKBufferVertexIndex* GetBufferVertexIndex_WireFrame() const { return this->pBufferVertexIndex_WireFrame; }
+		const VkBuffer& GetVkBufferVertex_WireFrame() const;
+		const VkDeviceMemory& GetVkBufferVertexMemory_WireFrame() const;
+		const VkBuffer& GetVkBufferIndex_WireFrame() const;
+		const VkDeviceMemory& GetVkBufferIndexMemory_WireFrame() const;
 
 	public:
 		void Destroy();
 		void Init(int nPatchQuads);
 
+		void BindVertexIndexBuffer(VkCommandBuffer& commandBuffer, bool isWireFrame);
+
+	protected:
+		void destroyBufferVertexIndex();
+
+		bool createBufferVertexIndex();
 	};
 
 
@@ -209,7 +237,7 @@ namespace LostPeterVulkan
 
 		VKStatePipelineGraphics* poStatePipelineGraphics;
 
-        std::vector<TerrainObjectConstants> terrainObjectCBs;
+        std::vector<TerrainChunkedObjecctInstanceConstants> terrainObjectCBs;
         VKBufferUniform* poBuffer_TerrainObjectCB;
 
         std::vector<MaterialConstants> materialCBs;
@@ -235,6 +263,7 @@ namespace LostPeterVulkan
 		void CleanupSwapChain();
         
         void UpdateDescriptorSets();
+		void UpdateBufferTerrainObject();
         void UpdateBufferTerrain();
 
 	public:

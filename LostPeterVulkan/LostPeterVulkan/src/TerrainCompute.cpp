@@ -145,7 +145,18 @@ namespace LostPeterVulkan
 
 	void TerrainCompute::Compute(VkCommandBuffer& commandBuffer)
 	{
+		if (!this->isNormalUpdated ||
+			this->isNormalUpdated_Sustained)
+		{
+			this->poStatePipelineCompute->BindState(commandBuffer);
+			
+			int nResolution = TerrainSetting::GetSingleton().GetResolution();
+			uint32_t groupX = (uint32_t)(nResolution / 8);
+			uint32_t groupY = (uint32_t)(nResolution / 8);
+			Base::GetWindowPtr()->dispatch(commandBuffer, groupX, groupY, 1);
 
+			this->isNormalUpdated = true;
+		}
 	}
 
 	void TerrainCompute::CleanupSwapChain()

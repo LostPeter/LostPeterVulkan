@@ -17,6 +17,7 @@
 #include "../include/VKTexture.h"
 #include "../include/VKBufferUniform.h"
 #include "../include/VKStatePipelineGraphics.h"
+#include "../include/VKBufferVertexIndex.h"
 
 namespace LostPeterVulkan
 {
@@ -443,6 +444,8 @@ namespace LostPeterVulkan
 	}
 
 	TerrainRenderPatchGeometry::TerrainRenderPatchGeometry()
+		: pBufferVertexIndex(nullptr)
+		, pBufferVertexIndex_WireFrame(nullptr)
 	{
 		
 	}
@@ -453,12 +456,102 @@ namespace LostPeterVulkan
 
 	void TerrainRenderPatchGeometry::Destroy()
 	{
-
+		destroyBufferVertexIndex();
 	}
+		void TerrainRenderPatchGeometry::destroyBufferVertexIndex()
+		{
+			F_DELETE(this->pBufferVertexIndex)
+			F_DELETE(this->pBufferVertexIndex_WireFrame)
+		}
 
 	void TerrainRenderPatchGeometry::Init(int nPatchQuads)
 	{
 		TerrainRenderPatchGeometry::MakePatchGeometry(this, nPatchQuads);
+
+		if (!createBufferVertexIndex())
+		{
+			F_LogError("*********************** TerrainRenderPatchGeometry::Init: createBufferVertexIndex failed !");
+		}
+	}
+		bool TerrainRenderPatchGeometry::createBufferVertexIndex()
+		{
+			String nameBuffer = "BufferVertexIndex-TerrainRenderPatchGeometry";
+			this->pBufferVertexIndex = Base::GetWindowPtr()->createBufferVertexIndex(nameBuffer,	
+																					 F_MeshVertex_Pos3Color4Normal3Tex2,
+                                                                                     (size_t)(sizeof(FVertex_Pos3Color4Normal3Tex2) * this->aVertices.size()), 
+                                                                                     (uint8*)this->aVertices.data(), 
+                                                                                     false,
+                                                                                     this->aIndicesTriangle.size() * sizeof(uint32),
+                                                                                     (uint8*)this->aIndicesTriangle.data(), 
+                                                                                     false,
+																					 false);
+			if (this->pBufferVertexIndex == nullptr)
+            {
+                F_LogError("*********************** TerrainRenderPatchGeometry::createBufferVertexIndex: create buffer vertex index failed: [%s] !", nameBuffer.c_str());
+                return false;
+            }
+			F_LogInfo("TerrainRenderPatchGeometry::createBufferVertexIndex: create buffer vertex index success: [%s] !", nameBuffer.c_str());
+
+			String nameBuffer_WireFrame = "BufferVertexIndex-TerrainRenderPatchGeometry-WireFrame";
+			this->pBufferVertexIndex_WireFrame = Base::GetWindowPtr()->createBufferVertexIndex(nameBuffer_WireFrame,	
+																							   F_MeshVertex_Pos3Color4Normal3Tex2,
+																							   (size_t)(sizeof(FVertex_Pos3Color4Normal3Tex2) * this->aVertices.size()), 
+																							   (uint8*)this->aVertices.data(), 
+																							   false,
+																							   this->aIndicesWireFrame.size() * sizeof(uint32),
+																							   (uint8*)this->aIndicesWireFrame.data(), 
+																							   false,
+																							   false);
+			if (this->pBufferVertexIndex_WireFrame == nullptr)
+            {
+                F_LogError("*********************** TerrainRenderPatchGeometry::createBufferVertexIndex: create buffer vertex index wire frame failed: [%s] !", nameBuffer_WireFrame.c_str());
+                return false;
+            }
+			F_LogInfo("TerrainRenderPatchGeometry::createBufferVertexIndex: create buffer vertex index wire frame success: [%s] !", nameBuffer_WireFrame.c_str());
+
+			return true;
+		}
+
+	void TerrainRenderPatchGeometry::BindVertexIndexBuffer(VkCommandBuffer& commandBuffer, bool isWireFrame)
+	{
+		if (isWireFrame)
+			this->pBufferVertexIndex_WireFrame->BindVertexIndexBuffer(commandBuffer);
+		else
+			this->pBufferVertexIndex->BindVertexIndexBuffer(commandBuffer);
+	}
+
+	const VkBuffer& TerrainRenderPatchGeometry::GetVkBufferVertex() const 
+	{ 
+		return this->pBufferVertexIndex->GetVkBufferVertex(); 
+	}
+	const VkDeviceMemory& TerrainRenderPatchGeometry::GetVkBufferVertexMemory() const
+	{ 
+		return this->pBufferVertexIndex->GetVkBufferVertexMemory(); 
+	}
+	const VkBuffer& TerrainRenderPatchGeometry::GetVkBufferIndex() const 
+	{ 
+		return this->pBufferVertexIndex->GetVkBufferIndex(); 
+	}
+	const VkDeviceMemory& TerrainRenderPatchGeometry::GetVkBufferIndexMemory() const 
+	{ 
+		return this->pBufferVertexIndex->GetVkBufferIndexMemory(); 
+	}
+
+	const VkBuffer& TerrainRenderPatchGeometry::GetVkBufferVertex_WireFrame() const
+	{
+		return this->pBufferVertexIndex_WireFrame->GetVkBufferVertex(); 
+	}
+	const VkDeviceMemory& TerrainRenderPatchGeometry::GetVkBufferVertexMemory_WireFrame() const
+	{
+		return this->pBufferVertexIndex_WireFrame->GetVkBufferVertexMemory(); 
+	}
+	const VkBuffer& TerrainRenderPatchGeometry::GetVkBufferIndex_WireFrame() const
+	{
+		return this->pBufferVertexIndex_WireFrame->GetVkBufferIndex(); 
+	}
+	const VkDeviceMemory& TerrainRenderPatchGeometry::GetVkBufferIndexMemory_WireFrame() const
+	{
+		return this->pBufferVertexIndex_WireFrame->GetVkBufferIndexMemory(); 
 	}
 
 
@@ -667,10 +760,10 @@ namespace LostPeterVulkan
 
 			this->terrainObjectCBs.clear();
 			this->terrainObjectCBs.resize(s_nRenderInstanceMaxCount);
-            VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
-			String nameBuffer = "TerrainObjectConstants-" + this->name;
+            VkDeviceSize bufferSize = sizeof(TerrainChunkedObjecctInstanceConstants) * this->terrainObjectCBs.size();
+			String nameBuffer = "TerrainChunkedObjecctInstanceConstants-" + this->name;
 			this->poBuffer_TerrainObjectCB = pWindow->createBufferUniform(nameBuffer,
-																		  sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size(), 
+																		  sizeof(TerrainChunkedObjecctInstanceConstants) * this->terrainObjectCBs.size(), 
 																		  (uint8*)this->terrainObjectCBs.data(),
 																		  false);
 			if (!this->poBuffer_TerrainObjectCB)
@@ -793,7 +886,34 @@ namespace LostPeterVulkan
 
 	void TerrainRender::Render(VkCommandBuffer& commandBuffer)
 	{
+		if (!this->pRenderBatches)
+			return;
 
+		VulkanWindow* pWindow = Base::GetWindowPtr();
+
+		s_pPatchGeometry->BindVertexIndexBuffer(commandBuffer, pWindow->cfg_isWireFrame);
+
+		//State/Shader/BufferUniform/Texture
+		this->poStatePipelineGraphics->BindState(commandBuffer, pWindow->cfg_isWireFrame);
+		this->poStatePipelineGraphics->BindShader(commandBuffer);
+		this->poStatePipelineGraphics->BindBufferUniforms(commandBuffer);
+		this->poStatePipelineGraphics->BindTextures(commandBuffer);
+
+		const TerrainRenderBatchDataVector& aBatches = this->pRenderBatches->GetBatches();
+		int count_batches = (int)aBatches.size();
+		for (int i = 0; i < count_batches; i++)
+		{
+			const TerrainRenderBatchData& batch = aBatches[i];
+			uint32 countInstance = (uint32)batch.aInstances.size();
+			if (countInstance <= 0)
+				continue;
+
+			IndexRange* pRange = s_pPatchGeometry->GetRangesTrianglePtr(i);
+			if (pWindow->cfg_isWireFrame)
+				pRange = s_pPatchGeometry->GetRangesWireFramePtr(i);
+			pWindow->drawIndexed(commandBuffer, pRange->nIndexCount, countInstance, pRange->nFirstIndex, 0, 0);
+		}
+		this->poStatePipelineGraphics->UnBindState(commandBuffer);
 	}
 
 	void TerrainRender::CleanupSwapChain()
@@ -802,11 +922,159 @@ namespace LostPeterVulkan
 	}
     void TerrainRender::UpdateDescriptorSets()
 	{
+		VulkanWindow* pWindow = Base::GetWindowPtr();
 
+		size_t count = this->poStatePipelineGraphics->poDescriptorSets.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkWriteDescriptorSetVector descriptorWrites;
+            //<0> PassConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Pass = {};
+                bufferInfo_Pass.buffer = pWindow->poBuffers_PassCB[i]->GetVkBuffer();
+                bufferInfo_Pass.offset = 0;
+                bufferInfo_Pass.range = sizeof(PassConstants);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 0,
+													 0,
+													 1,
+													 bufferInfo_Pass);
+            }
+            //<1> TerrainChunkedObjecctInstanceConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_TerrainObject = {};
+                bufferInfo_TerrainObject.buffer = this->poBuffer_TerrainObjectCB->GetVkBuffer();
+                bufferInfo_TerrainObject.offset = 0;
+                bufferInfo_TerrainObject.range = sizeof(TerrainChunkedObjecctInstanceConstants) * this->terrainObjectCBs.size();
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 1,
+													 0,
+													 1,
+													 bufferInfo_TerrainObject);
+            }
+            //<2> MaterialConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Material = {};
+                bufferInfo_Material.buffer = this->poBuffer_MaterialCB->GetVkBuffer();
+                bufferInfo_Material.offset = 0;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 2,
+													 0,
+													 1,
+													 bufferInfo_Material);
+            }
+            //<3> InstanceConstants
+            {
+                // VkDescriptorBufferInfo bufferInfo_Instance = {};
+                // bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i];
+                // bufferInfo_Instance.offset = 0;
+                // bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
+                // pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                //                                      this->poStatePipelineGraphics->poDescriptorSets[i],
+                //                                      3,
+                //                                      0,
+                //                                      1,
+                //                                      bufferInfo_Instance);
+            }
+            //<4> Terrain
+            {
+                VkDescriptorBufferInfo bufferInfo_Terrain = {};
+                bufferInfo_Terrain.buffer = this->poBuffer_TerrainCB->GetVkBuffer();
+                bufferInfo_Terrain.offset = 0;
+                bufferInfo_Terrain.range = sizeof(TerrainConstants);
+                pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+													 this->poStatePipelineGraphics->poDescriptorSets[i],
+													 4,
+													 0,
+													 1,
+													 bufferInfo_Terrain);
+            }
+            //<5> pTexture_HeightMap
+            {
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   5,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+												   this->pChunked->pTexture_HeightMap->GetVkDescriptorImageInfo_NoSampler());
+            }
+            //<6> pTexture_NormalMap
+            {
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   6,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+												   this->pChunked->pTexture_NormalMap->GetVkDescriptorImageInfo_NoSampler());
+            }
+            //<7> pTexture_Diffuse
+            {
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+											 	   7,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->pChunked->pTexture_Diffuse->GetVkDescriptorImageInfo());
+            }
+            //<8> pTexture_Normal
+            {
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+												   8,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->pChunked->pTexture_Normal->GetVkDescriptorImageInfo());
+            }
+            //<9> pTexture_Control
+            {
+                pWindow->pushVkDescriptorSet_Image(descriptorWrites,
+												   this->poStatePipelineGraphics->poDescriptorSets[i],
+											  	   9,
+												   0,
+												   1,
+												   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+												   this->pChunked->pTexture_Control->GetVkDescriptorImageInfo());
+            }
+            pWindow->updateVkDescriptorSets(descriptorWrites);
+        }
+	}
+	void TerrainRender::UpdateBufferTerrainObject()
+	{
+		if (!this->pRenderBatches)
+			return;
+
+		int count_ins = (int)this->pRenderBatches->aInstances.size();
+		if (count_ins > s_nRenderInstanceMaxCount)
+		{
+			F_LogError("*********************** TerrainRender::UpdateBufferTerrainObject: Render terrain chunked: [%s], instance count: [%d] is bigger than max: [%d] !", this->name.c_str(), count_ins, s_nRenderInstanceMaxCount);
+			return;
+		}
+
+		for (int i = 0; i < count_ins; i++)
+		{
+			TerrainRenderInstanceData* pInstance = this->pRenderBatches->aInstances[i];
+			TerrainChunkedObjecctInstanceConstants& insConst = this->terrainObjectCBs[i];
+			memcpy(&insConst.vPatch, pInstance->aPatch, sizeof(float) * 4);
+			memcpy(&insConst.vLodTint, pInstance->aLodTint, sizeof(float) * 4);
+			memcpy(&insConst.vStitchStep, pInstance->aStitchStep, sizeof(float) * 4);
+		}
+		this->poBuffer_TerrainObjectCB->UpdateBuffer(0,
+													 sizeof(TerrainChunkedObjecctInstanceConstants) * count_ins,
+													 (uint8*)this->terrainObjectCBs.data());
 	}
 	void TerrainRender::UpdateBufferTerrain()
 	{
-
+		this->poBuffer_TerrainCB->UpdateBuffer(0,
+											   sizeof(TerrainConstants), 
+											   (uint8*)&this->terrainCB);
 	}
 
 	void TerrainRender::BeginAddRenderDatas()
@@ -844,6 +1112,7 @@ namespace LostPeterVulkan
 			else
 			{
 				pRenderBatches->AddBatches(this->aRenderDatas);
+				UpdateBufferTerrainObject();
 			}
 		}
 	}

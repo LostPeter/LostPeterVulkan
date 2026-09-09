@@ -40,6 +40,10 @@ namespace LostPeterVulkan
 
 		void UpdateLod(const FVector3& vCenterLod);
 
+		void Compute(VkCommandBuffer& commandBuffer);
+		void Render(VkCommandBuffer& commandBuffer);
+
+
 	public:
 		
 

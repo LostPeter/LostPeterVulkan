@@ -87,13 +87,13 @@ namespace LostPeterVulkan
 		VKTexture* pTexture_Normal;
 		VKTexture* pTexture_Control;
 
-		//Render
-		TerrainRender* pRender;
-
 		//Compute
 		TerrainCompute* pCompute;
 
+		//Render
+		TerrainRender* pRender;
 
+		//Common
 		bool bIsInit;
 
 	public:
@@ -119,9 +119,9 @@ namespace LostPeterVulkan
 		F_FORCEINLINE VKTexture* GetTexture_Normal() const { return this->pTexture_Normal; }
 		F_FORCEINLINE VKTexture* GetTexture_Control() const { return this->pTexture_Control; }
 
-		F_FORCEINLINE TerrainRender* GetRender() const { return this->pRender; }
 		F_FORCEINLINE TerrainCompute* GetCompute() const { return this->pCompute; }
-		
+		F_FORCEINLINE TerrainRender* GetRender() const { return this->pRender; }
+
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
 		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }
 
@@ -131,11 +131,14 @@ namespace LostPeterVulkan
 				  TerrainHeightMap* pHeightMap,
 				  int leafQuads, int patchQuads);
 
+		int GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const;
+
 		void SelectDynamicLod(const FVector3& vPos, float fRadiusLod0, float fRadiusLod1, TerrainChunkedNodePtrVector& aNodeSelect);
 		void BuildRenderData(const TerrainChunkedNodePtrVector& aNodeSelect, TerrainRenderDataPtrVector& aRenderData);
 		void BuildBatches(const TerrainRenderDataPtrVector& aRenderData);
 			
-		int GetEffectiveSegmentStepCells(const TerrainChunkedNode* pNode, int lod) const;
+		void Compute(VkCommandBuffer& commandBuffer);
+		void Render(VkCommandBuffer& commandBuffer); 
 
 	protected:
 		void destroyNodes();
@@ -147,6 +150,7 @@ namespace LostPeterVulkan
 		bool createRender();
 		bool createCompute();
 
+	protected:
 		TerrainChunkedNode* buildNode(int x, int z, int size, int level);
 
 		void computeBoundsAndError(TerrainChunkedNode* pNode);
