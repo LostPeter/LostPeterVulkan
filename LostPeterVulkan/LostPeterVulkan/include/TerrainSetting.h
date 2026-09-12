@@ -78,10 +78,12 @@ namespace LostPeterVulkan
 		int nResolution;
 		float fCellSize;
 		float fTerrainSize;
+		FVector3 vOffset;
 		bool isGPUCullingAll;
 		TerrainChunkedSettingPtrVector aChunkedSettings;
 		TerrainChunkedSettingPtrMap mapChunkedSettings;
 
+		bool bIsLog;
 		bool bIsInit;
 
 	public:
@@ -107,10 +109,14 @@ namespace LostPeterVulkan
 		F_FORCEINLINE int GetResolution() const { return this->nResolution; }
 		F_FORCEINLINE float GetCellSize() const { return this->fCellSize; }
 		F_FORCEINLINE float GetTerrainSize() const { return this->fTerrainSize; }
+		F_FORCEINLINE const FVector3& GetOffset() const { return this->vOffset; }
 		F_FORCEINLINE bool GetIsGPUCullingAll() const { return this->isGPUCullingAll; }
 
 		F_FORCEINLINE const TerrainChunkedSettingPtrVector& GetChunkedSettingPtrVector() const { return this->aChunkedSettings; }
 		F_FORCEINLINE const TerrainChunkedSettingPtrMap& GetChunkedSettingPtrMap() const { return this->mapChunkedSettings; }
+
+		F_FORCEINLINE bool IsLog() const { return this->bIsLog; }
+		F_FORCEINLINE void SetIsLog(bool b) { this->bIsLog = b; }
 
 		F_FORCEINLINE bool IsInit() const { return this->bIsInit; }
 		F_FORCEINLINE void SetIsInit(bool b) { this->bIsInit = b; }

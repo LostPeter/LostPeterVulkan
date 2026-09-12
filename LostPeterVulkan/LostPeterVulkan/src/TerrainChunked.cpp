@@ -464,6 +464,14 @@ namespace LostPeterVulkan
             pNode->ppChildren[2] = buildNode(x, 		z + half, half, level + 1);
             pNode->ppChildren[3] = buildNode(x + half, z + half, half, level + 1);
         }
+
+		if (TerrainSetting::GetSingleton().IsLog())
+		{
+			F_LogInfo("TerrainChunked::buildNode: Build Node: id: [%d], level: [%d], x-z: [%d , %d], size: [%d], heightMinMax: [%f , %f], error: [%f], aabb: [%f,%f,%f - %f,%f,%f] !",
+					  pNode->nID, pNode->nLevel, pNode->nX, pNode->nZ, pNode->nSize, pNode->fHeightMin, pNode->fHeightMax, pNode->fGeometricError, 
+					  pNode->bounds.m_vMin.x, pNode->bounds.m_vMin.y, pNode->bounds.m_vMin.z,
+					  pNode->bounds.m_vMax.x, pNode->bounds.m_vMax.y, pNode->bounds.m_vMax.z);
+		}
         return pNode;
 	}
 

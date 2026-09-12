@@ -11,7 +11,7 @@
 
 #include "../hlsl_input.hlsl"
 #include "../hlsl_common.hlsl"
-#include "../hlsl_terrain.hlsl"
+#include "../hlsl_terrain_chunked.hlsl"
 #include "../hlsl_lighting_lambert.hlsl"
 
 
@@ -29,7 +29,7 @@
 
 [[vk::binding(4)]]cbuffer terrainConsts             : register(b4) 
 {
-    TerrainConstants terrainConsts;
+    TerrainChunkedConstants terrainConsts;
 }
 
 
@@ -52,10 +52,10 @@ float4 main(VSInput_Terrain input,
     float3 N = normalize(input.inWorldNormal);
 
     //Terrain Splat
-    float4 splatControl = Terrain_GetSplatControl(texture2DArrayControl,
-                                                  texture2DArrayControlSampler,
-                                                  0,
-                                                  input.inTexCoord.xy);
+    float4 splatControl = TerrainChunked_GetSplatControl(texture2DArrayControl,
+														 texture2DArrayControlSampler,
+														 0,
+														 input.inTexCoord.xy);
     float4 diffuseRemapScale[4];
     diffuseRemapScale[0] = terrainConsts.aSplats[0].diffuseRemapScale;
     diffuseRemapScale[1] = terrainConsts.aSplats[1].diffuseRemapScale;
@@ -68,20 +68,20 @@ float4 main(VSInput_Terrain input,
     normalRemapScale[3] = terrainConsts.aSplats[3].normalRemapScale;
     float weight;
     float4 mixedDiffuse;
-    Terrain_SplatMapMix(texture2DArrayDiffuse,
-                        texture2DArrayDiffuseSampler,
-                        texture2DArrayNormal,
-                        texture2DArrayNormalSampler,
-                        0,
-                        input.inTexCoord.xy,
-                        input.uvSplat01,
-                        input.uvSplat23,
-                        splatControl,
-                        diffuseRemapScale,
-                        normalRemapScale,
-                        weight,
-                        mixedDiffuse,
-                        N);
+    TerrainChunked_SplatMapMix(texture2DArrayDiffuse,
+							   texture2DArrayDiffuseSampler,
+							   texture2DArrayNormal,
+							   texture2DArrayNormalSampler,
+							   0,
+							   input.inTexCoord.xy,
+							   input.uvSplat01,
+							   input.uvSplat23,
+							   splatControl,
+							   diffuseRemapScale,
+							   normalRemapScale,
+							   weight,
+							   mixedDiffuse,
+							   N);
 
     float3 colorLight;
     //Main Light

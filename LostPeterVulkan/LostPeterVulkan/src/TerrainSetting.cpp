@@ -88,12 +88,14 @@ namespace LostPeterVulkan
 	#define	TERRAIN_TAG_ATTRIBUTE_SIZE_Z	        "size_z"
 	#define	TERRAIN_TAG_ATTRIBUTE_RESOLUTION	    "resolution"
 	#define	TERRAIN_TAG_ATTRIBUTE_CELL_SIZE	       	"cell_size"
+	#define	TERRAIN_TAG_ATTRIBUTE_OFFSET	       	"offset"
 	#define	TERRAIN_TAG_ATTRIBUTE_X	        		"x"
 	#define	TERRAIN_TAG_ATTRIBUTE_Z	        		"z"
 	#define	TERRAIN_TAG_ATTRIBUTE_HEIGHT_MAP	    "height_map"
 	#define	TERRAIN_TAG_ATTRIBUTE_TEX_DIFFUSE	    "tex_diffuse"
 	#define	TERRAIN_TAG_ATTRIBUTE_TEX_NORMAL    	"tex_normal"
 	#define	TERRAIN_TAG_ATTRIBUTE_TEX_CONTROL	    "tex_control"
+	#define	TERRAIN_TAG_ATTRIBUTE_IS_LOG			"is_log"
 
 	TerrainSetting::TerrainSetting()
 		: Base("TerrainSetting")
@@ -117,9 +119,11 @@ namespace LostPeterVulkan
 		, fSizeZ(0.0f)	
 		, nResolution(0)
 		, fCellSize(1.0f)
+		, vOffset(0.0f, 0.0f, 0.0f)
 		, fTerrainSize(0)
 		, isGPUCullingAll(false)
 
+		, bIsLog(false)
 		, bIsInit(false)
 		
 	{
@@ -182,6 +186,7 @@ namespace LostPeterVulkan
 		FXMLElement* pTerrain = pRoot->FindElementChild(TERRAIN_TAG_TERRAIN);
 		F_Assert(pTerrain != nullptr && "TerrainSetting::LoadSetting")
 		pTerrain->ParserAttribute_String(TERRAIN_TAG_ATTRIBUTE_NAME, this->nameSetting);
+		pTerrain->ParserAttribute_Bool(TERRAIN_TAG_ATTRIBUTE_IS_LOG, this->bIsLog);
 
 		//Param
 		FXMLElement* pParam = pTerrain->FindElementChild(TERRAIN_TAG_PARAM);
@@ -230,7 +235,8 @@ namespace LostPeterVulkan
 			pElement->ParserAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
 			pElement->ParserAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
 			this->fTerrainSize = (float)((this->nResolution - 1) * this->fCellSize);
-				
+			pElement->ParserAttribute_Vector3(TERRAIN_TAG_ATTRIBUTE_OFFSET, this->vOffset);
+
 			int count_child = pElement->GetElementChildrenCount();
 			for (int i = 0; i < count_child; i++)
 			{
@@ -280,7 +286,8 @@ namespace LostPeterVulkan
 		//Terrain
 		FXMLElement* pTerrain = pRoot->AddElementChild(new FXMLElement(TERRAIN_TAG_TERRAIN));
 		pTerrain->SaveAttribute_String(TERRAIN_TAG_ATTRIBUTE_NAME, this->nameSetting);
-		
+		pTerrain->SaveAttribute_Bool(TERRAIN_TAG_ATTRIBUTE_IS_LOG, this->bIsLog);
+
 		//Param
 		FXMLElement* pParam = pTerrain->AddElementChild(new FXMLElement(TERRAIN_TAG_PARAM));
 		pParam->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_LEAF_QUADS, this->nLeafQuads);
@@ -302,6 +309,7 @@ namespace LostPeterVulkan
 		pChunks->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_SIZE_Z, this->fSizeZ);
 		pChunks->SaveAttribute_Int(TERRAIN_TAG_ATTRIBUTE_RESOLUTION, this->nResolution);
 		pChunks->SaveAttribute_Float(TERRAIN_TAG_ATTRIBUTE_CELL_SIZE, this->fCellSize);
+		pChunks->SaveAttribute_Vector3(TERRAIN_TAG_ATTRIBUTE_OFFSET, this->vOffset);
 
 		if (!saveChunkedSettings(pChunks, this->aChunkedSettings))
 		{

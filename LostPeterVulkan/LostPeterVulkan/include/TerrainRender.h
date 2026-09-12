@@ -243,15 +243,15 @@ namespace LostPeterVulkan
         std::vector<MaterialConstants> materialCBs;
         VKBufferUniform* poBuffer_MaterialCB;
 
-        TerrainConstants terrainCB;
+        TerrainChunkedConstants terrainCB;
         VKBufferUniform* poBuffer_TerrainCB;
 
 	public:
 		F_FORCEINLINE bool IsAddRenderDatas() const { return this->bAddRenderDatas; }
 		F_FORCEINLINE void SetIsAddRenderDatas(bool b) { this->bAddRenderDatas = b; }
 
-		F_FORCEINLINE const TerrainConstants& GetTerrainConstants() const { return this->terrainCB; }
-		F_FORCEINLINE TerrainConstants& GetTerrainConstants() { return this->terrainCB; }
+		F_FORCEINLINE const TerrainChunkedConstants& GetTerrainConstants() const { return this->terrainCB; }
+		F_FORCEINLINE TerrainChunkedConstants& GetTerrainConstants() { return this->terrainCB; }
 
 	public:
 		void Destroy();

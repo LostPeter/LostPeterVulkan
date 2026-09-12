@@ -10497,7 +10497,7 @@ namespace LostPeterVulkan
 					}
 						void VulkanWindow::terrainChunkedConfigItem(const TerrainChunkedLod* pChunkedLod)
 						{
-							TerrainConstants& tc = pChunkedLod->GetTerrainChunked()->GetRender()->GetTerrainConstants();
+							TerrainChunkedConstants& tc = pChunkedLod->GetTerrainChunked()->GetRender()->GetTerrainConstants();
 							const String& name = pChunkedLod->GetName();
 							if (ImGui::CollapsingHeader(name.c_str()))
                             {
@@ -10527,7 +10527,7 @@ namespace LostPeterVulkan
                                 for (int i = 0; i < MAX_TERRAIN_SPLAT_COUNT; i++)
                                 {
                                     String nameSplat = "Splat - " + FUtilString::SaveInt(i) + " - " + name;
-                                    if (terrainConfigSplatItem(tc.aSplats[i], nameSplat))
+                                    if (terrainChunkedConfigSplatItem(tc.aSplats[i], nameSplat))
                                     {
                                         isChange = true;
                                     }
@@ -10539,7 +10539,7 @@ namespace LostPeterVulkan
                                 }
                             }
 						}
-                            bool VulkanWindow::terrainChunkedConfigSplatItem(TerrainSplatConstants& tsc, const String& name)
+                            bool VulkanWindow::terrainChunkedConfigSplatItem(TerrainChunkedSplatConstants& tsc, const String& name)
 							{	
 								bool isChange = false;
                                 if (ImGui::CollapsingHeader(name.c_str()))

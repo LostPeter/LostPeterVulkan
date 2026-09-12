@@ -262,6 +262,40 @@ struct TerrainObjectConstants
     float offsetZ; //Instance offset Z
 };
 
+
+///////////////////////////////// TerrainChunkedConstants ///////////////////////
+struct TerrainChunkedSplatConstants
+{
+    float splatSizeX; //size x
+    float splatSizeY; //size y
+    float splatOffsetX; //offset x
+    float splatOffsetY; //offset y
+
+    float4 diffuseRemapScale; //diffuse remap scale
+    float normalRemapScale; //normal remap scale
+    float reserve0;
+    float reserve1;
+    float reserve2;
+};
+struct TerrainChunkedConstants
+{
+	float4x4 matWorld; //Matrix world 
+    float textureX; //HeightMap/NarmalMap Texture Size X
+    float textureZ; //HeightMap/NarmalMap Texture Size Z
+    float textureX_Inverse; //1/textureX
+    float textureZ_Inverse; //1/textureZ
+    float heightStart; //Height Low Start 
+    float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
+    float terrainSizeX; //Terrain Size X
+    float terrainSizeZ; //Terrain Size Z
+	float terrainScale; //Terrain Scale
+	float reserve0;
+    float reserve1;
+    float reserve2;
+
+    TerrainChunkedSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
+};
+
 struct TerrainChunkedObjecctInstanceConstants
 {
 	float4 patch;

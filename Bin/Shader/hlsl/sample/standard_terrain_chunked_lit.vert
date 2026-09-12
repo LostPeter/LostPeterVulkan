@@ -11,7 +11,7 @@
 
 #include "../hlsl_input.hlsl"
 #include "../hlsl_common.hlsl"
-#include "../hlsl_terrain.hlsl"
+#include "../hlsl_terrain_chunked.hlsl"
 
 
 [[vk::binding(0)]]cbuffer passConsts                : register(b0) 
@@ -28,7 +28,7 @@
 
 [[vk::binding(4)]]cbuffer terrainConsts             : register(b4) 
 {
-    TerrainConstants terrainConsts;
+    TerrainChunkedConstants terrainConsts;
 }
 
 
@@ -50,14 +50,14 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     float xPerf = posX / terrainConsts.terrainSizeX;
     float zPerf = posZ / terrainConsts.terrainSizeZ;
 
-    float height = Terrain_GetHeightFromHeightMap(textureHeightMap,
-                                                  xPerf,
-                                                  zPerf,
-                                                  terrainConsts.heightStart,
-                                                  terrainConsts.heightMax);
-    float3 normal = Terrain_GetNormalFromNormalMap(textureNormalMap,
-                                                   xPerf,
-                                                   zPerf);
+    float height = TerrainChunked_GetHeightFromHeightMap(textureHeightMap,
+														 xPerf,
+														 zPerf,
+														 terrainConsts.heightStart,
+														 terrainConsts.heightMax);
+    float3 normal = TerrainChunked_GetNormalFromNormalMap(textureNormalMap,
+														  xPerf,
+														  zPerf);
     float2 uv = float2(xPerf, zPerf);
 
     output.outWorldPos = mul(terrainConsts.matWorld, float4(input.inPosition, 1.0));
@@ -69,10 +69,10 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     output.outWorldNormal = mul((float3x3)terrainConsts.matWorld, normal);
     output.outTexCoord.xy = uv;
     output.outTexCoord.zw = float2(0, 0);
-    output.uvSplat01.xy = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 0);
-    output.uvSplat01.zw = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 1);
-    output.uvSplat23.xy = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 2);
-    output.uvSplat23.zw = Terrain_GetSplatUV2BySplatLayer(terrainConsts, uv, 3);
+    output.uvSplat01.xy = TerrainChunked_GetSplatUV2BySplatLayer(terrainConsts, uv, 0);
+    output.uvSplat01.zw = TerrainChunked_GetSplatUV2BySplatLayer(terrainConsts, uv, 1);
+    output.uvSplat23.xy = TerrainChunked_GetSplatUV2BySplatLayer(terrainConsts, uv, 2);
+    output.uvSplat23.zw = TerrainChunked_GetSplatUV2BySplatLayer(terrainConsts, uv, 3);
     
     return output;
 }

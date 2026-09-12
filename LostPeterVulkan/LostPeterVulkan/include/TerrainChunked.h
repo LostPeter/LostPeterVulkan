@@ -34,6 +34,11 @@ namespace LostPeterVulkan
 		float fGeometricError;
 		FAABB bounds;
 
+		//  ---------
+		//  | 2 | 3 |
+		//  ---------
+		//  | 0 | 1 |
+		//  ---------
 		TerrainChunkedNode* ppChildren[4];
 
 	public:

@@ -1665,7 +1665,7 @@ namespace LostPeterVulkan
 						//TerrainChunked
 						virtual void terrainChunkedConfig();
 							virtual void terrainChunkedConfigItem(const TerrainChunkedLod* pChunkedLod);
-                                virtual bool terrainChunkedConfigSplatItem(TerrainSplatConstants& tsc, const String& name);
+                                virtual bool terrainChunkedConfigSplatItem(TerrainChunkedSplatConstants& tsc, const String& name);
                             virtual void terrainChunkedReset();
                         //PassConstants
                         virtual void passConstantsConfig();

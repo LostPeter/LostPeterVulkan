@@ -810,10 +810,11 @@ namespace LostPeterVulkan
             this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
             this->terrainCB.terrainSizeX = pSetting->GetTerrainSize();
             this->terrainCB.terrainSizeZ = pSetting->GetTerrainSize();
+			this->terrainCB.terrainScale = pSetting->GetCellSize();
 
-			String nameBuffer = "TerrainConstants-" + this->name;
+			String nameBuffer = "TerrainChunkedConstants-" + this->name;
 			this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,
-																	sizeof(TerrainConstants), 
+																	sizeof(TerrainChunkedConstants), 
 																	(uint8*)&this->terrainCB,
 																	false);
 			if (!this->poBuffer_TerrainCB)
@@ -985,7 +986,7 @@ namespace LostPeterVulkan
                 VkDescriptorBufferInfo bufferInfo_Terrain = {};
                 bufferInfo_Terrain.buffer = this->poBuffer_TerrainCB->GetVkBuffer();
                 bufferInfo_Terrain.offset = 0;
-                bufferInfo_Terrain.range = sizeof(TerrainConstants);
+                bufferInfo_Terrain.range = sizeof(TerrainChunkedConstants);
                 pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
 													 this->poStatePipelineGraphics->poDescriptorSets[i],
 													 4,
@@ -1073,7 +1074,7 @@ namespace LostPeterVulkan
 	void TerrainRender::UpdateBufferTerrain()
 	{
 		this->poBuffer_TerrainCB->UpdateBuffer(0,
-											   sizeof(TerrainConstants), 
+											   sizeof(TerrainChunkedConstants), 
 											   (uint8*)&this->terrainCB);
 	}
 
