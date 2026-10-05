@@ -9,7 +9,7 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 SET(NAME_PROJECT "vulkan_003_texture")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)

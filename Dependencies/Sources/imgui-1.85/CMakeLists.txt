@@ -7,7 +7,7 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
 SET(PLATFORM_MODE_DX12 "dx12")
 SET(PLATFORM_MODE_GL3 "gl3")

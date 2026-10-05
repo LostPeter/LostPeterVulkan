@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.15)
 project(zziplib VERSION "0.13.72" LANGUAGES C)
 
 if(NOT CMAKE_BUILD_TYPE) 
