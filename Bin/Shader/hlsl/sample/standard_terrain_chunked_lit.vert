@@ -45,10 +45,12 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
     TerrainChunkedObjecctInstanceConstants obj = terrainObjectConsts[instanceIndex];
     
-    float posX = terrainConsts.terrainSizeX / 2.0 + input.inPosition.x + obj.patch.x;
-    float posZ = terrainConsts.terrainSizeZ / 2.0 - input.inPosition.z + obj.patch.y;
-    float xPerf = posX / terrainConsts.terrainSizeX;
-    float zPerf = posZ / terrainConsts.terrainSizeZ;
+	float posX_Rev = obj.patch.x + input.inPosition.x * obj.patch.z;
+	float posZ_Rev = obj.patch.y + input.inPosition.z * obj.patch.z;
+    float posX_World = terrainConsts.terrainOffset.x + posX_Rev;
+    float posZ_World = terrainConsts.terrainOffset.z + posZ_Rev;
+    float xPerf = posX_Rev / terrainConsts.terrainSizeX;
+    float zPerf = posZ_Rev / terrainConsts.terrainSizeZ;
 
     float height = TerrainChunked_GetHeightFromHeightMap(textureHeightMap,
 														 xPerf,
@@ -60,7 +62,7 @@ VSOutput_Terrain main(VSInput_Pos3Color4Normal3TexCood2 input,
 														  zPerf);
     float2 uv = float2(xPerf, zPerf);
 
-    output.outWorldPos = mul(terrainConsts.matWorld, float4(input.inPosition, 1.0));
+    output.outWorldPos = mul(terrainConsts.matWorld, float4(posX_World, 0.0f, posZ_World, 1.0));
     output.outWorldPos.y = height;
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;

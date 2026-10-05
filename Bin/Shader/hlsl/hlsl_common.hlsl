@@ -288,10 +288,7 @@ struct TerrainChunkedConstants
     float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
     float terrainSizeX; //Terrain Size X
     float terrainSizeZ; //Terrain Size Z
-	float terrainScale; //Terrain Scale
-	float reserve0;
-    float reserve1;
-    float reserve2;
+	float4 terrainOffset; //xyz: offset; w: scale
 
     TerrainChunkedSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 };
