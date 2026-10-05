@@ -1518,10 +1518,7 @@ namespace LostPeterVulkan
         float heightMax; //Height Max (from heightStart, heightEnd = heightStart + heightMax)
         float terrainSizeX; //Terrain Size X
         float terrainSizeZ; //Terrain Size Z
-		float terrainScale; //Terrain Scale
-		float reserve0;
-        float reserve1;
-        float reserve2;
+		FVector4 terrainOffset; //xyz: offset; w: scale
         
         TerrainChunkedSplatConstants aSplats[MAX_TERRAIN_SPLAT_COUNT];
 
@@ -1535,10 +1532,7 @@ namespace LostPeterVulkan
             , heightMax(200)
 			, terrainSizeX(1024)
             , terrainSizeZ(1024)
-			, terrainScale(1.0f)
-			, reserve0(0.0f)
-			, reserve1(0.0f)
-			, reserve2(0.0f)
+			, terrainOffset(0.0f, 0.0f, 0.0f, 1.0f)
         {
 
         }

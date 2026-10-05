@@ -313,7 +313,7 @@ namespace LostPeterVulkan
 				const float v = static_cast<float>(z) / static_cast<float>(nPatchQuads);
 
 				FVertex_Pos3Color4Normal3Tex2 vertex;
-				vertex.pos = FVector3(x, 0, z);
+				vertex.pos = FVector3(u, 0, v);
 				vertex.color = FMath::ms_clWhite;
 				vertex.normal = FMath::ms_v3UnitY;
 				vertex.texCoord = FVector2(u, v);
@@ -810,7 +810,10 @@ namespace LostPeterVulkan
             this->terrainCB.heightMax = pWindow->cfg_terrainHeightMax;
             this->terrainCB.terrainSizeX = pSetting->GetTerrainSize();
             this->terrainCB.terrainSizeZ = pSetting->GetTerrainSize();
-			this->terrainCB.terrainScale = pSetting->GetCellSize();
+			FVector3 vOffset = pSetting->GetOffset();
+			vOffset.x += this->pChunked->nChunkedX * pSetting->GetTerrainSize();
+			vOffset.z += this->pChunked->nChunkedZ * pSetting->GetTerrainSize();
+			this->terrainCB.terrainOffset = FVector4(vOffset.x, vOffset.y, vOffset.z, pSetting->GetCellSize());
 
 			String nameBuffer = "TerrainChunkedConstants-" + this->name;
 			this->poBuffer_TerrainCB = pWindow->createBufferUniform(nameBuffer,

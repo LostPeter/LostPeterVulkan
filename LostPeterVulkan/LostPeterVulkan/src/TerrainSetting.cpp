@@ -220,7 +220,13 @@ namespace LostPeterVulkan
 			F_LogError("*********************** TerrainSetting::LoadSetting, loadChunkedSettings failed, Load path cfg file: [%s] failed !", path.c_str());
 			return false;
 		}
-		F_LogInfo("TerrainSetting::LoadSetting: Load path cfg file: [%s] success !", path.c_str());
+		F_LogInfo("TerrainSetting::LoadSetting: Load path cfg file: [%s] success, Leaf-Patch: [%d - %d], Lod: [%d - %f - %f,%f,%f,%f], Chunk: [%d,%d - %d,%d], Size: [%f - %f], Resolution-Cell: [%d - %f], Offset: [%f - %f - %f] !", path.c_str(),
+				  this->nLeafQuads, this->nPatchQuads, 
+				  this->nLodCount, this->fLodUpdateDis, this->fLodRadius0, this->fLodRadius1, this->fLodRadius2, this->fLodRadius3,
+				  this->nStartX, this->nStartZ, this->nCountX, this->nCountZ,
+				  this->fSizeX, this->fSizeZ,
+				  this->nResolution, this->fCellSize,
+				  this->vOffset.x, this->vOffset.y, this->vOffset.z);
 
 		return true;
 	}
